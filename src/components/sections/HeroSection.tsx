@@ -28,7 +28,7 @@ export default function HeroSection() {
   const heroFade = useFadeIn(100);
 
   return (
-    <section className="bg-[url('/images/home-page/hero-bg.avif')] bg-cover bg-center overflow-hidden relative">
+    <section className="bg-[url('/images/home-page/house-2.png')] bg-cover bg-center overflow-hidden relative">
       <div className="relative px-5 sm:px-15 py-16 sm:pt-32 lg:pt-40 bg-black/40 flex flex-col">
         <div
           ref={heroFade.ref}

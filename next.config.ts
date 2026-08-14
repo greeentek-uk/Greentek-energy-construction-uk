@@ -30,7 +30,7 @@ const nextConfig: NextConfig = {
           },
           {
             key: "Content-Security-Policy",
-            value: "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://*.google.com https://*.gstatic.com; font-src 'self' data:; connect-src 'self'; frame-src 'self' https://www.google.com; frame-ancestors 'none';",
+            value: "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.openwidget.com https://api.openwidget.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://*.google.com https://*.gstatic.com; font-src 'self' data:; connect-src 'self' https://api.openwidget.com https://api.livechatinc.com; frame-src 'self' https://www.google.com https://cdn.openwidget.com https://secure.livechatinc.com; frame-ancestors 'none';",
           },
         ],
       },
