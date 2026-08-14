@@ -51,7 +51,7 @@ export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   maximumScale: 5,
-  themeColor: "#15803d", // green-700
+  themeColor: "#c5eb02", 
 };
 
 export default function RootLayout({
@@ -66,7 +66,6 @@ export default function RootLayout({
       >
         <div className="relative flex min-h-screen flex-col overflow-x-hidden">
           {children}
-          <FloatingActions />
           <OpenWidget />
         </div>
       </body>

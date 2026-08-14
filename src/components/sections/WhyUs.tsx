@@ -129,7 +129,7 @@ export default function WhyUs() {
           </p>
         </div>
       </div>
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 md:gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 md:gap-4 max-w-7xl mx-auto">
         <div className="bg-[#101314] rounded-xl border border-[#C5EB02] py-4 px-4 md:py-6 md:px-6 ">
           <Award className="text-[#C5EB02] w-8 h-8 mb-4" />
           <h3 className="mb-2 font-semibold text-xl">BRAND AGNOSTIC</h3>

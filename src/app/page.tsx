@@ -33,8 +33,8 @@ export default function HomePage() {
 
       <div className="flex-1">
         <HeroSection />
-        <Stats />
         <Verticals />
+        <Stats />
         <WhyUs />
         <AccreditationsSection />
         <ServicesGlimpse />

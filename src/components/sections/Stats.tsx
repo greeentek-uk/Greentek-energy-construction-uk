@@ -1,6 +1,8 @@
 "use client";
 
+import { CheckCircle2, ShieldCheck, Wrench } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import type { LucideIcon } from "lucide-react";
 
 function useFadeIn(delay = 0) {
   const ref = useRef<HTMLDivElement>(null);
@@ -27,10 +29,40 @@ function useFadeIn(delay = 0) {
   return { ref, visible };
 }
 
-const stats = [
-  { value: "500+", label: "Projects Completed" },
-  { value: "25+", label: "Years Combined Experience" },
-  { value: "98%", label: "Satisfaction Rate" },
+/* ============================================================
+   ADD A STAT HERE — copy a block, change the values.
+   `description` is optional; leave it out and the card just
+   shows the icon, number and label.
+   ============================================================ */
+type Stat = {
+  value: string;
+  label: string;
+  description?: string;
+  icon: LucideIcon;
+};
+
+const stats: Stat[] = [
+  {
+    value: "500+",
+    label: "Projects Completed",
+    description:
+      "Solar, heat pump and storage installs delivered across residential and commercial properties.",
+    icon: Wrench,
+  },
+  {
+    value: "25+",
+    label: "Years Combined Experience",
+    description:
+      "An accredited team with decades of hands-on energy and construction work behind it.",
+    icon: ShieldCheck,
+  },
+  {
+    value: "98%",
+    label: "Satisfaction Rate",
+    description:
+      "One team handling the whole job, so it gets done properly and signed off first time.",
+    icon: CheckCircle2,
+  },
 ];
 
 function CountUp({
@@ -67,8 +99,10 @@ function CountUp({
   );
 }
 
-function StatCard({ stat, delay }: { stat: (typeof stats)[0]; delay: number }) {
+function StatCard({ stat, delay }: { stat: Stat; delay: number }) {
   const fade = useFadeIn(delay);
+  const Icon = stat.icon;
+
   const numericMatch = stat.value.match(/(\d+(\.\d+)?)/);
   const target = numericMatch ? parseFloat(numericMatch[0]) : null;
   const suffix = numericMatch ? stat.value.replace(numericMatch[0], "") : "";
@@ -77,42 +111,56 @@ function StatCard({ stat, delay }: { stat: (typeof stats)[0]; delay: number }) {
   return (
     <div
       ref={fade.ref}
-      className={`flex-1 text-center px-6 py-4 md:py-0 transition-all duration-700 ${
+      className={`bg-[#101314] rounded-xl border border-[#C5EB02] shadow-lg shadow-[#c5eb02]/10 px-6 py-7 md:px-8 md:py-8 transition-all duration-700 ${
         fade.visible ? "translate-y-0 opacity-100" : "translate-y-8 opacity-0"
       }`}
     >
-      <div className="text-4xl sm:text-5xl md:text-6xl font-semibold text-white leading-none tracking-tight mb-3">
-        {target !== null ? (
-          isDecimal ? (
-            <span>
-              {(fade.visible ? target : 0).toFixed(1)}
-              {suffix}
-            </span>
-          ) : (
-            <CountUp target={target} suffix={suffix} visible={fade.visible} />
-          )
-        ) : (
-          stat.value
-        )}
+      <div className="flex items-center gap-4">
+        <span className="shrink-0 grid h-12 w-12 place-items-center rounded-xl bg-white/5 text-[#c5eb02]">
+          <Icon className="h-6 w-6" strokeWidth={1.75} />
+        </span>
+
+        <div className="min-w-0">
+          <div className="text-3xl sm:text-4xl font-semibold text-white leading-none tracking-tight">
+            {target !== null ? (
+              isDecimal ? (
+                <span>
+                  {(fade.visible ? target : 0).toFixed(1)}
+                  {suffix}
+                </span>
+              ) : (
+                <CountUp
+                  target={target}
+                  suffix={suffix}
+                  visible={fade.visible}
+                />
+              )
+            ) : (
+              stat.value
+            )}
+          </div>
+          <p className="mt-1.5 text-xs sm:text-sm font-semibold uppercase tracking-wide text-[#c5eb02]">
+            {stat.label}
+          </p>
+        </div>
       </div>
-      <p className="text-xs sm:text-sm font-semibold uppercase tracking-wide text-[#c5eb02]">
-        {stat.label}
-      </p>
+
+      {stat.description && (
+        <p className="mt-6 text-sm sm:text-base text-white/80 leading-relaxed">
+          {stat.description}
+        </p>
+      )}
     </div>
   );
 }
 
 export default function Stats() {
-  const headerFade = useFadeIn(0);
-
   return (
     <section className="py-10 lg:py-14">
-      <div className="mx-auto max-w-7xl px-6">
-        <div className="bg-[#101314] rounded-xl border border-[#C5EB02] py-10 md:py-14 px-6 md:px-12 flex flex-col md:flex-row items-center justify-between gap-8 md:gap-4 shadow-lg shadow-[#c5eb02]/10">
-          {stats.map((stat, i) => (
-            <StatCard key={stat.label} stat={stat} delay={i * 100} />
-          ))}
-        </div>
+      <div className="mx-auto max-w-7xl px-6 grid grid-cols-1 md:grid-cols-3 gap-5 md:gap-6">
+        {stats.map((stat, i) => (
+          <StatCard key={stat.label} stat={stat} delay={i * 100} />
+        ))}
       </div>
     </section>
   );
