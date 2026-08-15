@@ -59,7 +59,7 @@ export default function FAQSection() {
 
   return (
     <section
-      className=" py-12 lg:py-24 overflow-hidden"
+      className="py-12 md:py-16 lg:py-24 overflow-hidden"
       aria-labelledby="faq-heading"
     >
       <div className="mx-auto max-w-4xl px-6">
@@ -73,10 +73,10 @@ export default function FAQSection() {
         >
           {/* Heading Block */}
           <div className="text-center mb-6 md:mb-8">
-            <p className="text-[10px] md:text-[16px] font-semibold uppercase tracking-[0.3em mb-6 bg-[#28282C] text-[#c5eb02] rounded-xl px-3 py-1 w-fit mx-auto">
+            <p className="text-[10px] md:text-[16px] font-semibold uppercase mb-6 bg-[#28282C] text-[#c5eb02] rounded-xl px-3 py-1 w-fit mx-auto">
               Common Inquiries
             </p>
-            <h2 className="text-[1.625rem] md:text-[2.5rem] font-bold leading-[1.2] tracking-tight text-white">
+            <h2 className="text-[1.625rem] md:text-[2.5rem] font-bold leading-[1.2] text-white">
               Frequently Asked Questions
             </h2>
           </div>

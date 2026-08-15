@@ -38,7 +38,7 @@ export default function BlogPage() {
           <div className="bg-black/60 pt-30 py-20">
             <div className="absolute top-0 right-0 w-80 h-80 bg-green-500/10 rounded-full blur-3xl" />
             <div className="mx-auto max-w-5xl px-6 text-center relative z-10">
-              <h1 className="text-[2rem] md:text-[3.5rem] font-extrabold leading-[1.15] text-white mb-4">
+              <h1 className="text-[2rem] md:text-[3.5rem] font-bold leading-[1.15] text-white mb-4">
                 Energy Saving &amp;{" "}
                 <span className="text-[#c5eb02]">Home Improvement</span> Tips
               </h1>

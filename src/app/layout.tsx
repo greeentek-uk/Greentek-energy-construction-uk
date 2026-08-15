@@ -1,10 +1,8 @@
 import type { Metadata, Viewport } from "next";
-import { Inter, Hanken_Grotesk } from "next/font/google";
 import "./globals.css";
 import { siteConfig } from "@/data/site";
 import OpenWidget from "@/components/sections/OpenWidget";
-const inter = Inter({ subsets: ["latin"] });
-const hanken_Grotesk = Hanken_Grotesk({ subsets: ["latin"] });
+import { inter, hankenGrotesk } from "@/lib/fonts";
 
 export const metadata: Metadata = {
   title: {
@@ -59,10 +57,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body
-        className={`${inter.className} antialiased selection:bg-green-100 selection:text-green-900`}
-      >
+    <html lang="en" className={`${inter.variable} ${hankenGrotesk.variable}`}>
+      <body className="font-sans antialiased selection:bg-green-100 selection:text-green-900">
         <div className="relative flex min-h-screen flex-col overflow-x-hidden">
           {children}
           <OpenWidget />

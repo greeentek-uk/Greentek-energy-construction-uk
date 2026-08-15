@@ -84,14 +84,14 @@ function StatCard({ stat, delay }: { stat: (typeof stats)[0]; delay: number }) {
       }`}
     >
       <div className="relative z-10">
-        <span className="text-3xl md:text-4xl font-black text-[#c5eb02] leading-none tracking-tighter block mb-3 group-hover:scale-105 transition-transform duration-500 origin-left">
+        <span className="text-3xl md:text-4xl font-black text-[#c5eb02] leading-none block mb-3 group-hover:scale-105 transition-transform duration-500 origin-left">
           {target !== null ? (
             <CountUp target={target} suffix={suffix} visible={fade.visible} />
           ) : (
             stat.value
           )}
         </span>
-        <p className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500 group-hover:text-zinc-800 transition-colors">
+        <p className="text-[10px] font-black uppercase text-zinc-500 group-hover:text-zinc-800 transition-colors">
           {stat.label}
         </p>
       </div>
@@ -104,7 +104,7 @@ export default function WhyUs() {
   const journeyFade = useFadeIn(100);
 
   return (
-    <section className="gap-4 md:gap-6 py-10 lg:pt-14 lg:pb-4 overflow-hidden mx-auto px-4 md:px-10">
+    <section className="gap-4 md:gap-6 py-12 md:py-16 lg:py-24 overflow-hidden mx-auto px-4 md:px-10">
       {" "}
       <div>
         {/* Centered heading block */}
@@ -116,10 +116,10 @@ export default function WhyUs() {
               : "translate-y-6 opacity-0"
           }`}
         >
-          <p className="text-[10px] md:text-[16px] font-semibold uppercase tracking-[0.3em mb-6 bg-[#28282C] text-[#c5eb02] rounded-2xl px-3 py-1 w-fit text-center mx-auto">
+          <p className="text-[10px] md:text-[16px] font-semibold uppercase mb-6 bg-[#28282C] text-[#c5eb02] rounded-2xl px-3 py-1 w-fit text-center mx-auto">
             Why Greentek
           </p>
-          <h2 className="text-[1.625rem] md:text-[2.5rem] font-bold leading-[1.2] tracking-tight text-white text-center">
+          <h2 className="text-[1.625rem] md:text-[2.5rem] font-bold leading-[1.2] text-white text-center">
             Three Reasons
             <br /> Home Owners Trust Us.
           </h2>
@@ -132,7 +132,7 @@ export default function WhyUs() {
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 md:gap-4 max-w-7xl mx-auto">
         <div className="bg-[#101314] rounded-xl border border-[#C5EB02] py-4 px-4 md:py-6 md:px-6 ">
           <Award className="text-[#C5EB02] w-8 h-8 mb-4" />
-          <h3 className="mb-2 font-semibold text-xl">BRAND AGNOSTIC</h3>
+          <h3 className="mb-2 font-bold text-xl md:text-2xl">BRAND AGNOSTIC</h3>
           <p className="text-white/80 text-md">
             We select the best in class technology or hardware, based on client
             requirements.
@@ -140,7 +140,7 @@ export default function WhyUs() {
         </div>
         <div className="bg-[#101314] rounded-xl border border-[#C5EB02] py-4 px-4 md:py-6 md:px-6">
           <Users className="text-[#C5EB02] w-8 h-8 mb-4" />
-          <h3 className="mb-2 font-semibold text-xl">FULL LIFECYCLE SUPPORT</h3>
+          <h3 className="mb-2 font-bold text-xl md:text-2xl">FULL LIFECYCLE SUPPORT</h3>
           <p className="text-white/80 text-md">
             From initial consultancy and design to installation and long-term
             maintenance, we stay by your side.
@@ -148,7 +148,7 @@ export default function WhyUs() {
         </div>
         <div className="bg-[#101314] rounded-xl border border-[#C5EB02] py-4 px-4 md:py-6 md:px-6 ">
           <Handshake className="text-[#C5EB02] w-8 h-8 mb-4" />
-          <h3 className="mb-2 font-semibold text-xl">
+          <h3 className="mb-2 font-bold text-xl md:text-2xl">
             OUR STANDARD. YOUR GUARANTEE.
           </h3>
           <p className="text-white/80 text-md">

@@ -60,11 +60,11 @@ function ProjectCard({ project, delay }: { project: Project; delay: number }) {
 
       {/* Text below image */}
       <div className="pt-5">
-        <p className="text-[10px] font-semibold uppercase tracking-[0.3em] mb-3 bg-[#28282C] text-[#c5eb02] rounded-xl px-3 py-1 w-fit">
+        <p className="text-[10px] font-semibold uppercase mb-3 bg-[#28282C] text-[#c5eb02] rounded-xl px-3 py-1 w-fit">
           {project.category}
         </p>
         <Link href={`/projects/${project.slug}`} className="group">
-          <h3 className="text-xl font-semibold mb-2 text-white group-hover:text-[#c5eb02] transition-colors">
+          <h3 className="text-xl md:text-2xl font-bold mb-2 text-white group-hover:text-[#c5eb02] transition-colors">
             {project.title}
           </h3>
         </Link>

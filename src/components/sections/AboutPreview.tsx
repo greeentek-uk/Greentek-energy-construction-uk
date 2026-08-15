@@ -70,14 +70,14 @@ function StatCard({ stat, delay }: { stat: typeof stats[0], delay: number }) {
       }`}
     >
       <div className="relative z-10">
-        <span className="text-3xl md:text-4xl font-black text-green-700 leading-none tracking-tighter block mb-3 group-hover:scale-105 transition-transform duration-500 origin-left">
+        <span className="text-3xl md:text-4xl font-black text-green-700 leading-none block mb-3 group-hover:scale-105 transition-transform duration-500 origin-left">
           {target !== null ? (
             <CountUp target={target} suffix={suffix} visible={fade.visible} />
           ) : (
             stat.value
           )}
         </span>
-        <p className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500 group-hover:text-zinc-800 transition-colors">
+        <p className="text-[10px] font-black uppercase text-zinc-500 group-hover:text-zinc-800 transition-colors">
           {stat.label}
         </p>
       </div>
@@ -90,7 +90,7 @@ export default function AboutPreview() {
   const journeyFade = useFadeIn(100);
 
   return (
-    <section className="bg-white py-12 lg:py-24 overflow-hidden">
+    <section className="bg-white py-12 md:py-16 lg:py-24 overflow-hidden">
       <div className="mx-auto max-w-7xl px-6">
         {/* Centered heading block */}
         <div 
@@ -99,10 +99,10 @@ export default function AboutPreview() {
             headerFade.visible ? "translate-y-0 opacity-100" : "translate-y-6 opacity-0"
           }`}
         >
-          <p className="text-[10px] font-black uppercase tracking-[0.3em] text-green-600 mb-6">
+          <p className="text-[10px] font-black uppercase text-green-600 mb-6">
             About Us
           </p>
-          <h2 className="text-[1.625rem] md:text-[2.5rem] font-bold leading-[1.2] tracking-tight text-zinc-900">
+          <h2 className="text-[1.625rem] md:text-[2.5rem] font-bold leading-[1.2] text-zinc-900">
             Leading the Way in <br />
             <span className="text-green-700">Construction & Energy.</span>
           </h2>
@@ -120,7 +120,7 @@ export default function AboutPreview() {
               journeyFade.visible ? "translate-x-0 opacity-100" : "-translate-x-6 opacity-0"
             }`}
           >
-            <h3 className="text-[1.25rem] md:text-[1.5rem] font-bold leading-[1.3] tracking-tight text-zinc-900 mb-8">
+            <h3 className="text-[1.25rem] md:text-[1.5rem] font-bold leading-[1.3] text-zinc-900 mb-8">
               Our Journey <br />Since 2020
             </h3>
             <div className="space-y-6">

@@ -46,7 +46,7 @@ export default function BrandsSection() {
 
   return (
     <section
-      className="py-10 lg:py-14 overflow-hidden px-4 md:px-10"
+      className="py-12 md:py-16 lg:py-24 overflow-hidden px-4 md:px-10"
       aria-labelledby="brands-heading"
     >
       <div className="mx-auto max-w-7xl px-6">
@@ -64,7 +64,7 @@ export default function BrandsSection() {
           </p>
           <h2
             id="brands-heading"
-            className="text-[1.625rem] md:text-[2.5rem] font-bold leading-[1.2] tracking-tight text-white"
+            className="text-[1.625rem] md:text-[2.5rem] font-bold leading-[1.2] text-white"
           >
             Trusted by Industry Leaders.
           </h2>

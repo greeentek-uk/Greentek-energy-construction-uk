@@ -48,7 +48,7 @@ export default function ContactPageClient() {
                 : "translate-y-10 opacity-0"
             }`}
           >
-            <h1 className="text-[2rem] md:text-[3.5rem] font-extrabold leading-[1.15] text-white mb-8">
+            <h1 className="text-[2rem] md:text-[3.5rem] font-bold leading-[1.15] text-white mb-8">
               Get in <span className="text-[#c5eb02]">Touch.</span>
             </h1>
             <p className="text-lg md:text-xl text-white/80 max-w-2xl mx-auto leading-relaxed font-medium">
@@ -70,10 +70,10 @@ export default function ContactPageClient() {
                 : "translate-y-10 opacity-0"
             }`}
           >
-            <p className="text-[10px] md:text-[16px] font-semibold uppercase tracking-[0.3em mb-6 bg-[#28282C] text-[#c5eb02] rounded-2xl px-3 py-1 w-fit text-center mx-auto">
+            <p className="text-[10px] md:text-[16px] font-semibold uppercase mb-6 bg-[#28282C] text-[#c5eb02] rounded-2xl px-3 py-1 w-fit text-center mx-auto">
               Our Location
             </p>
-            <h2 className="text-[1.625rem] md:text-[2.5rem] font-bold leading-[1.2] tracking-tight text-white mb-4">
+            <h2 className="text-[1.625rem] md:text-[2.5rem] font-bold leading-[1.2] text-white mb-4">
               Visit Our Office
             </h2>
             <p className="text-base text-white font-medium">

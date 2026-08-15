@@ -17,7 +17,7 @@ import CtaSection from "@/components/sections/CtaSection";
 import Areas from "@/components/sections/Areas";
 import Process from "@/components/sections/Process";
 import Projects from "@/components/sections/Projects";
-
+import AboutUs from "@/components/sections/AboutUs";
 export function generateMetadata(): Metadata {
   return withSeoOverride("/", {
     title: "Solar, Heating & Renovation Experts",
@@ -33,12 +33,12 @@ export default function HomePage() {
 
       <div className="flex-1">
         <HeroSection />
-        <Verticals />
+        <AboutUs/>
         <Stats />
+        <Verticals />
         <WhyUs />
         <AccreditationsSection />
         <ServicesGlimpse />
-        <BrandsSection />
         <Process />
         <Projects />
         <CtaSection />

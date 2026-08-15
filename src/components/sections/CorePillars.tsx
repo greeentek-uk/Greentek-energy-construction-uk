@@ -31,7 +31,7 @@ export default function CorePillars() {
   const sectionFade = useFadeIn(0);
 
   return (
-    <section className="bg-white py-12 lg:py-24" aria-labelledby="pillars-heading">
+    <section className="bg-white py-12 md:py-16 lg:py-24" aria-labelledby="pillars-heading">
       <div className="mx-auto max-w-7xl px-6">
         <div 
           ref={sectionFade.ref}
@@ -41,7 +41,7 @@ export default function CorePillars() {
         >
           {/* Header Block */}
           <div className="text-center mb-12 md:mb-16">
-            <h2 id="pillars-heading" className="text-[1.625rem] md:text-[2.5rem] font-bold leading-[1.2] tracking-tight text-slate-950 mb-8">
+            <h2 id="pillars-heading" className="text-[1.625rem] md:text-[2.5rem] font-bold leading-[1.2] text-slate-950 mb-8">
               Our Core Pillars
             </h2>
             <p className="text-zinc-500 text-lg md:text-xl max-w-3xl mx-auto mb-10 font-medium leading-relaxed">
@@ -63,8 +63,8 @@ export default function CorePillars() {
                     </svg>
                   </div>
                   <div>
-                    <span className="text-[9px] font-black uppercase tracking-[0.3em] text-green-600 block mb-0.5">Division 01</span>
-                    <h3 className="text-xl font-black text-slate-900 tracking-tight leading-none">Energy & Carbon</h3>
+                    <span className="text-[9px] font-black uppercase text-green-600 block mb-0.5">Division 01</span>
+                    <h3 className="text-xl md:text-2xl font-bold text-slate-900 leading-none">Energy & Carbon</h3>
                   </div>
                 </div>
 
@@ -99,8 +99,8 @@ export default function CorePillars() {
                     </svg>
                   </div>
                   <div>
-                    <span className="text-[9px] font-black uppercase tracking-[0.3em] text-zinc-400 block mb-0.5">Division 02</span>
-                    <h3 className="text-xl font-black text-slate-900 tracking-tight leading-none">Construction</h3>
+                    <span className="text-[9px] font-black uppercase text-zinc-400 block mb-0.5">Division 02</span>
+                    <h3 className="text-xl md:text-2xl font-bold text-slate-900 leading-none">Construction</h3>
                   </div>
                 </div>
 

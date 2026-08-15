@@ -1,38 +1,23 @@
 "use client";
 
-import { ArrowRight, ChevronLeft, ChevronRight, Pause, Play } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
-
-/* ============================================================
-   ADD SLIDES HERE — copy a block and change the values.
-   `date` and `href` are optional. Everything else (progress
-   bars, arrows, timing) adapts on its own.
-   ============================================================ */
-type Slide = {
-  image: string;
-  title: string;
-  text: string;
-  href?: string;
-  date?: string;
-};
-
-const SLIDES: Slide[] = [
-  {
-    image: "/images/verticals/energy.avif",
-    href: "/energy-solutions",
-    title: "Energy Solutions",
-    text: "Turnkey multi-measure energy upgrades, from Solar PV to high-efficiency thermal systems.",
-  },
-  {
-    image: "/images/verticals/home.jpeg",
-    href: "/home-solutions",
-    title: "Home Solutions",
-    text: "Primary contractor for renovations, extentions, and planned maintenance across residential and commercial properties.",
-  },
-];
-
-const SLIDE_DURATION = 6000; // ms each slide stays on screen
+import type { LucideIcon } from "lucide-react";
+import {
+  ArrowRight,
+  ArrowUpRight,
+  Blocks,
+  Flame,
+  Hammer,
+  Home,
+  Layers,
+  PaintRoller,
+  Ruler,
+  Sofa,
+  Sun,
+  Thermometer,
+  Wrench,
+} from "lucide-react";
 
 function useFadeIn(delay = 0) {
   const ref = useRef<HTMLDivElement>(null);
@@ -59,197 +44,214 @@ function useFadeIn(delay = 0) {
   return { ref, visible };
 }
 
-export default function Verticals() {
-  const headerFade = useFadeIn(0);
-  const showFade = useFadeIn(100);
+/* ============================================================
+   ADD A SERVICE — drop an object into the right group's
+   `services` array. The grid reflows on its own.
+   ============================================================ */
+type Service = {
+  title: string;
+  text: string;
+  href: string;
+  icon: LucideIcon;
+};
 
-  const [index, setIndex] = useState(0);
-  const [paused, setPaused] = useState(false);
-  const [progress, setProgress] = useState(0);
-  const elapsed = useRef(0);
+type Group = {
+  name: string;
+  intro: string;
+  href: string;
+  services: Service[];
+};
 
-  // Respect reduced-motion: hold on the first slide until the user navigates.
-  useEffect(() => {
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      setPaused(true);
-    }
-  }, []);
+const GROUPS: Group[] = [
+  {
+    name: "Energy Solutions",
+    intro:
+      "Turnkey multi-measure upgrades that cut what your property costs to run.",
+    href: "/energy-solutions",
+    services: [
+      {
+        title: "Solar PV Installations",
+        text: "Generate your own electricity, with battery storage to use it after dark.",
+        href: "/services/solar-pv-installations",
+        icon: Sun,
+      },
+      {
+        title: "Air Source Heat Pump Installations",
+        text: "Swap fossil fuel heating for a system that runs at a fraction of the cost.",
+        href: "/services/air-source-heat-pump-installations",
+        icon: Thermometer,
+      },
+      {
+        title: "Complete Heating System Upgrades",
+        text: "New boiler, radiators and controls, sized properly so every room actually gets warm.",
+        href: "/services/complete-heating-system-upgrades",
+        icon: Flame,
+      },
+      {
+        title: "Loft Insulation",
+        text: "Stop paying to heat the sky. The cheapest measure on this page, and the fastest.",
+        href: "/services/loft-insulation",
+        icon: Layers,
+      },
+      {
+        title: "External Wall Insulation & Rendering",
+        text: "Warmer, cheaper to run, and a completely new finish to the outside of the property.",
+        href: "/services/external-wall-insulation-rendering",
+        icon: PaintRoller,
+      },
+    ],
+  },
+  {
+    name: "Home Solutions",
+    intro:
+      "Principal contractor for renovation, extension and maintenance work, residential and commercial.",
+    href: "/home-solutions",
+    services: [
+      {
+        title: "Full Home Renovation",
+        text: "Whole-property refurbishment run end to end, on one programme and one point of contact.",
+        href: "/services/full-home-renovation",
+        icon: Home,
+      },
+      {
+        title: "Single Storey Extension",
+        text: "More usable space, handled from drawings and building control through to handover.",
+        href: "/services/single-storey-extension",
+        icon: Ruler,
+      },
+      {
+        title: "Loft Conversions",
+        text: "Turn dead roof space into a bedroom or office without extending the footprint.",
+        href: "/services/loft-conversions",
+        icon: Blocks,
+      },
+      {
+        title: "Kitchen Renovations",
+        text: "Full strip-out and fit, with the electrics, plumbing and plastering under the same team.",
+        href: "/services/kitchen-renovations",
+        icon: Hammer,
+      },
+      {
+        title: "Living Room Improvements",
+        text: "Reconfigure, replaster and finish the room the household actually spends its evenings in.",
+        href: "/services/living-room-improvements",
+        icon: Sofa,
+      },
+      {
+        title: "Commercial Planned Maintenance",
+        text: "Scheduled upkeep across commercial sites, so repairs stop arriving as emergencies.",
+        href: "/services/commercial-planned-maintenance",
+        icon: Wrench,
+      },
+    ],
+  },
+];
 
-  // Reset the timer whenever the slide changes.
-  useEffect(() => {
-    elapsed.current = 0;
-    setProgress(0);
-  }, [index]);
-
-  // Autoplay.
-  useEffect(() => {
-    if (paused || SLIDES.length < 2) return;
-
-    let frame = 0;
-    let last = performance.now();
-
-    const step = (now: number) => {
-      elapsed.current += now - last;
-      last = now;
-
-      const ratio = Math.min(elapsed.current / SLIDE_DURATION, 1);
-      setProgress(ratio);
-
-      if (ratio >= 1) {
-        setIndex((i) => (i + 1) % SLIDES.length);
-        return;
-      }
-      frame = requestAnimationFrame(step);
-    };
-
-    frame = requestAnimationFrame(step);
-    return () => cancelAnimationFrame(frame);
-  }, [index, paused]);
-
-  const go = (next: number) =>
-    setIndex((next + SLIDES.length) % SLIDES.length);
+function ServiceCard({ service, delay }: { service: Service; delay: number }) {
+  const fade = useFadeIn(delay);
+  const Icon = service.icon;
 
   return (
-    <section className="pt-20 pb-10 lg:py-20 overflow-hidden px-4 md:px-10">
-      <div className="mx-auto max-w-7xl px-2 md:px-6 grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-center">
-        {/* ---------- Left: copy ---------- */}
+    <div
+      ref={fade.ref}
+      className={`transition-all duration-700 ${
+        fade.visible ? "translate-y-0 opacity-100" : "translate-y-8 opacity-0"
+      }`}
+    >
+      <Link
+        href={service.href}
+        className="group relative flex h-full flex-col rounded-2xl bg-[#000000] px-6 py-7 md:px-8 md:py-8"
+      >
+        <span className="grid h-12 w-12 shrink-0 place-items-center rounded-xl bg-white/5 text-[#c5eb02] transition-colors duration-300 group-hover:bg-[#c5eb02] group-hover:text-black">
+          <Icon className="h-6 w-6" strokeWidth={1.75} />
+        </span>
+
+        <h4 className="mt-5 pr-8 text-lg font-bold leading-snug text-white transition-colors duration-300 group-hover:text-[#c5eb02]">
+          {service.title}
+        </h4>
+
+        <p className="mt-2 text-sm sm:text-base leading-relaxed text-white/80">
+          {service.text}
+        </p>
+
+        <ArrowUpRight className="absolute right-6 top-7 h-5 w-5 text-white/25 transition-colors duration-300 group-hover:text-[#c5eb02] md:right-8 md:top-8" />
+      </Link>
+    </div>
+  );
+}
+
+function ServiceGroup({ group, offset }: { group: Group; offset: number }) {
+  const fade = useFadeIn(offset);
+
+  return (
+    <div>
+      <div
+        ref={fade.ref}
+        className={`mb-5 flex flex-col gap-3 px-1 md:flex-row md:items-end md:justify-between transition-all duration-700 ${
+          fade.visible ? "translate-y-0 opacity-100" : "translate-y-6 opacity-0"
+        }`}
+      >
+        <div>
+          <h3 className="text-xl md:text-2xl font-bold leading-[1.3] text-white">
+            {group.name}
+          </h3>
+          {/* <p className="mt-2 max-w-xl text-md leading-relaxed text-white/80">
+            {group.intro}
+          </p> */}
+        </div>
+
+        <Link
+          href={group.href}
+          className="group inline-flex shrink-0 items-center gap-2 text-sm font-semibold uppercase text-[#c5eb02]"
+        >
+          View {group.name}
+          <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+        </Link>
+      </div>
+
+      <div className="grid grid-cols-1 gap-3 rounded-xl bg-[#101314] p-3 sm:grid-cols-2 lg:grid-cols-3">
+        {group.services.map((service, i) => (
+          <ServiceCard
+            key={service.title}
+            service={service}
+            delay={offset + i * 80}
+          />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+export default function Verticals() {
+  const headerFade = useFadeIn(0);
+
+  return (
+    <section className="py-12 md:py-16 lg:py-24">
+      <div className="mx-auto max-w-7xl px-6">
         <div
           ref={headerFade.ref}
-          className={`transition-all duration-700 ease-out ${
+          className={`mx-auto mb-12 max-w-3xl text-center transition-all duration-700 ease-out ${
             headerFade.visible
               ? "translate-y-0 opacity-100"
               : "translate-y-6 opacity-0"
           }`}
         >
-          <p className="text-[10px] md:text-[16px] font-semibold uppercase mb-6 bg-[#28282C] text-[#c5eb02] rounded-2xl px-3 py-1 w-fit">
-            About Us
+          <p className="mx-auto mb-6 w-fit rounded-2xl bg-[#28282C] px-3 py-1 text-[10px] font-semibold uppercase text-[#c5eb02] md:text-[16px]">
+            Our Services
           </p>
-          <h2 className="text-[1.625rem] md:text-[2.5rem] font-bold leading-[1.2] tracking-tight text-white">
-            A Home That Works Harder, For Less.
+          <h2 className="text-[1.625rem] font-bold leading-[1.2] text-white md:text-[2.5rem]">
+            Energy. Built. Maintained.
           </h2>
-          <p className="mt-4 text-md md:text-xl text-white/80 leading-relaxed font-normal">
-            We believe you shouldn't need three different companies to power
-            your property, fix your heating, and renovate your space. That's why
-            Greentek brings solar, heat pumps, and energy storage together with
-            expert construction and renovation both residential and commercial,
-            so everything gets handled by one accredited team, properly, from
-            day one.
+          <p className="mt-4 text-md font-normal leading-relaxed text-white/80 md:text-xl">
+            Eleven services across two sides of the business, delivered by one
+            accredited team instead of three different contractors.
           </p>
         </div>
 
-        {/* ---------- Right: slideshow ---------- */}
-        <div
-          ref={showFade.ref}
-          className={`relative w-full h-80 sm:h-[26rem] lg:h-[30rem] rounded-xl border-1 border-white overflow-hidden bg-[#111827] transition-all duration-700 ease-out ${
-            showFade.visible
-              ? "translate-y-0 opacity-100"
-              : "translate-y-6 opacity-0"
-          }`}
-        >
-          {SLIDES.map((slide, i) => {
-            const active = i === index;
-            const slideClassName = `group absolute inset-0 bg-center bg-cover transition-opacity duration-700 ${
-              active ? "opacity-100" : "opacity-0 pointer-events-none"
-            }`;
-            const slideStyle = { backgroundImage: `url('${slide.image}')` };
-
-            const content = (
-              <div className="h-full flex flex-col justify-end px-6 py-6 text-white bg-linear-to-b from-transparent from-45% to-[#111827] to-100%">
-                {slide.date && (
-                  <span className="text-sm text-white/75 mb-1">
-                    {slide.date}
-                  </span>
-                )}
-                <h3 className="text-xl md:text-2xl font-semibold mb-2 group-hover:text-[#c5eb02] transition-colors">
-                  {slide.title}
-                </h3>
-                <p className="text-md font-normal max-w-[46ch]">
-                  {slide.text}
-                </p>
-              </div>
-            );
-
-            if (slide.href) {
-              return (
-                <Link
-                  key={slide.title}
-                  href={slide.href}
-                  aria-hidden={!active}
-                  tabIndex={active ? undefined : -1}
-                  className={slideClassName}
-                  style={slideStyle}
-                >
-                  {content}
-                </Link>
-              );
-            }
-
-            return (
-              <div
-                key={slide.title}
-                aria-hidden={!active}
-                tabIndex={active ? undefined : -1}
-                className={slideClassName}
-                style={slideStyle}
-              >
-                {content}
-              </div>
-            );
-          })}
-
-          {/* progress bars */}
-          <div className="absolute top-5 left-5 right-[7.5rem] z-20 flex gap-2">
-            {SLIDES.map((slide, i) => (
-              <div
-                key={slide.title}
-                className="h-[3px] flex-1 rounded-full bg-white/35 overflow-hidden"
-              >
-                <div
-                  className="h-full rounded-full bg-white"
-                  style={{
-                    width:
-                      i < index
-                        ? "100%"
-                        : i === index
-                          ? `${progress * 100}%`
-                          : "0%",
-                  }}
-                />
-              </div>
-            ))}
-          </div>
-
-          {/* pause / play */}
-          <button
-            type="button"
-            onClick={() => setPaused((p) => !p)}
-            aria-label={paused ? "Play slideshow" : "Pause slideshow"}
-            className="absolute top-3 right-3 z-20 grid h-9 w-9 place-items-center rounded-full bg-black/45 text-white backdrop-blur transition-colors hover:bg-black/75 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#c5eb02]"
-          >
-            {paused ? (
-              <Play className="h-4 w-4" />
-            ) : (
-              <Pause className="h-4 w-4" />
-            )}
-          </button>
-
-          {/* prev / next */}
-          <button
-            type="button"
-            onClick={() => go(index - 1)}
-            aria-label="Previous slide"
-            className="absolute left-3 top-1/2 z-20 -translate-y-1/2 grid h-10 w-10 place-items-center rounded-full bg-black/45 text-white backdrop-blur transition-colors hover:bg-black/75 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#c5eb02]"
-          >
-            <ChevronLeft className="h-5 w-5" />
-          </button>
-          <button
-            type="button"
-            onClick={() => go(index + 1)}
-            aria-label="Next slide"
-            className="absolute right-3 top-1/2 z-20 -translate-y-1/2 grid h-10 w-10 place-items-center rounded-full bg-black/45 text-white backdrop-blur transition-colors hover:bg-black/75 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#c5eb02]"
-          >
-            <ChevronRight className="h-5 w-5" />
-          </button>
+        <div className="flex flex-col gap-12 md:gap-14">
+          {GROUPS.map((group, i) => (
+            <ServiceGroup key={group.name} group={group} offset={i * 100} />
+          ))}
         </div>
       </div>
     </section>

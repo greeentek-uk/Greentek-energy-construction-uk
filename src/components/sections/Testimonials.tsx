@@ -95,7 +95,7 @@ export default function Testimonials() {
 
   return (
     <section className="bg-[url('/images/home-page/Solar-field-bg.avif')] bg-cover bg-center overflow-hidden">
-      <div className="py-10 lg:py-14 bg-linear-to-b from-white to-transparent">
+      <div className="py-12 md:py-16 lg:py-24 bg-linear-to-b from-white to-transparent">
         <div className="mx-auto">
           {/* Centered heading block */}
           <div
@@ -109,7 +109,7 @@ export default function Testimonials() {
             <p className="text-[10px] md:text-[16px] font-semibold uppercase mb-6 bg-[#28282C] text-[#c5eb02] rounded-xl px-3 py-1 w-fit mx-auto">
               Client Stories
             </p>
-            <h2 className="text-[1.625rem] md:text-[2.5rem] font-bold leading-[1.2] tracking-tight text-black w-[70%] mx-auto">
+            <h2 className="text-[1.625rem] md:text-[2.5rem] font-bold leading-[1.2] text-black w-[70%] mx-auto">
               Trusted By Homeowners And Businesses Alike
             </h2>
             <p className="mt-4 text-lg md:text-xl text-black leading-relaxed text-center w-[90%] md:w-[80%] mx-auto font-medium">

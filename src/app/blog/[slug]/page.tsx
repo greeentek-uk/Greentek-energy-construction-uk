@@ -70,7 +70,7 @@ export default async function BlogDetailPage({ params }: Props) {
                 })}
               </time>
             </div>
-            <h1 className="text-[2rem] md:text-[3.5rem] font-extrabold leading-[1.15] text-white mb-6">
+            <h1 className="text-[2rem] md:text-[3.5rem] font-bold leading-[1.15] text-white mb-6">
               {post.title}
             </h1>
             <p className="text-lg md:text-xl text-white/70 leading-relaxed font-medium max-w-3xl">
@@ -99,7 +99,7 @@ export default async function BlogDetailPage({ params }: Props) {
                   return (
                     <h2
                       key={idx}
-                      className="text-[1.625rem] md:text-[2.5rem] font-bold leading-[1.2] tracking-tight text-white mt-12 mb-6"
+                      className="text-[1.625rem] md:text-[2.5rem] font-bold leading-[1.2] text-white mt-12 mb-6"
                     >
                       {block.text}
                     </h2>
@@ -141,7 +141,7 @@ export default async function BlogDetailPage({ params }: Props) {
                       key={idx}
                       className="my-12 p-8 md:p-12 bg-white/5 rounded-xl border border-[#c5eb02]"
                     >
-                      <h3 className="text-2xl md:text-3xl font-black text-white mb-4">
+                      <h3 className="text-xl md:text-2xl font-bold text-white mb-4">
                         Ready to Get Started?
                       </h3>
                       <p className="text-lg text-white/80 mb-8 font-medium">
@@ -216,7 +216,7 @@ export default async function BlogDetailPage({ params }: Props) {
                       </svg>
                     </div>
                     <div>
-                      <h3 className="text-2xl font-black text-white">
+                      <h3 className="text-xl md:text-2xl font-bold text-white">
                         Follow on Instagram
                       </h3>
                       <p className="text-white/70 text-sm font-medium">

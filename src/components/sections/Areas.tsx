@@ -72,15 +72,15 @@ export default function Areas() {
   const tickerItems = [...moreAreas, ...moreAreas];
 
   return (
-    <section className="py-10 lg:py-18">
+    <section className="py-12 md:py-16 lg:py-24">
       <div className="mx-auto max-w-7xl px-4">
         {/* Header row */}
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6 mb-8">
           <div className="w-full mb-4 ">
-            <p className="text-[10px] md:text-[16px] font-semibold uppercase tracking-[0.3em mb-6 bg-[#28282C] text-[#c5eb02] rounded-2xl px-3 py-1 w-fit text-center mx-auto">
+            <p className="text-[10px] md:text-[16px] font-semibold uppercase mb-6 bg-[#28282C] text-[#c5eb02] rounded-2xl px-3 py-1 w-fit text-center mx-auto">
               Service Areas
             </p>
-            <h2 className="text-3xl sm:text-4xl md:text-[2.5rem] font-bold leading-tight tracking-tight text-white text-center">
+            <h2 className="text-[1.625rem] md:text-[2.5rem] font-bold leading-[1.2] text-white text-center">
               Local to Your Area.
             </h2>
             <p className="text-white/85 text-sm sm:text-base mt-3 text-center">
@@ -104,7 +104,7 @@ export default function Areas() {
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
             <div className="relative z-10 h-full flex flex-col justify-end p-6">
-              <h3 className="text-white text-2xl sm:text-3xl font-semibold  tracking-tight">
+              <h3 className="text-white text-xl md:text-2xl font-bold">
                 {largeArea.name}
               </h3>
               {largeArea.note && (
@@ -130,7 +130,7 @@ export default function Areas() {
 
               <div className="absolute inset-0 bg-gradient-to-t from- 20% from-black/75 via-black/10 to-transparent" />
               <div className="relative z-10 h-full flex flex-col justify-end p-4">
-                <h4 className="text-white text-lg font-semibold tracking-tight">
+                <h4 className="text-white text-lg font-bold">
                   {area.name}
                 </h4>
                 <p className="text-white/85 text-xs font-semibold mt-0.5">

@@ -167,7 +167,7 @@ function BeforeAfterCard({
         </div>
 
         {/* Labels */}
-        <span className="absolute top-3 left-3 bg-[#28282C] text-[#c5eb02] text-[10px] font-semibold uppercase tracking-wider px-2.5 py-1 rounded-full pointer-events-none">
+        <span className="absolute top-3 left-3 bg-[#28282C] text-[#c5eb02] text-[10px] font-semibold uppercase px-2.5 py-1 rounded-full pointer-events-none">
           Before
         </span>
         <Link
@@ -194,7 +194,7 @@ function BeforeAfterCard({
         <p className="text-[10px] font-semibold uppercase  mb-3 bg-[#28282C] text-[#c5eb02] rounded-xl px-3 py-1 w-fit">
           {project.category}
         </p>
-        <h3 className="text-xl font-semibold mb-2 text-white group-hover:text-[#c5eb02] transition-colors">
+        <h3 className="text-xl md:text-2xl font-bold mb-2 text-white group-hover:text-[#c5eb02] transition-colors">
           {project.title}
         </h3>
         <p className="text-md font-normal text-white/80">
@@ -209,7 +209,7 @@ export default function Projects() {
   const headerFade = useFadeIn(0);
 
   return (
-    <section className="py-10 lg:py-14 overflow-hidden px-4 md:px-10">
+    <section className="py-12 md:py-16 lg:py-24 overflow-hidden px-4 md:px-10">
       <div className="mx-auto max-w-7xl px-6">
         <div
           ref={headerFade.ref}
@@ -222,7 +222,7 @@ export default function Projects() {
           <p className="text-[10px] md:text-[16px] font-semibold uppercase mb-6 bg-[#28282C] text-[#c5eb02] rounded-xl px-3 py-1 w-fit mx-auto">
             Our Work
           </p>
-          <h2 className="text-[1.625rem] md:text-[2.5rem] font-bold leading-[1.2] tracking-tight text-white">
+          <h2 className="text-[1.625rem] md:text-[2.5rem] font-bold leading-[1.2] text-white">
             See the Difference.
           </h2>
           <p className="mt-4 text-md md:text-xl text-white/80 leading-relaxed text-center w-[80%] md:w-[85%] mx-auto font-normal">

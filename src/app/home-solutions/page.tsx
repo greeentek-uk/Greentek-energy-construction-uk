@@ -60,7 +60,7 @@ export default function HomeSolutionsPage() {
                     />
                   </div>
                   <div className="w-full sm:w-[60%] py-4 px-6 flex flex-col justify-center">
-                    <h3 className="text-[1.25rem] md:text-[1.5rem] font-semibold leading-[1.3] text-white mb-4 group-hover:text-[#c5eb02] transition-colors">
+                    <h3 className="text-[1.25rem] md:text-[1.5rem] font-bold leading-[1.3] text-white mb-4 group-hover:text-[#c5eb02] transition-colors">
                       {service.title}
                     </h3>
                     <p className="text-white/80 leading-relaxed font-medium">

@@ -96,7 +96,7 @@ export function BlogFilterClient() {
       {featuredPost && (
         <section className="py-12 md:py-16 border-b border-[#c5eb02]">
           <div className="mx-auto max-w-5xl px-6">
-            <h2 className="text-sm md:text-base font-black text-[#c5eb02] uppercase tracking-widest mb-10 md:mb-12 mx-auto text-center">
+            <h2 className="text-[1.625rem] md:text-[2.5rem] font-bold leading-[1.2] text-[#c5eb02] mb-10 md:mb-12 mx-auto text-center">
               Featured Article
             </h2>
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-10 items-center">
@@ -116,14 +116,14 @@ export function BlogFilterClient() {
               {/* Featured Content */}
               <div className="flex flex-col justify-between">
                 <div>
-                  <time className="inline-block text-xs font-semibold text-white/80 uppercase tracking-wide mb-4">
+                  <time className="inline-block text-xs font-semibold text-white/80 uppercase mb-4">
                     {new Date(featuredPost.date).toLocaleDateString("en-GB", {
                       year: "numeric",
                       month: "long",
                       day: "numeric",
                     })}
                   </time>
-                  <h3 className="text-2xl md:text-3xl lg:text-4xl font-black text-white leading-tight mb-4 md:mb-6">
+                  <h3 className="text-xl md:text-2xl font-bold text-white leading-[1.3] mb-4 md:mb-6">
                     {featuredPost.title}
                   </h3>
                   <p className="text-base md:text-lg text-white/80 leading-relaxed mb-6 md:mb-8 font-medium">
@@ -158,7 +158,7 @@ export function BlogFilterClient() {
       {/* Latest Insights Grid */}
       <section className="py-12 md:py-16">
         <div className="mx-auto max-w-5xl px-6">
-          <h2 className="text-sm md:text-base font-black text-[#c5eb02] uppercase tracking-widest mb-10 md:mb-12 mx-auto text-center">
+          <h2 className="text-[1.625rem] md:text-[2.5rem] font-bold leading-[1.2] text-[#c5eb02] mb-10 md:mb-12 mx-auto text-center">
             {activeCategory === "All" && !searchQuery
               ? "Latest Insights"
               : `${activeCategory} Insights`}
@@ -191,7 +191,7 @@ export function BlogFilterClient() {
 
                   {/* Card Content */}
                   <div className="p-6 md:p-8 flex flex-col flex-grow">
-                    <time className="text-xs font-semibold text-white/80 uppercase tracking-wide mb-3">
+                    <time className="text-xs font-semibold text-white/80 uppercase mb-3">
                       {new Date(post.date).toLocaleDateString("en-GB", {
                         year: "numeric",
                         month: "short",
@@ -200,7 +200,7 @@ export function BlogFilterClient() {
                     </time>
 
                     <Link href={`/blog/${post.slug}`}>
-                      <h3 className="text-lg md:text-xl font-black text-white leading-snug group-hover:text-[#c5eb02] transition-colors line-clamp-3 mb-3 flex-grow cursor-pointer">
+                      <h3 className="text-xl md:text-2xl font-bold text-white leading-snug group-hover:text-[#c5eb02] transition-colors line-clamp-3 mb-3 flex-grow cursor-pointer">
                         {post.title}
                       </h3>
                     </Link>
@@ -258,7 +258,7 @@ export function BlogFilterClient() {
                 </svg>
               </div>
             </div>
-            <h3 className="text-2xl md:text-3xl font-black text-white mb-2">
+            <h3 className="text-xl md:text-2xl font-bold text-white mb-2">
               Follow Greentek on Instagram
             </h3>
             <p className="text-white/80 text-sm md:text-base font-medium mb-6">

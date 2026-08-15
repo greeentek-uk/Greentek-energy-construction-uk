@@ -219,7 +219,7 @@ export default function CtaSection({
   }
 
   return (
-    <section className="py-10 lg:py-14">
+    <section className="py-12 md:py-16 lg:py-24">
       <div className="relative mx-auto max-w-7xl bg-[url('/images/form-bg.avif')] rounded-xl bg-cover bg-center overflow-hidden">
         <div className="absolute inset-0 bg-black/70 rounded-xl" />
         <div className="relative z-10 grid lg:grid-cols-12 gap-10 p-6 sm:p-10 md:p-14">
@@ -232,10 +232,10 @@ export default function CtaSection({
                 : "translate-y-8 opacity-0"
             }`}
           >
-            <p className="text-[10px] md:text-[16px] font-semibold uppercase tracking-[0.3em mb-6 bg-[#28282C] text-[#c5eb02] rounded-2xl px-3 py-1 w-fit text-center">
+            <p className="text-[10px] md:text-[16px] font-semibold uppercase mb-6 bg-[#28282C] text-[#c5eb02] rounded-2xl px-3 py-1 w-fit text-center">
               {eyebrow}
             </p>
-            <h2 className="text-[1.75rem] sm:text-4xl md:text-[2.75rem] font-bold leading-[1.15] tracking-tight text-white mb-4">
+            <h2 className="text-[1.625rem] md:text-[2.5rem] font-bold leading-[1.2] text-white mb-4">
               {heading}
             </h2>
             <p className="text-white/70 text-base md:text-lg leading-relaxed mb-8 max-w-md">
@@ -405,7 +405,7 @@ export default function CtaSection({
                         type="button"
                         key={val}
                         onClick={() => handlePropertyType(val)}
-                        className={`flex-1 py-3 rounded-xl text-xs font-bold uppercase tracking-wide transition-all border ${
+                        className={`flex-1 py-3 rounded-xl text-xs font-bold uppercase transition-all border ${
                           form.property_type === val
                             ? "bg-[#c5eb02] text-black border-[#c5eb02]"
                             : "bg-white/10 text-white border-white/20 hover:bg-white/20"
@@ -425,7 +425,7 @@ export default function CtaSection({
                         type="button"
                         key={val}
                         onClick={() => handleHomeowner(val)}
-                        className={`flex-1 py-3 rounded-xl text-xs font-bold uppercase tracking-wide transition-all border ${
+                        className={`flex-1 py-3 rounded-xl text-xs font-bold uppercase transition-all border ${
                           form.is_homeowner === val
                             ? "bg-[#c5eb02] text-black border-[#c5eb02]"
                             : "bg-white/10 text-white border-white/20 hover:bg-white/20"

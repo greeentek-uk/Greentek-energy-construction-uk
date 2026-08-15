@@ -48,7 +48,7 @@ export default function LocationsPage() {
                     className="object-cover -z-10 group-hover:scale-105 transition-transform duration-500"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-transparent -z-10" />
-                  <h3 className="text-2xl font-semibold text-white mb-2 group-hover:text-[#c5eb02] transition-colors">
+                  <h3 className="text-xl md:text-2xl font-bold text-white mb-2 group-hover:text-[#c5eb02] transition-colors">
                     {location.name}
                   </h3>
                   <span className="text-[#c5eb02] font-bold text-sm">

@@ -105,7 +105,7 @@ export default async function LocationDetailPage({ params }: Props) {
         {/* Services in this location */}
         <section className="py-12 lg:py-24">
           <div className="mx-auto max-w-6xl px-6">
-            <h2 className="text-[1.625rem] md:text-[2.5rem] font-bold leading-[1.2] tracking-tight text-white mb-4">
+            <h2 className="text-[1.625rem] md:text-[2.5rem] font-bold leading-[1.2] text-white mb-4">
               Services in {location.name}
             </h2>
             <p className="text-white/70 text-lg mb-10 max-w-2xl">
@@ -129,7 +129,7 @@ export default async function LocationDetailPage({ params }: Props) {
                     />
                   </div>
                   <div className="w-full sm:w-[60%] py-4 px-6 flex flex-col justify-center">
-                    <h3 className="text-lg font-semibold leading-[1.3] text-white mb-2 group-hover:text-[#c5eb02] transition-colors">
+                    <h3 className="text-xl md:text-2xl font-bold leading-[1.3] text-white mb-2 group-hover:text-[#c5eb02] transition-colors">
                       {service.shortName} in {location.name}
                     </h3>
                     <p className="text-white/80 text-sm leading-relaxed font-medium">
@@ -187,7 +187,7 @@ export default async function LocationDetailPage({ params }: Props) {
                   href={`/locations/${other.slug}`}
                   className="group p-6 rounded-xl bg-white/5 border border-white/10 hover:border-[#c5eb02] hover:bg-white/10 transition-all"
                 >
-                  <p className="text-[10px] font-semibold uppercase tracking-[0.3em] mb-3 bg-[#28282C] text-[#c5eb02] rounded-xl px-3 py-1 w-fit">
+                  <p className="text-[10px] font-semibold uppercase mb-3 bg-[#28282C] text-[#c5eb02] rounded-xl px-3 py-1 w-fit">
                     {other.region}
                   </p>
                   <h4 className="text-lg font-bold text-white mb-2 group-hover:text-[#c5eb02] transition-colors">

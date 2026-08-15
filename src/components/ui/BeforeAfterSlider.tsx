@@ -86,7 +86,7 @@ export default function BeforeAfterSlider({
       </div>
 
       {/* Labels */}
-      <span className="absolute top-3 left-3 bg-[#28282C] text-[#c5eb02] text-[10px] font-semibold uppercase tracking-wider px-2.5 py-1 rounded-full pointer-events-none">
+      <span className="absolute top-3 left-3 bg-[#28282C] text-[#c5eb02] text-[10px] font-semibold uppercase px-2.5 py-1 rounded-full pointer-events-none">
         Before
       </span>
       <span className="absolute top-3 right-3 h-10 w-10 rounded-full bg-white flex items-center justify-center pointer-events-none">

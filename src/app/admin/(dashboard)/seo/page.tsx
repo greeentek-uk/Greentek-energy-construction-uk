@@ -17,7 +17,7 @@ export default function SeoListPage() {
 
       {groups.map((group) => (
         <div key={group} className="mb-8">
-          <h2 className="text-sm font-bold uppercase tracking-wide text-zinc-500 mb-3">
+          <h2 className="text-sm font-bold uppercase text-zinc-500 mb-3">
             {group}
           </h2>
           <div className="bg-white border border-zinc-200 rounded-xl divide-y divide-zinc-100">
@@ -36,7 +36,7 @@ export default function SeoListPage() {
                   </div>
                   <div className="flex items-center gap-3 shrink-0">
                     {overrides[r.path] && (
-                      <span className="text-[10px] font-bold uppercase tracking-wide text-green-700 bg-green-50 px-2 py-1 rounded-full">
+                      <span className="text-[10px] font-bold uppercase text-green-700 bg-green-50 px-2 py-1 rounded-full">
                         Custom
                       </span>
                     )}

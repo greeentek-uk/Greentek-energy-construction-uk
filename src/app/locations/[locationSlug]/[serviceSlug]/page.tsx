@@ -139,7 +139,7 @@ export default async function LocationServicePage({ params }: Props) {
         {/* Highlights */}
         <section className="py-12 lg:py-24">
           <div className="mx-auto max-w-4xl px-6">
-            <h2 className="text-[1.625rem] md:text-[2.5rem] font-bold leading-[1.2] tracking-tight text-white mb-8">
+            <h2 className="text-[1.625rem] md:text-[2.5rem] font-bold leading-[1.2] text-white mb-8">
               What&apos;s Included
             </h2>
             <ul className="space-y-4">
@@ -257,7 +257,7 @@ export default async function LocationServicePage({ params }: Props) {
                   href={`/locations/${location.slug}/${other.slug}`}
                   className="group p-6 rounded-xl bg-white/5 border border-white/10 hover:border-[#c5eb02] hover:bg-white/10 transition-all"
                 >
-                  <h4 className="text-base font-bold text-white mb-2 group-hover:text-[#c5eb02] transition-colors">
+                  <h4 className="text-lg font-bold text-white mb-2 group-hover:text-[#c5eb02] transition-colors">
                     {other.shortName}
                   </h4>
                   <span className="text-[#c5eb02] font-bold text-sm">

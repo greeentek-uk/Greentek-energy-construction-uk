@@ -92,7 +92,7 @@ export default function Header() {
                 >
                   <Link
                     href={link.href}
-                    className={`${hankenGrotesk.className} flex items-center gap-1 text-[12px] font-extrabold uppercase tracking-[0.2em] transition hover:text-[#c5eb02] ${
+                    className={`${hankenGrotesk.className} flex items-center gap-1 text-[12px] font-extrabold uppercase transition hover:text-[#c5eb02] ${
                       activeDropdown === link.label
                         ? "text-[#c5eb02]"
                         : "text-white"
@@ -157,7 +157,7 @@ export default function Header() {
                             <div className="h-px bg-zinc-100 my-1 mx-2" />
                             <Link
                               href="/projects"
-                              className="px-4 py-2 text-center text-[10px] font-black uppercase tracking-widest text-[#c5eb02] hover:text-[#c5eb02]/80"
+                              className="px-4 py-2 text-center text-[10px] font-black uppercase text-[#c5eb02] hover:text-[#c5eb02]/80"
                             >
                               View All Projects
                             </Link>
@@ -178,7 +178,7 @@ export default function Header() {
                             <div className="h-px bg-zinc-100 my-1 mx-2" />
                             <Link
                               href="/locations"
-                              className="px-4 py-2 text-center text-[10px] font-black uppercase tracking-widest text-[#c5eb02] hover:text-[#c5eb02]/80"
+                              className="px-4 py-2 text-center text-[10px] font-black uppercase text-[#c5eb02] hover:text-[#c5eb02]/80"
                             >
                               View All Areas
                             </Link>
@@ -207,7 +207,7 @@ export default function Header() {
                 width={24}
                 height={24}
               />
-              <span className="text-sm tracking-wide whitespace-nowrap">
+              <span className="text-sm whitespace-nowrap">
                 0 333 533 4567
               </span>
             </Link>
@@ -392,7 +392,7 @@ export default function Header() {
             <Link
               href="/contact"
               onClick={() => setIsMenuOpen(false)}
-              className="block w-full py-5 bg-[#c5eb02] text-black font-black text-sm tracking-[0.2em] rounded-full text-center active:scale-95 transition shadow-2xl shadow-[#c5eb02]/40"
+              className="block w-full py-5 bg-[#c5eb02] text-black font-black text-sm rounded-full text-center active:scale-95 transition shadow-2xl shadow-[#c5eb02]/40"
             >
               Start Project
             </Link>

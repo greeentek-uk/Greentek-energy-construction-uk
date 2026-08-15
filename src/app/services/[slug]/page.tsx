@@ -79,7 +79,7 @@ export default async function ServiceDetailPage({ params }: Props) {
               >
                 ← All Services
               </Link>
-              <h1 className="text-[2rem] md:text-[3.5rem] font-extrabold leading-[1.15] text-white mb-6">
+              <h1 className="text-[2rem] md:text-[3.5rem] font-bold leading-[1.15] text-white mb-6">
                 {service.title}
               </h1>
               <p className="text-lg md:text-xl text-white/80 leading-relaxed font-medium max-w-3xl mb-8">
@@ -109,7 +109,7 @@ export default async function ServiceDetailPage({ params }: Props) {
         {/* Highlights Section */}
         <section className="py-12 lg:py-24">
           <div className="mx-auto max-w-4xl px-6">
-            <h2 className="text-[1.625rem] md:text-[2.5rem] font-bold leading-[1.2] tracking-tight text-white mb-8">
+            <h2 className="text-[1.625rem] md:text-[2.5rem] font-bold leading-[1.2] text-white mb-8">
               What&apos;s Included
             </h2>
             <ul className="space-y-4">

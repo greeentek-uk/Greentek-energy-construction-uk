@@ -36,7 +36,7 @@ export default function AccreditationsSection() {
 
   return (
     <section
-      className="py-12 lg:py-24"
+      className="py-12 md:py-16 lg:py-24"
       aria-labelledby="accreditations-heading"
     >
       <div className="mx-auto max-w-7xl px-6">
@@ -51,7 +51,7 @@ export default function AccreditationsSection() {
         >
           <h2
             id="accreditations-heading"
-            className="text-[1.625rem] md:text-[2.5rem] font-bold leading-[1.2] tracking-tight text-white"
+            className="text-[1.625rem] md:text-[2.5rem] font-bold leading-[1.2] text-white"
           >
             Fully Accredited & Certified.
           </h2>

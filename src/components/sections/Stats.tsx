@@ -111,7 +111,7 @@ function StatCard({ stat, delay }: { stat: Stat; delay: number }) {
   return (
     <div
       ref={fade.ref}
-      className={`bg-[#101314] rounded-xl border border-[#C5EB02] shadow-lg shadow-[#c5eb02]/10 px-6 py-7 md:px-8 md:py-8 transition-all duration-700 ${
+      className={`bg-[#000000] rounded-2xl px-6 py-7 md:px-8 md:py-8 transition-all duration-700 ${
         fade.visible ? "translate-y-0 opacity-100" : "translate-y-8 opacity-0"
       }`}
     >
@@ -121,7 +121,7 @@ function StatCard({ stat, delay }: { stat: Stat; delay: number }) {
         </span>
 
         <div className="min-w-0">
-          <div className="text-3xl sm:text-4xl font-semibold text-white leading-none tracking-tight">
+          <div className="text-3xl sm:text-4xl font-semibold text-white leading-none">
             {target !== null ? (
               isDecimal ? (
                 <span>
@@ -139,7 +139,7 @@ function StatCard({ stat, delay }: { stat: Stat; delay: number }) {
               stat.value
             )}
           </div>
-          <p className="mt-1.5 text-xs sm:text-sm font-semibold uppercase tracking-wide text-[#c5eb02]">
+          <p className="mt-1.5 text-xs sm:text-sm font-semibold uppercase text-[#c5eb02]">
             {stat.label}
           </p>
         </div>
@@ -156,8 +156,8 @@ function StatCard({ stat, delay }: { stat: Stat; delay: number }) {
 
 export default function Stats() {
   return (
-    <section className="py-10 lg:py-14">
-      <div className="mx-auto max-w-7xl px-6 grid grid-cols-1 md:grid-cols-3 gap-5 md:gap-6">
+    <section className="py-12 md:py-16 lg:py-24">
+      <div className="mx-auto max-w-7xl px-3 py-3 rounded-xl grid grid-cols-1 md:grid-cols-3 gap-3 bg-[#101314]">
         {stats.map((stat, i) => (
           <StatCard key={stat.label} stat={stat} delay={i * 100} />
         ))}

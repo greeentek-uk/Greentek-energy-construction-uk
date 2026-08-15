@@ -2,7 +2,6 @@
 import Image from "next/image";
 import { ArrowRight, Check } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import { hankenGrotesk } from "@/lib/fonts";
 function useFadeIn(delay = 0) {
   const ref = useRef<HTMLDivElement>(null);
   const [visible, setVisible] = useState(false);
@@ -39,7 +38,7 @@ export default function HeroSection() {
           }`}
         >
           <div
-            className={`text-white text-md mb-8 bg-white w-fit py-1.5 px-1 rounded-2xl text-sm`}
+            className={`font-medium text-white text-md mb-8 bg-white w-fit py-1.5 px-1 rounded-2xl text-sm`}
           >
             <span
               className={`bg-[#c5eb02] text-zinc-900 rounded-2xl px-3 py-1
@@ -49,9 +48,7 @@ export default function HeroSection() {
             </span>
             <span className={`mx-2 text-black`}>by 500+ Homeowners</span>
           </div>
-          <h1
-            className={` ${hankenGrotesk.className} text-white text-[2.5rem] md:text-[4rem] font-bold leading-[1.15] max-w-[90%]`}
-          >
+          <h1 className="text-white text-[2.5rem] md:text-[4rem] font-bold leading-[1.1] ">
             Bridging <span>Construction</span>{" "}
             <br className="hidden sm:block" />
             with Renewable Energy.
@@ -72,7 +69,7 @@ export default function HeroSection() {
               <ArrowRight className="inline ml-2 bg-black rounded px-1 py-1 text-white" />
             </a>
           </div>
-          <div className="flex flex-wrap items-center gap-x-4 gap-y-3">
+          {/* <div className="flex flex-wrap items-center gap-x-4 gap-y-3">
             <span className="flex items-center gap-2 text-white text-sm md:text-md">
               <Check className="h-5 w-5 border rounded-full px-0.5 py-0.5" />
               Fully Accredited
@@ -85,7 +82,7 @@ export default function HeroSection() {
               <Check className="h-5 w-5 border rounded-full px-0.5 py-0.5" />
               Zero Hidden Fees
             </span>
-          </div>
+          </div> */}
         </div>
         {/* <div className="w-full grid grid-cols-1 md:grid-cols-3 items-center justify-between gap-4 md:gap-8 mt-10">
           {" "}

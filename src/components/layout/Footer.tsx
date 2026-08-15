@@ -1,7 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
 import { siteConfig } from "@/data/site";
-import { hankenGrotesk } from "@/lib/fonts";
 import { ArrowRight } from "lucide-react";
 
 export default function Footer() {
@@ -14,11 +13,9 @@ export default function Footer() {
           <p className="text-[10px] md:text-[16px] font-semibold uppercase mb-6 bg-[#28282C] text-[#c5eb02] rounded-2xl px-3 py-1 w-fit mx-auto">
             Get In Touch
           </p>
-          <h4
-            className={`  text-white text-[1.8rem] md:text-[2.8rem] font-semibold leading md:leading-12 max-w-[90%] sm:max-w-lg md:max-w-2xl text-center px-4`}
-          >
+          <h2 className="text-white text-[1.8rem] md:text-[2.8rem] font-bold leading-[1.15] max-w-[90%] sm:max-w-lg md:max-w-2xl text-center px-4">
             Ready to Switch to Solar <br /> and Save for Years?
-          </h4>
+          </h2>
           <p className="mt-4 text-lg md:text-xl text-white/80 leading-relaxed text-center max-w-[90%] sm:max-w-md mx-auto font-normal">
             Join thousands of happy customers who are already enjoying clean
             energy and significant savings. Get your free consultation today.
@@ -57,7 +54,7 @@ export default function Footer() {
 
             {/* Column 2 — Navigation */}
             <div className="space-y-4 flex items-center  flex-col text-center">
-              <h4 className="text-lg font-semibold text-white mb-4">
+              <h4 className="text-lg font-bold text-white mb-4">
                 Navigation
               </h4>
               <ul className="space-y-3">
@@ -76,7 +73,7 @@ export default function Footer() {
 
             {/* Column 3 — Contact */}
             <div className="space-y-4 flex items-center flex-col text-center">
-              <h4 className="text-lg font-semibold text-white mb-4">Contact</h4>
+              <h4 className="text-lg font-bold text-white mb-4">Contact</h4>
               <ul className="space-y-3 text-sm text-white/90">
                 <li>
                   <span className="block text-white/90 text-xs mb-0.5">
@@ -116,7 +113,7 @@ export default function Footer() {
             {/* Column 4 — Legal / Company */}
             <div className="space-y-6 flex items-center flex-col text-center">
               <div>
-                <h4 className="text-sm font-semibold text-white mb-4">
+                <h4 className="text-lg font-bold text-white mb-4">
                   Company
                 </h4>
                 <p className="text-sm text-white/90 leading-relaxed">

@@ -3,7 +3,7 @@
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import WhyUs from "@/components/sections/WhyUs";
-import Verticals from "@/components/sections/Verticals";
+import Verticals from "@/components/sections/AboutUs";
 import BrandsSection from "@/components/sections/BrandsSection";
 import OurProcess from "@/components/sections/Process";
 import ServicesGlimpse from "@/components/sections/ServicesGlimpse";
@@ -85,11 +85,11 @@ export default function AboutPageClient() {
             </div>
           </div>
         </section>
-        <section className="py-24 ">
+        <section className="py-12 md:py-16 lg:py-24">
           <div className="mx-auto max-w-7xl px-6">
             <div className="grid lg:grid-cols-2 gap-16 items-center">
               <div>
-                <h2 className="text-[1.625rem] md:text-[2.5rem] font-bold leading-[1.2] tracking-tight text-white mb-6">
+                <h2 className="text-[1.625rem] md:text-[2.5rem] font-bold leading-[1.2] text-white mb-6">
                   Our Journey Since 2020
                 </h2>
                 <div className="space-y-4 text-lg text-white/80">
@@ -117,7 +117,7 @@ export default function AboutPageClient() {
                     <div className="text-4xl font-bold text-[#c5eb02]">
                       {stat.value}
                     </div>
-                    <div className="mt-2 text-sm font-medium text-white/80 uppercase tracking-wider">
+                    <div className="mt-2 text-sm font-medium text-white/80 uppercase">
                       {stat.label}
                     </div>
                   </div>
