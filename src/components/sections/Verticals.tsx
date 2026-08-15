@@ -147,35 +147,53 @@ export default function Verticals() {
           }`}
         >
           {SLIDES.map((slide, i) => {
-            const Wrapper = slide.href ? Link : "div";
             const active = i === index;
+            const slideClassName = `group absolute inset-0 bg-center bg-cover transition-opacity duration-700 ${
+              active ? "opacity-100" : "opacity-0 pointer-events-none"
+            }`;
+            const slideStyle = { backgroundImage: `url('${slide.image}')` };
+
+            const content = (
+              <div className="h-full flex flex-col justify-end px-6 py-6 text-white bg-linear-to-b from-transparent from-45% to-[#111827] to-100%">
+                {slide.date && (
+                  <span className="text-sm text-white/75 mb-1">
+                    {slide.date}
+                  </span>
+                )}
+                <h3 className="text-xl md:text-2xl font-semibold mb-2 group-hover:text-[#c5eb02] transition-colors">
+                  {slide.title}
+                </h3>
+                <p className="text-md font-normal max-w-[46ch]">
+                  {slide.text}
+                </p>
+              </div>
+            );
+
+            if (slide.href) {
+              return (
+                <Link
+                  key={slide.title}
+                  href={slide.href}
+                  aria-hidden={!active}
+                  tabIndex={active ? undefined : -1}
+                  className={slideClassName}
+                  style={slideStyle}
+                >
+                  {content}
+                </Link>
+              );
+            }
 
             return (
-              <Wrapper
+              <div
                 key={slide.title}
-                {...(slide.href ? { href: slide.href } : {})}
                 aria-hidden={!active}
                 tabIndex={active ? undefined : -1}
-                className={`group absolute inset-0 bg-center bg-cover transition-opacity duration-700 ${
-                  active ? "opacity-100" : "opacity-0 pointer-events-none"
-                }`}
-                style={{ backgroundImage: `url('${slide.image}')` }}
+                className={slideClassName}
+                style={slideStyle}
               >
-                <div className="h-full flex flex-col justify-end px-6 py-6 text-white bg-linear-to-b from-transparent from-45% to-[#111827] to-100%">
-                  {slide.date && (
-                    <span className="text-sm text-white/75 mb-1">
-                      {slide.date}
-                    </span>
-                  )}
-                  <h3 className="text-xl md:text-2xl font-semibold mb-2 group-hover:text-[#c5eb02] transition-colors">
-                    {slide.title}
-                  </h3>
-                  <p className="text-md font-normal max-w-[46ch]">
-                    {slide.text}
-                  </p>
-                </div>
-
-              </Wrapper>
+                {content}
+              </div>
             );
           })}
 

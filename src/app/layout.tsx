@@ -2,7 +2,6 @@ import type { Metadata, Viewport } from "next";
 import { Inter, Hanken_Grotesk } from "next/font/google";
 import "./globals.css";
 import { siteConfig } from "@/data/site";
-import FloatingActions from "@/components/ui/FloatingActions";
 import OpenWidget from "@/components/sections/OpenWidget";
 const inter = Inter({ subsets: ["latin"] });
 const hanken_Grotesk = Hanken_Grotesk({ subsets: ["latin"] });
