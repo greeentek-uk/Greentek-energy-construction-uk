@@ -1,9 +1,10 @@
 import Link from "next/link";
 import Image from "next/image";
-import { siteConfig } from "@/data/site";
+import { getCurrentSiteConfig } from "@/lib/cms";
 import { ArrowRight } from "lucide-react";
 
-export default function Footer() {
+export default async function Footer() {
+  const siteConfig = await getCurrentSiteConfig();
   const currentYear = new Date().getFullYear();
 
   return (

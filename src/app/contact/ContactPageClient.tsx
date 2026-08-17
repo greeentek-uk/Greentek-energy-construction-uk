@@ -1,7 +1,5 @@
 "use client";
 
-import Header from "@/components/layout/Header";
-import Footer from "@/components/layout/Footer";
 import CtaSection from "@/components/sections/CtaSection";
 import { useEffect, useRef, useState } from "react";
 
@@ -35,8 +33,7 @@ export default function ContactPageClient() {
   const mapHeaderFade = useFadeIn(0);
 
   return (
-    <div className="flex flex-col min-h-screen ">
-      <Header />
+    <main className="flex-1">
       {/* Centered Hero Section */}
       <section className="relative  bg-[url('/images/footer/footer-bg.webp')] bg-cover overflow-hidden">
         <div className="bg-black/70 pt-30 py-20">
@@ -96,8 +93,6 @@ export default function ContactPageClient() {
           </div>
         </div>
       </section>
-
-      <Footer />
-    </div>
+    </main>
   );
 }

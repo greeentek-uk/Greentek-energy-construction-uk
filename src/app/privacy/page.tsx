@@ -1,17 +1,19 @@
 import type { Metadata } from "next";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
-import { siteConfig } from "@/data/site";
+import { getCurrentSiteConfig } from "@/lib/cms";
 import { withSeoOverride } from "@/lib/seo";
 
-export function generateMetadata(): Metadata {
+export async function generateMetadata(): Promise<Metadata> {
   return withSeoOverride("/privacy", {
     title: "Privacy Policy",
     description: "Privacy policy for Greentek Construction.",
   });
 }
 
-export default function PrivacyPage() {
+export default async function PrivacyPage() {
+  const siteConfig = await getCurrentSiteConfig();
+
   return (
     <div className="flex flex-col min-h-screen bg-white">
       <Header />

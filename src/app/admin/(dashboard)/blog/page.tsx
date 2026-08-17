@@ -10,9 +10,7 @@ interface Props {
 
 export default async function BlogListPage({ searchParams }: Props) {
   const params = await searchParams;
-  const posts = [...getCurrentBlogPosts()].sort((a, b) =>
-    b.date.localeCompare(a.date),
-  );
+  const posts = await getCurrentBlogPosts();
 
   return (
     <div>

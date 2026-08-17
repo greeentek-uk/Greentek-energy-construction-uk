@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
 import { withSeoOverride } from "@/lib/seo";
+import Header from "@/components/layout/Header";
+import Footer from "@/components/layout/Footer";
 import ContactPageClient from "./ContactPageClient";
 
-export function generateMetadata(): Metadata {
+export async function generateMetadata(): Promise<Metadata> {
   return withSeoOverride("/contact", {
     title: "Contact Us",
     description:
@@ -11,5 +13,11 @@ export function generateMetadata(): Metadata {
 }
 
 export default function ContactPage() {
-  return <ContactPageClient />;
+  return (
+    <div className="flex flex-col min-h-screen">
+      <Header />
+      <ContactPageClient />
+      <Footer />
+    </div>
+  );
 }

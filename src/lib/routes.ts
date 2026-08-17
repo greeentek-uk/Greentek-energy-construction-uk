@@ -1,4 +1,4 @@
-import { siteConfig } from "@/data/site";
+import { getCurrentSiteConfig } from "@/lib/cms";
 
 export interface RouteEntry {
   path: string;
@@ -7,7 +7,9 @@ export interface RouteEntry {
 }
 
 /** Every route the site currently generates, used to drive the admin SEO editor and sitemap. */
-export function getAllRoutes(): RouteEntry[] {
+export async function getAllRoutes(): Promise<RouteEntry[]> {
+  const siteConfig = await getCurrentSiteConfig();
+
   const routes: RouteEntry[] = [
     { path: "/", label: "Home", group: "Static Pages" },
     { path: "/about", label: "About", group: "Static Pages" },

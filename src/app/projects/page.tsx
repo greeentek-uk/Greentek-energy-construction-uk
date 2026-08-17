@@ -1,8 +1,11 @@
 import type { Metadata } from "next";
 import { withSeoOverride } from "@/lib/seo";
+import { getCurrentSiteConfig } from "@/lib/cms";
+import Header from "@/components/layout/Header";
+import Footer from "@/components/layout/Footer";
 import ProjectsPageClient from "./ProjectsPageClient";
 
-export function generateMetadata(): Metadata {
+export async function generateMetadata(): Promise<Metadata> {
   return withSeoOverride("/projects", {
     title: "Our Project Gallery",
     description:
@@ -10,6 +13,14 @@ export function generateMetadata(): Metadata {
   });
 }
 
-export default function ProjectsPage() {
-  return <ProjectsPageClient />;
+export default async function ProjectsPage() {
+  const { projects } = await getCurrentSiteConfig();
+
+  return (
+    <div className="flex flex-col min-h-screen">
+      <Header />
+      <ProjectsPageClient projects={projects} />
+      <Footer />
+    </div>
+  );
 }

@@ -1,17 +1,19 @@
 import type { Metadata } from "next";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
-import { siteConfig } from "@/data/site";
+import { getCurrentSiteConfig } from "@/lib/cms";
 import { withSeoOverride } from "@/lib/seo";
 
-export function generateMetadata(): Metadata {
+export async function generateMetadata(): Promise<Metadata> {
   return withSeoOverride("/terms", {
     title: "Terms of Service",
     description: "Terms of service for Greentek Construction.",
   });
 }
 
-export default function TermsPage() {
+export default async function TermsPage() {
+  const siteConfig = await getCurrentSiteConfig();
+
   return (
     <div className="flex flex-col min-h-screen bg-white">
       <Header />

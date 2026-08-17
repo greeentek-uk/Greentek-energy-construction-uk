@@ -1,36 +1,25 @@
-import { commitFile } from "./github";
-import siteData from "@/data/site.json";
-import blogsData from "@/data/blogs.json";
-import seoOverridesData from "@/data/seo.json";
+import { cache } from "react";
+import { getServices } from "./db/services";
+import { getProjects } from "./db/projects";
+import { getLocations } from "./db/locations";
+import { getSettings } from "./db/settings";
+import { getBlogPosts } from "./db/blogPosts";
+import { getSeoOverrides } from "./db/seoOverrides";
 import type { SiteConfig } from "@/data/site";
 import type { BlogPost } from "@/data/blogs";
 import type { SeoOverrides } from "@/lib/seo";
 
-function stringifyJson(data: unknown): string {
-  return JSON.stringify(data, null, 2) + "\n";
-}
+/** Assembles the same shape every page already consumes, from parallel collection reads. Cached per-request so Header/Footer/page body sharing one request only hit Mongo once. */
+export const getCurrentSiteConfig = cache(async (): Promise<SiteConfig> => {
+  const [settings, services, projects, locations] = await Promise.all([
+    getSettings(),
+    getServices(),
+    getProjects(),
+    getLocations(),
+  ]);
+  return { ...settings, services, projects, locations };
+});
 
-/** Current data as of the last deploy — the only source of truth between admin saves. */
-export function getCurrentSiteConfig(): SiteConfig {
-  return siteData as SiteConfig;
-}
+export const getCurrentBlogPosts = cache((): Promise<BlogPost[]> => getBlogPosts());
 
-export function getCurrentBlogPosts(): BlogPost[] {
-  return blogsData as BlogPost[];
-}
-
-export function getCurrentSeoOverrides(): SeoOverrides {
-  return seoOverridesData as SeoOverrides;
-}
-
-export async function saveSiteConfig(next: SiteConfig, message: string): Promise<void> {
-  await commitFile("src/data/site.json", stringifyJson(next), message);
-}
-
-export async function saveBlogPosts(next: BlogPost[], message: string): Promise<void> {
-  await commitFile("src/data/blogs.json", stringifyJson(next), message);
-}
-
-export async function saveSeoOverrides(next: SeoOverrides, message: string): Promise<void> {
-  await commitFile("src/data/seo.json", stringifyJson(next), message);
-}
+export const getCurrentSeoOverrides = cache((): Promise<SeoOverrides> => getSeoOverrides());

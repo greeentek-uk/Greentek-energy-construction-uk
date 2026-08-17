@@ -1,10 +1,9 @@
 "use client";
-import Header from "@/components/layout/Header";
-import Footer from "@/components/layout/Footer";
-import { siteConfig } from "@/data/site";
+
 import BeforeAfterSlider from "@/components/ui/BeforeAfterSlider";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
+import type { Project } from "@/data/site";
 
 function useFadeIn(delay = 0) {
   const ref = useRef<HTMLDivElement>(null);
@@ -30,15 +29,6 @@ function useFadeIn(delay = 0) {
 
   return { ref, visible };
 }
-
-type Project = {
-  slug: string;
-  category: string;
-  title: string;
-  description: string;
-  before: string;
-  after: string;
-};
 
 function ProjectCard({ project, delay }: { project: Project; delay: number }) {
   const cardFade = useFadeIn(delay);
@@ -82,42 +72,36 @@ function ProjectCard({ project, delay }: { project: Project; delay: number }) {
   );
 }
 
-export default function ProjectsPageClient() {
+export default function ProjectsPageClient({ projects }: { projects: Project[] }) {
   return (
-    <div className="flex flex-col min-h-screen">
-      <Header />
+    <main className="flex-1 ">
+      {/* Projects Header - Centered */}
+      <section className="relative bg-[url('/images/footer/footer-bg.webp')] bg-cover overflow-hidden">
+        <div className="bg-black/70 pt-30 py-20">
+          <h1 className="text-[2rem] md:text-[3.5rem] font-bold leading-[1.15] text-white mx-auto text-center">
+            Our <span className="text-[#C5EB02]">Project Gallery</span>
+          </h1>
+          <p className="mt-6 text-md md:text-xl text-white/80 max-w-3xl mx-auto leading-relaxed font-medium text-center w-[85%]">
+            Explore our track record of excellence across the UK, featuring
+            high-impact renewable energy installations and premium
+            construction projects.
+          </p>
+        </div>
+      </section>
 
-      <main className="flex-1 ">
-        {/* Projects Header - Centered */}
-        <section className="relative bg-[url('/images/footer/footer-bg.webp')] bg-cover overflow-hidden">
-          <div className="bg-black/70 pt-30 py-20">
-            <h1 className="text-[2rem] md:text-[3.5rem] font-bold leading-[1.15] text-white mx-auto text-center">
-              Our <span className="text-[#C5EB02]">Project Gallery</span>
-            </h1>
-            <p className="mt-6 text-md md:text-xl text-white/80 max-w-3xl mx-auto leading-relaxed font-medium text-center w-[85%]">
-              Explore our track record of excellence across the UK, featuring
-              high-impact renewable energy installations and premium
-              construction projects.
-            </p>
+      <section className="py-12 lg:py-24 ">
+        <div className="mx-auto max-w-7xl px-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8">
+            {projects.map((project, index) => (
+              <ProjectCard
+                key={project.slug}
+                project={project}
+                delay={index * 100}
+              />
+            ))}
           </div>
-        </section>
-
-        <section className="py-12 lg:py-24 ">
-          <div className="mx-auto max-w-7xl px-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8">
-              {siteConfig.projects.map((project, index) => (
-                <ProjectCard
-                  key={project.slug}
-                  project={project}
-                  delay={index * 100}
-                />
-              ))}
-            </div>
-          </div>
-        </section>
-      </main>
-
-      <Footer />
-    </div>
+        </div>
+      </section>
+    </main>
   );
 }

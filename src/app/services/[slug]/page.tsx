@@ -4,13 +4,14 @@ import Link from "next/link";
 import { Phone } from "lucide-react";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
-import { siteConfig } from "@/data/site";
+import { getCurrentSiteConfig } from "@/lib/cms";
 import Process from "@/components/sections/Process";
 import Stats from "@/components/sections/Stats";
 import CtaSection from "@/components/sections/CtaSection";
 import AccreditationsSection from "@/components/sections/AccreditationsSection";
 import BeforeAfterSlider from "@/components/ui/BeforeAfterSlider";
 import { withSeoOverride } from "@/lib/seo";
+import { buildServiceJsonLd, SITE_URL } from "@/lib/structuredData";
 
 interface Props {
   params: {
@@ -20,6 +21,7 @@ interface Props {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
+  const siteConfig = await getCurrentSiteConfig();
   const service = siteConfig.services.find((s) => s.slug === slug);
 
   if (!service) {
@@ -34,14 +36,16 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   });
 }
 
-export function generateStaticParams() {
-  return siteConfig.services.map((service) => ({
+export async function generateStaticParams() {
+  const { services } = await getCurrentSiteConfig();
+  return services.map((service) => ({
     slug: service.slug,
   }));
 }
 
 export default async function ServiceDetailPage({ params }: Props) {
   const { slug } = await params;
+  const siteConfig = await getCurrentSiteConfig();
   const service = siteConfig.services.find((s) => s.slug === slug);
 
   if (!service) {
@@ -60,9 +64,14 @@ export default async function ServiceDetailPage({ params }: Props) {
     .slice(0, 3);
 
   const phoneHref = `tel:${siteConfig.phone.replace(/\s/g, "")}`;
+  const jsonLd = buildServiceJsonLd(service, siteConfig, SITE_URL);
 
   return (
     <div className="flex flex-col min-h-screen bg-black">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <Header />
 
       <main className="flex-1">

@@ -12,7 +12,8 @@ interface Props {
 export default async function EditBlogPostPage({ params, searchParams }: Props) {
   const { slug } = await params;
   const sp = await searchParams;
-  const post = getCurrentBlogPosts().find((p) => p.slug === slug);
+  const posts = await getCurrentBlogPosts();
+  const post = posts.find((p) => p.slug === slug);
 
   if (!post) {
     notFound();

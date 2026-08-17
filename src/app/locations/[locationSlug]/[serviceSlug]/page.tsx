@@ -5,7 +5,8 @@ import Image from "next/image";
 import { Phone } from "lucide-react";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
-import { siteConfig } from "@/data/site";
+import { getCurrentSiteConfig } from "@/lib/cms";
+import type { SiteConfig } from "@/data/site";
 import Stats from "@/components/sections/Stats";
 import CtaSection from "@/components/sections/CtaSection";
 import AccreditationsSection from "@/components/sections/AccreditationsSection";
@@ -19,7 +20,11 @@ interface Props {
   };
 }
 
-function findEntities(locationSlug: string, serviceSlug: string) {
+function findEntities(
+  siteConfig: SiteConfig,
+  locationSlug: string,
+  serviceSlug: string,
+) {
   const location = siteConfig.locations.find((l) => l.slug === locationSlug);
   const service = siteConfig.services.find((s) => s.slug === serviceSlug);
   return { location, service };
@@ -27,7 +32,8 @@ function findEntities(locationSlug: string, serviceSlug: string) {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { locationSlug, serviceSlug } = await params;
-  const { location, service } = findEntities(locationSlug, serviceSlug);
+  const siteConfig = await getCurrentSiteConfig();
+  const { location, service } = findEntities(siteConfig, locationSlug, serviceSlug);
 
   if (!location || !service) {
     return { title: "Page Not Found" };
@@ -39,9 +45,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   });
 }
 
-export function generateStaticParams() {
-  return siteConfig.locations.flatMap((location) =>
-    siteConfig.services.map((service) => ({
+export async function generateStaticParams() {
+  const { locations, services } = await getCurrentSiteConfig();
+  return locations.flatMap((location) =>
+    services.map((service) => ({
       locationSlug: location.slug,
       serviceSlug: service.slug,
     })),
@@ -50,7 +57,8 @@ export function generateStaticParams() {
 
 export default async function LocationServicePage({ params }: Props) {
   const { locationSlug, serviceSlug } = await params;
-  const { location, service } = findEntities(locationSlug, serviceSlug);
+  const siteConfig = await getCurrentSiteConfig();
+  const { location, service } = findEntities(siteConfig, locationSlug, serviceSlug);
 
   if (!location || !service) {
     notFound();

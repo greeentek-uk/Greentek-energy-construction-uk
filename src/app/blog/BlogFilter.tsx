@@ -3,15 +3,13 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useState, useMemo } from "react";
-import { blogPosts } from "@/data/blogs";
+import type { BlogPost } from "@/data/blogs";
 
-// Get unique categories from blog posts
-const categories = [
-  "All",
-  ...Array.from(new Set(blogPosts.map((post) => post.category))),
-];
-
-export function BlogFilterClient() {
+export function BlogFilterClient({ posts: blogPosts }: { posts: BlogPost[] }) {
+  const categories = useMemo(
+    () => ["All", ...Array.from(new Set(blogPosts.map((post) => post.category)))],
+    [blogPosts],
+  );
   const [activeCategory, setActiveCategory] = useState<string>("All");
   const [searchQuery, setSearchQuery] = useState<string>("");
 
@@ -33,7 +31,7 @@ export function BlogFilterClient() {
     }
 
     return filtered;
-  }, [activeCategory, searchQuery]);
+  }, [activeCategory, searchQuery, blogPosts]);
 
   // Featured post is the first one (always visible if "All" is selected and no search)
   const featuredPost =

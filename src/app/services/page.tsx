@@ -1,14 +1,14 @@
 import type { Metadata } from "next";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
-import { siteConfig } from "@/data/site";
+import { getCurrentSiteConfig } from "@/lib/cms";
 import Process from "@/components/sections/Process";
 import Projects from "@/components/sections/Projects";
 import Image from "next/image";
 import Link from "next/link";
 import { withSeoOverride } from "@/lib/seo";
 
-export function generateMetadata(): Metadata {
+export async function generateMetadata(): Promise<Metadata> {
   return withSeoOverride("/services", {
     title: "Our Services",
     description:
@@ -16,7 +16,9 @@ export function generateMetadata(): Metadata {
   });
 }
 
-export default function ServicesPage() {
+export default async function ServicesPage() {
+  const { services } = await getCurrentSiteConfig();
+
   return (
     <div className="flex flex-col min-h-screen">
       <Header />
@@ -39,7 +41,7 @@ export default function ServicesPage() {
         <section className="py-12 lg:py-24">
           <div className="mx-auto max-w-6xl">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8">
-              {siteConfig.services.map((service) => (
+              {services.map((service) => (
                 <Link
                   href={`/services/${service.slug}`}
                   key={service.slug}

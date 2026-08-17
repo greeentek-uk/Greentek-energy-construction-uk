@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
-import { siteConfig } from "@/data/site";
+import { getCurrentSiteConfig } from "@/lib/cms";
 import Process from "@/components/sections/Process";
 import Image from "next/image";
 import Link from "next/link";
@@ -9,7 +9,7 @@ import { withSeoOverride } from "@/lib/seo";
 
 const HOME_FORM_CATEGORIES = ["refurb_extension"];
 
-export function generateMetadata(): Metadata {
+export async function generateMetadata(): Promise<Metadata> {
   return withSeoOverride("/home-solutions", {
     title: "Home Solutions",
     description:
@@ -17,7 +17,8 @@ export function generateMetadata(): Metadata {
   });
 }
 
-export default function HomeSolutionsPage() {
+export default async function HomeSolutionsPage() {
+  const siteConfig = await getCurrentSiteConfig();
   const services = siteConfig.services.filter((service) =>
     HOME_FORM_CATEGORIES.includes(service.formCategory),
   );

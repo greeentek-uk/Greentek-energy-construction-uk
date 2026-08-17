@@ -3,14 +3,15 @@ import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import { BlogFilterClient } from "./BlogFilter";
 import { withSeoOverride } from "@/lib/seo";
+import { getCurrentBlogPosts } from "@/lib/cms";
 
-export function generateMetadata(): Metadata {
+export async function generateMetadata(): Promise<Metadata> {
   return {
-    ...withSeoOverride("/blog", {
+    ...(await withSeoOverride("/blog", {
       title: "Energy Saving & Home Improvement Insights",
       description:
         "Practical advice from Greentek on solar PV, air source heat pumps, insulation, property refurbishment, and energy-efficient living. Get expert tips to reduce your energy bills.",
-    }),
+    })),
     keywords: [
       "energy saving tips",
       "energy efficiency",
@@ -27,7 +28,9 @@ export function generateMetadata(): Metadata {
   };
 }
 
-export default function BlogPage() {
+export default async function BlogPage() {
+  const posts = await getCurrentBlogPosts();
+
   return (
     <div className="flex flex-col min-h-screen">
       <Header />
@@ -50,7 +53,7 @@ export default function BlogPage() {
           </div>
         </section>
 
-        <BlogFilterClient />
+        <BlogFilterClient posts={posts} />
       </main>
 
       <Footer />

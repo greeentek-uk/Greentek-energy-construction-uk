@@ -1,7 +1,14 @@
 "use server";
 
 import { redirect } from "next/navigation";
-import { getCurrentBlogPosts, saveBlogPosts } from "@/lib/cms";
+import { revalidatePath } from "next/cache";
+import {
+  createBlogPost,
+  updateBlogPost,
+  deleteBlogPost,
+  getBlogPostBySlug,
+  getBlogPosts,
+} from "@/lib/db/blogPosts";
 import type { BlogPost } from "@/data/blogs";
 
 function parseContentBlocks(formData: FormData): BlogPost["content"] {
@@ -30,6 +37,15 @@ function parseContentBlocks(formData: FormData): BlogPost["content"] {
   });
 }
 
+function revalidateBlogRoutes(slug: string, previousSlug?: string) {
+  revalidatePath("/blog");
+  revalidatePath(`/blog/${slug}`);
+  if (previousSlug && previousSlug !== slug) {
+    revalidatePath(`/blog/${previousSlug}`);
+  }
+  revalidatePath("/sitemap.xml");
+}
+
 export async function saveBlogPostAction(formData: FormData): Promise<void> {
   const originalSlug = String(formData.get("originalSlug") || "");
   const isNew = !originalSlug;
@@ -56,23 +72,24 @@ export async function saveBlogPostAction(formData: FormData): Promise<void> {
     );
   }
 
-  const current = getCurrentBlogPosts();
-
-  if (!isNew && !current.some((p) => p.slug === originalSlug)) {
+  const original = isNew ? null : await getBlogPostBySlug(originalSlug);
+  if (!isNew && !original) {
     redirect(`/admin/blog?error=${encodeURIComponent("Original post not found")}`);
   }
 
-  if ((isNew || slug !== originalSlug) && current.some((p) => p.slug === slug)) {
-    redirect(
-      `${editingPath}?error=${encodeURIComponent("A post with that slug already exists")}`,
-    );
+  if (isNew || slug !== originalSlug) {
+    if (await getBlogPostBySlug(slug)) {
+      redirect(
+        `${editingPath}?error=${encodeURIComponent("A post with that slug already exists")}`,
+      );
+    }
   }
 
   const nextId = isNew
-    ? Math.max(0, ...current.map((p) => p.id)) + 1
-    : current.find((p) => p.slug === originalSlug)!.id;
+    ? Math.max(0, ...(await getBlogPosts()).map((p) => p.id)) + 1
+    : original!.id;
 
-  const updatedPost: BlogPost = {
+  const post: BlogPost = {
     id: nextId,
     title,
     slug,
@@ -88,34 +105,31 @@ export async function saveBlogPostAction(formData: FormData): Promise<void> {
     content: parseContentBlocks(formData),
   };
 
-  const next = isNew
-    ? [...current, updatedPost]
-    : current.map((p) => (p.slug === originalSlug ? updatedPost : p));
-
   try {
-    await saveBlogPosts(
-      next,
-      isNew ? `Add blog post: ${title}` : `Update blog post: ${title}`,
-    );
+    if (isNew) {
+      await createBlogPost(post);
+    } else {
+      await updateBlogPost(originalSlug, post);
+    }
   } catch (err) {
     const message = err instanceof Error ? err.message : "Unknown error";
     redirect(`${editingPath}?error=${encodeURIComponent(message)}`);
   }
 
+  revalidateBlogRoutes(slug, isNew ? undefined : originalSlug);
   redirect(`/admin/blog/${slug}?saved=1`);
 }
 
 export async function deleteBlogPostAction(formData: FormData): Promise<void> {
   const slug = String(formData.get("slug") || "");
-  const current = getCurrentBlogPosts();
-  const next = current.filter((p) => p.slug !== slug);
 
   try {
-    await saveBlogPosts(next, `Delete blog post: ${slug}`);
+    await deleteBlogPost(slug);
   } catch (err) {
     const message = err instanceof Error ? err.message : "Unknown error";
     redirect(`/admin/blog?error=${encodeURIComponent(message)}`);
   }
 
+  revalidateBlogRoutes(slug);
   redirect("/admin/blog?deleted=1");
 }

@@ -4,7 +4,8 @@ import Link from "next/link";
 import Image from "next/image";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
-import { blogPosts } from "@/data/blogs";
+import { getCurrentBlogPosts } from "@/lib/cms";
+import { buildBlogPostingJsonLd, SITE_URL } from "@/lib/structuredData";
 
 interface Props {
   params: {
@@ -14,6 +15,7 @@ interface Props {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
+  const blogPosts = await getCurrentBlogPosts();
   const post = blogPosts.find((p) => p.slug === slug);
 
   if (!post) {
@@ -26,6 +28,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     title: { absolute: post.metaTitle },
     description: post.metaDescription,
     keywords: post.keywords,
+    alternates: { canonical: `/blog/${post.slug}` },
     openGraph: {
       title: post.metaTitle,
       description: post.metaDescription,
@@ -36,7 +39,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
-export function generateStaticParams() {
+export async function generateStaticParams() {
+  const blogPosts = await getCurrentBlogPosts();
   return blogPosts.map((post) => ({
     slug: post.slug,
   }));
@@ -44,14 +48,21 @@ export function generateStaticParams() {
 
 export default async function BlogDetailPage({ params }: Props) {
   const { slug } = await params;
+  const blogPosts = await getCurrentBlogPosts();
   const post = blogPosts.find((p) => p.slug === slug);
 
   if (!post) {
     notFound();
   }
 
+  const jsonLd = buildBlogPostingJsonLd(post, SITE_URL);
+
   return (
     <div className="flex flex-col min-h-screen bg-black">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <Header />
 
       <main className="flex-1">

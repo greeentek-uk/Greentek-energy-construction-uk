@@ -15,7 +15,7 @@ import Areas from "@/components/sections/Areas";
 import Process from "@/components/sections/Process";
 import Projects from "@/components/sections/Projects";
 import AboutUs from "@/components/sections/AboutUs";
-export function generateMetadata(): Metadata {
+export async function generateMetadata(): Promise<Metadata> {
   return withSeoOverride("/", {
     title: "Solar, Heating & Renovation Experts",
     description:

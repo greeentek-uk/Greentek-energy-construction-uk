@@ -1,128 +1,69 @@
+import Link from "next/link";
 import { getCurrentSiteConfig } from "@/lib/cms";
-import { saveServiceAction } from "../../_actions/content";
+import { deleteServiceAction } from "../../_actions/content";
 import SaveBanner from "../../_components/SaveBanner";
+import ServiceForm from "../../_components/ServiceForm";
+import ConfirmSubmitButton from "../../_components/ConfirmSubmitButton";
 
 interface Props {
-  searchParams: Promise<{ saved?: string; error?: string }>;
+  searchParams: Promise<{ saved?: string; deleted?: string; error?: string }>;
 }
-
-const FORM_CATEGORIES = [
-  "solar_storage",
-  "heating_boiler",
-  "insulation",
-  "refurb_extension",
-  "commercial",
-];
 
 export default async function ServicesAdminPage({ searchParams }: Props) {
   const params = await searchParams;
-  const services = getCurrentSiteConfig().services;
+  const { services } = await getCurrentSiteConfig();
 
   return (
     <div>
-      <h1 className="text-2xl font-bold mb-1">Services</h1>
+      <div className="flex items-center justify-between mb-1">
+        <h1 className="text-2xl font-bold">Services</h1>
+        <Link
+          href="/admin/services/new"
+          className="rounded-lg bg-zinc-900 text-white text-sm font-semibold px-4 py-2 hover:bg-zinc-800"
+        >
+          + New Service
+        </Link>
+      </div>
       <p className="text-zinc-500 mb-6 text-sm">
         Edit the copy, image, and highlights shown on each service page.
       </p>
 
-      <SaveBanner saved={params.saved === "1"} error={params.error} />
+      <SaveBanner
+        saved={params.saved === "1" || params.deleted === "1"}
+        error={params.error}
+      />
 
       <div className="space-y-3">
         {services.map((service) => (
-          <details
+          <div
             key={service.slug}
             className="bg-white border border-zinc-200 rounded-xl overflow-hidden"
           >
-            <summary className="cursor-pointer px-5 py-4 font-semibold text-zinc-900 hover:bg-zinc-50">
-              {service.title}
-            </summary>
-            <form action={saveServiceAction} className="px-5 pb-5 pt-2 space-y-4">
-              <input type="hidden" name="slug" value={service.slug} />
-              <div className="grid sm:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-xs font-semibold text-zinc-600 mb-1">
-                    Title
-                  </label>
-                  <input
-                    name="title"
-                    defaultValue={service.title}
-                    required
-                    className="w-full rounded-lg border border-zinc-300 px-3 py-2 text-sm text-zinc-900"
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-semibold text-zinc-600 mb-1">
-                    Short Name (used in headlines & CTAs)
-                  </label>
-                  <input
-                    name="shortName"
-                    defaultValue={service.shortName}
-                    required
-                    className="w-full rounded-lg border border-zinc-300 px-3 py-2 text-sm text-zinc-900"
-                  />
-                </div>
+            <div className="flex items-center justify-between px-5 py-4">
+              <span className="font-semibold text-zinc-900">{service.title}</span>
+              <form action={deleteServiceAction}>
+                <input type="hidden" name="slug" value={service.slug} />
+                <ConfirmSubmitButton
+                  message={`Delete "${service.title}"? This cannot be undone.`}
+                  className="text-xs font-semibold text-red-600 hover:underline"
+                >
+                  Delete
+                </ConfirmSubmitButton>
+              </form>
+            </div>
+            <details>
+              <summary className="cursor-pointer px-5 py-2 text-sm text-zinc-500 hover:bg-zinc-50 border-t border-zinc-100">
+                Edit details
+              </summary>
+              <div className="px-5 pb-5 pt-2">
+                <ServiceForm initial={service} />
               </div>
-              <div>
-                <label className="block text-xs font-semibold text-zinc-600 mb-1">
-                  Description
-                </label>
-                <textarea
-                  name="description"
-                  defaultValue={service.description}
-                  rows={2}
-                  required
-                  className="w-full rounded-lg border border-zinc-300 px-3 py-2 text-sm text-zinc-900"
-                />
-              </div>
-              <div className="grid sm:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-xs font-semibold text-zinc-600 mb-1">
-                    Image Path
-                  </label>
-                  <input
-                    name="image"
-                    defaultValue={service.image}
-                    required
-                    className="w-full rounded-lg border border-zinc-300 px-3 py-2 text-sm text-zinc-900"
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-semibold text-zinc-600 mb-1">
-                    Quote Form Category
-                  </label>
-                  <select
-                    name="formCategory"
-                    defaultValue={service.formCategory}
-                    className="w-full rounded-lg border border-zinc-300 px-3 py-2 text-sm text-zinc-900"
-                  >
-                    {FORM_CATEGORIES.map((c) => (
-                      <option key={c} value={c}>
-                        {c}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-              <div>
-                <label className="block text-xs font-semibold text-zinc-600 mb-1">
-                  Highlights (one per line)
-                </label>
-                <textarea
-                  name="highlights"
-                  defaultValue={service.highlights.join("\n")}
-                  rows={4}
-                  className="w-full rounded-lg border border-zinc-300 px-3 py-2 text-sm text-zinc-900"
-                />
-              </div>
-              <button
-                type="submit"
-                className="rounded-lg bg-zinc-900 text-white text-sm font-semibold px-5 py-2.5 hover:bg-zinc-800"
-              >
-                Save
-              </button>
-            </form>
-          </details>
+            </details>
+          </div>
         ))}
+        {services.length === 0 && (
+          <p className="text-sm text-zinc-400">No services yet.</p>
+        )}
       </div>
     </div>
   );

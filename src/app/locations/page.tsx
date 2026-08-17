@@ -3,10 +3,10 @@ import Link from "next/link";
 import Image from "next/image";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
-import { siteConfig } from "@/data/site";
+import { getCurrentSiteConfig } from "@/lib/cms";
 import { withSeoOverride } from "@/lib/seo";
 
-export function generateMetadata(): Metadata {
+export async function generateMetadata(): Promise<Metadata> {
   return withSeoOverride("/locations", {
     title: "Areas We Cover",
     description:
@@ -14,7 +14,9 @@ export function generateMetadata(): Metadata {
   });
 }
 
-export default function LocationsPage() {
+export default async function LocationsPage() {
+  const { locations } = await getCurrentSiteConfig();
+
   return (
     <div className="flex flex-col min-h-screen">
       <Header />
@@ -35,7 +37,7 @@ export default function LocationsPage() {
         <section className="py-12 lg:py-24">
           <div className="mx-auto max-w-6xl px-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8">
-              {siteConfig.locations.map((location) => (
+              {locations.map((location) => (
                 <Link
                   key={location.slug}
                   href={`/locations/${location.slug}`}

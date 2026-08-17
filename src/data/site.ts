@@ -1,5 +1,3 @@
-import siteData from "./site.json";
-
 export interface Service {
   slug: string;
   title: string;
@@ -59,5 +57,3 @@ export interface SiteConfig {
   projects: Project[];
   locations: Location[];
 }
-
-export const siteConfig = siteData as SiteConfig;

@@ -1,5 +1,3 @@
-import blogsData from "./blogs.json";
-
 export interface BlogPost {
   id: number;
   title: string;
@@ -21,5 +19,3 @@ export interface BlogPost {
     ctaLink?: string;
   }[];
 }
-
-export const blogPosts = blogsData as BlogPost[];

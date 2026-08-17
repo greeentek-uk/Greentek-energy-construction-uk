@@ -8,7 +8,7 @@ interface Props {
 
 export default async function SettingsAdminPage({ searchParams }: Props) {
   const params = await searchParams;
-  const site = getCurrentSiteConfig();
+  const site = await getCurrentSiteConfig();
 
   return (
     <div>

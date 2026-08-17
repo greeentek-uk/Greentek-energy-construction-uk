@@ -4,7 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
-import { siteConfig } from "@/data/site";
+import { getCurrentSiteConfig } from "@/lib/cms";
 import BeforeAfterSlider from "@/components/ui/BeforeAfterSlider";
 import { withSeoOverride } from "@/lib/seo";
 
@@ -16,6 +16,7 @@ interface Props {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
+  const siteConfig = await getCurrentSiteConfig();
   const project = siteConfig.projects.find((p) => p.slug === slug);
 
   if (!project) {
@@ -30,14 +31,16 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   });
 }
 
-export function generateStaticParams() {
-  return siteConfig.projects.map((project) => ({
+export async function generateStaticParams() {
+  const { projects } = await getCurrentSiteConfig();
+  return projects.map((project) => ({
     slug: project.slug,
   }));
 }
 
 export default async function ProjectDetailPage({ params }: Props) {
   const { slug } = await params;
+  const siteConfig = await getCurrentSiteConfig();
   const project = siteConfig.projects.find((p) => p.slug === slug);
 
   if (!project) {

@@ -2,9 +2,11 @@ import Link from "next/link";
 import { getAllRoutes } from "@/lib/routes";
 import { getCurrentSeoOverrides } from "@/lib/cms";
 
-export default function SeoListPage() {
-  const routes = getAllRoutes();
-  const overrides = getCurrentSeoOverrides();
+export default async function SeoListPage() {
+  const [routes, overrides] = await Promise.all([
+    getAllRoutes(),
+    getCurrentSeoOverrides(),
+  ]);
   const groups = Array.from(new Set(routes.map((r) => r.group)));
 
   return (

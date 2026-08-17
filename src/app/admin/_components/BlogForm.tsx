@@ -3,6 +3,7 @@
 import { useState } from "react";
 import type { BlogPost } from "@/data/blogs";
 import { saveBlogPostAction } from "../_actions/blog";
+import ImageUploadField from "./ImageUploadField";
 
 type BlockType = BlogPost["content"][number]["type"];
 
@@ -121,11 +122,10 @@ export default function BlogForm({ post }: { post?: BlogPost }) {
           required
         />
         <div className="grid sm:grid-cols-2 gap-4">
-          <Field
-            label="Cover Image Path"
+          <ImageUploadField
             name="coverImage"
+            label="Cover Image"
             defaultValue={post?.coverImage}
-            placeholder="/images/blog/example.jpg"
             required
           />
           <Field

@@ -10,7 +10,7 @@ interface Props {
 export default async function EditSeoPage({ searchParams }: Props) {
   const params = await searchParams;
   const path = params.path || "/";
-  const override = getSeoOverride(path);
+  const override = await getSeoOverride(path);
 
   return (
     <div>

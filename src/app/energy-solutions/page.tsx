@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
-import { siteConfig } from "@/data/site";
+import { getCurrentSiteConfig } from "@/lib/cms";
 import Process from "@/components/sections/Process";
 import Image from "next/image";
 import Link from "next/link";
@@ -13,7 +13,7 @@ const ENERGY_FORM_CATEGORIES = [
   "insulation",
 ];
 
-export function generateMetadata(): Metadata {
+export async function generateMetadata(): Promise<Metadata> {
   return withSeoOverride("/energy-solutions", {
     title: "Energy Solutions",
     description:
@@ -21,7 +21,8 @@ export function generateMetadata(): Metadata {
   });
 }
 
-export default function EnergySolutionsPage() {
+export default async function EnergySolutionsPage() {
+  const siteConfig = await getCurrentSiteConfig();
   const services = siteConfig.services.filter((service) =>
     ENERGY_FORM_CATEGORIES.includes(service.formCategory),
   );

@@ -5,7 +5,7 @@ import Image from "next/image";
 import { Phone } from "lucide-react";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
-import { siteConfig } from "@/data/site";
+import { getCurrentSiteConfig } from "@/lib/cms";
 import Stats from "@/components/sections/Stats";
 import CtaSection from "@/components/sections/CtaSection";
 import AccreditationsSection from "@/components/sections/AccreditationsSection";
@@ -19,6 +19,7 @@ interface Props {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { locationSlug } = await params;
+  const siteConfig = await getCurrentSiteConfig();
   const location = siteConfig.locations.find((l) => l.slug === locationSlug);
 
   if (!location) {
@@ -31,14 +32,16 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   });
 }
 
-export function generateStaticParams() {
-  return siteConfig.locations.map((location) => ({
+export async function generateStaticParams() {
+  const { locations } = await getCurrentSiteConfig();
+  return locations.map((location) => ({
     locationSlug: location.slug,
   }));
 }
 
 export default async function LocationDetailPage({ params }: Props) {
   const { locationSlug } = await params;
+  const siteConfig = await getCurrentSiteConfig();
   const location = siteConfig.locations.find((l) => l.slug === locationSlug);
 
   if (!location) {

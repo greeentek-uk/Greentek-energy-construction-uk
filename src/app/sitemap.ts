@@ -1,9 +1,13 @@
 import type { MetadataRoute } from "next";
-import { blogPosts } from "@/data/blogs";
-import { siteConfig } from "@/data/site";
+import { getCurrentBlogPosts, getCurrentSiteConfig } from "@/lib/cms";
 
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = "https://www.greentekenergy.co.uk";
+
+  const [blogPosts, siteConfig] = await Promise.all([
+    getCurrentBlogPosts(),
+    getCurrentSiteConfig(),
+  ]);
 
   const routes = [
     "",
