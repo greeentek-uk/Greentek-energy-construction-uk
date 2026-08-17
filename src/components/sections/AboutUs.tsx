@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
+import { siteConfig } from "@/data/site";
 
 type Slide = {
   image: string;
@@ -18,20 +19,20 @@ type Slide = {
   date?: string;
 };
 
-const SLIDES: Slide[] = [
-  {
-    image: "/images/verticals/energy.avif",
-    href: "/energy-solutions",
-    title: "Energy Solutions",
-    text: "Turnkey multi-measure energy upgrades, from Solar PV to high-efficiency thermal systems.",
-  },
-  {
-    image: "/images/verticals/home.jpeg",
-    href: "/home-solutions",
-    title: "Home Solutions",
-    text: "Primary contractor for renovations, extentions, and planned maintenance across residential and commercial properties.",
-  },
+const FEATURED_PROJECT_SLUGS = [
+  "solar-pv-installation",
+  "full-property-refurbishment",
 ];
+
+const SLIDES: Slide[] = FEATURED_PROJECT_SLUGS.map((slug) => {
+  const project = siteConfig.projects.find((p) => p.slug === slug)!;
+  return {
+    image: project.after,
+    href: `/projects/${project.slug}`,
+    title: project.title,
+    text: project.description,
+  };
+});
 
 const SLIDE_DURATION = 3000;
 

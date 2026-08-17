@@ -6,7 +6,7 @@ import WhyUs from "@/components/sections/WhyUs";
 import Verticals from "@/components/sections/AboutUs";
 import BrandsSection from "@/components/sections/BrandsSection";
 import OurProcess from "@/components/sections/Process";
-import ServicesGlimpse from "@/components/sections/ServicesGlimpse";
+import WhyChooseUs from "@/components/sections/WhyChooseUs";
 import Image from "next/image";
 import { siteConfig } from "@/data/site";
 import { useEffect, useRef, useState } from "react";
@@ -128,7 +128,7 @@ export default function AboutPageClient() {
         </section>
         <WhyUs />
         <Verticals />
-        <ServicesGlimpse />
+        <WhyChooseUs />
         <BrandsSection />
         <OurProcess />
       </main>

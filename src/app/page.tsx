@@ -6,7 +6,7 @@ import HeroSection from "@/components/sections/HeroSection";
 import AccreditationsSection from "@/components/sections/AccreditationsSection";
 import FAQSection from "@/components/sections/FAQSection";
 import Testimonials from "@/components/sections/Testimonials";
-import ServicesGlimpse from "@/components/sections/ServicesGlimpse";
+import WhyChooseUs from "@/components/sections/WhyChooseUs";
 import Verticals from "@/components/sections/Verticals";
 import WhyUs from "@/components/sections/WhyUs";
 import Stats from "@/components/sections/Stats";
@@ -33,9 +33,7 @@ export default function HomePage() {
         <AboutUs />
         <Stats />
         <Verticals />
-        <WhyUs />
-        <AccreditationsSection />
-        <ServicesGlimpse />
+        <WhyChooseUs />
         <Process />
         <Projects />
         <CtaSection />

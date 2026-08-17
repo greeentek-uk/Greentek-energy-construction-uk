@@ -6,12 +6,12 @@ import type { LucideIcon } from "lucide-react";
 import {
   ArrowRight,
   ArrowUpRight,
+  Award,
   Banknote,
-  Clock,
-  Maximize,
+  MapPin,
   PiggyBank,
-  Thermometer,
-  TrendingUp,
+  ShieldCheck,
+  Users,
 } from "lucide-react";
 
 function useFadeIn(delay = 0) {
@@ -39,7 +39,7 @@ function useFadeIn(delay = 0) {
   return { ref, visible };
 }
 
-type Benefit = {
+type Reason = {
   id: string;
   title: string;
   desc: string;
@@ -47,52 +47,52 @@ type Benefit = {
   icon: LucideIcon;
 };
 
-const benefits: Benefit[] = [
+const reasons: Reason[] = [
   {
-    id: "bills",
-    title: "Lower Electricity Bills",
-    desc: "Generate your own power during the day and store what you don't use, so you're buying far less of it back at peak rates.",
+    id: "certified",
+    title: "Certified & Accredited Installers",
+    desc: "Every installer is MCS and TrustMark certified, so the work is signed off to the standard your warranty and any grant funding requires.",
     image: "/images/projects/Examples/Solar Panel Installation.png",
-    icon: PiggyBank,
+    icon: ShieldCheck,
   },
   {
-    id: "warmth",
-    title: "A Warmer, Cheaper Home",
-    desc: "Insulation and efficient heating work together. Keep the heat in first, then the system you're running costs a fraction of what it did before.",
-    image: "/images/projects/External Wall Insulation/after.jpg",
-    icon: Thermometer,
-  },
-  {
-    id: "space",
-    title: "More Usable Space",
-    desc: "An extension or loft conversion adds the room the household actually needs, without the cost and upheaval of moving house to get it.",
+    id: "one-team",
+    title: "One Team, Start To Finish",
+    desc: "The same team handles the energy work and the building work, so there's a single point of contact and no trades passing the blame between each other.",
     image: "/images/projects/RIR/Mid RiR.jpeg",
-    icon: Maximize,
+    icon: Users,
   },
   {
-    id: "value",
-    title: "Higher Property Value",
-    desc: "A better EPC rating and finished, professionally certified work both show up when the property is valued, surveyed or let.",
+    id: "fixed-price",
+    title: "Fixed-Price, No Surprises",
+    desc: "You get a clear written quote before work starts, and that's what you pay, not an inflated final invoice once the job is already underway.",
     image: "/images/projects/heating-system.jpg",
-    icon: TrendingUp,
-  },
-  {
-    id: "funding",
-    title: "Grants & Funding Support",
-    desc: "Several measures qualify for government funding or reduced VAT. We check what your property is eligible for before you commit to anything.",
-    image: "/images/projects/Shop Chimney/Post shop.jpeg",
     icon: Banknote,
   },
   {
-    id: "one-programme",
-    title: "One Job, Not Three",
-    desc: "Doing the energy work and the building work on the same programme means one set of scaffolding, one clean-up, and one team accountable at the end.",
-    image: "/images/projects/Examples/Solar Panel Installation.png",
-    icon: Clock,
+    id: "funding",
+    title: "We Handle The Funding Paperwork",
+    desc: "From grant schemes to reduced VAT, we check what your property is eligible for and manage the application so you're not left chasing forms yourself.",
+    image: "/images/projects/Shop Chimney/Post shop.jpeg",
+    icon: PiggyBank,
+  },
+  {
+    id: "guarantee",
+    title: "Workmanship You Can Rely On",
+    desc: "Every installation is backed by a workmanship guarantee, so if something isn't right after we've left, we come back and put it right.",
+    image: "/images/projects/External Wall Insulation/after.jpg",
+    icon: Award,
+  },
+  {
+    id: "local",
+    title: "Local Team, On Site When You Need Us",
+    desc: "Based in the areas we work in, so if a question comes up during or after the job, you're speaking to someone who can actually visit.",
+    image: "/images/projects/Examples/solar.png",
+    icon: MapPin,
   },
 ];
 
-export default function Benefits() {
+export default function WhyChooseUs() {
   const headerFade = useFadeIn(0);
   const bodyFade = useFadeIn(150);
   const [active, setActive] = useState(0);
@@ -109,14 +109,14 @@ export default function Benefits() {
           }`}
         >
           <p className="mx-auto mb-6 w-fit rounded-2xl bg-[#28282C] px-3 py-1 text-[10px] font-semibold uppercase text-[#c5eb02] md:text-[16px]">
-            The Benefits
+            Why Choose Us
           </p>
           <h2 className="text-[1.625rem] font-bold leading-[1.2] text-white md:text-[2.5rem]">
-            What The Work Gives You Back.
+            Why Homeowners Choose Greentek.
           </h2>
           <p className="mt-4 text-md font-normal leading-relaxed text-white/80 md:text-xl">
-            Cheaper bills, a warmer property and more space to live in, from one
-            upgrade programme instead of three separate jobs.
+            Certified installers, fixed prices and one accountable team, from
+            the first survey through to the final sign-off.
           </p>
         </div>
 
@@ -128,15 +128,15 @@ export default function Benefits() {
               : "translate-y-6 opacity-0"
           }`}
         >
-          {/* LEFT: benefit list */}
+          {/* LEFT: reason list */}
           <div className="order-2 flex flex-col gap-3 lg:order-1">
-            {benefits.map((benefit, i) => {
+            {reasons.map((reason, i) => {
               const isActive = i === active;
-              const Icon = benefit.icon;
+              const Icon = reason.icon;
 
               return (
                 <button
-                  key={benefit.id}
+                  key={reason.id}
                   type="button"
                   onClick={() => setActive(i)}
                   aria-expanded={isActive}
@@ -158,7 +158,7 @@ export default function Benefits() {
                         isActive ? "text-[#c5eb02]" : "text-white/90"
                       }`}
                     >
-                      {benefit.title}
+                      {reason.title}
                     </span>
 
                     {isActive ? (
@@ -176,7 +176,7 @@ export default function Benefits() {
                     }}
                   >
                     <p className="mt-3 pl-14 text-sm leading-relaxed text-white/80 sm:text-base">
-                      {benefit.desc}
+                      {reason.desc}
                     </p>
                   </div>
                 </button>
@@ -186,11 +186,11 @@ export default function Benefits() {
 
           {/* RIGHT: image panel */}
           <div className="relative order-1 min-h-[280px] w-full overflow-hidden rounded-2xl bg-[#000000] lg:order-2 lg:min-h-full">
-            {benefits.map((benefit, i) => (
+            {reasons.map((reason, i) => (
               <Image
-                key={benefit.id}
-                src={benefit.image}
-                alt={benefit.title}
+                key={reason.id}
+                src={reason.image}
+                alt={reason.title}
                 fill
                 sizes="(max-width: 1024px) 100vw, 50vw"
                 className={`object-cover transition-opacity duration-500 ease-in-out ${

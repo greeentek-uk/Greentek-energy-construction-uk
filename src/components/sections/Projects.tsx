@@ -3,6 +3,8 @@
 import { ArrowRight, MoveHorizontal } from "lucide-react";
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { siteConfig } from "@/data/site";
+import type { Project } from "@/data/site";
 
 function useFadeIn(delay = 0) {
   const ref = useRef<HTMLDivElement>(null);
@@ -29,64 +31,7 @@ function useFadeIn(delay = 0) {
   return { ref, visible };
 }
 
-// Placeholder data — swap image paths for real before/after project photos.
-// Copy is generic on purpose; add real specifics (locations, system sizes,
-// savings figures) once confirmed.
-type Project = {
-  slug: string;
-  category: string;
-  title: string;
-  description: string;
-  before: string;
-  after: string;
-};
-
-const projects: Project[] = [
-  {
-    slug: "solar-pv-installation",
-    category: "Solar & Energy",
-    title: "Solar PV Installation",
-    description:
-      "Rooftop solar system installed for a family home, cutting grid dependence and lowering monthly bills.",
-    before: "/images/projects/Solar/before.png",
-    after: "/images/projects/Solar/after.png",
-  },
-  {
-    slug: "air-source-heat-pump-conversion",
-    category: "Home Improvement",
-    title: "Air Source Heat Pump Conversion",
-    description:
-      "Boiler-to-ASHP conversion delivering efficient, low-carbon heating for a semi-detached property.",
-    before: "/images/projects/Heating/before.png",
-    after: "/images/projects/Heating/after.webp",
-  },
-  {
-    slug: "external-wall-insulation",
-    category: "Home Improvement",
-    title: "External Wall Insulation",
-    description:
-      "Full external wall insulation upgrade, reducing heat loss and modernising an older property's exterior.",
-    before: "/images/projects/External Wall Insulation/before.jpeg",
-    after: "/images/projects/External Wall Insulation/after.jpg",
-  },
-  {
-    slug: "full-property-refurbishment",
-    category: "Renovation",
-    title: "Full Property Refurbishment",
-    description:
-      "Kitchen, bathroom, and extension refurbishment completed alongside an energy efficiency upgrade.",
-    before: "/images/projects/Extension 2/before.jpeg",
-    after: "/images/projects/Extension 2/after.jpeg",
-  },
-];
-
-function BeforeAfterCard({
-  project,
-  delay,
-}: {
-  project: Project;
-  delay: number;
-}) {
+function GalleryCard({ project, delay }: { project: Project; delay: number }) {
   const cardFade = useFadeIn(delay);
   const containerRef = useRef<HTMLDivElement>(null);
   const [sliderPos, setSliderPos] = useState(50);
@@ -135,10 +80,9 @@ function BeforeAfterCard({
           : "translate-y-6 opacity-0"
       }`}
     >
-      {/* Before/After slider image */}
       <div
         ref={containerRef}
-        className="relative rounded-md overflow-hidden border-6 border-white w-full h-100 select-none touch-none cursor-ew-resize"
+        className="group relative aspect-[4/5] w-full select-none touch-none overflow-hidden rounded-xl  cursor-ew-resize max-h-[450px]"
         onPointerDown={handlePointerDown}
         onPointerMove={handlePointerMove}
         onPointerUp={handlePointerUp}
@@ -149,7 +93,7 @@ function BeforeAfterCard({
           src={project.after}
           alt={`${project.title} — after`}
           draggable={false}
-          className="absolute inset-0 w-full h-full object-cover bg-center pointer-events-none"
+          className="absolute inset-0 h-full w-full bg-center object-cover pointer-events-none"
         />
 
         {/* Before image (clipped to slider position) */}
@@ -161,19 +105,19 @@ function BeforeAfterCard({
             src={project.before}
             alt={`${project.title} — before`}
             draggable={false}
-            className="h-full object-cover max-w-none"
+            className="h-full max-w-none object-cover"
             style={{ width: containerWidth || "100%" }}
           />
         </div>
 
         {/* Labels */}
-        <span className="absolute top-3 left-3 bg-[#28282C] text-[#c5eb02] text-[10px] font-semibold uppercase px-2.5 py-1 rounded-full pointer-events-none">
+        <span className="absolute top-3 left-3 z-10 rounded-full bg-[#28282C] px-2.5 py-1 text-[10px] font-semibold uppercase text-[#c5eb02] pointer-events-none">
           Before
         </span>
         <Link
           href={`/projects/${project.slug}`}
           aria-label={`View ${project.title} project`}
-          className="absolute top-3 right-3 h-10 w-10 rounded-full bg-white flex items-center justify-center hover:bg-[#c5eb02] transition-colors"
+          className="absolute top-3 right-3 z-10 flex h-10 w-10 items-center justify-center rounded-full bg-white transition-colors hover:bg-[#c5eb02]"
         >
           <ArrowRight className="h-5 w-5 text-black" />
         </Link>
@@ -183,24 +127,24 @@ function BeforeAfterCard({
           className="absolute top-0 bottom-0 w-0.5 bg-white pointer-events-none"
           style={{ left: `${sliderPos}%` }}
         >
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-white shadow-lg flex items-center justify-center">
+          <div className="absolute top-1/2 left-1/2 flex h-9 w-9 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-white shadow-lg">
             <MoveHorizontal className="h-4 w-4 text-black" />
           </div>
         </div>
-      </div>
 
-      {/* Text below image */}
-      <Link href={`/projects/${project.slug}`} className="block pt-5 group">
-        <p className="text-[10px] font-semibold uppercase  mb-3 bg-[#28282C] text-[#c5eb02] rounded-xl px-3 py-1 w-fit">
-          {project.category}
-        </p>
-        <h3 className="text-xl md:text-2xl font-bold mb-2 text-white group-hover:text-[#c5eb02] transition-colors">
-          {project.title}
-        </h3>
-        <p className="text-md font-normal text-white/80">
-          {project.description}
-        </p>
-      </Link>
+        {/* Hover reveal: project text inside the image */}
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 translate-y-3 bg-gradient-to-t from-black/90 via-black/50 to-transparent p-5 opacity-0 transition-all duration-300 ease-out group-hover:translate-y-0 group-hover:opacity-100">
+          <p className="mb-2 w-fit rounded-xl bg-[#28282C] px-2.5 py-1 text-[10px] font-semibold uppercase text-[#c5eb02]">
+            {project.category}
+          </p>
+          <h3 className="text-lg font-bold text-white md:text-xl">
+            {project.title}
+          </h3>
+          <p className="mt-1 text-sm font-normal text-white/85">
+            {project.description}
+          </p>
+        </div>
+      </div>
     </div>
   );
 }
@@ -226,19 +170,16 @@ export default function Projects() {
             See the Difference.
           </h2>
           <p className="mt-4 text-md md:text-xl text-white/80 leading-relaxed text-center w-[80%] md:w-[85%] mx-auto font-normal">
-            Drag the slider on each project to see the before and after, solar,
-            home improvement, and renovation work, side by side.
+            Drag the slider to see the before and after, hover a project to read
+            what was done, solar, home improvement, and renovation work, side by
+            side.
           </p>
         </div>
       </div>
 
-      <div className="w-full grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-12 max-w-7xl mx-auto mt-10 px-2">
-        {projects.map((project, i) => (
-          <BeforeAfterCard
-            key={project.title}
-            project={project}
-            delay={i * 100}
-          />
+      <div className="w-full grid grid-cols-1 sm:grid-cols-2 gap-6 max-w-7xl mx-auto mt-10 px-2">
+        {siteConfig.projects.map((project, i) => (
+          <GalleryCard key={project.slug} project={project} delay={i * 100} />
         ))}
       </div>
       <div className="mt-16 flex justify-center items-center">
