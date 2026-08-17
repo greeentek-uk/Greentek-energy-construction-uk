@@ -69,35 +69,15 @@ export default function HeroSection() {
               <ArrowRight className="inline ml-2 bg-black rounded px-1 py-1 text-white" />
             </a>
           </div>
-          {/* <div className="flex flex-wrap items-center gap-x-4 gap-y-3">
-            <span className="flex items-center gap-2 text-white text-sm md:text-md">
-              <Check className="h-5 w-5 border rounded-full px-0.5 py-0.5" />
-              Fully Accredited
-            </span>
-            <span className="flex items-center gap-2 text-white text-sm md:text-md">
-              <Check className="h-5 w-5 border rounded-full px-0.5 py-0.5" />
-              Written Warranty
-            </span>
-            <span className="flex items-center gap-2 text-white text-sm md:text-md">
-              <Check className="h-5 w-5 border rounded-full px-0.5 py-0.5" />
-              Zero Hidden Fees
-            </span>
-          </div> */}
         </div>
-        {/* <div className="w-full grid grid-cols-1 md:grid-cols-3 items-center justify-between gap-4 md:gap-8 mt-10">
-          {" "}
-          <div>
-            <p className="font-medium text-4xl">500+</p>
-            <p className="text-white/80 font-normal">Projects Completed</p>
-          </div>
-          <div>
-            <p className="font-medium text-4xl">25+</p>
-            <p className="text-white/80 font-normal">Years of Experience</p>
-          </div>
-          <div>
-            <p className="font-medium text-4xl">98%</p>
-            <p className="text-white/80 font-normal">Satisfaction Rate</p>
-          </div>
+        {/* <div className="w-full">
+          <Image
+            src="/images/home-page/hero-house-new.jpg"
+            alt="Hero Image"
+            width={800}
+            height={600}
+            className="w-full h-auto object-cover"
+          />
         </div> */}
       </div>
     </section>

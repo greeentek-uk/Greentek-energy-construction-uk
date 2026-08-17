@@ -1,14 +1,15 @@
 "use client";
 
-import { ArrowRight, ChevronLeft, ChevronRight, Pause, Play } from "lucide-react";
+import {
+  ArrowRight,
+  ChevronLeft,
+  ChevronRight,
+  Pause,
+  Play,
+} from "lucide-react";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 
-/* ============================================================
-   ADD SLIDES HERE — copy a block and change the values.
-   `date` and `href` are optional. Everything else (progress
-   bars, arrows, timing) adapts on its own.
-   ============================================================ */
 type Slide = {
   image: string;
   title: string;
@@ -32,7 +33,7 @@ const SLIDES: Slide[] = [
   },
 ];
 
-const SLIDE_DURATION = 6000; // ms each slide stays on screen
+const SLIDE_DURATION = 3000;
 
 function useFadeIn(delay = 0) {
   const ref = useRef<HTMLDivElement>(null);
@@ -68,14 +69,12 @@ export default function AboutUs() {
   const [progress, setProgress] = useState(0);
   const elapsed = useRef(0);
 
-  // Respect reduced-motion: hold on the first slide until the user navigates.
   useEffect(() => {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
       setPaused(true);
     }
   }, []);
 
-  // Reset the timer whenever the slide changes.
   useEffect(() => {
     elapsed.current = 0;
     setProgress(0);
@@ -106,11 +105,10 @@ export default function AboutUs() {
     return () => cancelAnimationFrame(frame);
   }, [index, paused]);
 
-  const go = (next: number) =>
-    setIndex((next + SLIDES.length) % SLIDES.length);
+  const go = (next: number) => setIndex((next + SLIDES.length) % SLIDES.length);
 
   return (
-    <section className="py-12 md:py-16 lg:py-24 overflow-hidden px-4 md:px-10">
+    <section className="py-12 md:py-14 lg:py-18 overflow-hidden px-4 md:px-10">
       <div className="mx-auto max-w-7xl px-2 md:px-6 grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-center">
         {/* ---------- Left: copy ---------- */}
         <div
@@ -137,10 +135,9 @@ export default function AboutUs() {
           </p>
         </div>
 
-        {/* ---------- Right: slideshow ---------- */}
         <div
           ref={showFade.ref}
-          className={`relative w-full h-80 sm:h-[26rem] lg:h-[30rem] rounded-xl border-1 border-white overflow-hidden bg-[#111827] transition-all duration-700 ease-out ${
+          className={`relative w-full h-80 sm:h-[26rem] lg:h-[30rem] rounded-xl overflow-hidden bg-[#111827] transition-all duration-700 ease-out ${
             showFade.visible
               ? "translate-y-0 opacity-100"
               : "translate-y-6 opacity-0"
@@ -163,9 +160,7 @@ export default function AboutUs() {
                 <h3 className="text-xl md:text-2xl font-bold mb-2 group-hover:text-[#c5eb02] transition-colors">
                   {slide.title}
                 </h3>
-                <p className="text-md font-normal max-w-[46ch]">
-                  {slide.text}
-                </p>
+                <p className="text-md font-normal max-w-[46ch]">{slide.text}</p>
               </div>
             );
 

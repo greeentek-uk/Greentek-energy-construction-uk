@@ -39,10 +39,6 @@ function useFadeIn(delay = 0) {
   return { ref, visible };
 }
 
-/* ============================================================
-   ADD A BENEFIT — drop an object into the array. The list and
-   the image panel stay in sync on their own.
-   ============================================================ */
 type Benefit = {
   id: string;
   title: string;

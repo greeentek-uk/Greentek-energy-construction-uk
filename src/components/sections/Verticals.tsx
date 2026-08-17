@@ -44,10 +44,6 @@ function useFadeIn(delay = 0) {
   return { ref, visible };
 }
 
-/* ============================================================
-   ADD A SERVICE — drop an object into the right group's
-   `services` array. The grid reflows on its own.
-   ============================================================ */
 type Service = {
   title: string;
   text: string;
@@ -160,13 +156,13 @@ function ServiceCard({ service, delay }: { service: Service; delay: number }) {
     >
       <Link
         href={service.href}
-        className="group relative flex h-full flex-col rounded-2xl bg-[#000000] px-6 py-7 md:px-8 md:py-8"
+        className="group relative flex h-full flex-col rounded-2xl bg-[#000000] px-6 py-7 md:px-10 md:py-10"
       >
         <span className="grid h-12 w-12 shrink-0 place-items-center rounded-xl bg-white/5 text-[#c5eb02] transition-colors duration-300 group-hover:bg-[#c5eb02] group-hover:text-black">
-          <Icon className="h-6 w-6" strokeWidth={1.75} />
+          <Icon className="h-6 w-6 md:h-10 md:w-10" strokeWidth={1.75} />
         </span>
 
-        <h4 className="mt-5 pr-8 text-lg font-bold leading-snug text-white transition-colors duration-300 group-hover:text-[#c5eb02]">
+        <h4 className="mt-5 pr-8 text-2xl font-semibold leading-snug text-white transition-colors duration-300 group-hover:text-[#c5eb02]">
           {service.title}
         </h4>
 
@@ -187,17 +183,14 @@ function ServiceGroup({ group, offset }: { group: Group; offset: number }) {
     <div>
       <div
         ref={fade.ref}
-        className={`mb-5 flex flex-col gap-3 px-1 md:flex-row md:items-end md:justify-between transition-all duration-700 ${
+        className={`mb-8 flex flex-col gap-3 px-1 md:flex-row md:items-end md:justify-between transition-all duration-700 ${
           fade.visible ? "translate-y-0 opacity-100" : "translate-y-6 opacity-0"
         }`}
       >
         <div>
-          <h3 className="text-xl md:text-2xl font-bold leading-[1.3] text-white">
+          <h3 className="text-xl md:text-2xl font-semibold leading-[1.3] text-white">
             {group.name}
           </h3>
-          {/* <p className="mt-2 max-w-xl text-md leading-relaxed text-white/80">
-            {group.intro}
-          </p> */}
         </div>
 
         <Link
@@ -226,7 +219,7 @@ export default function Verticals() {
   const headerFade = useFadeIn(0);
 
   return (
-    <section className="py-12 md:py-16 lg:py-24">
+    <section className="py-12 md:py-14 lg:py-18">
       <div className="mx-auto max-w-7xl px-6">
         <div
           ref={headerFade.ref}

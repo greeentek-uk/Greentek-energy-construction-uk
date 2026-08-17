@@ -29,11 +29,6 @@ function useFadeIn(delay = 0) {
   return { ref, visible };
 }
 
-/* ============================================================
-   ADD A STAT HERE — copy a block, change the values.
-   `description` is optional; leave it out and the card just
-   shows the icon, number and label.
-   ============================================================ */
 type Stat = {
   value: string;
   label: string;
@@ -111,17 +106,17 @@ function StatCard({ stat, delay }: { stat: Stat; delay: number }) {
   return (
     <div
       ref={fade.ref}
-      className={`bg-[#000000] rounded-2xl px-6 py-7 md:px-8 md:py-8 transition-all duration-700 ${
+      className={`bg-[#000000] rounded-2xl px-8 py-7 md:px-8 md:py-8 transition-all duration-700 ${
         fade.visible ? "translate-y-0 opacity-100" : "translate-y-8 opacity-0"
       }`}
     >
       <div className="flex items-center gap-4">
         <span className="shrink-0 grid h-12 w-12 place-items-center rounded-xl bg-white/5 text-[#c5eb02]">
-          <Icon className="h-6 w-6" strokeWidth={1.75} />
+          <Icon className="h-8 w-8 sm:h-10  sm:w-10" strokeWidth={1.75} />
         </span>
 
         <div className="min-w-0">
-          <div className="text-3xl sm:text-4xl font-semibold text-white leading-none">
+          <div className="text-3xl sm:text-5xl font-bold text-white leading-none">
             {target !== null ? (
               isDecimal ? (
                 <span>
@@ -156,7 +151,7 @@ function StatCard({ stat, delay }: { stat: Stat; delay: number }) {
 
 export default function Stats() {
   return (
-    <section className="py-12 md:py-16 lg:py-24">
+    <section className="py-12 md:py-14 lg:py-18">
       <div className="mx-auto max-w-7xl px-3 py-3 rounded-xl grid grid-cols-1 md:grid-cols-3 gap-3 bg-[#101314]">
         {stats.map((stat, i) => (
           <StatCard key={stat.label} stat={stat} delay={i * 100} />
