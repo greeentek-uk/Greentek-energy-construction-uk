@@ -3,10 +3,7 @@ import { withSeoOverride } from "@/lib/seo";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import HeroSection from "@/components/sections/HeroSection";
-import AboutPreview from "@/components/sections/AboutPreview";
-import CorePillars from "@/components/sections/CorePillars";
 import AccreditationsSection from "@/components/sections/AccreditationsSection";
-import BrandsSection from "@/components/sections/BrandsSection";
 import FAQSection from "@/components/sections/FAQSection";
 import Testimonials from "@/components/sections/Testimonials";
 import ServicesGlimpse from "@/components/sections/ServicesGlimpse";
@@ -33,7 +30,7 @@ export default function HomePage() {
 
       <div className="flex-1">
         <HeroSection />
-        <AboutUs/>
+        <AboutUs />
         <Stats />
         <Verticals />
         <WhyUs />
