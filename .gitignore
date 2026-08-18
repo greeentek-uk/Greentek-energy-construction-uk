@@ -30,3 +30,5 @@ next-env.d.ts
 # Unused Vercel/default assets
 public/images/vercel.svg
 src/favicon.ico
+.vercel
+.env*
