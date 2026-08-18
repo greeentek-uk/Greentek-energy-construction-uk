@@ -3,7 +3,7 @@
  * into MongoDB. Safe to re-run (upserts, not inserts) if content changes
  * before the admin CMS fully takes over. Run via `npm run migrate`.
  */
-import "dotenv/config";
+import { config } from "dotenv";
 import { readFileSync } from "node:fs";
 import path from "node:path";
 import type { Collection, Db } from "mongodb";
@@ -11,6 +11,8 @@ import { getDb } from "../src/lib/db/mongodb";
 import type { SiteConfig } from "../src/data/site";
 import type { BlogPost } from "../src/data/blogs";
 import type { SeoOverrides } from "../src/lib/seo";
+
+config({ path: ".env.local" });
 
 type StringIdDoc = Record<string, unknown> & { _id: string };
 
