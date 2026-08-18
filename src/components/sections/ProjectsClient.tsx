@@ -4,6 +4,7 @@ import { ArrowRight, MoveHorizontal } from "lucide-react";
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { Project } from "@/data/site";
+import type { ProjectsPreviewContent } from "@/data/pageContent";
 
 function useFadeIn(delay = 0) {
   const ref = useRef<HTMLDivElement>(null);
@@ -30,7 +31,15 @@ function useFadeIn(delay = 0) {
   return { ref, visible };
 }
 
-function GalleryCard({ project, delay }: { project: Project; delay: number }) {
+function GalleryCard({
+  project,
+  delay,
+  beforeBadgeLabel,
+}: {
+  project: Project;
+  delay: number;
+  beforeBadgeLabel: string;
+}) {
   const cardFade = useFadeIn(delay);
   const containerRef = useRef<HTMLDivElement>(null);
   const [sliderPos, setSliderPos] = useState(50);
@@ -111,7 +120,7 @@ function GalleryCard({ project, delay }: { project: Project; delay: number }) {
 
         {/* Labels */}
         <span className="absolute top-3 left-3 z-10 rounded-full bg-[#28282C] px-2.5 py-1 text-[10px] font-semibold uppercase text-[#c5eb02] pointer-events-none">
-          Before
+          {beforeBadgeLabel}
         </span>
         <Link
           href={`/projects/${project.slug}`}
@@ -148,7 +157,14 @@ function GalleryCard({ project, delay }: { project: Project; delay: number }) {
   );
 }
 
-export default function ProjectsClient({ projects }: { projects: Project[] }) {
+export default function ProjectsClient({
+  projects,
+  eyebrow,
+  heading,
+  subheading,
+  beforeBadgeLabel,
+  ctaLabel,
+}: { projects: Project[] } & ProjectsPreviewContent) {
   const headerFade = useFadeIn(0);
 
   return (
@@ -163,22 +179,25 @@ export default function ProjectsClient({ projects }: { projects: Project[] }) {
           }`}
         >
           <p className="text-[10px] md:text-[16px] font-semibold uppercase mb-6 bg-[#28282C] text-[#c5eb02] rounded-xl px-3 py-1 w-fit mx-auto">
-            Our Work
+            {eyebrow}
           </p>
           <h2 className="text-[1.625rem] md:text-[2.5rem] font-bold leading-[1.2] text-white">
-            See the Difference.
+            {heading}
           </h2>
           <p className="mt-4 text-md md:text-xl text-white/80 leading-relaxed text-center w-[80%] md:w-[85%] mx-auto font-normal">
-            Drag the slider to see the before and after, hover a project to read
-            what was done, solar, home improvement, and renovation work, side by
-            side.
+            {subheading}
           </p>
         </div>
       </div>
 
       <div className="w-full grid grid-cols-1 sm:grid-cols-2 gap-6 max-w-7xl mx-auto mt-10 px-2">
         {projects.map((project, i) => (
-          <GalleryCard key={project.slug} project={project} delay={i * 100} />
+          <GalleryCard
+            key={project.slug}
+            project={project}
+            delay={i * 100}
+            beforeBadgeLabel={beforeBadgeLabel}
+          />
         ))}
       </div>
       <div className="mt-16 flex justify-center items-center">
@@ -186,7 +205,7 @@ export default function ProjectsClient({ projects }: { projects: Project[] }) {
           href="/projects"
           className="w-fit rounded px-4 py-3 text-sm md:text-[18px] font-semibold text-black backdrop-blur-sm transition active:scale-95 bg-[#c5eb02]"
         >
-          View All Projects{" "}
+          {ctaLabel}{" "}
           <ArrowRight className="inline ml-2 bg-black rounded px-1 py-1 text-white" />
         </a>
       </div>

@@ -1,14 +1,22 @@
 import Link from "next/link";
 import { getCurrentSiteConfig, getCurrentBlogPosts } from "@/lib/cms";
+import { listBlocksWithDirty } from "@/lib/db/pageContent";
 
 export default async function AdminHomePage() {
-  const [site, posts] = await Promise.all([
+  const [site, posts, pageContentBlocks] = await Promise.all([
     getCurrentSiteConfig(),
     getCurrentBlogPosts(),
+    listBlocksWithDirty(),
   ]);
+  const dirtyCount = pageContentBlocks.filter((b) => b.dirty).length;
 
   const cards = [
     { href: "/admin/seo", label: "Page SEO", count: "Meta titles & descriptions" },
+    {
+      href: "/admin/page-content",
+      label: "Page Content",
+      count: dirtyCount > 0 ? `${dirtyCount} unpublished change${dirtyCount === 1 ? "" : "s"}` : "Shared sections & page headers",
+    },
     { href: "/admin/blog", label: "Blog Posts", count: `${posts.length} posts` },
     { href: "/admin/services", label: "Services", count: `${site.services.length} services` },
     { href: "/admin/projects", label: "Projects", count: `${site.projects.length} projects` },
@@ -21,7 +29,8 @@ export default async function AdminHomePage() {
       <h1 className="text-2xl font-bold mb-1">Dashboard</h1>
       <p className="text-zinc-500 mb-8">
         Edit the live site&apos;s content, blog, and SEO without touching
-        code. Changes go live immediately — no redeploy required.
+        code. Most changes go live immediately — Page Content edits save as
+        drafts until you click Publish Changes in the sidebar.
       </p>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         {cards.map((card) => (

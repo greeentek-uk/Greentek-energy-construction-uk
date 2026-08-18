@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
-import { getCurrentSiteConfig } from "@/lib/cms";
+import { getCurrentSiteConfig, getPageContent } from "@/lib/cms";
 import Process from "@/components/sections/Process";
 import Projects from "@/components/sections/Projects";
 import Image from "next/image";
@@ -17,7 +17,10 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function ServicesPage() {
-  const { services } = await getCurrentSiteConfig();
+  const [{ services }, header] = await Promise.all([
+    getCurrentSiteConfig(),
+    getPageContent("services-page-header"),
+  ]);
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -26,13 +29,10 @@ export default async function ServicesPage() {
         <section className="relative  bg-[url('/images/footer/footer-bg.webp')] bg-cover overflow-hidden">
           <div className="bg-black/70 pt-30 py-20">
             <h1 className="text-[2rem] md:text-[3.5rem] font-bold leading-[1.15] text-white  mx-auto text-center">
-              Our <span className="text-[#c5eb02]">Services</span>
+              {header.headingPrefix} <span className="text-[#c5eb02]">{header.headingHighlight}</span>
             </h1>
             <p className="mt-6 text-md md:text-xl text-white/80 max-w-2xl mx-auto leading-relaxed font-medium text-center w-[85%]">
-              From air source heat pump installation and solar PV systems to
-              property refurbishment, loft insulation, and building extensions,
-              Greentek delivers comprehensive construction and renewable energy
-              solutions tailored to your needs.
+              {header.subheading}
             </p>
             <div className="mt-8 flex justify-center"></div>
           </div>

@@ -10,6 +10,7 @@ import {
 import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { Project } from "@/data/site";
+import type { AboutUsSlideContent } from "@/data/pageContent";
 
 type Slide = {
   image: string;
@@ -51,7 +52,12 @@ function useFadeIn(delay = 0) {
   return { ref, visible };
 }
 
-export default function AboutUsClient({ projects }: { projects: Project[] }) {
+export default function AboutUsClient({
+  projects,
+  eyebrow,
+  heading,
+  body,
+}: { projects: Project[] } & AboutUsSlideContent) {
   const headerFade = useFadeIn(0);
   const showFade = useFadeIn(100);
 
@@ -125,18 +131,13 @@ export default function AboutUsClient({ projects }: { projects: Project[] }) {
           }`}
         >
           <p className="text-[10px] md:text-[16px] font-semibold uppercase mb-6 bg-[#28282C] text-[#c5eb02] rounded-2xl px-3 py-1 w-fit">
-            About Us
+            {eyebrow}
           </p>
           <h2 className="text-[1.625rem] md:text-[2.5rem] font-bold leading-[1.2] text-white">
-            A Home That Works Harder, For Less.
+            {heading}
           </h2>
           <p className="mt-4 text-md md:text-xl text-white/80 leading-relaxed font-normal">
-            We believe you shouldn't need three different companies to power
-            your property, fix your heating, and renovate your space. That's why
-            Greentek brings solar, heat pumps, and energy storage together with
-            expert construction and renovation both residential and commercial,
-            so everything gets handled by one accredited team, properly, from
-            day one.
+            {body}
           </p>
         </div>
 

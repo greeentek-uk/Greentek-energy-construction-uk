@@ -1,0 +1,71 @@
+import Link from "next/link";
+import { listBlocksWithDirty } from "@/lib/db/pageContent";
+import { PAGE_CONTENT_META, type PageContentKey } from "@/data/pageContent";
+import SaveBanner from "../../_components/SaveBanner";
+
+interface Props {
+  searchParams: Promise<{ saved?: string; published?: string; error?: string }>;
+}
+
+export default async function PageContentListPage({ searchParams }: Props) {
+  const params = await searchParams;
+  const blocks = await listBlocksWithDirty();
+  const dirtyByKey = new Map(blocks.map((b) => [b.key, b.dirty]));
+
+  const groups: ("Shared Sections" | "Page Headers")[] = ["Shared Sections", "Page Headers"];
+
+  return (
+    <div>
+      <h1 className="text-2xl font-bold mb-1">Page Content</h1>
+      <p className="text-zinc-500 mb-6 text-sm">
+        Edit the copy in shared sections and page headers across the site. Changes save as
+        drafts — nothing goes live until you click Publish Changes in the sidebar.
+      </p>
+
+      <SaveBanner
+        saved={params.saved === "1"}
+        error={params.error}
+      />
+      {params.published !== undefined && (
+        <p className="-mt-4 mb-6 text-sm text-zinc-500">
+          Published {params.published} block{params.published === "1" ? "" : "s"}.
+        </p>
+      )}
+
+      {groups.map((group) => {
+        const keys = (Object.keys(PAGE_CONTENT_META) as PageContentKey[]).filter(
+          (key) => PAGE_CONTENT_META[key].group === group,
+        );
+
+        return (
+          <div key={group} className="mb-8">
+            <h2 className="text-sm font-bold uppercase text-zinc-500 mb-3">{group}</h2>
+            <div className="bg-white border border-zinc-200 rounded-xl divide-y divide-zinc-100">
+              {keys.map((key) => {
+                const meta = PAGE_CONTENT_META[key];
+                const dirty = dirtyByKey.get(key) ?? false;
+                return (
+                  <Link
+                    key={key}
+                    href={`/admin/page-content/${key}`}
+                    className="flex items-center justify-between gap-4 px-4 py-3 hover:bg-zinc-50"
+                  >
+                    <div className="min-w-0">
+                      <p className="text-sm font-medium text-zinc-900 truncate">{meta.label}</p>
+                      <p className="text-xs text-zinc-400 truncate">{meta.routes.join(", ")}</p>
+                    </div>
+                    {dirty && (
+                      <span className="shrink-0 text-[10px] font-bold uppercase text-amber-700 bg-amber-50 px-2 py-1 rounded-full">
+                        Unpublished changes
+                      </span>
+                    )}
+                  </Link>
+                );
+              })}
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  );
+}

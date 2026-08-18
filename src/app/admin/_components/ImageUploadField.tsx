@@ -8,6 +8,8 @@ interface ImageUploadFieldProps {
   label: string;
   defaultValue?: string;
   required?: boolean;
+  /** Called with the new URL after a successful upload — for parents (e.g. RepeatingFieldList) that need to track the value themselves instead of relying on this field's own hidden input. */
+  onChange?: (url: string) => void;
 }
 
 export default function ImageUploadField({
@@ -15,6 +17,7 @@ export default function ImageUploadField({
   label,
   defaultValue = "",
   required,
+  onChange,
 }: ImageUploadFieldProps) {
   const [url, setUrl] = useState(defaultValue);
   const [uploading, setUploading] = useState(false);
@@ -43,6 +46,7 @@ export default function ImageUploadField({
       if (!res.ok) throw new Error("Upload failed");
       const data = (await res.json()) as { secure_url: string };
       setUrl(data.secure_url);
+      onChange?.(data.secure_url);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Upload failed");
     } finally {

@@ -1,7 +1,10 @@
-import { getCurrentSiteConfig } from "@/lib/cms";
+import { getCurrentSiteConfig, getPageContent } from "@/lib/cms";
 import ProjectsClient from "./ProjectsClient";
 
 export default async function Projects() {
-  const { projects } = await getCurrentSiteConfig();
-  return <ProjectsClient projects={projects} />;
+  const [{ projects }, content] = await Promise.all([
+    getCurrentSiteConfig(),
+    getPageContent("projects-preview"),
+  ]);
+  return <ProjectsClient projects={projects} {...content} />;
 }

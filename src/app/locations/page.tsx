@@ -3,7 +3,7 @@ import Link from "next/link";
 import Image from "next/image";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
-import { getCurrentSiteConfig } from "@/lib/cms";
+import { getCurrentSiteConfig, getPageContent } from "@/lib/cms";
 import { withSeoOverride } from "@/lib/seo";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -15,7 +15,10 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function LocationsPage() {
-  const { locations } = await getCurrentSiteConfig();
+  const [{ locations }, header] = await Promise.all([
+    getCurrentSiteConfig(),
+    getPageContent("locations-page-header"),
+  ]);
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -24,12 +27,10 @@ export default async function LocationsPage() {
         <section className="relative bg-[url('/images/footer/footer-bg.webp')] bg-cover overflow-hidden">
           <div className="bg-black/70 pt-30 py-20">
             <h1 className="text-[2rem] md:text-[3.5rem] font-bold leading-[1.15] text-white mx-auto text-center">
-              Areas We <span className="text-[#c5eb02]">Cover</span>
+              {header.headingPrefix} <span className="text-[#c5eb02]">{header.headingHighlight}</span>
             </h1>
             <p className="mt-6 text-md md:text-xl text-white/80 max-w-2xl mx-auto leading-relaxed font-medium text-center w-[85%]">
-              Greentek is in-house, not a subcontracted franchise. Our teams
-              live and work across the West Midlands and Wales, delivering
-              solar, heating, insulation and renovation projects locally.
+              {header.subheading}
             </p>
           </div>
         </section>
