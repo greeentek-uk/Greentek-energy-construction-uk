@@ -23,59 +23,59 @@ export default function ProjectForm({
       <div className="grid sm:grid-cols-2 gap-4">
         {isNew && (
           <div>
-            <label className="block text-xs font-semibold text-zinc-600 mb-1">
+            <label className="block text-xs font-semibold text-white/70 mb-1">
               Slug
             </label>
             <input
               name="slug"
               required
               placeholder="solar-install-wolverhampton"
-              className="w-full rounded-lg border border-zinc-300 px-3 py-2 text-sm text-zinc-900"
+              className="w-full rounded-lg border border-white/15 bg-white/5 px-3 py-2 text-sm text-white placeholder:text-white/30 outline-none focus:border-[#c5eb02] focus:ring-2 focus:ring-[#c5eb02]/20 transition-all"
             />
           </div>
         )}
         <div>
-          <label className="block text-xs font-semibold text-zinc-600 mb-1">
+          <label className="block text-xs font-semibold text-white/70 mb-1">
             Title
           </label>
           <input
             name="title"
             defaultValue={initial?.title}
             required
-            className="w-full rounded-lg border border-zinc-300 px-3 py-2 text-sm text-zinc-900"
+            className="w-full rounded-lg border border-white/15 bg-white/5 px-3 py-2 text-sm text-white placeholder:text-white/30 outline-none focus:border-[#c5eb02] focus:ring-2 focus:ring-[#c5eb02]/20 transition-all"
           />
         </div>
         <div>
-          <label className="block text-xs font-semibold text-zinc-600 mb-1">
+          <label className="block text-xs font-semibold text-white/70 mb-1">
             Category
           </label>
           <input
             name="category"
             defaultValue={initial?.category}
             required
-            className="w-full rounded-lg border border-zinc-300 px-3 py-2 text-sm text-zinc-900"
+            className="w-full rounded-lg border border-white/15 bg-white/5 px-3 py-2 text-sm text-white placeholder:text-white/30 outline-none focus:border-[#c5eb02] focus:ring-2 focus:ring-[#c5eb02]/20 transition-all"
           />
         </div>
       </div>
       <div>
-        <label className="block text-xs font-semibold text-zinc-600 mb-1">
+        <label className="block text-xs font-semibold text-white/70 mb-1">
           Related Service
         </label>
         <select
           name="service"
           defaultValue={initial?.service}
-          className="w-full rounded-lg border border-zinc-300 px-3 py-2 text-sm text-zinc-900"
+          className="w-full rounded-lg border border-white/15 bg-white/5 px-3 py-2 text-sm text-white placeholder:text-white/30 outline-none focus:border-[#c5eb02] focus:ring-2 focus:ring-[#c5eb02]/20 transition-all"
         >
-          <option value="">— None —</option>
+          <option value="" className="text-black">— None —</option>
           {services.map((s) => (
-            <option key={s.slug} value={s.slug}>
+            <option key={s.slug} value={s.slug} className="text-black">
               {s.title}
             </option>
           ))}
         </select>
       </div>
       <div>
-        <label className="block text-xs font-semibold text-zinc-600 mb-1">
+        <label className="block text-xs font-semibold text-white/70 mb-1">
           Description
         </label>
         <textarea
@@ -83,7 +83,7 @@ export default function ProjectForm({
           defaultValue={initial?.description}
           rows={2}
           required
-          className="w-full rounded-lg border border-zinc-300 px-3 py-2 text-sm text-zinc-900"
+          className="w-full rounded-lg border border-white/15 bg-white/5 px-3 py-2 text-sm text-white placeholder:text-white/30 outline-none focus:border-[#c5eb02] focus:ring-2 focus:ring-[#c5eb02]/20 transition-all"
         />
       </div>
       <div className="grid sm:grid-cols-2 gap-4">
@@ -101,14 +101,14 @@ export default function ProjectForm({
         />
       </div>
       <div>
-        <label className="block text-xs font-semibold text-zinc-600 mb-1">
+        <label className="block text-xs font-semibold text-white/70 mb-1">
           Overview Paragraphs (one per line)
         </label>
         <textarea
           name="overview"
           defaultValue={initial?.overview?.join("\n")}
           rows={3}
-          className="w-full rounded-lg border border-zinc-300 px-3 py-2 text-sm text-zinc-900"
+          className="w-full rounded-lg border border-white/15 bg-white/5 px-3 py-2 text-sm text-white placeholder:text-white/30 outline-none focus:border-[#c5eb02] focus:ring-2 focus:ring-[#c5eb02]/20 transition-all"
         />
       </div>
       <MultiImageUploadField
@@ -118,7 +118,7 @@ export default function ProjectForm({
       />
       <button
         type="submit"
-        className="rounded-lg bg-zinc-900 text-white text-sm font-semibold px-5 py-2.5 hover:bg-zinc-800"
+        className="rounded-lg bg-[#c5eb02] text-black text-sm font-semibold px-5 py-2.5 hover:bg-[#c5eb02]/80"
       >
         {isNew ? "Create Project" : "Save"}
       </button>

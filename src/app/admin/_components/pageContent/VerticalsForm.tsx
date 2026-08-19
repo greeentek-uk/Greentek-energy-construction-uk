@@ -15,8 +15,8 @@ export default function VerticalsForm({ content }: { content: VerticalsContent }
       <Field label="Subheading" name="subheading" textarea defaultValue={content.subheading} required />
 
       {[group0, group1].map((group, gIdx) => (
-        <div key={gIdx} className="border border-zinc-200 rounded-lg p-4 space-y-4 bg-zinc-50">
-          <p className="text-xs font-semibold text-zinc-500">Group {gIdx + 1}</p>
+        <div key={gIdx} className="border border-white/10 rounded-lg p-4 space-y-4 bg-white/5">
+          <p className="text-xs font-semibold text-white/50">Group {gIdx + 1}</p>
           <div className="grid sm:grid-cols-2 gap-4">
             <Field label="Name" name={`group${gIdx}_name`} defaultValue={group?.name} required />
             <Field label="Href" name={`group${gIdx}_href`} defaultValue={group?.href} required />
@@ -36,7 +36,7 @@ export default function VerticalsForm({ content }: { content: VerticalsContent }
         </div>
       ))}
 
-      <button type="submit" className="rounded-lg bg-zinc-900 text-white text-sm font-semibold px-6 py-3 hover:bg-zinc-800">
+      <button type="submit" className="rounded-lg bg-[#c5eb02] text-black text-sm font-semibold px-6 py-3 hover:bg-[#c5eb02]/80">
         Save Draft
       </button>
     </form>

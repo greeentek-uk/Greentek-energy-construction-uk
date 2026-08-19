@@ -16,7 +16,7 @@ export default function HomeHeroForm({ content }: { content: HomeHeroContent }) 
       />
 
       <div>
-        <p className="text-xs font-semibold text-zinc-500 mb-2">
+        <p className="text-xs font-semibold text-white/50 mb-2">
           Hero Slides — background image, heading and CTA rotate every few
           seconds on the homepage.
         </p>
@@ -41,7 +41,7 @@ export default function HomeHeroForm({ content }: { content: HomeHeroContent }) 
         />
       </div>
 
-      <button type="submit" className="rounded-lg bg-zinc-900 text-white text-sm font-semibold px-6 py-3 hover:bg-zinc-800">
+      <button type="submit" className="rounded-lg bg-[#c5eb02] text-black text-sm font-semibold px-6 py-3 hover:bg-[#c5eb02]/80">
         Save Draft
       </button>
     </form>

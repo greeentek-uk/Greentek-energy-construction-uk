@@ -13,8 +13,8 @@ export default function AreasForm({ content }: { content: AreasContent }) {
       <Field label="Heading" name="heading" defaultValue={content.heading} required />
       <Field label="Subheading" name="subheading" textarea defaultValue={content.subheading} required />
 
-      <div className="border border-zinc-200 rounded-lg p-4 space-y-3 bg-zinc-50">
-        <p className="text-xs font-semibold text-zinc-500">Large / Home Base Area</p>
+      <div className="border border-white/10 rounded-lg p-4 space-y-3 bg-white/5">
+        <p className="text-xs font-semibold text-white/50">Large / Home Base Area</p>
         <Field label="Name" name="largeArea_name" defaultValue={content.largeArea.name} required />
         <Field label="Stat" name="largeArea_stat" defaultValue={content.largeArea.stat} />
         <Field label="Note" name="largeArea_note" defaultValue={content.largeArea.note} />
@@ -47,7 +47,7 @@ export default function AreasForm({ content }: { content: AreasContent }) {
         <Field label="CTA Button Label" name="ctaLabel" defaultValue={content.ctaLabel} required />
       </div>
 
-      <button type="submit" className="rounded-lg bg-zinc-900 text-white text-sm font-semibold px-6 py-3 hover:bg-zinc-800">
+      <button type="submit" className="rounded-lg bg-[#c5eb02] text-black text-sm font-semibold px-6 py-3 hover:bg-[#c5eb02]/80">
         Save Draft
       </button>
     </form>

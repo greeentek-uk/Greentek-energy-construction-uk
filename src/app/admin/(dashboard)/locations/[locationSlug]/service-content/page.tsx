@@ -25,13 +25,13 @@ export default async function LocationServiceContentPage({ params, searchParams 
 
   return (
     <div>
-      <Link href="/admin/locations" className="text-sm text-zinc-500 hover:text-zinc-900">
+      <Link href="/admin/locations" className="text-sm text-white/50 hover:text-white">
         ← All Locations
       </Link>
       <h1 className="text-2xl font-bold mt-2 mb-1">
         Service content for {location.name}
       </h1>
-      <p className="text-zinc-500 mb-6 text-sm">
+      <p className="text-white/50 mb-6 text-sm">
         Unique copy for each /locations/{location.slug}/[service] page. Leave a
         service&apos;s intro blank and that page keeps rendering its current
         templated default — nothing breaks while you work through the list.
@@ -43,18 +43,18 @@ export default async function LocationServiceContentPage({ params, searchParams 
         {services.map((service) => (
           <div
             key={service.slug}
-            className="bg-white border border-zinc-200 rounded-xl overflow-hidden"
+            className="bg-[#101314] border border-white/10 rounded-xl overflow-hidden"
           >
             <div className="flex items-center justify-between px-5 py-4">
-              <span className="font-semibold text-zinc-900">{service.shortName}</span>
+              <span className="font-semibold text-white">{service.shortName}</span>
               {overrideBySlug.has(service.slug) && (
-                <span className="text-[10px] font-bold text-green-700 bg-green-50 px-2 py-0.5 rounded-full">
+                <span className="text-[10px] font-bold text-green-400 bg-green-500/10 px-2 py-0.5 rounded-full">
                   Customised
                 </span>
               )}
             </div>
             <details>
-              <summary className="cursor-pointer px-5 py-2 text-sm text-zinc-500 hover:bg-zinc-50 border-t border-zinc-100">
+              <summary className="cursor-pointer px-5 py-2 text-sm text-white/50 hover:bg-white/5 border-t border-white/10">
                 Edit content
               </summary>
               <div className="px-5 pb-5 pt-2">

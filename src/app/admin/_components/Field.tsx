@@ -19,7 +19,7 @@ export default function Field({
 }) {
   return (
     <div>
-      <label className="block text-xs font-semibold text-zinc-600 mb-1">
+      <label className="block text-xs font-semibold text-white/70 mb-1">
         {label}
       </label>
       {textarea ? (
@@ -29,7 +29,7 @@ export default function Field({
           required={required}
           rows={rows}
           placeholder={placeholder}
-          className="w-full rounded-lg border border-zinc-300 px-3 py-2 text-sm text-zinc-900"
+          className="w-full rounded-lg border border-white/15 bg-white/5 px-3 py-2 text-sm text-white placeholder:text-white/30 outline-none focus:border-[#c5eb02] focus:ring-2 focus:ring-[#c5eb02]/20 transition-all"
         />
       ) : (
         <input
@@ -38,7 +38,7 @@ export default function Field({
           defaultValue={defaultValue}
           required={required}
           placeholder={placeholder}
-          className="w-full rounded-lg border border-zinc-300 px-3 py-2 text-sm text-zinc-900"
+          className="w-full rounded-lg border border-white/15 bg-white/5 px-3 py-2 text-sm text-white placeholder:text-white/30 outline-none focus:border-[#c5eb02] focus:ring-2 focus:ring-[#c5eb02]/20 transition-all"
         />
       )}
     </div>

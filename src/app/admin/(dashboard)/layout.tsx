@@ -24,29 +24,29 @@ export default async function AdminDashboardLayout({
   const dirtyCount = blocks.filter((b) => b.dirty).length;
 
   return (
-    <div className="min-h-screen bg-zinc-50 text-zinc-900 flex">
-      <aside className="w-64 shrink-0 bg-white border-r border-zinc-200 flex flex-col">
-        <div className="px-5 py-5 border-b border-zinc-200">
+    <div className="min-h-screen bg-black text-white flex">
+      <aside className="w-64 shrink-0 bg-black border-r border-white/10 flex flex-col">
+        <div className="px-5 py-5 border-b border-white/10">
           <p className="font-bold text-lg">Greentek Admin</p>
-          <p className="text-xs text-zinc-500">Content management</p>
+          <p className="text-xs text-white/50">Content management</p>
         </div>
         <nav className="flex-1 px-3 py-4 space-y-1">
           {navItems.map((item) => (
             <Link
               key={item.href}
               href={item.href}
-              className="flex items-center justify-between px-3 py-2 rounded-lg text-sm font-medium text-zinc-700 hover:bg-zinc-100 hover:text-zinc-900 transition-colors"
+              className="flex items-center justify-between px-3 py-2 rounded-lg text-sm font-medium text-white/70 hover:bg-white/10 hover:text-white transition-colors"
             >
               {item.label}
               {item.href === "/admin/page-content" && dirtyCount > 0 && (
-                <span className="text-[10px] font-bold text-amber-700 bg-amber-50 px-1.5 py-0.5 rounded-full">
+                <span className="text-[10px] font-bold text-amber-300 bg-amber-500/10 px-1.5 py-0.5 rounded-full">
                   {dirtyCount}
                 </span>
               )}
             </Link>
           ))}
         </nav>
-        <div className="px-3 py-4 border-t border-zinc-200 space-y-1">
+        <div className="px-3 py-4 border-t border-white/10 space-y-1">
           {dirtyCount > 0 && (
             <form action={publishAllAction}>
               <ConfirmSubmitButton
@@ -60,14 +60,14 @@ export default async function AdminDashboardLayout({
           <Link
             href="/"
             target="_blank"
-            className="block px-3 py-2 rounded-lg text-sm font-medium text-zinc-500 hover:bg-zinc-100 hover:text-zinc-900 transition-colors"
+            className="block px-3 py-2 rounded-lg text-sm font-medium text-white/50 hover:bg-white/10 hover:text-white transition-colors"
           >
             View Live Site ↗
           </Link>
           <form action={logoutAction}>
             <button
               type="submit"
-              className="w-full text-left px-3 py-2 rounded-lg text-sm font-medium text-red-600 hover:bg-red-50 transition-colors"
+              className="w-full text-left px-3 py-2 rounded-lg text-sm font-medium text-red-400 hover:bg-red-500/10 transition-colors"
             >
               Sign Out
             </button>

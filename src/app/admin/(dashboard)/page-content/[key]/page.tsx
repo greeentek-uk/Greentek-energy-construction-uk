@@ -54,7 +54,7 @@ export default async function EditPageContentPage({ params, searchParams }: Prop
 
   return (
     <div>
-      <Link href="/admin/page-content" className="text-sm text-zinc-500 hover:text-zinc-900">
+      <Link href="/admin/page-content" className="text-sm text-white/50 hover:text-white">
         ← All Page Content
       </Link>
       <div className="flex items-center justify-between gap-4 mt-2 mb-6">
@@ -62,7 +62,7 @@ export default async function EditPageContentPage({ params, searchParams }: Prop
         <div className="flex items-center gap-3">
           {dirty ? (
             <>
-              <span className="shrink-0 text-[10px] font-bold uppercase text-amber-700 bg-amber-50 px-2 py-1 rounded-full">
+              <span className="shrink-0 text-[10px] font-bold uppercase text-amber-300 bg-amber-500/10 px-2 py-1 rounded-full">
                 Unpublished changes
               </span>
               <form action={publishBlockAction}>
@@ -76,7 +76,7 @@ export default async function EditPageContentPage({ params, searchParams }: Prop
               </form>
             </>
           ) : (
-            <span className="shrink-0 text-[10px] font-bold uppercase text-green-700 bg-green-50 px-2 py-1 rounded-full">
+            <span className="shrink-0 text-[10px] font-bold uppercase text-green-400 bg-green-500/10 px-2 py-1 rounded-full">
               Published
             </span>
           )}
@@ -84,7 +84,7 @@ export default async function EditPageContentPage({ params, searchParams }: Prop
       </div>
 
       {sp.published !== undefined && (
-        <p className="-mt-4 mb-6 text-sm text-zinc-500">
+        <p className="-mt-4 mb-6 text-sm text-white/50">
           {sp.published === "1"
             ? "Published — this section is now live."
             : "Nothing to publish — draft already matched the live version."}
@@ -92,7 +92,7 @@ export default async function EditPageContentPage({ params, searchParams }: Prop
       )}
       <SaveBanner saved={sp.saved === "1"} error={sp.error} />
 
-      <div className="bg-white border border-zinc-200 rounded-xl p-6">
+      <div className="bg-[#101314] border border-white/10 rounded-xl p-6">
         {(() => {
           switch (key) {
             case "home-hero":

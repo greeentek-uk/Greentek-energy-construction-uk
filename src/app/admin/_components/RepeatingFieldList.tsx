@@ -57,10 +57,10 @@ export default function RepeatingFieldList<T extends Record<string, unknown>>({
   return (
     <div className="space-y-3">
       {items.map((item, index) => (
-        <div key={index} className="border border-zinc-200 rounded-lg p-4 space-y-3 bg-zinc-50">
+        <div key={index} className="border border-white/10 rounded-lg p-4 space-y-3 bg-white/5">
           <input type="hidden" name={name} value={JSON.stringify(item)} />
           <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-zinc-500">
+            <span className="text-xs font-semibold text-white/50">
               {itemLabel ? itemLabel(item, index) || `Item ${index + 1}` : `Item ${index + 1}`}
             </span>
             <div className="flex items-center gap-3">
@@ -68,7 +68,7 @@ export default function RepeatingFieldList<T extends Record<string, unknown>>({
                 type="button"
                 onClick={() => moveItem(index, -1)}
                 disabled={index === 0}
-                className="text-xs font-semibold text-zinc-500 hover:underline disabled:opacity-30 disabled:hover:no-underline"
+                className="text-xs font-semibold text-white/50 hover:underline disabled:opacity-30 disabled:hover:no-underline"
               >
                 ↑
               </button>
@@ -76,14 +76,14 @@ export default function RepeatingFieldList<T extends Record<string, unknown>>({
                 type="button"
                 onClick={() => moveItem(index, 1)}
                 disabled={index === items.length - 1}
-                className="text-xs font-semibold text-zinc-500 hover:underline disabled:opacity-30 disabled:hover:no-underline"
+                className="text-xs font-semibold text-white/50 hover:underline disabled:opacity-30 disabled:hover:no-underline"
               >
                 ↓
               </button>
               <button
                 type="button"
                 onClick={() => removeItem(index)}
-                className="text-xs font-semibold text-red-600 hover:underline"
+                className="text-xs font-semibold text-red-400 hover:text-red-300"
               >
                 Remove
               </button>
@@ -107,7 +107,7 @@ export default function RepeatingFieldList<T extends Record<string, unknown>>({
               const arr = Array.isArray(value) ? (value as unknown[]) : [];
               return (
                 <div key={field.key}>
-                  <label className="block text-xs font-semibold text-zinc-600 mb-1">
+                  <label className="block text-xs font-semibold text-white/70 mb-1">
                     {field.label} (one per line)
                   </label>
                   <textarea
@@ -120,7 +120,7 @@ export default function RepeatingFieldList<T extends Record<string, unknown>>({
                       )
                     }
                     rows={4}
-                    className="w-full rounded-lg border border-zinc-300 px-3 py-2 text-sm text-zinc-900"
+                    className="w-full rounded-lg border border-white/15 bg-white/5 px-3 py-2 text-sm text-white placeholder:text-white/30 outline-none focus:border-[#c5eb02] focus:ring-2 focus:ring-[#c5eb02]/20 transition-all"
                   />
                 </div>
               );
@@ -128,21 +128,21 @@ export default function RepeatingFieldList<T extends Record<string, unknown>>({
             if (field.textarea) {
               return (
                 <div key={field.key}>
-                  <label className="block text-xs font-semibold text-zinc-600 mb-1">
+                  <label className="block text-xs font-semibold text-white/70 mb-1">
                     {field.label}
                   </label>
                   <textarea
                     value={typeof value === "string" ? value : ""}
                     onChange={(e) => updateField(index, field.key, e.target.value)}
                     rows={3}
-                    className="w-full rounded-lg border border-zinc-300 px-3 py-2 text-sm text-zinc-900"
+                    className="w-full rounded-lg border border-white/15 bg-white/5 px-3 py-2 text-sm text-white placeholder:text-white/30 outline-none focus:border-[#c5eb02] focus:ring-2 focus:ring-[#c5eb02]/20 transition-all"
                   />
                 </div>
               );
             }
             return (
               <div key={field.key}>
-                <label className="block text-xs font-semibold text-zinc-600 mb-1">
+                <label className="block text-xs font-semibold text-white/70 mb-1">
                   {field.label}
                 </label>
                 <input
@@ -155,7 +155,7 @@ export default function RepeatingFieldList<T extends Record<string, unknown>>({
                       field.type === "number" ? Number(e.target.value) : e.target.value,
                     )
                   }
-                  className="w-full rounded-lg border border-zinc-300 px-3 py-2 text-sm text-zinc-900"
+                  className="w-full rounded-lg border border-white/15 bg-white/5 px-3 py-2 text-sm text-white placeholder:text-white/30 outline-none focus:border-[#c5eb02] focus:ring-2 focus:ring-[#c5eb02]/20 transition-all"
                 />
               </div>
             );
@@ -165,7 +165,7 @@ export default function RepeatingFieldList<T extends Record<string, unknown>>({
       <button
         type="button"
         onClick={addItem}
-        className="text-sm font-semibold text-zinc-900 hover:underline"
+        className="text-sm font-semibold text-white hover:underline"
       >
         + Add {name}
       </button>

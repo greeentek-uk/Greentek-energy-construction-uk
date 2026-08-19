@@ -16,14 +16,14 @@ export default async function EditSeoPage({ searchParams }: Props) {
     <div>
       <Link
         href="/admin/seo"
-        className="text-sm text-zinc-500 hover:text-zinc-900"
+        className="text-sm text-white/50 hover:text-white"
       >
         ← All Pages
       </Link>
       <h1 className="text-2xl font-bold mt-2 mb-1 break-all">
         Edit SEO: {path}
       </h1>
-      <p className="text-zinc-500 mb-6 text-sm">
+      <p className="text-white/50 mb-6 text-sm">
         Leave a field blank to use the site&apos;s default for this page.
       </p>
 
@@ -31,35 +31,35 @@ export default async function EditSeoPage({ searchParams }: Props) {
 
       <form
         action={saveSeoOverrideAction}
-        className="space-y-4 bg-white border border-zinc-200 rounded-xl p-6"
+        className="space-y-4 bg-[#101314] border border-white/10 rounded-xl p-6"
       >
         <input type="hidden" name="path" value={path} />
         <div>
-          <label className="block text-xs font-semibold text-zinc-600 mb-1">
+          <label className="block text-xs font-semibold text-white/70 mb-1">
             Meta Title
           </label>
           <input
             name="title"
             defaultValue={override?.title || ""}
-            className="w-full rounded-lg border border-zinc-300 px-3 py-2 text-sm text-zinc-900"
+            className="w-full rounded-lg border border-white/15 bg-white/5 px-3 py-2 text-sm text-white placeholder:text-white/30 outline-none focus:border-[#c5eb02] focus:ring-2 focus:ring-[#c5eb02]/20 transition-all"
             placeholder="Leave blank for default"
           />
         </div>
         <div>
-          <label className="block text-xs font-semibold text-zinc-600 mb-1">
+          <label className="block text-xs font-semibold text-white/70 mb-1">
             Meta Description
           </label>
           <textarea
             name="description"
             defaultValue={override?.description || ""}
             rows={3}
-            className="w-full rounded-lg border border-zinc-300 px-3 py-2 text-sm text-zinc-900"
+            className="w-full rounded-lg border border-white/15 bg-white/5 px-3 py-2 text-sm text-white placeholder:text-white/30 outline-none focus:border-[#c5eb02] focus:ring-2 focus:ring-[#c5eb02]/20 transition-all"
             placeholder="Leave blank for default"
           />
         </div>
         <button
           type="submit"
-          className="rounded-lg bg-zinc-900 text-white text-sm font-semibold px-5 py-2.5 hover:bg-zinc-800"
+          className="rounded-lg bg-[#c5eb02] text-black text-sm font-semibold px-5 py-2.5 hover:bg-[#c5eb02]/80"
         >
           Save
         </button>

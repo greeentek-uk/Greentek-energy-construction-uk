@@ -57,7 +57,7 @@ export default function ImageUploadField({
 
   return (
     <div>
-      <label className="block text-xs font-semibold text-zinc-600 mb-1">
+      <label className="block text-xs font-semibold text-white/70 mb-1">
         {label}
         {required ? " *" : ""}
       </label>
@@ -67,7 +67,7 @@ export default function ImageUploadField({
         <img
           src={url}
           alt=""
-          className="w-full h-32 object-cover rounded-lg border border-zinc-200 bg-zinc-100 mb-2"
+          className="w-full h-32 object-cover rounded-lg border border-white/10 bg-white/5 mb-2"
         />
       )}
       <input
@@ -76,10 +76,10 @@ export default function ImageUploadField({
         accept="image/*"
         onChange={handleFileChange}
         disabled={uploading}
-        className="w-full rounded-lg border border-zinc-300 px-3 py-2 text-sm text-zinc-900 file:mr-3 file:rounded-md file:border-0 file:bg-zinc-900 file:text-white file:px-3 file:py-1.5 file:text-xs file:font-semibold"
+        className="w-full rounded-lg border border-white/15 bg-white/5 px-3 py-2 text-sm text-white outline-none focus:border-[#c5eb02] focus:ring-2 focus:ring-[#c5eb02]/20 transition-all file:mr-3 file:rounded-md file:border-0 file:bg-[#c5eb02] file:text-black file:px-3 file:py-1.5 file:text-xs file:font-semibold"
       />
-      {uploading && <p className="text-xs text-zinc-500 mt-1">Uploading…</p>}
-      {error && <p className="text-xs text-red-600 mt-1">{error}</p>}
+      {uploading && <p className="text-xs text-white/50 mt-1">Uploading…</p>}
+      {error && <p className="text-xs text-red-400 mt-1">{error}</p>}
     </div>
   );
 }

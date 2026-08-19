@@ -10,7 +10,7 @@ export default function AboutUsSlideForm({ content }: { content: AboutUsSlideCon
       <Field label="Eyebrow" name="eyebrow" defaultValue={content.eyebrow} required />
       <Field label="Heading" name="heading" defaultValue={content.heading} required />
       <Field label="Body" name="body" textarea defaultValue={content.body} required />
-      <button type="submit" className="rounded-lg bg-zinc-900 text-white text-sm font-semibold px-6 py-3 hover:bg-zinc-800">
+      <button type="submit" className="rounded-lg bg-[#c5eb02] text-black text-sm font-semibold px-6 py-3 hover:bg-[#c5eb02]/80">
         Save Draft
       </button>
     </form>

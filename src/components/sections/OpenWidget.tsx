@@ -4,7 +4,7 @@ import Script from "next/script";
 export default function OpenWidget() {
   return (
     <>
-      <Script id="openwidget" strategy="lazyOnload">
+      <Script id="openwidget" strategy="afterInteractive">
         {`
           window.__ow = window.__ow || {};
           window.__ow.organizationId = "e5f04de6-c5c1-434a-a36d-e260143881d8";

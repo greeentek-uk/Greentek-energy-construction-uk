@@ -10,15 +10,15 @@ export default async function AdminLoginPage({ searchParams }: Props) {
   const hasError = params.error === "1";
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-zinc-100 px-4">
-      <div className="w-full max-w-sm bg-white rounded-xl shadow-lg p-8 border border-zinc-200">
-        <h1 className="text-xl font-bold text-zinc-900 mb-1">Greentek Admin</h1>
-        <p className="text-sm text-zinc-500 mb-6">
+    <div className="min-h-screen flex items-center justify-center bg-black px-4">
+      <div className="w-full max-w-sm bg-[#101314] rounded-xl shadow-lg p-8 border border-white/10">
+        <h1 className="text-xl font-bold text-white mb-1">Greentek Admin</h1>
+        <p className="text-sm text-white/50 mb-6">
           Sign in to manage site content.
         </p>
 
         {hasError && (
-          <p className="mb-4 text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2">
+          <p className="mb-4 text-sm text-red-400 bg-red-500/10 border border-red-500/20 rounded-lg px-3 py-2">
             Incorrect username or password.
           </p>
         )}
@@ -26,18 +26,18 @@ export default async function AdminLoginPage({ searchParams }: Props) {
         <form action={loginAction} className="space-y-4">
           <input type="hidden" name="next" value={next} />
           <div>
-            <label className="block text-xs font-semibold text-zinc-600 mb-1">
+            <label className="block text-xs font-semibold text-white/70 mb-1">
               Username
             </label>
             <input
               name="username"
               required
               autoComplete="username"
-              className="w-full rounded-lg border border-zinc-300 px-3 py-2 text-sm text-zinc-900 focus:outline-none focus:ring-2 focus:ring-zinc-900"
+              className="w-full rounded-lg border border-white/15 bg-white/5 px-3 py-2 text-sm text-white placeholder:text-white/30 outline-none focus:border-[#c5eb02] focus:ring-2 focus:ring-[#c5eb02]/20 transition-all"
             />
           </div>
           <div>
-            <label className="block text-xs font-semibold text-zinc-600 mb-1">
+            <label className="block text-xs font-semibold text-white/70 mb-1">
               Password
             </label>
             <input
@@ -45,12 +45,12 @@ export default async function AdminLoginPage({ searchParams }: Props) {
               name="password"
               required
               autoComplete="current-password"
-              className="w-full rounded-lg border border-zinc-300 px-3 py-2 text-sm text-zinc-900 focus:outline-none focus:ring-2 focus:ring-zinc-900"
+              className="w-full rounded-lg border border-white/15 bg-white/5 px-3 py-2 text-sm text-white placeholder:text-white/30 outline-none focus:border-[#c5eb02] focus:ring-2 focus:ring-[#c5eb02]/20 transition-all"
             />
           </div>
           <button
             type="submit"
-            className="w-full rounded-lg bg-zinc-900 text-white text-sm font-semibold py-2.5 hover:bg-zinc-800 transition-colors"
+            className="w-full rounded-lg bg-[#c5eb02] text-black text-sm font-semibold py-2.5 hover:bg-[#c5eb02]/80 transition-colors"
           >
             Sign In
           </button>

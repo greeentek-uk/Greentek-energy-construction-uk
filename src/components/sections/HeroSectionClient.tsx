@@ -64,9 +64,9 @@ export default function HeroSectionClient({ trustBadgeSuffix, slides }: HomeHero
           style={{ backgroundImage: `url('${slide.image}')` }}
         />
       ))}
-      <div className="absolute inset-0 bg-black/40" />
+      <div className="absolute inset-0 bg-black/50" />
 
-      <div className="relative px-5 sm:px-15 pt-28 sm:pt-32 lg:pt-40 pb-24 sm:pb-28 lg:pb-32 flex flex-col">
+      <div className="relative px-5 sm:px-15 pt-28 sm:pt-32 lg:pt-40 pb-28 sm:pb-32 lg:pb-40 flex flex-col">
         <div
           ref={heroFade.ref}
           className={`max-w-3xl text-center sm:text-left transition-all duration-1000 ease-out ${
@@ -82,12 +82,13 @@ export default function HeroSectionClient({ trustBadgeSuffix, slides }: HomeHero
             <span className="mx-2 text-black">{trustBadgeSuffix}</span>
           </div>
 
-          <div className="relative min-h-[280px] sm:min-h-[240px] lg:min-h-[220px]">
+          {/* Grid-stacked slides: parent auto-sizes to the tallest slide instead of a guessed height, so no slide's content ever clips or overflows the reserved space. */}
+          <div className="grid">
             {slides.map((slide, i) => (
               <div
                 key={slide.headingLine1 + i}
                 aria-hidden={i !== index}
-                className={`absolute inset-0 transition-opacity duration-700 ease-in-out ${
+                className={`col-start-1 row-start-1 transition-opacity duration-700 ease-in-out ${
                   i === index ? "opacity-100" : "opacity-0 pointer-events-none"
                 }`}
               >
@@ -100,7 +101,7 @@ export default function HeroSectionClient({ trustBadgeSuffix, slides }: HomeHero
                   {slide.body}
                 </p>
 
-                <div className="my-12 flex justify-center sm:justify-start">
+                <div className="mt-8 mb-4 flex justify-center sm:justify-start">
                   <a
                     href="/contact"
                     className="w-fit rounded px-4 py-3 text-sm md:text-[18px] font-semibold text-black backdrop-blur-sm transition active:scale-95 bg-[#c5eb02]"
@@ -116,7 +117,7 @@ export default function HeroSectionClient({ trustBadgeSuffix, slides }: HomeHero
       </div>
 
       {slides.length > 1 && (
-        <div className="absolute bottom-6 right-5 sm:bottom-10 sm:right-15 lg:bottom-12 z-10 flex items-center gap-4 sm:gap-6">
+        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 sm:left-auto sm:translate-x-0 sm:right-15 sm:bottom-10 lg:right-15 lg:bottom-12 z-10 flex items-center gap-4 sm:gap-6">
           <div className="flex items-center gap-2">
             {slides.map((slide, i) => (
               <button

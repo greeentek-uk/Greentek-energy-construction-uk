@@ -39,34 +39,34 @@ export default function ContentBlocksEditor({ initial }: { initial?: ContentBloc
   return (
     <div className="space-y-3">
       <div className="flex items-center justify-between">
-        <h3 className="font-bold text-zinc-900 text-sm">Content</h3>
+        <h3 className="font-bold text-white text-sm">Content</h3>
         <button
           type="button"
           onClick={addBlock}
-          className="text-sm font-semibold text-zinc-900 hover:underline"
+          className="text-sm font-semibold text-white hover:underline"
         >
           + Add Block
         </button>
       </div>
 
       {blocks.map((block) => (
-        <div key={block.id} className="border border-zinc-200 rounded-lg p-4 space-y-3">
+        <div key={block.id} className="border border-white/10 rounded-lg p-4 space-y-3">
           <div className="flex items-center justify-between">
             <select
               name="block_type"
               value={block.type}
               onChange={(e) => updateType(block.id, e.target.value as BlockType)}
-              className="rounded-lg border border-zinc-300 px-2 py-1.5 text-sm text-zinc-900"
+              className="rounded-lg border border-white/15 bg-white/5 px-2 py-1.5 text-sm text-white outline-none focus:border-[#c5eb02] focus:ring-2 focus:ring-[#c5eb02]/20 transition-all"
             >
-              <option value="heading">Heading</option>
-              <option value="paragraph">Paragraph</option>
-              <option value="list">List</option>
-              <option value="cta">CTA</option>
+              <option value="heading" className="text-black">Heading</option>
+              <option value="paragraph" className="text-black">Paragraph</option>
+              <option value="list" className="text-black">List</option>
+              <option value="cta" className="text-black">CTA</option>
             </select>
             <button
               type="button"
               onClick={() => removeBlock(block.id)}
-              className="text-xs font-semibold text-red-600 hover:underline"
+              className="text-xs font-semibold text-red-400 hover:text-red-300"
             >
               Remove
             </button>
@@ -79,7 +79,7 @@ export default function ContentBlocksEditor({ initial }: { initial?: ContentBloc
                 defaultValue={block.items?.join("\n")}
                 rows={4}
                 placeholder="One item per line"
-                className="w-full rounded-lg border border-zinc-300 px-3 py-2 text-sm text-zinc-900"
+                className="w-full rounded-lg border border-white/15 bg-white/5 px-3 py-2 text-sm text-white placeholder:text-white/30 outline-none focus:border-[#c5eb02] focus:ring-2 focus:ring-[#c5eb02]/20 transition-all"
               />
               <input type="hidden" name="block_text" value="" />
             </>
@@ -90,7 +90,7 @@ export default function ContentBlocksEditor({ initial }: { initial?: ContentBloc
                 defaultValue={block.text}
                 rows={block.type === "heading" ? 1 : 3}
                 placeholder={block.type === "cta" ? "CTA body text (optional)" : "Text"}
-                className="w-full rounded-lg border border-zinc-300 px-3 py-2 text-sm text-zinc-900"
+                className="w-full rounded-lg border border-white/15 bg-white/5 px-3 py-2 text-sm text-white placeholder:text-white/30 outline-none focus:border-[#c5eb02] focus:ring-2 focus:ring-[#c5eb02]/20 transition-all"
               />
               <input type="hidden" name="block_items" value="" />
             </>
@@ -102,13 +102,13 @@ export default function ContentBlocksEditor({ initial }: { initial?: ContentBloc
                 name="block_ctaText"
                 defaultValue={block.ctaText}
                 placeholder="Button text"
-                className="rounded-lg border border-zinc-300 px-3 py-2 text-sm text-zinc-900"
+                className="rounded-lg border border-white/15 bg-white/5 px-3 py-2 text-sm text-white placeholder:text-white/30 outline-none focus:border-[#c5eb02] focus:ring-2 focus:ring-[#c5eb02]/20 transition-all"
               />
               <input
                 name="block_ctaLink"
                 defaultValue={block.ctaLink}
                 placeholder="Button link"
-                className="rounded-lg border border-zinc-300 px-3 py-2 text-sm text-zinc-900"
+                className="rounded-lg border border-white/15 bg-white/5 px-3 py-2 text-sm text-white placeholder:text-white/30 outline-none focus:border-[#c5eb02] focus:ring-2 focus:ring-[#c5eb02]/20 transition-all"
               />
             </div>
           ) : (
@@ -121,7 +121,7 @@ export default function ContentBlocksEditor({ initial }: { initial?: ContentBloc
       ))}
 
       {blocks.length === 0 && (
-        <p className="text-sm text-zinc-400">No content blocks yet — add one above.</p>
+        <p className="text-sm text-white/40">No content blocks yet — add one above.</p>
       )}
     </div>
   );

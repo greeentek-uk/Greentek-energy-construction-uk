@@ -27,7 +27,7 @@ export default async function AdminHomePage() {
   return (
     <div>
       <h1 className="text-2xl font-bold mb-1">Dashboard</h1>
-      <p className="text-zinc-500 mb-8">
+      <p className="text-white/50 mb-8">
         Edit the live site&apos;s content, blog, and SEO without touching
         code. Most changes go live immediately — Page Content edits save as
         drafts until you click Publish Changes in the sidebar.
@@ -37,10 +37,10 @@ export default async function AdminHomePage() {
           <Link
             key={card.href}
             href={card.href}
-            className="block rounded-xl border border-zinc-200 bg-white p-5 hover:border-zinc-400 hover:shadow-sm transition-all"
+            className="block rounded-xl border border-white/10 bg-[#101314] p-5 hover:border-white/20 hover:shadow-sm transition-all"
           >
-            <p className="font-semibold text-zinc-900">{card.label}</p>
-            <p className="text-sm text-zinc-500 mt-1">{card.count}</p>
+            <p className="font-semibold text-white">{card.label}</p>
+            <p className="text-sm text-white/50 mt-1">{card.count}</p>
           </Link>
         ))}
       </div>

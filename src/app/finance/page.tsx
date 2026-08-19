@@ -3,13 +3,14 @@ import { ArrowRight, Calculator, ShieldAlert } from "lucide-react";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import { withSeoOverride } from "@/lib/seo";
+import FinanceCalculator from "./FinanceCalculator";
 
 const APPLY_URL = "https://ideal4finance.com/loan-apply/grntekener";
-const CALCULATOR_URL = "https://ideal4finance.com/retail/calculator/grntekener";
 
 const FINANCE_OPTIONS = [
   { rate: "0% APR finance", terms: "3, 6, 12 or 24 months" },
-  { rate: "11.9% APR finance", terms: "36, 48, 60 or 120 months" },
+  { rate: "11.9% APR finance", terms: "36, 48 or 60 months" },
+  { rate: "10.9% APR finance", terms: "120 months" },
 ];
 
 const EXAMPLE_ROWS = [
@@ -65,30 +66,27 @@ export default function FinancePage() {
                 <ArrowRight className="ml-2 h-4 w-4" />
               </a>
               <a
-                href={CALCULATOR_URL}
-                target="_blank"
-                rel="noopener noreferrer"
+                href="#calculator"
                 className="inline-flex items-center justify-center gap-2 px-6 md:px-8 py-4 rounded-full border border-white/30 text-white text-sm font-bold hover:border-[#c5eb02] hover:text-[#c5eb02] transition-all"
               >
                 <Calculator className="w-4 h-4" />
-                Finance Calculator
+                Calculate Repayments
               </a>
             </div>
+          </div>
+        </section>
 
-            <p className="text-white/50 text-sm leading-relaxed max-w-2xl mx-auto mt-6">
-              You can use our handy finance calculator{" "}
-              <a
-                href={CALCULATOR_URL}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-[#c5eb02] font-bold hover:text-[#c5eb02]/80"
-              >
-                here
-              </a>{" "}
-              to find out more about the loan repayments. Please note that
-              this provides a guide only and the exact details will be
-              confirmed during the application process.
+        {/* Calculator */}
+        <section id="calculator" className="py-12 lg:py-24 scroll-mt-24">
+          <div className="mx-auto max-w-2xl px-6">
+            <h2 className="text-[1.625rem] md:text-[2.5rem] font-bold leading-[1.2] text-white mb-4 text-center">
+              Calculate your repayments
+            </h2>
+            <p className="text-white/70 text-lg mb-8 max-w-xl mx-auto text-center">
+              Enter a purchase price to see estimated monthly repayments
+              across our available finance options.
             </p>
+            <FinanceCalculator />
           </div>
         </section>
 
@@ -102,7 +100,7 @@ export default function FinancePage() {
               The following options are available, always subject to the
               lender&apos;s assessment:
             </p>
-            <div className="grid sm:grid-cols-2 gap-4 mb-6">
+            <div className="grid sm:grid-cols-3 gap-4 mb-6">
               {FINANCE_OPTIONS.map((option) => (
                 <div
                   key={option.rate}

@@ -21,7 +21,7 @@ export default async function EditBlogPostPage({ params, searchParams }: Props) 
 
   return (
     <div>
-      <Link href="/admin/blog" className="text-sm text-zinc-500 hover:text-zinc-900">
+      <Link href="/admin/blog" className="text-sm text-white/50 hover:text-white">
         ← All Posts
       </Link>
       <h1 className="text-2xl font-bold mt-2 mb-6">Edit: {post.title}</h1>
