@@ -2,7 +2,7 @@
 
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
-import { saveBlockDraft, publishAllDirtyBlocks } from "@/lib/db/pageContent";
+import { saveBlockDraft, publishBlock, publishAllDirtyBlocks } from "@/lib/db/pageContent";
 import { PAGE_CONTENT_KEYS, type PageContentKey, type PageContentMap } from "@/data/pageContent";
 
 function str(formData: FormData, key: string): string {
@@ -25,11 +25,8 @@ function parseBlockFields(key: PageContentKey, formData: FormData): PageContentM
     case "home-hero":
       return {
         trustBadgeSuffix: str(formData, "trustBadgeSuffix"),
-        headingLine1: str(formData, "headingLine1"),
-        headingLine2: str(formData, "headingLine2"),
-        body: str(formData, "body"),
-        ctaLabel: str(formData, "ctaLabel"),
-      };
+        slides: items(formData, "slides"),
+      } as PageContentMap["home-hero"];
     case "why-us":
       return {
         eyebrow: str(formData, "eyebrow"),
@@ -167,6 +164,21 @@ export async function saveBlockDraftAction(formData: FormData): Promise<void> {
   }
 
   redirect(`/admin/page-content/${blockKey}?saved=1`);
+}
+
+export async function publishBlockAction(formData: FormData): Promise<void> {
+  const blockKey = str(formData, "blockKey") as PageContentKey;
+
+  if (!PAGE_CONTENT_KEYS.includes(blockKey)) {
+    redirect(`/admin/page-content?error=${encodeURIComponent("Unknown content block")}`);
+  }
+
+  const published = await publishBlock(blockKey);
+  if (published) {
+    revalidatePath("/", "layout");
+  }
+
+  redirect(`/admin/page-content/${blockKey}?published=${published ? "1" : "0"}`);
 }
 
 export async function publishAllAction(): Promise<void> {

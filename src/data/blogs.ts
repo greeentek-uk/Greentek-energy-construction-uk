@@ -1,3 +1,5 @@
+import type { ContentBlock } from "./content";
+
 export interface BlogPost {
   id: number;
   title: string;
@@ -11,11 +13,5 @@ export interface BlogPost {
   metaTitle: string;
   metaDescription: string;
   keywords: string[];
-  content: {
-    type: "heading" | "paragraph" | "list" | "cta";
-    text?: string;
-    items?: string[];
-    ctaText?: string;
-    ctaLink?: string;
-  }[];
+  content: ContentBlock[];
 }

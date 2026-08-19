@@ -1,9 +1,15 @@
-export interface HomeHeroContent {
-  trustBadgeSuffix: string;
+export interface HomeHeroSlide {
+  image: string;
   headingLine1: string;
   headingLine2: string;
   body: string;
   ctaLabel: string;
+}
+
+export interface HomeHeroContent {
+  /** Shown once, persistent across all slides. */
+  trustBadgeSuffix: string;
+  slides: HomeHeroSlide[];
 }
 
 export interface WhyUsContent {

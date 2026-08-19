@@ -76,6 +76,23 @@ export async function seedBlockIfMissing<K extends PageContentKey>(
   );
 }
 
+/** Copies draft -> published for a single block, if it's dirty. Returns whether it was published. */
+export async function publishBlock(key: PageContentKey): Promise<boolean> {
+  const db = await getDb();
+  const col = db.collection<PageContentDoc<unknown>>(COLLECTION);
+  const doc = await col.findOne({ _id: key });
+  if (!doc) return false;
+
+  const dirty = JSON.stringify(doc.draft) !== JSON.stringify(doc.published);
+  if (!dirty) return false;
+
+  await col.updateOne(
+    { _id: key },
+    { $set: { published: doc.draft, publishedAt: new Date().toISOString() } },
+  );
+  return true;
+}
+
 /** Copies draft -> published for every block where they differ. Returns the keys that changed. */
 export async function publishAllDirtyBlocks(): Promise<PageContentKey[]> {
   const db = await getDb();

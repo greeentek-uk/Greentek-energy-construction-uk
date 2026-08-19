@@ -1,3 +1,5 @@
+import type { ContentBlock } from "./content";
+
 export interface Service {
   slug: string;
   title: string;
@@ -6,6 +8,9 @@ export interface Service {
   image: string;
   formCategory: string;
   highlights: string[];
+  metaTitle?: string;
+  metaDescription?: string;
+  content?: ContentBlock[];
 }
 
 export interface Project {
@@ -29,6 +34,23 @@ export interface Location {
   tagline: string;
   blurb: string;
   nearbyAreas: string[];
+  metaTitle?: string;
+  metaDescription?: string;
+  content?: ContentBlock[];
+}
+
+/** Per-combination overrides for a /locations/[locationSlug]/[serviceSlug] page, keyed by locationSlug+serviceSlug. Optional — a combo with no row here falls back to the templated defaults those pages already render. */
+export interface LocationServiceContent {
+  locationSlug: string;
+  serviceSlug: string;
+  metaTitle?: string;
+  metaDescription?: string;
+  /** Unique paragraph replacing the reused service.description on this specific combo page. */
+  intro: string;
+  /** Optional second paragraph replacing the generic isHomeBase template sentence. */
+  localNote?: string;
+  /** Optional override of service.highlights for this combo; falls back to service.highlights when empty. */
+  highlights?: string[];
 }
 
 export interface SiteConfig {

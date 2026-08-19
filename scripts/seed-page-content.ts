@@ -15,10 +15,29 @@ config({ path: ".env.local" });
 const seedData: PageContentMap = {
   "home-hero": {
     trustBadgeSuffix: "by 500+ Homeowners",
-    headingLine1: "Bridging Construction",
-    headingLine2: "with Renewable Energy.",
-    body: "One team for solar, heat pumps, insulation, and full property renovation, residential and commercial, across the West Midlands and Wales.",
-    ctaLabel: "Consult an Expert",
+    slides: [
+      {
+        image: "/images/home-page/house-2.png",
+        headingLine1: "Bridging Construction",
+        headingLine2: "with Renewable Energy.",
+        body: "One team for solar, heat pumps, insulation, and full property renovation, residential and commercial, across the West Midlands and Wales.",
+        ctaLabel: "Consult an Expert",
+      },
+      {
+        image: "/images/projects/Heating/after.webp",
+        headingLine1: "Solar, Heat Pumps",
+        headingLine2: "& Smarter Heating.",
+        body: "Cut your energy bills with MCS-certified solar PV, battery storage and air source heat pump installations from one accredited in-house team.",
+        ctaLabel: "Get a Free Quote",
+      },
+      {
+        image: "/images/projects/full-home-renovation.jpg",
+        headingLine1: "Full Renovations,",
+        headingLine2: "Built To Last.",
+        body: "From kitchens and extensions to whole-property refurbishments, we deliver construction work to the same standard as our energy installations.",
+        ctaLabel: "Start Your Project",
+      },
+    ],
   },
   "why-us": {
     eyebrow: "Why Greentek",

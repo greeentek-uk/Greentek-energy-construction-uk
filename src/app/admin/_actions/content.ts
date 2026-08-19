@@ -22,6 +22,7 @@ import {
 } from "@/lib/db/locations";
 import { updateSettings } from "@/lib/db/settings";
 import type { Service, Project, Location } from "@/data/site";
+import { parseContentBlocks } from "./contentBlocks";
 
 function splitLines(value: string): string[] {
   return value
@@ -70,6 +71,9 @@ function readServiceFields(formData: FormData) {
     image: String(formData.get("image") || "").trim(),
     formCategory: String(formData.get("formCategory") || "").trim(),
     highlights: splitLines(String(formData.get("highlights") || "")),
+    metaTitle: String(formData.get("metaTitle") || "").trim(),
+    metaDescription: String(formData.get("metaDescription") || "").trim(),
+    content: parseContentBlocks(formData),
   };
 }
 
@@ -214,6 +218,9 @@ function readLocationFields(formData: FormData) {
     blurb: String(formData.get("blurb") || "").trim(),
     nearbyAreas: splitCommas(String(formData.get("nearbyAreas") || "")),
     isHomeBase: formData.get("isHomeBase") === "on",
+    metaTitle: String(formData.get("metaTitle") || "").trim(),
+    metaDescription: String(formData.get("metaDescription") || "").trim(),
+    content: parseContentBlocks(formData),
   };
 }
 

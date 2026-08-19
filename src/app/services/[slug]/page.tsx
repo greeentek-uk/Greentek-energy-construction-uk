@@ -10,6 +10,7 @@ import Stats from "@/components/sections/Stats";
 import CtaSection from "@/components/sections/CtaSection";
 import AccreditationsSection from "@/components/sections/AccreditationsSection";
 import BeforeAfterSlider from "@/components/ui/BeforeAfterSlider";
+import ContentBlocks from "@/components/ui/ContentBlocks";
 import { withSeoOverride } from "@/lib/seo";
 import { buildServiceJsonLd, SITE_URL } from "@/lib/structuredData";
 
@@ -31,8 +32,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   }
 
   return withSeoOverride(`/services/${service.slug}`, {
-    title: service.title,
-    description: service.description,
+    title: service.metaTitle || service.title,
+    description: service.metaDescription || service.description,
   });
 }
 
@@ -150,6 +151,15 @@ export default async function ServiceDetailPage({ params }: Props) {
             </ul>
           </div>
         </section>
+
+        {/* Long-form content */}
+        {service.content && service.content.length > 0 && (
+          <section className="pb-12 lg:pb-24">
+            <div className="mx-auto max-w-4xl px-6">
+              <ContentBlocks blocks={service.content} />
+            </div>
+          </section>
+        )}
 
         {/* Trust bar */}
         <Stats />

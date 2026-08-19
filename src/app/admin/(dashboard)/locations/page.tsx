@@ -42,15 +42,23 @@ export default async function LocationsAdminPage({ searchParams }: Props) {
           >
             <div className="flex items-center justify-between px-5 py-4">
               <span className="font-semibold text-zinc-900">{location.name}</span>
-              <form action={deleteLocationAction}>
-                <input type="hidden" name="slug" value={location.slug} />
-                <ConfirmSubmitButton
-                  message={`Delete "${location.name}"? This cannot be undone.`}
-                  className="text-xs font-semibold text-red-600 hover:underline"
+              <div className="flex items-center gap-4">
+                <Link
+                  href={`/admin/locations/${location.slug}/service-content`}
+                  className="text-xs font-semibold text-zinc-700 hover:underline"
                 >
-                  Delete
-                </ConfirmSubmitButton>
-              </form>
+                  Service content
+                </Link>
+                <form action={deleteLocationAction}>
+                  <input type="hidden" name="slug" value={location.slug} />
+                  <ConfirmSubmitButton
+                    message={`Delete "${location.name}"? This cannot be undone.`}
+                    className="text-xs font-semibold text-red-600 hover:underline"
+                  >
+                    Delete
+                  </ConfirmSubmitButton>
+                </form>
+              </div>
             </div>
             <details>
               <summary className="cursor-pointer px-5 py-2 text-sm text-zinc-500 hover:bg-zinc-50 border-t border-zinc-100">

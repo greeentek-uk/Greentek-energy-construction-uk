@@ -1,4 +1,4 @@
-import type { SiteConfig, Service } from "@/data/site";
+import type { SiteConfig, Service, Location } from "@/data/site";
 import type { BlogPost } from "@/data/blogs";
 
 export const SITE_URL =
@@ -48,6 +48,58 @@ export function buildServiceJsonLd(
     },
     areaServed: siteConfig.locations.map((l) => l.name),
     url: `${siteUrl}/services/${service.slug}`,
+  };
+}
+
+/** LocalBusiness schema scoped to one service area, for a /locations/[locationSlug] page. */
+export function buildLocationJsonLd(
+  location: Location,
+  siteConfig: SiteConfig,
+  siteUrl: string,
+) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "LocalBusiness",
+    name: `${siteConfig.name} — ${location.name}`,
+    description: location.metaDescription || location.blurb,
+    url: `${siteUrl}/locations/${location.slug}`,
+    telephone: siteConfig.phone,
+    email: siteConfig.email,
+    ...(location.isHomeBase
+      ? {
+          address: {
+            "@type": "PostalAddress",
+            streetAddress: siteConfig.address.line1,
+            addressLocality: siteConfig.address.city,
+            addressRegion: siteConfig.address.region,
+            postalCode: siteConfig.address.postcode,
+            addressCountry: "GB",
+          },
+        }
+      : {}),
+    areaServed: [location.name, ...location.nearbyAreas],
+  };
+}
+
+/** Service schema scoped to one location, for a /locations/[locationSlug]/[serviceSlug] page. */
+export function buildLocalizedServiceJsonLd(
+  service: Service,
+  location: Location,
+  siteConfig: SiteConfig,
+  siteUrl: string,
+) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "Service",
+    name: `${service.title} in ${location.name}`,
+    description: service.description,
+    provider: {
+      "@type": "LocalBusiness",
+      name: siteConfig.name,
+      telephone: siteConfig.phone,
+    },
+    areaServed: [location.name, ...location.nearbyAreas],
+    url: `${siteUrl}/locations/${location.slug}/${service.slug}`,
   };
 }
 

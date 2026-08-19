@@ -12,6 +12,8 @@ import CtaSection from "@/components/sections/CtaSection";
 import AccreditationsSection from "@/components/sections/AccreditationsSection";
 import BeforeAfterSlider from "@/components/ui/BeforeAfterSlider";
 import { withSeoOverride } from "@/lib/seo";
+import { buildLocalizedServiceJsonLd, SITE_URL } from "@/lib/structuredData";
+import { getLocationServiceContentByKeys } from "@/lib/db/locationServiceContent";
 
 interface Props {
   params: {
@@ -39,9 +41,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     return { title: "Page Not Found" };
   }
 
+  const override = await getLocationServiceContentByKeys(location.slug, service.slug);
+
   return withSeoOverride(`/locations/${location.slug}/${service.slug}`, {
-    title: `${service.shortName} in ${location.name}`,
-    description: `Professional ${service.shortName.toLowerCase()} in ${location.name}, ${location.region}. Free local survey, fixed-price quote and in-house installation team. Also covering ${location.nearbyAreas.join(", ")}.`,
+    title: override?.metaTitle || `${service.shortName} in ${location.name}`,
+    description:
+      override?.metaDescription ||
+      `Professional ${service.shortName.toLowerCase()} in ${location.name}, ${location.region}. Free local survey, fixed-price quote and in-house installation team. Also covering ${location.nearbyAreas.join(", ")}.`,
   });
 }
 
@@ -74,12 +80,24 @@ export default async function LocationServicePage({ params }: Props) {
 
   const phoneHref = `tel:${siteConfig.phone.replace(/\s/g, "")}`;
 
+  const override = await getLocationServiceContentByKeys(location.slug, service.slug);
+
   const localIntro = location.isHomeBase
     ? `As our home base, ${location.name} gets same-week surveys and the fastest turnaround on ${service.shortName.toLowerCase()} work.`
     : `Our in-house team covers ${location.name} and the surrounding ${location.region} regularly for ${service.shortName.toLowerCase()} projects, with no subcontractors passing the job around.`;
 
+  const introText = override?.intro || service.description;
+  const localNoteText = override?.localNote || localIntro;
+  const highlights = override?.highlights?.length ? override.highlights : service.highlights;
+
+  const jsonLd = buildLocalizedServiceJsonLd(service, location, siteConfig, SITE_URL);
+
   return (
     <div className="flex flex-col min-h-screen bg-black">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <Header />
 
       <main className="flex-1">
@@ -109,10 +127,10 @@ export default async function LocationServicePage({ params }: Props) {
               <span className="text-[#c5eb02]">{location.name}</span>
             </h1>
             <p className="text-lg md:text-xl text-white/70 leading-relaxed font-medium max-w-3xl mb-4">
-              {service.description}
+              {introText}
             </p>
             <p className="text-lg text-white/70 leading-relaxed font-medium max-w-3xl mb-8">
-              {localIntro}
+              {localNoteText}
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4">
@@ -151,7 +169,7 @@ export default async function LocationServicePage({ params }: Props) {
               What&apos;s Included
             </h2>
             <ul className="space-y-4">
-              {service.highlights.map((item, idx) => (
+              {highlights.map((item, idx) => (
                 <li
                   key={idx}
                   className="flex items-start gap-4 bg-white/5 border border-white/10 rounded-xl px-5 py-4"

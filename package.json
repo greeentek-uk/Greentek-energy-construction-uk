@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "eslint",
     "migrate": "tsx scripts/migrate-to-mongo.ts",
-    "seed:page-content": "tsx scripts/seed-page-content.ts"
+    "seed:page-content": "tsx scripts/seed-page-content.ts",
+    "seed:service-location-content": "tsx scripts/seed-service-location-content.ts"
   },
   "dependencies": {
     "@lottiefiles/dotlottie-react": "^0.19.12",

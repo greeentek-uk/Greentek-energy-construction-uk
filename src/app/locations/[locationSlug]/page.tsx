@@ -9,7 +9,9 @@ import { getCurrentSiteConfig } from "@/lib/cms";
 import Stats from "@/components/sections/Stats";
 import CtaSection from "@/components/sections/CtaSection";
 import AccreditationsSection from "@/components/sections/AccreditationsSection";
+import ContentBlocks from "@/components/ui/ContentBlocks";
 import { withSeoOverride } from "@/lib/seo";
+import { buildLocationJsonLd, SITE_URL } from "@/lib/structuredData";
 
 interface Props {
   params: {
@@ -27,8 +29,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   }
 
   return withSeoOverride(`/locations/${location.slug}`, {
-    title: `Construction & Renewable Energy Services in ${location.name}`,
-    description: `Greentek installs solar PV, air source heat pumps, insulation and full property renovations in ${location.name}, ${location.region}. Free local survey and fixed-price quote.`,
+    title:
+      location.metaTitle ||
+      `Construction & Renewable Energy Services in ${location.name}`,
+    description:
+      location.metaDescription ||
+      `Greentek installs solar PV, air source heat pumps, insulation and full property renovations in ${location.name}, ${location.region}. Free local survey and fixed-price quote.`,
   });
 }
 
@@ -53,9 +59,14 @@ export default async function LocationDetailPage({ params }: Props) {
     .slice(0, 3);
 
   const phoneHref = `tel:${siteConfig.phone.replace(/\s/g, "")}`;
+  const jsonLd = buildLocationJsonLd(location, siteConfig, SITE_URL);
 
   return (
     <div className="flex flex-col min-h-screen bg-black">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <Header />
 
       <main className="flex-1">
@@ -146,6 +157,15 @@ export default async function LocationDetailPage({ params }: Props) {
         </section>
 
         <Stats />
+
+        {/* Long-form content */}
+        {location.content && location.content.length > 0 && (
+          <section className="py-12 lg:py-24 border-t border-[#c5eb02]">
+            <div className="mx-auto max-w-4xl px-6">
+              <ContentBlocks blocks={location.content} />
+            </div>
+          </section>
+        )}
 
         {/* Nearby areas */}
         <section className="py-12 border-t border-[#c5eb02]">
