@@ -6,6 +6,7 @@ import Process from "@/components/sections/Process";
 import Image from "next/image";
 import Link from "next/link";
 import { withSeoOverride } from "@/lib/seo";
+import PageSchema from "@/components/site/PageSchema";
 
 const ENERGY_FORM_CATEGORIES = [
   "solar_storage",
@@ -29,6 +30,7 @@ export default async function EnergySolutionsPage() {
 
   return (
     <div className="flex flex-col min-h-screen">
+      <PageSchema path="/energy-solutions" />
       <Header />
       <main className="flex-1">
         <section className="relative bg-[url('/images/verticals/energy.avif')] bg-cover bg-center overflow-hidden">
@@ -60,7 +62,8 @@ export default async function EnergySolutionsPage() {
                   <div className="w-full h-48 sm:h-auto sm:w-[40%]">
                     <Image
                       src={service.image}
-                      alt={service.title}
+                      sizes="(min-width: 640px) 40vw, 100vw"
+                      alt={service.imageAlt || service.title}
                       width={300}
                       height={300}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"

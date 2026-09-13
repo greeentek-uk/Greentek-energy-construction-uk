@@ -13,8 +13,10 @@ import Areas from "@/components/sections/Areas";
 import Process from "@/components/sections/Process";
 import Projects from "@/components/sections/Projects";
 import AboutUs from "@/components/sections/AboutUs";
+import PageSchema from "@/components/site/PageSchema";
 export async function generateMetadata(): Promise<Metadata> {
   return withSeoOverride("/", {
+    kind: "home",
     title: "Solar, Heating & Renovation Experts",
     description:
       "Greentek delivers solar PV, air source heat pumps, insulation, and construction projects across the West Midlands and Wales. Free quotes, in-house team.",
@@ -24,6 +26,7 @@ export async function generateMetadata(): Promise<Metadata> {
 export default function HomePage() {
   return (
     <div className="flex flex-col min-h-screen">
+      <PageSchema path="/" />
       <Header />
 
       <div className="flex-1">

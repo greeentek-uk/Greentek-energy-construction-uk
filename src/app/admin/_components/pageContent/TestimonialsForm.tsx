@@ -14,14 +14,20 @@ export default function TestimonialsForm({ content }: { content: TestimonialsCon
       <RepeatingFieldList
         name="items"
         defaultValue={content.items}
-        emptyItem={{ name: "", quote: "", role: "", rating: 5, image: "" }}
+        emptyItem={{ name: "", quote: "", role: "", rating: 5, image: "", imageAlt: "" }}
         itemLabel={(i) => i.name}
         fields={[
           { key: "name", label: "Name" },
           { key: "role", label: "Role (e.g. Home Owner)" },
           { key: "quote", label: "Quote", textarea: true },
           { key: "rating", label: "Rating (1-5)", type: "number" },
-          { key: "image", label: "Photo", image: true },
+          {
+            key: "image",
+            label: "Photo",
+            image: true,
+            altKey: "imageAlt",
+            altFallbackKey: "name",
+          },
         ]}
       />
       <button type="submit" className="rounded-lg bg-[#c5eb02] text-black text-sm font-semibold px-6 py-3 hover:bg-[#c5eb02]/80">

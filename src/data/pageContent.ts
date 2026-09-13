@@ -1,10 +1,16 @@
-export interface HomeHeroSlide {
+/**
+ * Declared as a type alias rather than an interface so it picks up an implicit
+ * index signature — RepeatingFieldList's generic is constrained to
+ * Record<string, unknown>, which a named interface can't satisfy.
+ */
+export type HomeHeroSlide = {
   image: string;
+  imageAlt?: string;
   headingLine1: string;
   headingLine2: string;
   body: string;
   ctaLabel: string;
-}
+};
 
 export interface HomeHeroContent {
   /** Shown once, persistent across all slides. */
@@ -24,14 +30,21 @@ export interface WhyChooseUsContent {
   eyebrow: string;
   heading: string;
   subheading: string;
-  items: { id: string; title: string; description: string; image: string }[];
+  items: { id: string; title: string; description: string; image: string; imageAlt?: string }[];
 }
 
 export interface TestimonialsContent {
   eyebrow: string;
   heading: string;
   subheading: string;
-  items: { name: string; quote: string; role: string; rating: number; image: string }[];
+  items: {
+    name: string;
+    quote: string;
+    role: string;
+    rating: number;
+    image: string;
+    imageAlt?: string;
+  }[];
 }
 
 export interface FaqContent {
@@ -44,8 +57,15 @@ export interface AreasContent {
   eyebrow: string;
   heading: string;
   subheading: string;
-  largeArea: { name: string; stat: string; note: string; image: string; path: string };
-  smallAreas: { name: string; image: string; path: string }[];
+  largeArea: {
+    name: string;
+    stat: string;
+    note: string;
+    image: string;
+    imageAlt?: string;
+    path: string;
+  };
+  smallAreas: { name: string; image: string; imageAlt?: string; path: string }[];
   tickerItems: string[];
   tickerLabel: string;
   ctaLabel: string;
@@ -71,7 +91,7 @@ export interface VerticalsContent {
 
 export interface AccreditationsContent {
   heading: string;
-  logos: { name: string; image: string }[];
+  logos: { name: string; image: string; imageAlt?: string }[];
 }
 
 export interface ProcessContent {
@@ -86,7 +106,7 @@ export interface BrandsContent {
   eyebrow: string;
   heading: string;
   subheading: string;
-  logos: { name: string; image: string }[];
+  logos: { name: string; image: string; imageAlt?: string }[];
 }
 
 export interface StatsContent {

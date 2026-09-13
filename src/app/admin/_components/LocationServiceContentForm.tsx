@@ -2,6 +2,7 @@
 
 import type { LocationServiceContent } from "@/data/site";
 import { saveLocationServiceContentAction } from "../_actions/locationServiceContent";
+import FaqEditor from "./FaqEditor";
 
 export default function LocationServiceContentForm({
   locationSlug,
@@ -73,6 +74,8 @@ export default function LocationServiceContentForm({
           />
         </div>
       </div>
+      <FaqEditor initial={initial?.faqs} />
+
       <button
         type="submit"
         className="rounded-lg bg-[#c5eb02] text-black text-sm font-semibold px-5 py-2.5 hover:bg-[#c5eb02]/80"

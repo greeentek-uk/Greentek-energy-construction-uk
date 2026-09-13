@@ -23,6 +23,7 @@ import {
 import { updateSettings } from "@/lib/db/settings";
 import type { Service, Project, Location } from "@/data/site";
 import { parseContentBlocks } from "./contentBlocks";
+import { parseFaqs } from "./faqs";
 
 function splitLines(value: string): string[] {
   return value
@@ -69,11 +70,13 @@ function readServiceFields(formData: FormData) {
     shortName: String(formData.get("shortName") || "").trim(),
     description: String(formData.get("description") || "").trim(),
     image: String(formData.get("image") || "").trim(),
+    imageAlt: String(formData.get("imageAlt") || "").trim(),
     formCategory: String(formData.get("formCategory") || "").trim(),
     highlights: splitLines(String(formData.get("highlights") || "")),
     metaTitle: String(formData.get("metaTitle") || "").trim(),
     metaDescription: String(formData.get("metaDescription") || "").trim(),
     content: parseContentBlocks(formData),
+    faqs: parseFaqs(formData),
   };
 }
 
@@ -136,7 +139,10 @@ export async function deleteServiceAction(formData: FormData): Promise<void> {
 }
 
 function readProjectFields(formData: FormData) {
-  const gallery = splitLines(String(formData.get("gallery") || ""));
+  // MultiImageUploadField posts one `gallery` and one `galleryAlt` value per
+  // image, in the same order, so the two arrays line up by index.
+  const gallery = formData.getAll("gallery").map((v) => String(v).trim()).filter(Boolean);
+  const galleryAlt = formData.getAll("galleryAlt").map((v) => String(v).trim());
   const overview = splitLines(String(formData.get("overview") || ""));
 
   return {
@@ -145,8 +151,11 @@ function readProjectFields(formData: FormData) {
     title: String(formData.get("title") || "").trim(),
     description: String(formData.get("description") || "").trim(),
     before: String(formData.get("before") || "").trim(),
+    beforeAlt: String(formData.get("beforeAlt") || "").trim(),
     after: String(formData.get("after") || "").trim(),
+    afterAlt: String(formData.get("afterAlt") || "").trim(),
     ...(gallery.length ? { gallery } : {}),
+    ...(galleryAlt.some(Boolean) ? { galleryAlt } : {}),
     ...(overview.length ? { overview } : {}),
   };
 }
@@ -214,6 +223,7 @@ function readLocationFields(formData: FormData) {
     name: String(formData.get("name") || "").trim(),
     region: String(formData.get("region") || "").trim(),
     image: String(formData.get("image") || "").trim(),
+    imageAlt: String(formData.get("imageAlt") || "").trim(),
     tagline: String(formData.get("tagline") || "").trim(),
     blurb: String(formData.get("blurb") || "").trim(),
     nearbyAreas: splitCommas(String(formData.get("nearbyAreas") || "")),
@@ -221,6 +231,7 @@ function readLocationFields(formData: FormData) {
     metaTitle: String(formData.get("metaTitle") || "").trim(),
     metaDescription: String(formData.get("metaDescription") || "").trim(),
     content: parseContentBlocks(formData),
+    faqs: parseFaqs(formData),
   };
 }
 

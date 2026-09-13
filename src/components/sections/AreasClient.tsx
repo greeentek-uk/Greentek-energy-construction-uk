@@ -42,7 +42,7 @@ export default function AreasClient({
           >
             <img
               src={largeArea.image}
-              alt={largeArea.name}
+              alt={largeArea.imageAlt || largeArea.name}
               className="absolute inset-0 w-full h-full object-cover position-center group-hover:scale-105 transition-transform duration-500"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
@@ -67,7 +67,7 @@ export default function AreasClient({
             >
               <img
                 src={area.image}
-                alt={area.name}
+                alt={area.imageAlt || area.name}
                 className="absolute inset-0 w-full h-full object-cover"
               />
 

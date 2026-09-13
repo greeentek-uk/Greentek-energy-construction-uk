@@ -3,6 +3,7 @@ import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import { getCurrentSiteConfig } from "@/lib/cms";
 import { withSeoOverride } from "@/lib/seo";
+import PageSchema from "@/components/site/PageSchema";
 
 export async function generateMetadata(): Promise<Metadata> {
   return withSeoOverride("/terms", {
@@ -16,6 +17,7 @@ export default async function TermsPage() {
 
   return (
     <div className="flex flex-col min-h-screen bg-white">
+      <PageSchema path="/terms" />
       <Header />
       <main className="flex-1 pt-24 pb-20">
         <div className="mx-auto max-w-4xl px-6">

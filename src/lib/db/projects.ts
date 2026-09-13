@@ -1,5 +1,6 @@
 import { getDb } from "./mongodb";
 import type { Project } from "@/data/site";
+import { saveRevision } from "./revisions";
 
 const COLLECTION = "projects";
 
@@ -41,10 +42,15 @@ export async function updateProject(
   updates: Partial<Omit<Project, "slug">>,
 ): Promise<void> {
   const db = await getDb();
+  // Snapshot before writing, so the panel can walk a bad edit back.
+  const existing = await getProjectBySlug(slug);
+  if (existing) await saveRevision("projects", slug, existing, existing.title);
   await db.collection<ProjectDoc>(COLLECTION).updateOne({ _id: slug }, { $set: updates });
 }
 
 export async function deleteProject(slug: string): Promise<void> {
   const db = await getDb();
+  const existing = await getProjectBySlug(slug);
+  if (existing) await saveRevision("projects", slug, existing, `${existing.title} (deleted)`);
   await db.collection<ProjectDoc>(COLLECTION).deleteOne({ _id: slug });
 }

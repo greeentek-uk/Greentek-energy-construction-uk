@@ -1,5 +1,6 @@
 import { getDb } from "./mongodb";
 import type { BlogPost } from "@/data/blogs";
+import { saveRevision } from "./revisions";
 
 const COLLECTION = "blogPosts";
 
@@ -41,6 +42,10 @@ export async function updateBlogPost(originalSlug: string, post: BlogPost): Prom
   const db = await getDb();
   const collection = db.collection<BlogPostDoc>(COLLECTION);
 
+  // Snapshot before writing, so the panel can walk a bad edit back.
+  const existing = await getBlogPostBySlug(originalSlug);
+  if (existing) await saveRevision("blogPosts", originalSlug, existing, existing.title);
+
   if (post.slug !== originalSlug) {
     await collection.deleteOne({ _id: originalSlug });
     await collection.insertOne(toDoc(post));
@@ -52,5 +57,7 @@ export async function updateBlogPost(originalSlug: string, post: BlogPost): Prom
 
 export async function deleteBlogPost(slug: string): Promise<void> {
   const db = await getDb();
+  const existing = await getBlogPostBySlug(slug);
+  if (existing) await saveRevision("blogPosts", slug, existing, `${existing.title} (deleted)`);
   await db.collection<BlogPostDoc>(COLLECTION).deleteOne({ _id: slug });
 }

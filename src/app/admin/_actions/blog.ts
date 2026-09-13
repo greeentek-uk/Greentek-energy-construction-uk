@@ -11,6 +11,7 @@ import {
 } from "@/lib/db/blogPosts";
 import type { BlogPost } from "@/data/blogs";
 import { parseContentBlocks } from "./contentBlocks";
+import { parseFaqs } from "./faqs";
 
 function revalidateBlogRoutes(slug: string, previousSlug?: string) {
   revalidatePath("/blog");
@@ -78,6 +79,7 @@ export async function saveBlogPostAction(formData: FormData): Promise<void> {
     metaDescription,
     keywords,
     content: parseContentBlocks(formData),
+    faqs: parseFaqs(formData),
   };
 
   try {

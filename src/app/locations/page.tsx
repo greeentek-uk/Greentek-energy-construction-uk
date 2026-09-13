@@ -5,6 +5,7 @@ import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import { getCurrentSiteConfig, getPageContent } from "@/lib/cms";
 import { withSeoOverride } from "@/lib/seo";
+import PageSchema from "@/components/site/PageSchema";
 
 export async function generateMetadata(): Promise<Metadata> {
   return withSeoOverride("/locations", {
@@ -22,6 +23,7 @@ export default async function LocationsPage() {
 
   return (
     <div className="flex flex-col min-h-screen">
+      <PageSchema path="/locations" />
       <Header />
       <main className="flex-1">
         <section className="relative bg-[url('/images/footer/footer-bg.webp')] bg-cover overflow-hidden">
@@ -46,7 +48,8 @@ export default async function LocationsPage() {
                 >
                   <Image
                     src={location.image}
-                    alt={location.name}
+                    sizes="(min-width: 768px) 50vw, 100vw"
+                    alt={location.imageAlt || location.name}
                     fill
                     className="object-cover -z-10 group-hover:scale-105 transition-transform duration-500"
                   />

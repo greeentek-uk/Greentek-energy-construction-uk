@@ -65,6 +65,7 @@ function parseBlockFields(key: PageContentKey, formData: FormData): PageContentM
           stat: str(formData, "largeArea_stat"),
           note: str(formData, "largeArea_note"),
           image: str(formData, "largeArea_image"),
+          imageAlt: str(formData, "largeArea_imageAlt"),
           path: str(formData, "largeArea_path"),
         },
         smallAreas: items(formData, "smallAreas"),

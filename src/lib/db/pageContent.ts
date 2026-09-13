@@ -1,5 +1,6 @@
 import { getDb } from "./mongodb";
 import type { PageContentMap, PageContentKey } from "@/data/pageContent";
+import { saveRevision } from "./revisions";
 
 const COLLECTION = "pageContent";
 
@@ -55,6 +56,11 @@ export async function saveBlockDraft<K extends PageContentKey>(
   data: PageContentMap[K],
 ): Promise<void> {
   const db = await getDb();
+
+  // Snapshot the previous draft before overwriting it.
+  const previous = await getBlockDraft(key);
+  if (previous) await saveRevision("pageContent", key, previous, key);
+
   await db.collection<PageContentDoc<PageContentMap[K]>>(COLLECTION).updateOne(
     { _id: key },
     { $set: { draft: data, draftUpdatedAt: new Date().toISOString() } },

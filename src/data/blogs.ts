@@ -1,4 +1,5 @@
 import type { ContentBlock } from "./content";
+import type { FaqItem } from "./pages";
 
 export interface BlogPost {
   id: number;
@@ -14,4 +15,6 @@ export interface BlogPost {
   metaDescription: string;
   keywords: string[];
   content: ContentBlock[];
+  /** Post-specific FAQs, rendered and marked up as FAQPage schema. */
+  faqs?: FaqItem[];
 }

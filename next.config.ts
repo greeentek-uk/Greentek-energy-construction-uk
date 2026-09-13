@@ -4,6 +4,11 @@ const nextConfig: NextConfig = {
   reactStrictMode: true,
   poweredByHeader: false,
   images: {
+    // Cloudinary already holds the originals, so it resizes and format-negotiates
+    // them directly (see src/lib/imageLoader.ts). Non-Cloudinary sources still
+    // fall through to Next's own optimizer inside that loader.
+    loader: "custom",
+    loaderFile: "./src/lib/imageLoader.ts",
     remotePatterns: [
       {
         protocol: "https",
@@ -36,10 +41,10 @@ const nextConfig: NextConfig = {
             key: "Referrer-Policy",
             value: "origin-when-cross-origin",
           },
-          {
-            key: "Content-Security-Policy",
-            value: "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.openwidget.com https://api.openwidget.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://*.google.com https://*.gstatic.com https://res.cloudinary.com; font-src 'self' data:; connect-src 'self' https://api.openwidget.com https://api.livechatinc.com https://api.cloudinary.com; frame-src 'self' https://www.google.com https://cdn.openwidget.com https://secure.livechatinc.com; frame-ancestors 'none';",
-          },
+          // Content-Security-Policy is deliberately NOT set here. It is built
+          // per request in src/proxy.ts from the admin-managed script allowlist
+          // — a browser intersects two CSP headers, so the static one has to
+          // stay gone for the dynamic one to have any effect.
         ],
       },
     ];

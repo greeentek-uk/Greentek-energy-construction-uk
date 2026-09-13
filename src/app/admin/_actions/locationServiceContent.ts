@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { upsertLocationServiceContent } from "@/lib/db/locationServiceContent";
 import type { LocationServiceContent } from "@/data/site";
+import { parseFaqs } from "./faqs";
 
 function splitLines(value: string): string[] {
   return value
@@ -38,6 +39,7 @@ export async function saveLocationServiceContentAction(formData: FormData): Prom
     ...(metaDescription ? { metaDescription } : {}),
     ...(localNote ? { localNote } : {}),
     ...(highlights.length ? { highlights } : {}),
+    ...(parseFaqs(formData).length ? { faqs: parseFaqs(formData) } : {}),
   };
 
   try {

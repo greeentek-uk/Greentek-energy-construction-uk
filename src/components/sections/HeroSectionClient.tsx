@@ -2,6 +2,7 @@
 import { ArrowRight, ChevronLeft, ChevronRight } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import type { HomeHeroContent } from "@/data/pageContent";
+import Image from "next/image";
 
 const SLIDE_DURATION = 6000;
 
@@ -58,11 +59,24 @@ export default function HeroSectionClient({ trustBadgeSuffix, slides }: HomeHero
         <div
           key={slide.image + i}
           aria-hidden={i !== index}
-          className={`absolute inset-0 bg-cover bg-center transition-opacity duration-1000 ease-in-out ${
+          className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${
             i === index ? "opacity-100" : "opacity-0"
           }`}
-          style={{ backgroundImage: `url('${slide.image}')` }}
-        />
+        >
+          <Image
+            src={slide.image}
+            alt={
+              slide.imageAlt ||
+              `${slide.headingLine1} ${slide.headingLine2}`.trim()
+            }
+            fill
+            sizes="100vw"
+            // The hero fills the fold, so the first slide is the LCP element —
+            // it has to load eagerly at full width rather than lazily.
+            priority={i === 0}
+            className="object-cover object-center"
+          />
+        </div>
       ))}
       <div className="absolute inset-0 bg-black/50" />
 

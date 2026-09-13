@@ -47,6 +47,8 @@ function ProjectCard({ project, delay }: { project: Project; delay: number }) {
         before={project.before}
         after={project.after}
         title={project.title}
+        beforeAlt={project.beforeAlt}
+        afterAlt={project.afterAlt}
       />
 
       {/* Text below image */}

@@ -14,13 +14,19 @@ export default function HomeWhyChooseUsForm({ content }: { content: WhyChooseUsC
       <RepeatingFieldList
         name="items"
         defaultValue={content.items}
-        emptyItem={{ id: "", title: "", description: "", image: "" }}
+        emptyItem={{ id: "", title: "", description: "", image: "", imageAlt: "" }}
         itemLabel={(i) => i.title}
         fields={[
           { key: "id", label: "ID (slug, unique)" },
           { key: "title", label: "Title" },
           { key: "description", label: "Description", textarea: true },
-          { key: "image", label: "Image", image: true },
+          {
+            key: "image",
+            label: "Image",
+            image: true,
+            altKey: "imageAlt",
+            altFallbackKey: "title",
+          },
         ]}
       />
       <button type="submit" className="rounded-lg bg-[#c5eb02] text-black text-sm font-semibold px-6 py-3 hover:bg-[#c5eb02]/80">

@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { ArrowRight, MoveHorizontal } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 
@@ -7,6 +8,11 @@ interface BeforeAfterSliderProps {
   before: string;
   after: string;
   title: string;
+  /** Admin-set alt text; falls back to a description derived from `title`. */
+  beforeAlt?: string;
+  afterAlt?: string;
+  /** Width this slider actually occupies, so Cloudinary is asked for that size. */
+  sizes?: string;
   className?: string;
 }
 
@@ -14,6 +20,9 @@ export default function BeforeAfterSlider({
   before,
   after,
   title,
+  beforeAlt,
+  afterAlt,
+  sizes = "(min-width: 768px) 50vw, 100vw",
   className = "h-100",
 }: BeforeAfterSliderProps) {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -64,25 +73,32 @@ export default function BeforeAfterSlider({
       onPointerLeave={handlePointerUp}
     >
       {/* After image (base layer) */}
-      <img
+      <Image
         src={after}
-        alt={`${title} — after`}
+        alt={afterAlt || `${title} — after`}
+        fill
+        sizes={sizes}
         draggable={false}
-        className="absolute inset-0 w-full h-full object-cover bg-center pointer-events-none"
+        className="object-cover object-center pointer-events-none"
       />
 
-      {/* Before image (clipped to slider position) */}
+      {/* Before image (clipped to slider position). The inner wrapper stays the
+          full container width while the outer one narrows, so the visible half
+          reveals the image in place instead of squashing it. */}
       <div
         className="absolute inset-0 overflow-hidden pointer-events-none"
         style={{ width: `${sliderPos}%` }}
       >
-        <img
-          src={before}
-          alt={`${title} — before`}
-          draggable={false}
-          className="h-full object-cover max-w-none"
-          style={{ width: containerWidth || "100%" }}
-        />
+        <div className="relative h-full" style={{ width: containerWidth || "100%" }}>
+          <Image
+            src={before}
+            alt={beforeAlt || `${title} — before`}
+            fill
+            sizes={sizes}
+            draggable={false}
+            className="object-cover object-center"
+          />
+        </div>
       </div>
 
       {/* Labels */}

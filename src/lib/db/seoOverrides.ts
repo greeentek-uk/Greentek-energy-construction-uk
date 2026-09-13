@@ -1,5 +1,5 @@
 import { getDb } from "./mongodb";
-import type { SeoOverride, SeoOverrides } from "@/lib/seo";
+import type { SeoOverride, SeoOverrides } from "@/lib/seoTypes";
 
 const COLLECTION = "seoOverrides";
 
@@ -15,9 +15,13 @@ export async function getSeoOverrides(): Promise<SeoOverrides> {
 
 export async function upsertSeoOverride(path: string, override: SeoOverride): Promise<void> {
   const db = await getDb();
+  // Replace rather than merge: an admin clearing a field means "remove it",
+  // and $set would leave the old value behind.
   await db
     .collection<SeoOverrideDoc>(COLLECTION)
-    .updateOne({ _id: path }, { $set: override }, { upsert: true });
+    .replaceOne({ _id: path }, { _id: path, ...override } as SeoOverrideDoc, {
+      upsert: true,
+    });
 }
 
 export async function deleteSeoOverride(path: string): Promise<void> {

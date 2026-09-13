@@ -13,8 +13,9 @@ export default async function SeoListPage() {
     <div>
       <h1 className="text-2xl font-bold mb-1">Page SEO</h1>
       <p className="text-white/50 mb-8 text-sm">
-        Set a custom meta title/description for any page. Pages without an
-        override use the site&apos;s built-in default copy.
+        Per-page title, description, canonical, social cards and crawler directives.
+        Anything left blank falls back to the site-wide template in{" "}
+        <span className="text-white/70">SEO Settings</span>.
       </p>
 
       {groups.map((group) => (
@@ -37,7 +38,12 @@ export default async function SeoListPage() {
                     <p className="text-xs text-white/40 truncate">{r.path}</p>
                   </div>
                   <div className="flex items-center gap-3 shrink-0">
-                    {overrides[r.path] && (
+                    {overrides[r.path]?.noindex && (
+                      <span className="text-[10px] font-bold uppercase text-red-400 bg-red-500/10 px-2 py-1 rounded-full">
+                        Noindex
+                      </span>
+                    )}
+                    {overrides[r.path] && !overrides[r.path]?.noindex && (
                       <span className="text-[10px] font-bold uppercase text-green-400 bg-green-500/10 px-2 py-1 rounded-full">
                         Custom
                       </span>

@@ -14,11 +14,17 @@ export default function BrandsForm({ content }: { content: BrandsContent }) {
       <RepeatingFieldList
         name="logos"
         defaultValue={content.logos}
-        emptyItem={{ name: "", image: "" }}
+        emptyItem={{ name: "", image: "", imageAlt: "" }}
         itemLabel={(i) => i.name}
         fields={[
           { key: "name", label: "Name (alt text)" },
-          { key: "image", label: "Logo", image: true },
+          {
+            key: "image",
+            label: "Logo",
+            image: true,
+            altKey: "imageAlt",
+            altFallbackKey: "name",
+          },
         ]}
       />
       <button type="submit" className="rounded-lg bg-[#c5eb02] text-black text-sm font-semibold px-6 py-3 hover:bg-[#c5eb02]/80">

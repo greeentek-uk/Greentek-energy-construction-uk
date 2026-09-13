@@ -92,12 +92,18 @@ export default function ProjectForm({
           label="Before Image"
           defaultValue={initial?.before}
           required
+          altName="beforeAlt"
+          altDefaultValue={initial?.beforeAlt}
+          altFallback={initial?.title ? `${initial.title} — before` : undefined}
         />
         <ImageUploadField
           name="after"
           label="After Image"
           defaultValue={initial?.after}
           required
+          altName="afterAlt"
+          altDefaultValue={initial?.afterAlt}
+          altFallback={initial?.title ? `${initial.title} — after` : undefined}
         />
       </div>
       <div>
@@ -115,6 +121,8 @@ export default function ProjectForm({
         name="gallery"
         label="Extra Gallery Images"
         defaultValue={initial?.gallery}
+        altName="galleryAlt"
+        altDefaultValue={initial?.galleryAlt}
       />
       <button
         type="submit"

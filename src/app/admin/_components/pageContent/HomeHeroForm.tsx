@@ -25,6 +25,7 @@ export default function HomeHeroForm({ content }: { content: HomeHeroContent }) 
           defaultValue={content.slides}
           emptyItem={{
             image: "",
+            imageAlt: "",
             headingLine1: "",
             headingLine2: "",
             body: "",
@@ -32,7 +33,13 @@ export default function HomeHeroForm({ content }: { content: HomeHeroContent }) 
           }}
           itemLabel={(item) => `${item.headingLine1} ${item.headingLine2}`}
           fields={[
-            { key: "image", label: "Background Image", image: true },
+            {
+              key: "image",
+              label: "Background Image",
+              image: true,
+              altKey: "imageAlt",
+              altFallbackKey: "headingLine1",
+            },
             { key: "headingLine1", label: "Heading Line 1" },
             { key: "headingLine2", label: "Heading Line 2" },
             { key: "body", label: "Body", textarea: true },

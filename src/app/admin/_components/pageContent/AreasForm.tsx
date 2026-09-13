@@ -19,18 +19,32 @@ export default function AreasForm({ content }: { content: AreasContent }) {
         <Field label="Stat" name="largeArea_stat" defaultValue={content.largeArea.stat} />
         <Field label="Note" name="largeArea_note" defaultValue={content.largeArea.note} />
         <Field label="Path" name="largeArea_path" defaultValue={content.largeArea.path} required />
-        <ImageUploadField name="largeArea_image" label="Image" defaultValue={content.largeArea.image} required />
+        <ImageUploadField
+          name="largeArea_image"
+          label="Image"
+          defaultValue={content.largeArea.image}
+          required
+          altName="largeArea_imageAlt"
+          altDefaultValue={content.largeArea.imageAlt}
+          altFallback={content.largeArea.name}
+        />
       </div>
 
       <RepeatingFieldList
         name="smallAreas"
         defaultValue={content.smallAreas}
-        emptyItem={{ name: "", image: "", path: "" }}
+        emptyItem={{ name: "", image: "", imageAlt: "", path: "" }}
         itemLabel={(i) => i.name}
         fields={[
           { key: "name", label: "Name" },
           { key: "path", label: "Path (e.g. /locations/dudley)" },
-          { key: "image", label: "Image", image: true },
+          {
+            key: "image",
+            label: "Image",
+            image: true,
+            altKey: "imageAlt",
+            altFallbackKey: "name",
+          },
         ]}
       />
 

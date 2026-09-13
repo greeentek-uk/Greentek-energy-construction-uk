@@ -4,6 +4,7 @@ import { deleteServiceAction } from "../../_actions/content";
 import SaveBanner from "../../_components/SaveBanner";
 import ServiceForm from "../../_components/ServiceForm";
 import ConfirmSubmitButton from "../../_components/ConfirmSubmitButton";
+import InternalLinkSuggestions from "../../_components/InternalLinkSuggestions";
 
 interface Props {
   searchParams: Promise<{ saved?: string; deleted?: string; error?: string }>;
@@ -56,7 +57,13 @@ export default async function ServicesAdminPage({ searchParams }: Props) {
                 Edit details
               </summary>
               <div className="px-5 pb-5 pt-2">
-                <ServiceForm initial={service} />
+                <InternalLinkSuggestions
+                  content={service.content}
+                  currentPath={`/services/${service.slug}`}
+                />
+                <div className="mt-4">
+                  <ServiceForm initial={service} />
+                </div>
               </div>
             </details>
           </div>

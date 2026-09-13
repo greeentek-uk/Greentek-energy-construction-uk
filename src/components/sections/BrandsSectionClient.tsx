@@ -90,7 +90,8 @@ export default function BrandsSectionClient({ eyebrow, heading, subheading, logo
               <div className="relative w-full h-full">
                 <Image
                   src={logo.image}
-                  alt={logo.name}
+                  sizes="(min-width: 768px) 112px, 80px"
+                  alt={logo.imageAlt || logo.name}
                   fill
                   className="object-contain"
                 />

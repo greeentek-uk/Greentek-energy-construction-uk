@@ -7,14 +7,24 @@ interface MultiImageUploadFieldProps {
   name: string;
   label: string;
   defaultValue?: string[];
+  /** Form field name for the parallel alt-text array. Omit to hide the alt inputs. */
+  altName?: string;
+  altDefaultValue?: string[];
 }
 
 export default function MultiImageUploadField({
   name,
   label,
   defaultValue = [],
+  altName,
+  altDefaultValue = [],
 }: MultiImageUploadFieldProps) {
   const [urls, setUrls] = useState<string[]>(defaultValue);
+  // Kept positionally aligned with `urls` so the two hidden arrays stay paired
+  // on submit — an image added or removed has to take its alt text with it.
+  const [alts, setAlts] = useState<string[]>(() =>
+    defaultValue.map((_, i) => altDefaultValue[i] ?? ""),
+  );
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -46,6 +56,7 @@ export default function MultiImageUploadField({
     try {
       const uploaded = await Promise.all(files.map(uploadOne));
       setUrls((prev) => [...prev, ...uploaded]);
+      setAlts((prev) => [...prev, ...uploaded.map(() => "")]);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Upload failed");
     } finally {
@@ -56,31 +67,58 @@ export default function MultiImageUploadField({
 
   function removeAt(index: number) {
     setUrls((prev) => prev.filter((_, i) => i !== index));
+    setAlts((prev) => prev.filter((_, i) => i !== index));
+  }
+
+  function updateAlt(index: number, value: string) {
+    setAlts((prev) => prev.map((alt, i) => (i === index ? value : alt)));
   }
 
   return (
     <div>
       <label className="block text-xs font-semibold text-white/70 mb-1">{label}</label>
       {urls.map((url, i) => (
-        <input key={`${i}-${url}`} type="hidden" name={name} value={url} />
+        <input key={`url-${i}-${url}`} type="hidden" name={name} value={url} />
       ))}
+      {altName &&
+        urls.map((url, i) => (
+          <input key={`alt-${i}-${url}`} type="hidden" name={altName} value={alts[i] ?? ""} />
+        ))}
       {urls.length > 0 && (
-        <div className="grid grid-cols-4 gap-2 mb-2">
+        <div className="space-y-2 mb-2">
           {urls.map((url, i) => (
-            <div key={`${i}-${url}`} className="relative">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={url}
-                alt=""
-                className="w-full h-20 object-cover rounded-lg border border-white/10 bg-white/5"
-              />
-              <button
-                type="button"
-                onClick={() => removeAt(i)}
-                className="absolute top-1 right-1 bg-black/70 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center"
-              >
-                ×
-              </button>
+            <div
+              key={`${i}-${url}`}
+              className="flex items-start gap-3 rounded-lg border border-white/10 bg-white/5 p-2"
+            >
+              <div className="relative shrink-0">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={url}
+                  alt=""
+                  className="w-24 h-20 object-cover rounded-md border border-white/10"
+                />
+                <button
+                  type="button"
+                  onClick={() => removeAt(i)}
+                  className="absolute top-1 right-1 bg-black/70 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center"
+                >
+                  ×
+                </button>
+              </div>
+              {altName && (
+                <div className="flex-1 min-w-0">
+                  <label className="block text-xs font-semibold text-white/70 mb-1">
+                    Alt text
+                  </label>
+                  <input
+                    value={alts[i] ?? ""}
+                    onChange={(e) => updateAlt(i, e.target.value)}
+                    placeholder="Describe what this photo shows"
+                    className="w-full rounded-lg border border-white/15 bg-white/5 px-3 py-2 text-sm text-white placeholder:text-white/30 outline-none focus:border-[#c5eb02] focus:ring-2 focus:ring-[#c5eb02]/20 transition-all"
+                  />
+                </div>
+              )}
             </div>
           ))}
         </div>

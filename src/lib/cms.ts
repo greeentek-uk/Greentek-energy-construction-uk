@@ -5,6 +5,7 @@ import { getLocations } from "./db/locations";
 import { getSettings } from "./db/settings";
 import { getBlogPosts } from "./db/blogPosts";
 import { getSeoOverrides } from "./db/seoOverrides";
+import { getMenus } from "./db/menus";
 import { getBlockPublished } from "./db/pageContent";
 import type { SiteConfig } from "@/data/site";
 import type { BlogPost } from "@/data/blogs";
@@ -13,13 +14,25 @@ import type { PageContentMap, PageContentKey } from "@/data/pageContent";
 
 /** Assembles the same shape every page already consumes, from parallel collection reads. Cached per-request so Header/Footer/page body sharing one request only hit Mongo once. */
 export const getCurrentSiteConfig = cache(async (): Promise<SiteConfig> => {
-  const [settings, services, projects, locations] = await Promise.all([
+  const [settings, services, projects, locations, menus] = await Promise.all([
     getSettings(),
     getServices(),
     getProjects(),
     getLocations(),
+    getMenus(),
   ]);
-  return { ...settings, services, projects, locations };
+
+  // Navigation is overlaid from the Menus collection rather than stored on
+  // settings, so Header and Footer pick it up without either component
+  // knowing where it came from.
+  return {
+    ...settings,
+    services,
+    projects,
+    locations,
+    navLinks: menus.header.map(({ label, href, newTab }) => ({ label, href, newTab })),
+    footerLinks: menus.footer.map(({ label, href, newTab }) => ({ label, href, newTab })),
+  };
 });
 
 export const getCurrentBlogPosts = cache((): Promise<BlogPost[]> => getBlogPosts());

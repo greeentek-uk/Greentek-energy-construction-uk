@@ -103,6 +103,7 @@ export function BlogFilterClient({ posts: blogPosts }: { posts: BlogPost[] }) {
                 <div className="relative h-80 md:h-96 lg:h-[420px] rounded-xl overflow-hidden group cursor-pointer flex items-center justify-center">
                   <Image
                     src={featuredPost.coverImage}
+                    sizes="(min-width: 1024px) 50vw, 100vw"
                     alt={featuredPost.coverImageAlt}
                     fill
                     className="object-contain object-center"
@@ -181,6 +182,7 @@ export function BlogFilterClient({ posts: blogPosts }: { posts: BlogPost[] }) {
                   >
                     <Image
                       src={post.coverImage}
+                      sizes="(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw"
                       alt={post.coverImageAlt}
                       fill
                       className="object-contain object-center"

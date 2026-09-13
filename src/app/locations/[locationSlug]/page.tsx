@@ -12,6 +12,9 @@ import AccreditationsSection from "@/components/sections/AccreditationsSection";
 import ContentBlocks from "@/components/ui/ContentBlocks";
 import { withSeoOverride } from "@/lib/seo";
 import { buildLocationJsonLd, SITE_URL } from "@/lib/structuredData";
+import PageSchema from "@/components/site/PageSchema";
+import Breadcrumbs from "@/components/site/Breadcrumbs";
+import FaqSection from "@/components/site/FaqSection";
 
 interface Props {
   params: {
@@ -29,12 +32,15 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   }
 
   return withSeoOverride(`/locations/${location.slug}`, {
+    kind: "location",
     title:
       location.metaTitle ||
       `Construction & Renewable Energy Services in ${location.name}`,
     description:
       location.metaDescription ||
       `Greentek installs solar PV, air source heat pumps, insulation and full property renovations in ${location.name}, ${location.region}. Free local survey and fixed-price quote.`,
+    image: location.image,
+    vars: { location: location.name, region: location.region },
   });
 }
 
@@ -63,9 +69,12 @@ export default async function LocationDetailPage({ params }: Props) {
 
   return (
     <div className="flex flex-col min-h-screen bg-black">
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      <PageSchema path={`/locations/${location.slug}`} defaultJsonLd={jsonLd} />
+      <Breadcrumbs
+        crumbs={[
+          { label: "Locations", href: "/locations" },
+          { label: location.name },
+        ]}
       />
       <Header />
 
@@ -75,7 +84,8 @@ export default async function LocationDetailPage({ params }: Props) {
           <div className="relative min-h-[560px] md:min-h-[620px] w-full">
             <Image
               src={location.image}
-              alt={location.name}
+              sizes="100vw"
+              alt={location.imageAlt || location.name}
               fill
               className="object-cover"
               priority
@@ -136,7 +146,8 @@ export default async function LocationDetailPage({ params }: Props) {
                   <div className="w-full h-48 sm:h-auto sm:w-[40%]">
                     <Image
                       src={service.image}
-                      alt={service.title}
+                      sizes="(min-width: 640px) 40vw, 100vw"
+                      alt={service.imageAlt || service.title}
                       width={300}
                       height={300}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
@@ -188,6 +199,7 @@ export default async function LocationDetailPage({ params }: Props) {
 
         {/* Quote form */}
         <div id="quote">
+          <FaqSection faqs={location.faqs} />
           <CtaSection
             eyebrow="Free Local Quote"
             heading={`Get a Free Quote in ${location.name}`}

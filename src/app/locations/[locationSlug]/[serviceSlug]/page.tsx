@@ -14,6 +14,9 @@ import BeforeAfterSlider from "@/components/ui/BeforeAfterSlider";
 import { withSeoOverride } from "@/lib/seo";
 import { buildLocalizedServiceJsonLd, SITE_URL } from "@/lib/structuredData";
 import { getLocationServiceContentByKeys } from "@/lib/db/locationServiceContent";
+import PageSchema from "@/components/site/PageSchema";
+import Breadcrumbs from "@/components/site/Breadcrumbs";
+import FaqSection from "@/components/site/FaqSection";
 
 interface Props {
   params: {
@@ -44,10 +47,17 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const override = await getLocationServiceContentByKeys(location.slug, service.slug);
 
   return withSeoOverride(`/locations/${location.slug}/${service.slug}`, {
+    kind: "locationService",
     title: override?.metaTitle || `${service.shortName} in ${location.name}`,
     description:
       override?.metaDescription ||
       `Professional ${service.shortName.toLowerCase()} in ${location.name}, ${location.region}. Free local survey, fixed-price quote and in-house installation team. Also covering ${location.nearbyAreas.join(", ")}.`,
+    image: service.image,
+    vars: {
+      service: service.shortName,
+      location: location.name,
+      region: location.region,
+    },
   });
 }
 
@@ -94,9 +104,13 @@ export default async function LocationServicePage({ params }: Props) {
 
   return (
     <div className="flex flex-col min-h-screen bg-black">
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      <PageSchema path={`/locations/${location.slug}/${service.slug}`} defaultJsonLd={jsonLd} />
+      <Breadcrumbs
+        crumbs={[
+          { label: "Locations", href: "/locations" },
+          { label: location.name, href: `/locations/${location.slug}` },
+          { label: service.shortName },
+        ]}
       />
       <Header />
 
@@ -155,7 +169,8 @@ export default async function LocationServicePage({ params }: Props) {
         <div className="relative h-96 md:h-125 w-full bg-black overflow-hidden flex items-center justify-center border-b border-[#c5eb02]">
           <Image
             src={service.image}
-            alt={`${service.title} in ${location.name}`}
+            sizes="100vw"
+            alt={service.imageAlt || `${service.title} in ${location.name}`}
             fill
             className="object-contain object-center"
             priority
@@ -236,6 +251,8 @@ export default async function LocationServicePage({ params }: Props) {
                       before={project.before}
                       after={project.after}
                       title={project.title}
+                      beforeAlt={project.beforeAlt}
+                      afterAlt={project.afterAlt}
                       className="h-72"
                     />
                     <div className="pt-4">
@@ -260,6 +277,7 @@ export default async function LocationServicePage({ params }: Props) {
 
         {/* Quote form */}
         <div id="quote">
+          <FaqSection faqs={override?.faqs} />
           <CtaSection
             eyebrow="Free Local Quote"
             heading={`Get a Free ${service.shortName} Quote in ${location.name}`}

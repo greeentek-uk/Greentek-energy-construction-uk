@@ -9,6 +9,10 @@ interface FieldSpec {
   textarea?: boolean;
   type?: string;
   image?: boolean;
+  /** For an image field: the item key its alt text is stored under, rendered as a paired input. */
+  altKey?: string;
+  /** Item key whose value the site falls back to when alt is blank, shown as the placeholder. */
+  altFallbackKey?: string;
   /** Field value is a string[], edited as one-per-line text. */
   lines?: boolean;
 }
@@ -93,14 +97,34 @@ export default function RepeatingFieldList<T extends Record<string, unknown>>({
           {fields.map((field) => {
             const value = item[field.key];
             if (field.image) {
+              const altValue = field.altKey ? item[field.altKey] : undefined;
+              const fallback = field.altFallbackKey ? item[field.altFallbackKey] : undefined;
               return (
-                <ImageUploadField
-                  key={field.key}
-                  name={`__no_submit_${name}_${field.key}`}
-                  label={field.label}
-                  defaultValue={typeof value === "string" ? value : ""}
-                  onChange={(url) => updateField(index, field.key, url)}
-                />
+                <div key={field.key} className="space-y-2">
+                  <ImageUploadField
+                    name={`__no_submit_${name}_${field.key}`}
+                    label={field.label}
+                    defaultValue={typeof value === "string" ? value : ""}
+                    onChange={(url) => updateField(index, field.key, url)}
+                  />
+                  {field.altKey && (
+                    <div>
+                      <label className="block text-xs font-semibold text-white/70 mb-1">
+                        Alt text
+                      </label>
+                      <input
+                        value={typeof altValue === "string" ? altValue : ""}
+                        onChange={(e) => updateField(index, field.altKey!, e.target.value)}
+                        placeholder={
+                          typeof fallback === "string" && fallback
+                            ? `Leave blank to use "${fallback}"`
+                            : "Describe the image for screen readers and search engines"
+                        }
+                        className="w-full rounded-lg border border-white/15 bg-white/5 px-3 py-2 text-sm text-white placeholder:text-white/30 outline-none focus:border-[#c5eb02] focus:ring-2 focus:ring-[#c5eb02]/20 transition-all"
+                      />
+                    </div>
+                  )}
+                </div>
               );
             }
             if (field.lines) {

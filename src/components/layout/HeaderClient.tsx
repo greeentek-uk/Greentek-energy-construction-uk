@@ -66,6 +66,7 @@ export default function HeaderClient({ siteConfig }: { siteConfig: SiteConfig })
           <Link href="/" className="flex items-center z-[70]">
             <Image
               src="/images/home-page/greentek-logo.png"
+              sizes="180px"
               alt="Greentek"
               width={180}
               height={60}
@@ -257,6 +258,7 @@ export default function HeaderClient({ siteConfig }: { siteConfig: SiteConfig })
             >
               <Image
                 src="/images/home-page/greentek-logo.png"
+                sizes="180px"
                 alt="Greentek"
                 width={180}
                 height={60}

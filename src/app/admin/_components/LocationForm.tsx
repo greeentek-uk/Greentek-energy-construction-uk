@@ -4,6 +4,7 @@ import type { Location } from "@/data/site";
 import { saveLocationAction, createLocationAction } from "../_actions/content";
 import ImageUploadField from "./ImageUploadField";
 import ContentBlocksEditor from "./ContentBlocksEditor";
+import FaqEditor from "./FaqEditor";
 
 export default function LocationForm({ initial }: { initial?: Location }) {
   const isNew = !initial;
@@ -56,6 +57,9 @@ export default function LocationForm({ initial }: { initial?: Location }) {
         label="Image"
         defaultValue={initial?.image}
         required
+        altName="imageAlt"
+        altDefaultValue={initial?.imageAlt}
+        altFallback={initial?.name}
       />
       <div>
         <label className="block text-xs font-semibold text-white/70 mb-1">
@@ -128,6 +132,8 @@ export default function LocationForm({ initial }: { initial?: Location }) {
       <div className="border-t border-white/10 pt-4">
         <ContentBlocksEditor initial={initial?.content} />
       </div>
+
+      <FaqEditor initial={initial?.faqs} />
 
       <button
         type="submit"

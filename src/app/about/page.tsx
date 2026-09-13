@@ -9,6 +9,7 @@ import WhyChooseUs from "@/components/sections/WhyChooseUs";
 import BrandsSection from "@/components/sections/BrandsSection";
 import Process from "@/components/sections/Process";
 import AboutPageClient from "./AboutPageClient";
+import PageSchema from "@/components/site/PageSchema";
 
 export async function generateMetadata(): Promise<Metadata> {
   return withSeoOverride("/about", {
@@ -26,6 +27,7 @@ export default async function AboutPage() {
 
   return (
     <div className="flex flex-col min-h-screen">
+      <PageSchema path="/about" />
       <Header />
       <AboutPageClient
         siteConfig={siteConfig}

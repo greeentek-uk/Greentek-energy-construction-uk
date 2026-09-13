@@ -13,6 +13,9 @@ import BeforeAfterSlider from "@/components/ui/BeforeAfterSlider";
 import ContentBlocks from "@/components/ui/ContentBlocks";
 import { withSeoOverride } from "@/lib/seo";
 import { buildServiceJsonLd, SITE_URL } from "@/lib/structuredData";
+import PageSchema from "@/components/site/PageSchema";
+import Breadcrumbs from "@/components/site/Breadcrumbs";
+import FaqSection from "@/components/site/FaqSection";
 
 interface Props {
   params: {
@@ -32,8 +35,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   }
 
   return withSeoOverride(`/services/${service.slug}`, {
+    kind: "service",
     title: service.metaTitle || service.title,
     description: service.metaDescription || service.description,
+    image: service.image,
+    vars: { service: service.title },
   });
 }
 
@@ -69,9 +75,12 @@ export default async function ServiceDetailPage({ params }: Props) {
 
   return (
     <div className="flex flex-col min-h-screen bg-black">
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      <PageSchema path={`/services/${service.slug}`} defaultJsonLd={jsonLd} />
+      <Breadcrumbs
+        crumbs={[
+          { label: "Services", href: "/services" },
+          { label: service.title },
+        ]}
       />
       <Header />
 
@@ -188,6 +197,8 @@ export default async function ServiceDetailPage({ params }: Props) {
                       before={project.before}
                       after={project.after}
                       title={project.title}
+                      beforeAlt={project.beforeAlt}
+                      afterAlt={project.afterAlt}
                       className="h-72"
                     />
                     <div className="pt-4">
@@ -218,6 +229,7 @@ export default async function ServiceDetailPage({ params }: Props) {
 
         {/* Quote Form */}
         <div id="quote">
+          <FaqSection faqs={service.faqs} />
           <CtaSection
             eyebrow="Free Quote"
             heading={`Get a Free ${service.shortName} Quote`}

@@ -4,6 +4,7 @@ import type { Service } from "@/data/site";
 import { saveServiceAction, createServiceAction } from "../_actions/content";
 import ImageUploadField from "./ImageUploadField";
 import ContentBlocksEditor from "./ContentBlocksEditor";
+import FaqEditor from "./FaqEditor";
 
 const FORM_CATEGORIES = [
   "solar_storage",
@@ -77,6 +78,9 @@ export default function ServiceForm({ initial }: { initial?: Service }) {
           label="Image"
           defaultValue={initial?.image}
           required
+          altName="imageAlt"
+          altDefaultValue={initial?.imageAlt}
+          altFallback={initial?.title}
         />
         <div>
           <label className="block text-xs font-semibold text-white/70 mb-1">
@@ -135,6 +139,8 @@ export default function ServiceForm({ initial }: { initial?: Service }) {
       <div className="border-t border-white/10 pt-4">
         <ContentBlocksEditor initial={initial?.content} />
       </div>
+
+      <FaqEditor initial={initial?.faqs} />
 
       <button
         type="submit"

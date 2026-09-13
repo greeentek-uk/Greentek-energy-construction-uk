@@ -1,5 +1,6 @@
 import { getDb } from "./mongodb";
 import type { Service } from "@/data/site";
+import { saveRevision } from "./revisions";
 
 const COLLECTION = "services";
 
@@ -41,10 +42,15 @@ export async function updateService(
   updates: Partial<Omit<Service, "slug">>,
 ): Promise<void> {
   const db = await getDb();
+  // Snapshot before writing, so the panel can walk a bad edit back.
+  const existing = await getServiceBySlug(slug);
+  if (existing) await saveRevision("services", slug, existing, existing.title);
   await db.collection<ServiceDoc>(COLLECTION).updateOne({ _id: slug }, { $set: updates });
 }
 
 export async function deleteService(slug: string): Promise<void> {
   const db = await getDb();
+  const existing = await getServiceBySlug(slug);
+  if (existing) await saveRevision("services", slug, existing, `${existing.title} (deleted)`);
   await db.collection<ServiceDoc>(COLLECTION).deleteOne({ _id: slug });
 }

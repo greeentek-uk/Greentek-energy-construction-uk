@@ -4,6 +4,7 @@ import { getCurrentSiteConfig, getPageContent } from "@/lib/cms";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import ProjectsPageClient from "./ProjectsPageClient";
+import PageSchema from "@/components/site/PageSchema";
 
 export async function generateMetadata(): Promise<Metadata> {
   return withSeoOverride("/projects", {
@@ -21,6 +22,7 @@ export default async function ProjectsPage() {
 
   return (
     <div className="flex flex-col min-h-screen">
+      <PageSchema path="/projects" />
       <Header />
       <ProjectsPageClient projects={projects} header={header} />
       <Footer />

@@ -4,6 +4,7 @@ import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import { withSeoOverride } from "@/lib/seo";
 import FinanceCalculator from "./FinanceCalculator";
+import PageSchema from "@/components/site/PageSchema";
 
 const APPLY_URL = "https://ideal4finance.com/loan-apply/grntekener";
 
@@ -35,6 +36,7 @@ export async function generateMetadata(): Promise<Metadata> {
 export default function FinancePage() {
   return (
     <div className="flex flex-col min-h-screen bg-black">
+      <PageSchema path="/finance" />
       <Header />
 
       <main className="flex-1">

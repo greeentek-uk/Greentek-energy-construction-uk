@@ -1,13 +1,21 @@
 import Link from "next/link";
 import { getCurrentSiteConfig, getCurrentBlogPosts } from "@/lib/cms";
 import { listBlocksWithDirty } from "@/lib/db/pageContent";
+import { getRedirects } from "@/lib/db/redirects";
+import { getNotFoundEntries } from "@/lib/db/notFoundLog";
+import { getPages } from "@/lib/db/pages";
 
 export default async function AdminHomePage() {
-  const [site, posts, pageContentBlocks] = await Promise.all([
+  const [site, posts, pageContentBlocks, redirects, notFound] = await Promise.all([
     getCurrentSiteConfig(),
     getCurrentBlogPosts(),
     listBlocksWithDirty(),
+    getRedirects(),
+    getNotFoundEntries(),
   ]);
+  const pageCount = (await getPages()).length;
+  const redirectCount = redirects.length;
+  const notFoundCount = notFound.filter((entry) => !entry.resolved).length;
   const dirtyCount = pageContentBlocks.filter((b) => b.dirty).length;
 
   const cards = [
@@ -17,10 +25,26 @@ export default async function AdminHomePage() {
       label: "Page Content",
       count: dirtyCount > 0 ? `${dirtyCount} unpublished change${dirtyCount === 1 ? "" : "s"}` : "Shared sections & page headers",
     },
+    { href: "/admin/pages", label: "Pages", count: `${pageCount} pages` },
+    { href: "/admin/menus", label: "Menus", count: "Header & footer links" },
     { href: "/admin/blog", label: "Blog Posts", count: `${posts.length} posts` },
     { href: "/admin/services", label: "Services", count: `${site.services.length} services` },
     { href: "/admin/projects", label: "Projects", count: `${site.projects.length} projects` },
     { href: "/admin/locations", label: "Locations", count: `${site.locations.length} areas` },
+    { href: "/admin/seo-settings", label: "SEO Settings", count: "Templates, social & verification" },
+    { href: "/admin/schema", label: "Schema (JSON-LD)", count: "Structured data per page" },
+    { href: "/admin/sitemap", label: "Sitemap", count: "What's included & excluded" },
+    {
+      href: "/admin/redirects",
+      label: "Redirects & 404s",
+      count: `${redirectCount} redirects · ${notFoundCount} missing pages`,
+    },
+    { href: "/admin/local-seo", label: "Local SEO", count: "Hours, coordinates & service area" },
+    { href: "/admin/scripts", label: "Scripts & Tracking", count: "Analytics, pixels & tags" },
+    { href: "/admin/site-files", label: "robots.txt & llms.txt", count: "Crawler & AI instructions" },
+    { href: "/admin/media", label: "Media", count: "Images & alt text coverage" },
+    { href: "/admin/images", label: "Image Delivery", count: "Cloudinary compression & sizing" },
+    { href: "/admin/revisions", label: "Version History", count: "Undo a bad edit" },
     { href: "/admin/settings", label: "Company Settings", count: "Phone, email, social & more" },
   ];
 

@@ -62,7 +62,8 @@ export default function AccreditationsSectionClient({ heading, logos }: Accredit
               <div className="relative w-25 h-25 md:w-45 md:h-25">
                 <Image
                   src={logo.image}
-                  alt={logo.name}
+                  sizes="(min-width: 768px) 180px, 100px"
+                  alt={logo.imageAlt || logo.name}
                   fill
                   className="object-contain"
                 />

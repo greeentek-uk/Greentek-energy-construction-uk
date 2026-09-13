@@ -1,5 +1,6 @@
 import { getDb } from "./mongodb";
 import type { Location } from "@/data/site";
+import { saveRevision } from "./revisions";
 
 const COLLECTION = "locations";
 
@@ -41,10 +42,15 @@ export async function updateLocation(
   updates: Partial<Omit<Location, "slug">>,
 ): Promise<void> {
   const db = await getDb();
+  // Snapshot before writing, so the panel can walk a bad edit back.
+  const existing = await getLocationBySlug(slug);
+  if (existing) await saveRevision("locations", slug, existing, existing.name);
   await db.collection<LocationDoc>(COLLECTION).updateOne({ _id: slug }, { $set: updates });
 }
 
 export async function deleteLocation(slug: string): Promise<void> {
   const db = await getDb();
+  const existing = await getLocationBySlug(slug);
+  if (existing) await saveRevision("locations", slug, existing, `${existing.name} (deleted)`);
   await db.collection<LocationDoc>(COLLECTION).deleteOne({ _id: slug });
 }

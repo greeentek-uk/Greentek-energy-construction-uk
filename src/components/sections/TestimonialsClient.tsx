@@ -35,7 +35,8 @@ function ReviewCard({ review }: { review: Review }) {
           <div>
             <Image
               src={review.image}
-              alt={review.name}
+              sizes="60px"
+              alt={review.imageAlt || review.name}
               width={100}
               height={100}
               className="w-15 h-15 rounded-full object-cover"

@@ -147,7 +147,7 @@ export default function WhyChooseUsClient({
               <Image
                 key={reason.id}
                 src={reason.image}
-                alt={reason.title}
+                alt={reason.imageAlt || reason.title}
                 fill
                 sizes="(max-width: 1024px) 100vw, 50vw"
                 className={`object-cover transition-opacity duration-500 ease-in-out ${

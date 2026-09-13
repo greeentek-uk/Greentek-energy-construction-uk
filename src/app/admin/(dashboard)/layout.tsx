@@ -7,11 +7,23 @@ import ConfirmSubmitButton from "../_components/ConfirmSubmitButton";
 const navItems = [
   { href: "/admin", label: "Dashboard" },
   { href: "/admin/seo", label: "Page SEO" },
+  { href: "/admin/seo-settings", label: "SEO Settings" },
+  { href: "/admin/schema", label: "Schema (JSON-LD)" },
+  { href: "/admin/sitemap", label: "Sitemap" },
+  { href: "/admin/redirects", label: "Redirects & 404s" },
+  { href: "/admin/local-seo", label: "Local SEO" },
   { href: "/admin/page-content", label: "Page Content" },
+  { href: "/admin/pages", label: "Pages" },
+  { href: "/admin/menus", label: "Menus" },
   { href: "/admin/blog", label: "Blog Posts" },
   { href: "/admin/services", label: "Services" },
   { href: "/admin/projects", label: "Projects" },
   { href: "/admin/locations", label: "Locations" },
+  { href: "/admin/scripts", label: "Scripts & Tracking" },
+  { href: "/admin/site-files", label: "robots.txt & llms.txt" },
+  { href: "/admin/media", label: "Media" },
+  { href: "/admin/images", label: "Image Delivery" },
+  { href: "/admin/revisions", label: "Version History" },
   { href: "/admin/settings", label: "Company Settings" },
 ];
 

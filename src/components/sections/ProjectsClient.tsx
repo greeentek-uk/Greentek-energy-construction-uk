@@ -99,7 +99,7 @@ function GalleryCard({
         {/* After image (base layer) */}
         <img
           src={project.after}
-          alt={`${project.title} — after`}
+          alt={project.afterAlt || `${project.title} — after`}
           draggable={false}
           className="absolute inset-0 h-full w-full bg-center object-cover pointer-events-none"
         />
@@ -111,7 +111,7 @@ function GalleryCard({
         >
           <img
             src={project.before}
-            alt={`${project.title} — before`}
+            alt={project.beforeAlt || `${project.title} — before`}
             draggable={false}
             className="h-full max-w-none object-cover"
             style={{ width: containerWidth || "100%" }}

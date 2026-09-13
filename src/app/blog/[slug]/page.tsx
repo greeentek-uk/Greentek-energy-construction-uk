@@ -7,6 +7,10 @@ import Footer from "@/components/layout/Footer";
 import { getCurrentBlogPosts } from "@/lib/cms";
 import { buildBlogPostingJsonLd, SITE_URL } from "@/lib/structuredData";
 import ContentBlocks from "@/components/ui/ContentBlocks";
+import PageSchema from "@/components/site/PageSchema";
+import { withSeoOverride } from "@/lib/seo";
+import Breadcrumbs from "@/components/site/Breadcrumbs";
+import FaqSection from "@/components/site/FaqSection";
 
 interface Props {
   params: {
@@ -25,14 +29,20 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     };
   }
 
+  const metadata = await withSeoOverride(`/blog/${post.slug}`, {
+    kind: "blog",
+    title: post.metaTitle || post.title,
+    description: post.metaDescription || post.excerpt,
+    image: post.coverImage,
+    ogType: "article",
+    vars: { category: post.category, date: post.date },
+  });
+
   return {
-    title: { absolute: post.metaTitle },
-    description: post.metaDescription,
+    ...metadata,
     keywords: post.keywords,
-    alternates: { canonical: `/blog/${post.slug}` },
     openGraph: {
-      title: post.metaTitle,
-      description: post.metaDescription,
+      ...metadata.openGraph,
       type: "article",
       publishedTime: post.date,
       authors: ["Greentek"],
@@ -60,9 +70,9 @@ export default async function BlogDetailPage({ params }: Props) {
 
   return (
     <div className="flex flex-col min-h-screen bg-black">
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      <PageSchema path={`/blog/${post.slug}`} defaultJsonLd={jsonLd} />
+      <Breadcrumbs
+        crumbs={[{ label: "Blog", href: "/blog" }, { label: post.title }]}
       />
       <Header />
 
@@ -95,6 +105,7 @@ export default async function BlogDetailPage({ params }: Props) {
         <div className="relative h-96 md:h-125  w-full bg-black overflow-hidden flex items-center justify-center border-b border-[#c5eb02]">
           <Image
             src={post.coverImage}
+            sizes="100vw"
             alt={post.coverImageAlt}
             fill
             className="object-contain object-center"
@@ -201,6 +212,7 @@ export default async function BlogDetailPage({ params }: Props) {
         </section>
       </main>
 
+      <FaqSection faqs={post.faqs} />
       <Footer />
     </div>
   );

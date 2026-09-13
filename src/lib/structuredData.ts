@@ -8,7 +8,7 @@ export const SITE_URL =
 export function buildLocalBusinessJsonLd(siteConfig: SiteConfig, siteUrl: string) {
   return {
     "@context": "https://schema.org",
-    "@type": "LocalBusiness",
+    "@type": siteConfig.localSeo?.businessType || "LocalBusiness",
     name: siteConfig.name,
     description: siteConfig.description,
     url: siteUrl,
@@ -28,6 +28,43 @@ export function buildLocalBusinessJsonLd(siteConfig: SiteConfig, siteUrl: string
       siteConfig.social.linkedin,
     ].filter(Boolean),
     areaServed: siteConfig.locations.map((l) => l.name),
+    ...localSeoFields(siteConfig),
+  };
+}
+
+/**
+ * The admin-entered Local SEO fields, in the shape schema.org expects.
+ *
+ * Split out so the same block can be reused by any business-type schema, and
+ * so an unset field is omitted entirely rather than emitted empty — Google
+ * treats a blank `priceRange` as a malformed value, not an absent one.
+ */
+function localSeoFields(siteConfig: SiteConfig) {
+  const local = siteConfig.localSeo;
+  if (!local) return {};
+
+  const hours = (local.openingHours ?? [])
+    .filter((entry) => entry.days.trim())
+    .map((entry) => ({
+      "@type": "OpeningHoursSpecification",
+      dayOfWeek: entry.days.split(",").map((d) => d.trim()).filter(Boolean),
+      ...(entry.closed ? { opens: "00:00", closes: "00:00" } : {}),
+      ...(!entry.closed && entry.opens ? { opens: entry.opens } : {}),
+      ...(!entry.closed && entry.closes ? { closes: entry.closes } : {}),
+    }));
+
+  return {
+    ...(local.priceRange ? { priceRange: local.priceRange } : {}),
+    ...(local.latitude && local.longitude
+      ? {
+          geo: {
+            "@type": "GeoCoordinates",
+            latitude: local.latitude,
+            longitude: local.longitude,
+          },
+        }
+      : {}),
+    ...(hours.length ? { openingHoursSpecification: hours } : {}),
   };
 }
 

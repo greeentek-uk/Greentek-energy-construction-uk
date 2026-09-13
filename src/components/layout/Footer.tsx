@@ -40,6 +40,7 @@ export default async function Footer() {
                 <div className="relative h-16 w-56">
                   <Image
                     src="/images/home-page/greentek-logo.png"
+                    sizes="224px"
                     alt={siteConfig.name}
                     fill
                     className="object-contain object-left"
@@ -182,20 +183,21 @@ export default async function Footer() {
             <p className="text-sm md:text-md text-white/90">
               © {currentYear} {siteConfig.name}. All rights reserved.
             </p>
-            <div className="flex gap-2">
-              <Link
-                href="/privacy"
-                className="text-xs text-[#c5eb02] transition-colors"
-              >
-                Privacy Policy
-              </Link>
-              <span className="text-gray-600 text-xs">·</span>
-              <Link
-                href="/terms"
-                className=" text-xs text-[#c5eb02] transition-colors"
-              >
-                Terms of Service
-              </Link>
+            <div className="flex flex-wrap justify-center items-center gap-2">
+              {siteConfig.footerLinks.map((link, index) => (
+                <span key={link.href} className="flex items-center gap-2">
+                  {index > 0 && <span className="text-gray-600 text-xs">·</span>}
+                  <Link
+                    href={link.href}
+                    {...(link.newTab
+                      ? { target: "_blank", rel: "noopener noreferrer" }
+                      : {})}
+                    className="text-xs text-[#c5eb02] transition-colors"
+                  >
+                    {link.label}
+                  </Link>
+                </span>
+              ))}
             </div>
           </div>
         </div>

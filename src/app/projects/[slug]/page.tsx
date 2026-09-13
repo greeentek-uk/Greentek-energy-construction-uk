@@ -7,6 +7,8 @@ import Footer from "@/components/layout/Footer";
 import { getCurrentSiteConfig } from "@/lib/cms";
 import BeforeAfterSlider from "@/components/ui/BeforeAfterSlider";
 import { withSeoOverride } from "@/lib/seo";
+import PageSchema from "@/components/site/PageSchema";
+import Breadcrumbs from "@/components/site/Breadcrumbs";
 
 interface Props {
   params: {
@@ -26,8 +28,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   }
 
   return withSeoOverride(`/projects/${project.slug}`, {
+    kind: "project",
     title: project.title,
     description: project.description,
+    image: project.after,
+    vars: { category: project.category },
   });
 }
 
@@ -57,6 +62,13 @@ export default async function ProjectDetailPage({ params }: Props) {
 
   return (
     <div className="flex flex-col min-h-screen bg-black">
+      <PageSchema path={`/projects/${project.slug}`} />
+      <Breadcrumbs
+        crumbs={[
+          { label: "Projects", href: "/projects" },
+          { label: project.title },
+        ]}
+      />
       <Header />
 
       <main className="flex-1">
@@ -86,6 +98,9 @@ export default async function ProjectDetailPage({ params }: Props) {
               before={project.before}
               after={project.after}
               title={project.title}
+              beforeAlt={project.beforeAlt}
+              afterAlt={project.afterAlt}
+              sizes="(min-width: 1280px) 1100px, 100vw"
               className="h-80 md:h-125"
             />
             <p className="text-center text-white/50 text-sm mt-4 font-medium">
@@ -166,7 +181,8 @@ export default async function ProjectDetailPage({ params }: Props) {
                       >
                         <Image
                           src={src}
-                          alt={`${project.title} — additional photo ${idx + 1}`}
+                          sizes="(min-width: 640px) 50vw, 100vw"
+                          alt={project.galleryAlt?.[idx] || `${project.title} — additional photo ${idx + 1}`}
                           fill
                           className="object-cover"
                         />

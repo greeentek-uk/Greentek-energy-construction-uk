@@ -4,6 +4,7 @@ import type { BlogPost } from "@/data/blogs";
 import { saveBlogPostAction } from "../_actions/blog";
 import ImageUploadField from "./ImageUploadField";
 import ContentBlocksEditor from "./ContentBlocksEditor";
+import FaqEditor from "./FaqEditor";
 
 function Field({
   label,
@@ -131,6 +132,8 @@ export default function BlogForm({ post }: { post?: BlogPost }) {
       <div className="bg-[#101314] border border-white/10 rounded-xl p-6">
         <ContentBlocksEditor initial={post?.content} />
       </div>
+
+      <FaqEditor initial={post?.faqs} />
 
       <button
         type="submit"

@@ -4,6 +4,7 @@ import { deleteLocationAction } from "../../_actions/content";
 import SaveBanner from "../../_components/SaveBanner";
 import LocationForm from "../../_components/LocationForm";
 import ConfirmSubmitButton from "../../_components/ConfirmSubmitButton";
+import InternalLinkSuggestions from "../../_components/InternalLinkSuggestions";
 
 interface Props {
   searchParams: Promise<{ saved?: string; deleted?: string; error?: string }>;
@@ -65,7 +66,13 @@ export default async function LocationsAdminPage({ searchParams }: Props) {
                 Edit details
               </summary>
               <div className="px-5 pb-5 pt-2">
-                <LocationForm initial={location} />
+                <InternalLinkSuggestions
+                  content={location.content}
+                  currentPath={`/locations/${location.slug}`}
+                />
+                <div className="mt-4">
+                  <LocationForm initial={location} />
+                </div>
               </div>
             </details>
           </div>

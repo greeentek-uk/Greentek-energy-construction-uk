@@ -4,6 +4,7 @@ import Footer from "@/components/layout/Footer";
 import { BlogFilterClient } from "./BlogFilter";
 import { withSeoOverride } from "@/lib/seo";
 import { getCurrentBlogPosts } from "@/lib/cms";
+import PageSchema from "@/components/site/PageSchema";
 
 export async function generateMetadata(): Promise<Metadata> {
   return {
@@ -33,6 +34,7 @@ export default async function BlogPage() {
 
   return (
     <div className="flex flex-col min-h-screen">
+      <PageSchema path="/blog" />
       <Header />
 
       <main className="flex-1 ">

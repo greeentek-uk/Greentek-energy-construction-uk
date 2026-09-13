@@ -16,3 +16,42 @@ export function signUploadParams(
   }
   return cloudinary.utils.api_sign_request(paramsToSign, apiSecret);
 }
+
+export interface MediaAsset {
+  publicId: string;
+  url: string;
+  format: string;
+  width: number;
+  height: number;
+  bytes: number;
+  createdAt: string;
+}
+
+/**
+ * Lists what's actually in the Cloudinary folder.
+ *
+ * The panel had no way to see existing uploads, so the same image was being
+ * re-uploaded per field and nothing could ever be cleaned up.
+ */
+export async function listMedia(max = 200): Promise<MediaAsset[]> {
+  const folder = process.env.CLOUDINARY_UPLOAD_FOLDER || "greentek";
+  const result = await cloudinary.api.resources({
+    type: "upload",
+    prefix: folder,
+    max_results: Math.min(max, 500),
+  });
+
+  return (result.resources as Record<string, unknown>[]).map((r) => ({
+    publicId: String(r.public_id),
+    url: String(r.secure_url),
+    format: String(r.format ?? ""),
+    width: Number(r.width ?? 0),
+    height: Number(r.height ?? 0),
+    bytes: Number(r.bytes ?? 0),
+    createdAt: String(r.created_at ?? ""),
+  }));
+}
+
+export async function deleteMedia(publicId: string): Promise<void> {
+  await cloudinary.uploader.destroy(publicId);
+}
