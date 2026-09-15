@@ -9,7 +9,10 @@
     "lint": "eslint",
     "migrate": "tsx scripts/migrate-to-mongo.ts",
     "seed:page-content": "tsx scripts/seed-page-content.ts",
-    "seed:service-location-content": "tsx scripts/seed-service-location-content.ts"
+    "seed:service-location-content": "tsx scripts/seed-service-location-content.ts",
+    "flatten:home-hero": "tsx scripts/flatten-home-hero.ts",
+    "db:indexes": "tsx scripts/ensure-indexes.ts",
+    "preflight": "tsx scripts/preflight.ts"
   },
   "dependencies": {
     "@lottiefiles/dotlottie-react": "^0.19.12",
@@ -36,5 +39,9 @@
     "tailwindcss": "^4",
     "tsx": "^4.23.12",
     "typescript": "^5"
+  },
+  "packageManager": "pnpm@11.25.0",
+  "engines": {
+    "node": ">=20"
   }
 }

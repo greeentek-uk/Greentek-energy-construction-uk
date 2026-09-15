@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { serviceOptions, timelineOptions } from "@/lib/quoteForm";
 
 function useFadeIn(delay = 0) {
   const ref = useRef<HTMLDivElement>(null);
@@ -98,23 +99,6 @@ const contactDetails = [
       </svg>
     ),
   },
-];
-
-const serviceOptions = [
-  { value: "", label: "Select a service" },
-  { value: "solar_storage", label: "Solar PV & Battery Storage" },
-  { value: "heating_boiler", label: "Heating & Boiler Upgrades" },
-  { value: "insulation", label: "Insulation" },
-  { value: "refurb_extension", label: "Property Refurbishment & Extensions" },
-  { value: "commercial", label: "Commercial Refurbishment & Maintenance" },
-  { value: "not_sure", label: "Not Sure — Need Advice" },
-];
-
-const timelineOptions = [
-  { value: "", label: "Select a timeframe" },
-  { value: "asap", label: "As soon as possible" },
-  { value: "3_months", label: "Within 3 months" },
-  { value: "researching", label: "Just researching" },
 ];
 
 type FormState = {

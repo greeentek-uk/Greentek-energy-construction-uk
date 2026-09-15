@@ -42,22 +42,25 @@ type MenusDoc = Menus & { _id: typeof DOC_ID };
  *
  * Before this collection exists, navigation lived on `settings.navLinks` — and
  * that list has been edited since launch (the Finance entry was added by a
- * one-off script). Seeding from it rather than from DEFAULT_MENUS means turning
- * this feature on doesn't silently drop a live link.
+ * one-off script). Callers that already hold settings pass `fallbackNavLinks`
+ * so seeding costs no extra query: this runs once per page during a static
+ * build, where a second round trip per page is measurable.
  */
-export async function getMenus(): Promise<Menus> {
+export async function getMenus(
+  fallbackNavLinks?: { label: string; href: string }[],
+): Promise<Menus> {
   const db = await getDb();
   const doc = await db.collection<MenusDoc>(COLLECTION).findOne({ _id: DOC_ID });
+
   if (doc?.header?.length) {
-    return { header: doc.header, footer: doc.footer?.length ? doc.footer : DEFAULT_MENUS.footer };
+    return {
+      header: doc.header,
+      footer: doc.footer?.length ? doc.footer : DEFAULT_MENUS.footer,
+    };
   }
 
-  const settings = await db
-    .collection<{ _id: string; navLinks?: { label: string; href: string }[] }>("settings")
-    .findOne({ _id: "settings" });
-
-  const inherited = settings?.navLinks?.length
-    ? settings.navLinks.map((link, index) => ({
+  const inherited = fallbackNavLinks?.length
+    ? fallbackNavLinks.map((link, index) => ({
         id: `h${index + 1}`,
         label: link.label,
         href: link.href,

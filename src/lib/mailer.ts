@@ -10,6 +10,8 @@ export interface QuoteRequestPayload {
   is_homeowner: string;
   timeline: string;
   message: string;
+  /** Which form the enquiry came from, so they can be told apart in the inbox. */
+  source?: string;
 }
 
 function humanize(value: string): string {
@@ -45,6 +47,7 @@ export async function sendQuoteRequestEmail(data: QuoteRequestPayload): Promise<
     ["Property type", humanize(data.property_type)],
     ["Homeowner?", humanize(data.is_homeowner)],
     ["Timeline", humanize(data.timeline)],
+    ["Came from", data.source || "Contact form"],
   ];
 
   const text = [

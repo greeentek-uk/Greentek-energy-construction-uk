@@ -13,9 +13,6 @@ export const config = {
   ],
 };
 
-/** Lets `not-found.tsx` log which URL was missed. */
-export const PATHNAME_HEADER = "x-greentek-pathname";
-
 export async function proxy(request: NextRequest) {
   const { pathname, search } = request.nextUrl;
 
@@ -47,10 +44,7 @@ export async function proxy(request: NextRequest) {
     }
   }
 
-  const requestHeaders = new Headers(request.headers);
-  requestHeaders.set(PATHNAME_HEADER, pathname);
-
-  const response = NextResponse.next({ request: { headers: requestHeaders } });
+  const response = NextResponse.next();
 
   // Built per request from the admin's allowlist (cached for a minute) so a tag
   // added in the panel actually runs, instead of being silently blocked by a

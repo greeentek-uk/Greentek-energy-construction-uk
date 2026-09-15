@@ -32,3 +32,4 @@ public/images/vercel.svg
 src/favicon.ico
 .vercel
 .env*
+package-lock.json

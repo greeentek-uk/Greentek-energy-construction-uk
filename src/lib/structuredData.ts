@@ -1,8 +1,29 @@
 import type { SiteConfig, Service, Location } from "@/data/site";
 import type { BlogPost } from "@/data/blogs";
 
-export const SITE_URL =
-  process.env.NEXT_PUBLIC_SITE_URL || "https://www.greentekenergy.co.uk";
+function resolveSiteUrl(): string {
+  const configured = process.env.NEXT_PUBLIC_SITE_URL;
+  const fallback = "https://www.greentekenergy.co.uk";
+  if (!configured) return fallback;
+
+  // Every canonical tag, sitemap entry, JSON-LD url and llms.txt link is built
+  // from this value. A localhost value copied from .env.local into a hosting
+  // dashboard would publish a site that points entirely at localhost — so on a
+  // real deploy that is a hard failure rather than a silent one. Local
+  // production builds are left alone.
+  const isDeployment = Boolean(process.env.VERCEL || process.env.CI);
+  if (isDeployment && /localhost|127\.0\.0\.1/.test(configured)) {
+    throw new Error(
+      `NEXT_PUBLIC_SITE_URL is "${configured}" on a deployed build. ` +
+        `Set it to the public site origin (e.g. ${fallback}) — otherwise every ` +
+        `canonical URL, sitemap entry and schema link will point at localhost.`,
+    );
+  }
+
+  return configured.replace(/\/$/, "");
+}
+
+export const SITE_URL = resolveSiteUrl();
 
 /** Org-wide LocalBusiness schema, rendered once in the root layout — makes the business eligible for Google's Local Pack / rich results. */
 export function buildLocalBusinessJsonLd(siteConfig: SiteConfig, siteUrl: string) {

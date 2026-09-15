@@ -14,13 +14,16 @@ import type { PageContentMap, PageContentKey } from "@/data/pageContent";
 
 /** Assembles the same shape every page already consumes, from parallel collection reads. Cached per-request so Header/Footer/page body sharing one request only hit Mongo once. */
 export const getCurrentSiteConfig = cache(async (): Promise<SiteConfig> => {
-  const [settings, services, projects, locations, menus] = await Promise.all([
+  const [settings, services, projects, locations] = await Promise.all([
     getSettings(),
     getServices(),
     getProjects(),
     getLocations(),
-    getMenus(),
   ]);
+
+  // Settings is already loaded, so it seeds the menu fallback directly rather
+  // than making getMenus() fetch it again.
+  const menus = await getMenus(settings.navLinks);
 
   // Navigation is overlaid from the Menus collection rather than stored on
   // settings, so Header and Footer pick it up without either component

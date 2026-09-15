@@ -31,6 +31,7 @@ export async function POST(request: Request) {
     is_homeowner: String(body.is_homeowner || ""),
     timeline: String(body.timeline || ""),
     message: String(body.message || ""),
+    source: String(body.source || "Contact form"),
   };
 
   try {

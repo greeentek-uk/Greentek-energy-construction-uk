@@ -25,7 +25,14 @@ function parseBlockFields(key: PageContentKey, formData: FormData): PageContentM
     case "home-hero":
       return {
         trustBadgeSuffix: str(formData, "trustBadgeSuffix"),
-        slides: items(formData, "slides"),
+        image: str(formData, "image"),
+        imageAlt: str(formData, "imageAlt"),
+        headingLine1: str(formData, "headingLine1"),
+        headingLine2: str(formData, "headingLine2"),
+        body: str(formData, "body"),
+        ctaLabel: str(formData, "ctaLabel"),
+        formHeading: str(formData, "formHeading"),
+        formSubheading: str(formData, "formSubheading"),
       } as PageContentMap["home-hero"];
     case "why-us":
       return {

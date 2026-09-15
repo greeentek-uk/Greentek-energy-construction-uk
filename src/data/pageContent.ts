@@ -1,21 +1,22 @@
 /**
- * Declared as a type alias rather than an interface so it picks up an implicit
- * index signature — RepeatingFieldList's generic is constrained to
- * Record<string, unknown>, which a named interface can't satisfy.
+ * The homepage hero — a single, static panel.
+ *
+ * This was a rotating carousel of three slides. It is now one: the hero shares
+ * its space with the quote form, and copy that changes under the reader while
+ * they are filling in a form works against both of them.
  */
-export type HomeHeroSlide = {
+export interface HomeHeroContent {
+  trustBadgeSuffix: string;
   image: string;
   imageAlt?: string;
   headingLine1: string;
   headingLine2: string;
   body: string;
   ctaLabel: string;
-};
-
-export interface HomeHeroContent {
-  /** Shown once, persistent across all slides. */
-  trustBadgeSuffix: string;
-  slides: HomeHeroSlide[];
+  /** Heading above the hero quote form. */
+  formHeading: string;
+  /** Short line under the form heading. */
+  formSubheading: string;
 }
 
 export interface WhyUsContent {
