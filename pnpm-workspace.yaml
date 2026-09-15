@@ -1,4 +1,10 @@
+# pnpm 10+ refuses to run dependency install scripts unless they are approved
+# here. In CI that refusal is a hard failure, not the warning shown locally —
+# an unapproved entry exits 1 and the deploy never reaches the build step.
 allowBuilds:
-  esbuild: set this to true or false
-  sharp: set this to true or false
-  unrs-resolver: set this to true or false
+  # tsx needs esbuild's platform binary for the seed and migration scripts.
+  esbuild: true
+  # Next's image optimizer for the local files under /images.
+  sharp: true
+  # Module resolver used by eslint-config-next.
+  unrs-resolver: true
