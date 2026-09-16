@@ -15,6 +15,8 @@ interface FieldSpec {
   altFallbackKey?: string;
   /** Field value is a string[], edited as one-per-line text. */
   lines?: boolean;
+  /** Renders a dropdown instead of a text input — use where a typo would break rendering. */
+  options?: { value: string; label: string }[];
 }
 
 interface RepeatingFieldListProps<T extends Record<string, unknown>> {
@@ -124,6 +126,26 @@ export default function RepeatingFieldList<T extends Record<string, unknown>>({
                       />
                     </div>
                   )}
+                </div>
+              );
+            }
+            if (field.options) {
+              return (
+                <div key={field.key}>
+                  <label className="block text-xs font-semibold text-white/70 mb-1">
+                    {field.label}
+                  </label>
+                  <select
+                    value={typeof value === "string" ? value : ""}
+                    onChange={(e) => updateField(index, field.key, e.target.value)}
+                    className="w-full rounded-lg border border-white/15 bg-white/5 px-3 py-2 text-sm text-white outline-none focus:border-[#c5eb02] focus:ring-2 focus:ring-[#c5eb02]/20 transition-all"
+                  >
+                    {field.options.map((option) => (
+                      <option key={option.value} value={option.value}>
+                        {option.label}
+                      </option>
+                    ))}
+                  </select>
                 </div>
               );
             }

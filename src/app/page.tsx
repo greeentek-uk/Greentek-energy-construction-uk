@@ -14,6 +14,7 @@ import Process from "@/components/sections/Process";
 import Projects from "@/components/sections/Projects";
 import AboutUs from "@/components/sections/AboutUs";
 import PageSchema from "@/components/site/PageSchema";
+import FinanceBanner from "@/components/sections/FinanceBanner";
 export async function generateMetadata(): Promise<Metadata> {
   return withSeoOverride("/", {
     kind: "home",
@@ -31,6 +32,7 @@ export default function HomePage() {
 
       <div className="flex-1">
         <HeroSection />
+        <FinanceBanner />
         <Projects />
         <Testimonials />
         <AboutUs />

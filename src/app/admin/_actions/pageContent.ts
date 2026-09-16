@@ -3,7 +3,14 @@
 import { redirect } from "next/navigation";
 import { revalidate } from "@/lib/revalidate";
 import { saveBlockDraft, publishBlock, publishAllDirtyBlocks } from "@/lib/db/pageContent";
-import { PAGE_CONTENT_KEYS, type PageContentKey, type PageContentMap } from "@/data/pageContent";
+import {
+  PAGE_CONTENT_KEYS,
+  PROJECT_COUNT_OPTIONS,
+  DEFAULT_PROJECT_COUNT,
+  type PROJECT_COUNT,
+  type PageContentKey,
+  type PageContentMap,
+} from "@/data/pageContent";
 
 function str(formData: FormData, key: string): string {
   return String(formData.get(key) || "").trim();
@@ -137,6 +144,22 @@ function parseBlockFields(key: PageContentKey, formData: FormData): PageContentM
         subheading: str(formData, "subheading"),
         beforeBadgeLabel: str(formData, "beforeBadgeLabel"),
         ctaLabel: str(formData, "ctaLabel"),
+        // Anything not on the list falls back to the default rather than
+        // being stored and quietly breaking the grid later.
+        projectCount: (PROJECT_COUNT_OPTIONS as readonly number[]).includes(
+          Number(formData.get("projectCount")),
+        )
+          ? (Number(formData.get("projectCount")) as PROJECT_COUNT)
+          : DEFAULT_PROJECT_COUNT,
+      };
+    case "finance-banner":
+      return {
+        heading: str(formData, "heading"),
+        logo: str(formData, "logo"),
+        logoAlt: str(formData, "logoAlt"),
+        providerName: str(formData, "providerName"),
+        linkLabel: str(formData, "linkLabel"),
+        linkHref: str(formData, "linkHref"),
       };
     case "services-page-header":
     case "locations-page-header":

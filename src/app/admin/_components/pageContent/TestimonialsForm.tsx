@@ -3,6 +3,7 @@ import Field from "../Field";
 import RepeatingFieldList from "../RepeatingFieldList";
 import { saveBlockDraftAction } from "../../_actions/pageContent";
 import type { TestimonialsContent } from "@/data/pageContent";
+import { REVIEW_SOURCE_OPTIONS } from "@/lib/reviewSources";
 
 export default function TestimonialsForm({ content }: { content: TestimonialsContent }) {
   return (
@@ -14,16 +15,17 @@ export default function TestimonialsForm({ content }: { content: TestimonialsCon
       <RepeatingFieldList
         name="items"
         defaultValue={content.items}
-        emptyItem={{ name: "", quote: "", role: "", rating: 5, image: "", imageAlt: "" }}
+        emptyItem={{ name: "", quote: "", role: "", rating: 5, image: "", imageAlt: "", source: "" }}
         itemLabel={(i) => i.name}
         fields={[
           { key: "name", label: "Name" },
           { key: "role", label: "Role (e.g. Home Owner)" },
           { key: "quote", label: "Quote", textarea: true },
           { key: "rating", label: "Rating (1-5)", type: "number" },
+          { key: "source", label: "Review from", options: REVIEW_SOURCE_OPTIONS },
           {
             key: "image",
-            label: "Photo",
+            label: "Photo (optional — initials are used if blank)",
             image: true,
             altKey: "imageAlt",
             altFallbackKey: "name",

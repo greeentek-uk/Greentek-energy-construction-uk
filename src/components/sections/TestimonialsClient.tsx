@@ -1,8 +1,8 @@
 "use client";
 
-import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import type { TestimonialsContent } from "@/data/pageContent";
+import ReviewIdentity from "@/components/site/ReviewIdentity";
 
 function useFadeIn(delay = 0) {
   const ref = useRef<HTMLDivElement>(null);
@@ -31,22 +31,13 @@ function ReviewCard({ review }: { review: Review }) {
   return (
     <div className="flex flex-col justify-between w-[320px] md:w-[380px] bg-black/40 backdrop-blur-[2px] border border-[#c5eb02]/60 rounded-xl px-4 md:px-6 py-2 md:py-4 mx-3">
       <div>
-        <div className="flex gap-4 py-2 md:py-4 items-center">
-          <div>
-            <Image
-              src={review.image}
-              sizes="60px"
-              alt={review.imageAlt || review.name}
-              width={100}
-              height={100}
-              className="w-15 h-15 rounded-full object-cover"
-            />
-          </div>
-          <div>
-            <p className="text-2xl font-bold text-white">{review.name}</p>
-            <p className="text-md text-white/70">{review.role}</p>
-          </div>
-        </div>
+        <ReviewIdentity
+          name={review.name}
+          role={review.role}
+          image={review.image}
+          imageAlt={review.imageAlt}
+          source={review.source}
+        />
         <div className="my-3">
           <p className="text-white">{review.quote}</p>
         </div>

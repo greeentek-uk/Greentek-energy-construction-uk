@@ -54,8 +54,11 @@ export interface TestimonialsContent {
     quote: string;
     role: string;
     rating: number;
-    image: string;
+    /** Optional — initials are shown when there's no photo. */
+    image?: string;
     imageAlt?: string;
+    /** Where the review came from, e.g. "trustpilot" or "google". */
+    source?: string;
   }[];
 }
 
@@ -147,6 +150,24 @@ export interface ProjectsPreviewContent {
   subheading: string;
   beforeBadgeLabel: string;
   ctaLabel: string;
+  /** How many projects the homepage shows. Multiples of the 3-column grid. */
+  projectCount: PROJECT_COUNT;
+}
+
+/** The grid is three columns, so anything else would leave a ragged last row. */
+export const PROJECT_COUNT_OPTIONS = [3, 6, 9] as const;
+export type PROJECT_COUNT = (typeof PROJECT_COUNT_OPTIONS)[number];
+export const DEFAULT_PROJECT_COUNT: PROJECT_COUNT = 6;
+
+export interface FinanceBannerContent {
+  /** Short line above the link, e.g. "Finance options available". */
+  heading: string;
+  /** Finance provider logo. Falls back to `providerName` as text when unset. */
+  logo: string;
+  logoAlt: string;
+  providerName: string;
+  linkLabel: string;
+  linkHref: string;
 }
 
 export interface PageHeaderContent {
@@ -179,6 +200,7 @@ export interface PageContentMap {
   stats: StatsContent;
   "about-us-slide": AboutUsSlideContent;
   "projects-preview": ProjectsPreviewContent;
+  "finance-banner": FinanceBannerContent;
   "services-page-header": PageHeaderContent;
   "locations-page-header": PageHeaderContent;
   "projects-page-header": PageHeaderContent;
@@ -202,6 +224,7 @@ export const PAGE_CONTENT_KEYS = [
   "stats",
   "about-us-slide",
   "projects-preview",
+  "finance-banner",
   "services-page-header",
   "locations-page-header",
   "projects-page-header",
@@ -275,6 +298,11 @@ export const PAGE_CONTENT_META: Record<PageContentKey, PageContentMeta> = {
     label: "Our Work (Home Preview)",
     group: "Shared Sections",
     routes: ["/", "/services"],
+  },
+  "finance-banner": {
+    label: "Finance Banner",
+    group: "Shared Sections",
+    routes: ["/"],
   },
   "services-page-header": {
     label: "Services Page Header",

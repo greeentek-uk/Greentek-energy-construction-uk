@@ -282,6 +282,15 @@ const seedData: PageContentMap = {
     subheading: "Drag the slider to see the before and after, hover a project to read what was done, solar, home improvement, and renovation work, side by side.",
     beforeBadgeLabel: "Before",
     ctaLabel: "View All Projects",
+    projectCount: 6,
+  },
+  "finance-banner": {
+    heading: "Finance options available",
+    logo: "",
+    logoAlt: "",
+    providerName: "Ideal Finance",
+    linkLabel: "Explore financing options",
+    linkHref: "/finance",
   },
   "services-page-header": {
     headingPrefix: "Our",
