@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import type { TestimonialsContent } from "@/data/pageContent";
-import ReviewIdentity from "@/components/site/ReviewIdentity";
+import ReviewIdentity, { ReviewSourceBadge } from "@/components/site/ReviewIdentity";
 
 function useFadeIn(delay = 0) {
   const ref = useRef<HTMLDivElement>(null);
@@ -44,14 +44,16 @@ function ReviewCard({
           role={review.role}
           image={review.image}
           imageAlt={review.imageAlt}
-          source={review.source}
         />
         <div className="my-3">
           <p className="text-white">{review.quote}</p>
         </div>
       </div>
-      <div className="flex flex-col items-end">
-        <p className="text-yellow-500 text-2xl">{"★".repeat(review.rating)}</p>
+      <div className="flex items-center justify-between gap-3">
+        <ReviewSourceBadge source={review.source} />
+        <p className="ml-auto text-yellow-500 text-2xl leading-none">
+          {"★".repeat(review.rating)}
+        </p>
       </div>
     </>
   );

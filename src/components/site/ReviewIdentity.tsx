@@ -21,8 +21,21 @@ function SourceMark({ id, color }: { id: string; color: string }) {
   );
 }
 
+/** Where a review came from, as a small brand mark plus label. */
+export function ReviewSourceBadge({ source }: { source?: string }) {
+  const reviewSource = getReviewSource(source);
+  if (!reviewSource) return null;
+
+  return (
+    <span className="flex items-center gap-1.5 text-xs font-semibold text-white/60">
+      <SourceMark id={reviewSource.id} color={reviewSource.color} />
+      Review from {reviewSource.label}
+    </span>
+  );
+}
+
 /**
- * A reviewer's avatar, name, role and where the review came from.
+ * A reviewer's avatar, name and role.
  *
  * Falls back to initials when there's no photo — reviews pulled from Google or
  * Trustpilot rarely have one, and an empty circle reads as a broken image.
@@ -32,16 +45,12 @@ export default function ReviewIdentity({
   role,
   image,
   imageAlt,
-  source,
 }: {
   name: string;
   role?: string;
   image?: string;
   imageAlt?: string;
-  source?: string;
 }) {
-  const reviewSource = getReviewSource(source);
-
   return (
     <div className="flex gap-4 py-2 md:py-4 items-center">
       {image ? (
@@ -66,12 +75,6 @@ export default function ReviewIdentity({
       <div className="min-w-0">
         <p className="text-2xl font-bold text-white truncate">{name}</p>
         {role && <p className="text-md text-white/70 truncate">{role}</p>}
-        {reviewSource && (
-          <p className="mt-1 flex items-center gap-1.5 text-xs font-semibold text-white/60">
-            <SourceMark id={reviewSource.id} color={reviewSource.color} />
-            Review from {reviewSource.label}
-          </p>
-        )}
       </div>
     </div>
   );
