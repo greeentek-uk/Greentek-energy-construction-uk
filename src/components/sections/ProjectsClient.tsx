@@ -138,7 +138,6 @@ function GalleryCard({
             <MoveHorizontal className="h-4 w-4 text-black" />
           </div>
         </div>
-
       </div>
 
       {/* Text sits below the image rather than over it: the card is a
@@ -177,7 +176,7 @@ export default function ProjectsClient({
   const headerFade = useFadeIn(0);
 
   return (
-    <section className="py-16 md:py-24 lg:py-32 overflow-hidden px-4 md:px-10">
+    <section className="py-10 md:py-20 lg:py-24 overflow-hidden px-4 md:px-10">
       <div className="mx-auto max-w-7xl px-6">
         <div
           ref={headerFade.ref}

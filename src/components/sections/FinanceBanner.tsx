@@ -16,8 +16,13 @@ export default async function FinanceBanner() {
   if (!content.heading && !content.linkLabel) return null;
 
   return (
-    <section className="px-5 sm:px-15 py-12 md:py-16">
-      <div className="mx-auto flex max-w-3xl flex items-center gap-4 text-center">
+    <section className="px-4 sm:px-10 py-2 md:py-4 bg-[#101314]">
+      <div className="mx-auto flex max-w-4xl flex items-center gap-4 text-center ">
+        {content.heading && (
+          <p className="text-md font-semibold text-white md:text-xl text-balance">
+            {content.heading}
+          </p>
+        )}
         {content.logo ? (
           <Image
             src={content.logo}
@@ -25,7 +30,7 @@ export default async function FinanceBanner() {
             width={320}
             height={90}
             sizes="200px"
-            className="h-12 w-auto object-contain md:h-14"
+            className="h-12 w-auto object-contain md:h-14 ml-3 mr-8"
           />
         ) : (
           content.providerName && (
@@ -34,13 +39,6 @@ export default async function FinanceBanner() {
             </p>
           )
         )}
-
-        {content.heading && (
-          <p className="text-xl font-semibold text-white md:text-2xl text-balance">
-            {content.heading}
-          </p>
-        )}
-
         {content.linkLabel && (
           <Link
             href={content.linkHref || "/finance"}
