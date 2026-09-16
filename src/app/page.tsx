@@ -36,9 +36,9 @@ export default function HomePage() {
         <Projects />
         <Testimonials />
         <AboutUs />
-        <Stats />
         <Verticals />
         <WhyChooseUs />
+        <Stats />
         <Process />
         <CtaSection />
         <Areas />
