@@ -27,9 +27,17 @@ function useFadeIn(delay = 0) {
 
 type Review = TestimonialsContent["items"][number];
 
-function ReviewCard({ review }: { review: Review }) {
-  return (
-    <div className="flex flex-col justify-between w-[320px] md:w-[380px] bg-black/40 backdrop-blur-[2px] border border-[#c5eb02]/60 rounded-xl px-4 md:px-6 py-2 md:py-4 mx-3">
+function ReviewCard({
+  review,
+  onPause,
+  onResume,
+}: {
+  review: Review;
+  onPause: () => void;
+  onResume: () => void;
+}) {
+  const inner = (
+    <>
       <div>
         <ReviewIdentity
           name={review.name}
@@ -45,6 +53,39 @@ function ReviewCard({ review }: { review: Review }) {
       <div className="flex flex-col items-end">
         <p className="text-yellow-500 text-2xl">{"★".repeat(review.rating)}</p>
       </div>
+    </>
+  );
+
+  const shell =
+    "flex flex-col justify-between w-[320px] md:w-[380px] bg-black/40 backdrop-blur-[2px] border border-[#c5eb02]/60 rounded-xl px-4 md:px-6 py-2 md:py-4 mx-3";
+
+  // Focus pauses as well as hover, so someone tabbing through the links can
+  // actually reach them instead of chasing a moving target.
+  const handlers = {
+    onMouseEnter: onPause,
+    onMouseLeave: onResume,
+    onFocus: onPause,
+    onBlur: onResume,
+  };
+
+  if (review.url) {
+    return (
+      <a
+        href={review.url}
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label={`Read ${review.name}'s full review`}
+        className={`${shell} transition-colors hover:border-[#c5eb02] focus-visible:border-[#c5eb02] focus-visible:outline-none`}
+        {...handlers}
+      >
+        {inner}
+      </a>
+    );
+  }
+
+  return (
+    <div className={shell} {...handlers}>
+      {inner}
     </div>
   );
 }
@@ -56,6 +97,7 @@ export default function TestimonialsClient({
   items,
 }: TestimonialsContent) {
   const headerFade = useFadeIn(0);
+  const [paused, setPaused] = useState(false);
   // duplicate the list so the loop is seamless
   const marqueeReviews = [...items, ...items];
 
@@ -84,10 +126,18 @@ export default function TestimonialsClient({
           </div>
 
           {/* Marquee */}
-          <div className="relative w-full overflow-hidden group">
-            <div className="flex w-max animate-marquee group-hover:[animation-play-state:paused]">
+          <div className="relative w-full overflow-hidden">
+            <div
+              className="flex w-max animate-marquee"
+              style={{ animationPlayState: paused ? "paused" : "running" }}
+            >
               {marqueeReviews.map((review, idx) => (
-                <ReviewCard key={`${review.name}-${idx}`} review={review} />
+                <ReviewCard
+                  key={`${review.name}-${idx}`}
+                  review={review}
+                  onPause={() => setPaused(true)}
+                  onResume={() => setPaused(false)}
+                />
               ))}
             </div>
           </div>

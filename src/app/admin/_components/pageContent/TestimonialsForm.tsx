@@ -15,7 +15,7 @@ export default function TestimonialsForm({ content }: { content: TestimonialsCon
       <RepeatingFieldList
         name="items"
         defaultValue={content.items}
-        emptyItem={{ name: "", quote: "", role: "", rating: 5, image: "", imageAlt: "", source: "" }}
+        emptyItem={{ name: "", quote: "", role: "", rating: 5, image: "", imageAlt: "", source: "", url: "" }}
         itemLabel={(i) => i.name}
         fields={[
           { key: "name", label: "Name" },
@@ -23,6 +23,7 @@ export default function TestimonialsForm({ content }: { content: TestimonialsCon
           { key: "quote", label: "Quote", textarea: true },
           { key: "rating", label: "Rating (1-5)", type: "number" },
           { key: "source", label: "Review from", options: REVIEW_SOURCE_OPTIONS },
+          { key: "url", label: "Link to the review (optional)" },
           {
             key: "image",
             label: "Photo (optional — initials are used if blank)",

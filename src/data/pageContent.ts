@@ -59,6 +59,8 @@ export interface TestimonialsContent {
     imageAlt?: string;
     /** Where the review came from, e.g. "trustpilot" or "google". */
     source?: string;
+    /** Optional link to the review itself. Makes the whole card clickable. */
+    url?: string;
   }[];
 }
 
