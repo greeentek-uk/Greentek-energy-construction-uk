@@ -41,13 +41,15 @@ function useFadeIn(delay = 0) {
  */
 function FeatureCard({ card }: { card: AboutCard }) {
   return (
-    <div className="flex h-full flex-col overflow-hidden rounded-xl border border-white/10 bg-[#101314] sm:flex-row sm:items-stretch">
-      <div className="flex flex-1 flex-col justify-center gap-4 p-6 md:p-8">
+    <div className="flex h-full flex-col overflow-hidden rounded-xl border border-white/10 bg-black sm:flex-row sm:items-stretch">
+      <div className="flex flex-1 flex-col justify-center gap-4 p-4 md:p-6">
         <h3 className="text-xl md:text-2xl font-bold leading-[1.25] text-white text-balance">
           {card.title}
         </h3>
         {card.body && (
-          <p className="text-md font-normal leading-relaxed text-white/80">{card.body}</p>
+          <p className="text-md font-normal leading-relaxed text-white/80">
+            {card.body}
+          </p>
         )}
         {card.linkLabel && card.href && (
           <Link
@@ -109,7 +111,7 @@ export default function AboutUsClient({
 
         {visibleCards.length > 0 && (
           <div
-            className={`mt-10 md:mt-12 grid gap-6 ${
+            className={`mt-10 md:mt-12 grid gap-4 bg-[#101314] px-3 py-3 rounded ${
               visibleCards.length > 1 ? "lg:grid-cols-2" : ""
             }`}
           >

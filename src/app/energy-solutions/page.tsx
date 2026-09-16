@@ -1,18 +1,13 @@
 import type { Metadata } from "next";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
-import { getCurrentSiteConfig } from "@/lib/cms";
+import { getCurrentSiteConfig, getPageContent } from "@/lib/cms";
 import Process from "@/components/sections/Process";
-import Image from "next/image";
-import Link from "next/link";
 import { withSeoOverride } from "@/lib/seo";
 import PageSchema from "@/components/site/PageSchema";
+import { ServiceCardGrid } from "@/components/site/ServiceCards";
+import { buildServiceGroups } from "@/lib/serviceGroups";
 
-const ENERGY_FORM_CATEGORIES = [
-  "solar_storage",
-  "heating_boiler",
-  "insulation",
-];
 
 export async function generateMetadata(): Promise<Metadata> {
   return withSeoOverride("/energy-solutions", {
@@ -23,10 +18,11 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function EnergySolutionsPage() {
-  const siteConfig = await getCurrentSiteConfig();
-  const services = siteConfig.services.filter((service) =>
-    ENERGY_FORM_CATEGORIES.includes(service.formCategory),
-  );
+  const [siteConfig, verticals] = await Promise.all([
+    getCurrentSiteConfig(),
+    getPageContent("verticals"),
+  ]);
+  const group = buildServiceGroups(siteConfig.services, verticals.groups)[0];
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -51,38 +47,9 @@ export default async function EnergySolutionsPage() {
         </section>
 
         <section className="py-12 lg:py-24">
-          <div className="mx-auto max-w-6xl px-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8">
-              {services.map((service) => (
-                <Link
-                  href={`/services/${service.slug}`}
-                  key={service.slug}
-                  className="group relative rounded-xl bg-[#101314] hover:shadow-[0_32px_64px_-16px_rgba(0,0,0,0.1)] hover:-translate-y-1 transition-all duration-500 overflow-hidden flex flex-col sm:flex-row gap-0 sm:gap-6"
-                >
-                  <div className="w-full h-48 sm:h-auto sm:w-[40%]">
-                    <Image
-                      src={service.image}
-                      sizes="(min-width: 640px) 40vw, 100vw"
-                      alt={service.imageAlt || service.title}
-                      width={300}
-                      height={300}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                    />
-                  </div>
-                  <div className="w-full sm:w-[60%] py-4 px-6 flex flex-col justify-center">
-                    <h3 className="text-[1.25rem] md:text-[1.5rem] font-bold leading-[1.3] text-white mb-4 group-hover:text-[#c5eb02] transition-colors">
-                      {service.title}
-                    </h3>
-                    <p className="text-white/80 leading-relaxed font-medium">
-                      {service.description}
-                    </p>
-                    <span className="mt-4 text-[#c5eb02] font-bold text-sm">
-                      Learn More →
-                    </span>
-                  </div>
-                </Link>
-              ))}
-            </div>
+          <div className="mx-auto max-w-7xl px-6">
+            {/* Same card as the homepage's Verticals section. */}
+            <ServiceCardGrid services={group.services} />
           </div>
         </section>
 

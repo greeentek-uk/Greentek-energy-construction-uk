@@ -149,7 +149,7 @@ function GalleryCard({
           {project.category}
         </p>
 
-        <h3 className="text-lg font-bold text-white md:text-xl">
+        <h3 className="text-lg font-bold text-white md:text-2xl">
           <Link
             href={`/projects/${project.slug}`}
             className="transition-colors hover:text-[#c5eb02]"

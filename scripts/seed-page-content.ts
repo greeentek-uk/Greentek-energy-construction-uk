@@ -206,7 +206,7 @@ const seedData: PageContentMap = {
         services: [
           { title: "Solar PV Installations", body: "Generate your own electricity, with battery storage to use it after dark.", href: "/services/solar-pv-installations" },
           { title: "Air Source Heat Pump Installations", body: "Swap fossil fuel heating for a system that runs at a fraction of the cost.", href: "/services/air-source-heat-pump-installations" },
-          { title: "Complete Heating System Upgrades", body: "New boiler, radiators and controls, sized properly so every room actually gets warm.", href: "/services/complete-heating-system-upgrades" },
+          { title: "Complete Heating System Upgrades", body: "New boiler, radiators and controls, sized properly so every room actually gets warm.", href: "/services/heating-system-upgrades" },
           { title: "Loft Insulation", body: "Stop paying to heat the sky. The cheapest measure on this page, and the fastest.", href: "/services/loft-insulation" },
           { title: "External Wall Insulation & Rendering", body: "Warmer, cheaper to run, and a completely new finish to the outside of the property.", href: "/services/external-wall-insulation-rendering" },
         ],
