@@ -1,7 +1,7 @@
 "use server";
 
 import { redirect } from "next/navigation";
-import { revalidatePath } from "next/cache";
+import { revalidate } from "@/lib/revalidate";
 import { upsertSeoOverride, deleteSeoOverride } from "@/lib/db/seoOverrides";
 import { saveSeoTemplates } from "@/lib/db/seoSettings";
 import { saveBreadcrumbSettings } from "@/lib/db/breadcrumbs";
@@ -74,8 +74,8 @@ export async function saveSeoOverrideAction(formData: FormData): Promise<void> {
     );
   }
 
-  revalidatePath(path);
-  revalidatePath("/sitemap.xml");
+  await revalidate(path);
+  await revalidate("/sitemap.xml");
   redirect(`/admin/seo/edit?path=${encodeURIComponent(path)}&saved=1`);
 }
 
@@ -120,6 +120,6 @@ export async function saveSeoTemplatesAction(formData: FormData): Promise<void> 
   }
 
   // Titles and descriptions are baked into every rendered page.
-  revalidatePath("/", "layout");
+  await revalidate("/", "layout");
   redirect("/admin/seo-settings?saved=1");
 }

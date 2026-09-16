@@ -6,7 +6,12 @@
  * they are filling in a form works against both of them.
  */
 export interface HomeHeroContent {
-  trustBadgeSuffix: string;
+  /** Rating word shown before the stars, e.g. "Excellent". */
+  ratingLabel: string;
+  /** Score out of 5, e.g. "4.4". Drives how much of the star strip is filled. */
+  ratingScore: string;
+  /** Where the badge links — your public Trustpilot profile. */
+  ratingUrl: string;
   image: string;
   imageAlt?: string;
   headingLine1: string;
@@ -31,7 +36,13 @@ export interface WhyChooseUsContent {
   eyebrow: string;
   heading: string;
   subheading: string;
-  items: { id: string; title: string; description: string; image: string; imageAlt?: string }[];
+  items: {
+    id: string;
+    title: string;
+    description: string;
+    image: string;
+    imageAlt?: string;
+  }[];
 }
 
 export interface TestimonialsContent {
@@ -66,7 +77,12 @@ export interface AreasContent {
     imageAlt?: string;
     path: string;
   };
-  smallAreas: { name: string; image: string; imageAlt?: string; path: string }[];
+  smallAreas: {
+    name: string;
+    image: string;
+    imageAlt?: string;
+    path: string;
+  }[];
   tickerItems: string[];
   tickerLabel: string;
   ctaLabel: string;
@@ -75,7 +91,12 @@ export interface AreasContent {
 export interface CorePillarsContent {
   heading: string;
   intro: string;
-  pillars: { label: string; title: string; description: string; items: string[] }[];
+  pillars: {
+    label: string;
+    title: string;
+    description: string;
+    items: string[];
+  }[];
 }
 
 export interface VerticalsContent {
@@ -201,7 +222,11 @@ export const PAGE_CONTENT_META: Record<PageContentKey, PageContentMeta> = {
     group: "Shared Sections",
     routes: ["/", "/about"],
   },
-  testimonials: { label: "Testimonials", group: "Shared Sections", routes: ["/"] },
+  testimonials: {
+    label: "Testimonials",
+    group: "Shared Sections",
+    routes: ["/"],
+  },
   faq: { label: "FAQ", group: "Shared Sections", routes: ["/"] },
   areas: { label: "Service Areas", group: "Shared Sections", routes: ["/"] },
   "core-pillars": {
@@ -213,23 +238,62 @@ export const PAGE_CONTENT_META: Record<PageContentKey, PageContentMeta> = {
   accreditations: {
     label: "Accreditations",
     group: "Shared Sections",
-    routes: ["/services/[slug]", "/locations/[locationSlug]", "/locations/[locationSlug]/[serviceSlug]"],
+    routes: [
+      "/services/[slug]",
+      "/locations/[locationSlug]",
+      "/locations/[locationSlug]/[serviceSlug]",
+    ],
   },
   process: {
     label: "Our Process",
     group: "Shared Sections",
-    routes: ["/", "/about", "/services", "/energy-solutions", "/home-solutions"],
+    routes: [
+      "/",
+      "/about",
+      "/services",
+      "/energy-solutions",
+      "/home-solutions",
+    ],
   },
   brands: { label: "Brands", group: "Shared Sections", routes: ["/about"] },
   stats: {
     label: "Stats",
     group: "Shared Sections",
-    routes: ["/", "/services/[slug]", "/locations/[locationSlug]", "/locations/[locationSlug]/[serviceSlug]"],
+    routes: [
+      "/",
+      "/services/[slug]",
+      "/locations/[locationSlug]",
+      "/locations/[locationSlug]/[serviceSlug]",
+    ],
   },
-  "about-us-slide": { label: "About Us (Home Slide)", group: "Shared Sections", routes: ["/", "/about"] },
-  "projects-preview": { label: "Our Work (Home Preview)", group: "Shared Sections", routes: ["/", "/services"] },
-  "services-page-header": { label: "Services Page Header", group: "Page Headers", routes: ["/services"] },
-  "locations-page-header": { label: "Locations Page Header", group: "Page Headers", routes: ["/locations"] },
-  "projects-page-header": { label: "Projects Page Header", group: "Page Headers", routes: ["/projects"] },
-  "about-page": { label: "About Page (Hero + Journey)", group: "Page Headers", routes: ["/about"] },
+  "about-us-slide": {
+    label: "About Us (Home Slide)",
+    group: "Shared Sections",
+    routes: ["/", "/about"],
+  },
+  "projects-preview": {
+    label: "Our Work (Home Preview)",
+    group: "Shared Sections",
+    routes: ["/", "/services"],
+  },
+  "services-page-header": {
+    label: "Services Page Header",
+    group: "Page Headers",
+    routes: ["/services"],
+  },
+  "locations-page-header": {
+    label: "Locations Page Header",
+    group: "Page Headers",
+    routes: ["/locations"],
+  },
+  "projects-page-header": {
+    label: "Projects Page Header",
+    group: "Page Headers",
+    routes: ["/projects"],
+  },
+  "about-page": {
+    label: "About Page (Hero + Journey)",
+    group: "Page Headers",
+    routes: ["/about"],
+  },
 };

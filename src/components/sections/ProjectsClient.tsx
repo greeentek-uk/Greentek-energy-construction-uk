@@ -90,7 +90,7 @@ function GalleryCard({
     >
       <div
         ref={containerRef}
-        className="group relative aspect-[4/5] w-full select-none touch-none overflow-hidden rounded-xl  cursor-ew-resize max-h-[450px]"
+        className="relative aspect-[4/5] max-h-[450px] w-full select-none touch-none overflow-hidden rounded-xl cursor-ew-resize"
         onPointerDown={handlePointerDown}
         onPointerMove={handlePointerMove}
         onPointerUp={handlePointerUp}
@@ -129,7 +129,6 @@ function GalleryCard({
         >
           <ArrowRight className="h-5 w-5 text-black" />
         </Link>
-
         {/* Divider handle */}
         <div
           className="absolute top-0 bottom-0 w-0.5 bg-white pointer-events-none"
@@ -140,18 +139,28 @@ function GalleryCard({
           </div>
         </div>
 
-        {/* Hover reveal: project text inside the image */}
-        <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 translate-y-3 bg-gradient-to-t from-black/90 via-black/50 to-transparent p-5 opacity-0 transition-all duration-300 ease-out group-hover:translate-y-0 group-hover:opacity-100">
-          <p className="mb-2 w-fit rounded-xl bg-[#28282C] px-2.5 py-1 text-[10px] font-semibold uppercase text-[#c5eb02]">
-            {project.category}
-          </p>
-          <h3 className="text-lg font-bold text-white md:text-xl">
+      </div>
+
+      {/* Text sits below the image rather than over it: the card is a
+          before/after slider, so copy laid on top competed with the thing the
+          reader is dragging, and on touch there was no hover to reveal it at
+          all. The arrow stays on the image, where it was. */}
+      <div className="pt-5">
+        <p className="mb-3 w-fit rounded-xl bg-[#28282C] px-3 py-1 text-[10px] font-semibold uppercase text-[#c5eb02]">
+          {project.category}
+        </p>
+
+        <h3 className="text-lg font-bold text-white md:text-xl">
+          <Link
+            href={`/projects/${project.slug}`}
+            className="transition-colors hover:text-[#c5eb02]"
+          >
             {project.title}
-          </h3>
-          <p className="mt-1 text-sm font-normal text-white/85">
-            {project.description}
-          </p>
-        </div>
+          </Link>
+        </h3>
+        <p className="mt-1 text-sm font-normal text-white/80">
+          {project.description}
+        </p>
       </div>
     </div>
   );
@@ -168,11 +177,11 @@ export default function ProjectsClient({
   const headerFade = useFadeIn(0);
 
   return (
-    <section className="py-12 md:py-16 lg:py-24 overflow-hidden px-4 md:px-10">
+    <section className="py-16 md:py-24 lg:py-32 overflow-hidden px-4 md:px-10">
       <div className="mx-auto max-w-7xl px-6">
         <div
           ref={headerFade.ref}
-          className={`text-center max-w-4xl mx-auto mb-10 md:mb-10 transition-all duration-700 ease-out ${
+          className={`text-center max-w-4xl mx-auto mb-12 md:mb-14 transition-all duration-700 ease-out ${
             headerFade.visible
               ? "translate-y-0 opacity-100"
               : "translate-y-6 opacity-0"
@@ -190,7 +199,11 @@ export default function ProjectsClient({
         </div>
       </div>
 
-      <div className="w-full grid grid-cols-1 sm:grid-cols-2 gap-6 max-w-7xl mx-auto mt-10 px-2">
+      {/* Row gap is larger than the column gap: each card now carries its
+          category, title and description below the image, so stacked rows need
+          more separation than side-by-side cards do. px-6 matches the header
+          above so the cards line up with the heading. */}
+      <div className="w-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-x-6 gap-y-12 md:gap-y-14 max-w-7xl mx-auto px-6">
         {projects.map((project, i) => (
           <GalleryCard
             key={project.slug}
@@ -200,7 +213,7 @@ export default function ProjectsClient({
           />
         ))}
       </div>
-      <div className="mt-16 flex justify-center items-center">
+      <div className="mt-14 md:mt-16 flex justify-center items-center">
         <a
           href="/projects"
           className="w-fit rounded px-4 py-3 text-sm md:text-[18px] font-semibold text-black backdrop-blur-sm transition active:scale-95 bg-[#c5eb02]"

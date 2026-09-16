@@ -1,7 +1,7 @@
 "use server";
 
 import { redirect } from "next/navigation";
-import { revalidatePath } from "next/cache";
+import { revalidate } from "@/lib/revalidate";
 import { upsertLocationServiceContent } from "@/lib/db/locationServiceContent";
 import type { LocationServiceContent } from "@/data/site";
 import { parseFaqs } from "./faqs";
@@ -51,7 +51,7 @@ export async function saveLocationServiceContentAction(formData: FormData): Prom
     );
   }
 
-  revalidatePath(`/locations/${locationSlug}/${serviceSlug}`);
-  revalidatePath("/sitemap.xml");
+  await revalidate(`/locations/${locationSlug}/${serviceSlug}`);
+  await revalidate("/sitemap.xml");
   redirect(`/admin/locations/${locationSlug}/service-content?saved=1`);
 }

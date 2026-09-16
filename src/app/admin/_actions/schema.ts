@@ -1,7 +1,7 @@
 "use server";
 
 import { redirect } from "next/navigation";
-import { revalidatePath } from "next/cache";
+import { revalidate } from "@/lib/revalidate";
 import {
   saveSchemaOverride,
   deleteSchemaOverride,
@@ -14,11 +14,11 @@ function editUrl(path: string, query: string): string {
   return `/admin/schema/edit?path=${encodeURIComponent(path)}&${query}`;
 }
 
-function revalidateFor(path: string): void {
+async function revalidateFor(path: string): Promise<void> {
   if (path === GLOBAL_SCHEMA_PATH) {
-    revalidatePath("/", "layout");
+    await revalidate("/", "layout");
   } else {
-    revalidatePath(path);
+    await revalidate(path);
   }
 }
 
@@ -66,7 +66,7 @@ export async function saveSchemaAction(formData: FormData): Promise<void> {
     redirect(editUrl(path, `error=${encodeURIComponent(message)}`));
   }
 
-  revalidateFor(path);
+  await revalidateFor(path);
   redirect(editUrl(path, "saved=1"));
 }
 
@@ -75,6 +75,6 @@ export async function deleteSchemaOverrideAction(formData: FormData): Promise<vo
 
   await deleteSchemaOverride(path);
 
-  revalidateFor(path);
+  await revalidateFor(path);
   redirect("/admin/schema?deleted=1");
 }

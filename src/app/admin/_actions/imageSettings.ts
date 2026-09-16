@@ -1,7 +1,7 @@
 "use server";
 
 import { redirect } from "next/navigation";
-import { revalidatePath } from "next/cache";
+import { revalidate } from "@/lib/revalidate";
 import { saveImageDelivery } from "@/lib/db/imageDelivery";
 import { normalizeImageDeliveryConfig } from "@/lib/imageDelivery";
 
@@ -21,6 +21,6 @@ export async function saveImageDeliveryAction(formData: FormData): Promise<void>
   }
 
   // Every rendered srcSet embeds these values, so the whole tree needs rebuilding.
-  revalidatePath("/", "layout");
+  await revalidate("/", "layout");
   redirect("/admin/images?saved=1");
 }

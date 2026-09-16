@@ -1,7 +1,7 @@
 "use server";
 
 import { redirect } from "next/navigation";
-import { revalidatePath } from "next/cache";
+import { revalidate } from "@/lib/revalidate";
 import { getHeadScripts, saveHeadScripts } from "@/lib/db/headScripts";
 import {
   normalizeDomains,
@@ -53,7 +53,7 @@ export async function saveScriptAction(formData: FormData): Promise<void> {
 
   await saveHeadScripts({ ...config, entries });
 
-  revalidatePath("/", "layout");
+  await revalidate("/", "layout");
   redirect("/admin/scripts?saved=1");
 }
 
@@ -66,7 +66,7 @@ export async function toggleScriptAction(formData: FormData): Promise<void> {
     entries: config.entries.map((e) => (e.id === id ? { ...e, enabled: !e.enabled } : e)),
   });
 
-  revalidatePath("/", "layout");
+  await revalidate("/", "layout");
   redirect("/admin/scripts?saved=1");
 }
 
@@ -79,7 +79,7 @@ export async function deleteScriptAction(formData: FormData): Promise<void> {
     entries: config.entries.filter((e) => e.id !== id),
   });
 
-  revalidatePath("/", "layout");
+  await revalidate("/", "layout");
   redirect("/admin/scripts?deleted=1");
 }
 
@@ -94,6 +94,6 @@ export async function saveAllowedDomainsAction(formData: FormData): Promise<void
 
   // The policy is emitted per request from this list, so nothing needs rebuilding
   // — but the admin page itself renders the current list.
-  revalidatePath("/admin/scripts");
+  await revalidate("/admin/scripts");
   redirect("/admin/scripts?domains=1");
 }

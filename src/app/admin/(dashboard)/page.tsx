@@ -4,8 +4,14 @@ import { listBlocksWithDirty } from "@/lib/db/pageContent";
 import { getRedirects } from "@/lib/db/redirects";
 import { getNotFoundEntries } from "@/lib/db/notFoundLog";
 import { getPages } from "@/lib/db/pages";
+import { refreshLiveSiteAction } from "../_actions/cache";
 
-export default async function AdminHomePage() {
+interface Props {
+  searchParams: Promise<{ cache?: string; message?: string }>;
+}
+
+export default async function AdminHomePage({ searchParams }: Props) {
+  const params = await searchParams;
   const [site, posts, pageContentBlocks, redirects, notFound] = await Promise.all([
     getCurrentSiteConfig(),
     getCurrentBlogPosts(),
@@ -56,6 +62,18 @@ export default async function AdminHomePage() {
         code. Most changes go live immediately — Page Content edits save as
         drafts until you click Publish Changes in the sidebar.
       </p>
+      {params.cache === "refreshed" && (
+        <div className="mb-6 text-sm text-green-400 bg-green-500/10 border border-green-500/20 rounded-lg px-4 py-3">
+          Live site cache cleared. Every page will rebuild from the current content on its
+          next visit.
+        </div>
+      )}
+      {params.cache === "error" && (
+        <div className="mb-6 text-sm text-red-400 bg-red-500/10 border border-red-500/20 rounded-lg px-4 py-3">
+          <strong>Couldn&apos;t reach the live site:</strong> {params.message}
+        </div>
+      )}
+
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         {cards.map((card) => (
           <Link
@@ -67,6 +85,24 @@ export default async function AdminHomePage() {
             <p className="text-sm text-white/50 mt-1">{card.count}</p>
           </Link>
         ))}
+      </div>
+
+      <div className="mt-8 rounded-xl border border-white/10 bg-[#101314] p-5 flex flex-wrap items-center justify-between gap-4">
+        <div>
+          <p className="font-semibold text-white">Live site cache</p>
+          <p className="text-sm text-white/50 mt-1 max-w-xl">
+            Your changes refresh the live site automatically as you save them. Use this only
+            if something you published still looks old.
+          </p>
+        </div>
+        <form action={refreshLiveSiteAction}>
+          <button
+            type="submit"
+            className="rounded-lg border border-white/15 px-4 py-2 text-sm font-semibold text-white/80 hover:text-white hover:border-[#c5eb02]/50 transition-colors"
+          >
+            Refresh live site
+          </button>
+        </form>
       </div>
     </div>
   );

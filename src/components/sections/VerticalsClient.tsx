@@ -107,6 +107,13 @@ function ServiceGroup({
           <h3 className="text-xl md:text-2xl font-semibold leading-[1.3] text-white">
             {group.name}
           </h3>
+          {/* The panel has always had this field; it was simply never output,
+              so anything typed into it was silently discarded. */}
+          {group.intro && (
+            <p className="mt-2 max-w-xl text-sm md:text-base leading-relaxed text-white/70">
+              {group.intro}
+            </p>
+          )}
         </div>
 
         <Link

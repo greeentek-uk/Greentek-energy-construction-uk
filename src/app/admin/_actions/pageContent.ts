@@ -1,7 +1,7 @@
 "use server";
 
 import { redirect } from "next/navigation";
-import { revalidatePath } from "next/cache";
+import { revalidate } from "@/lib/revalidate";
 import { saveBlockDraft, publishBlock, publishAllDirtyBlocks } from "@/lib/db/pageContent";
 import { PAGE_CONTENT_KEYS, type PageContentKey, type PageContentMap } from "@/data/pageContent";
 
@@ -24,7 +24,9 @@ function parseBlockFields(key: PageContentKey, formData: FormData): PageContentM
   switch (key) {
     case "home-hero":
       return {
-        trustBadgeSuffix: str(formData, "trustBadgeSuffix"),
+        ratingLabel: str(formData, "ratingLabel"),
+        ratingScore: str(formData, "ratingScore"),
+        ratingUrl: str(formData, "ratingUrl"),
         image: str(formData, "image"),
         imageAlt: str(formData, "imageAlt"),
         headingLine1: str(formData, "headingLine1"),
@@ -183,7 +185,7 @@ export async function publishBlockAction(formData: FormData): Promise<void> {
 
   const published = await publishBlock(blockKey);
   if (published) {
-    revalidatePath("/", "layout");
+    await revalidate("/", "layout");
   }
 
   redirect(`/admin/page-content/${blockKey}?published=${published ? "1" : "0"}`);
@@ -193,7 +195,7 @@ export async function publishAllAction(): Promise<void> {
   const publishedKeys = await publishAllDirtyBlocks();
 
   if (publishedKeys.length > 0) {
-    revalidatePath("/", "layout");
+    await revalidate("/", "layout");
   }
 
   redirect(`/admin/page-content?published=${publishedKeys.length}`);

@@ -1,7 +1,7 @@
 "use server";
 
 import { redirect } from "next/navigation";
-import { revalidatePath } from "next/cache";
+import { revalidate } from "@/lib/revalidate";
 import { saveMenus, type MenuItem, type Menus } from "@/lib/db/menus";
 
 function parseMenu(formData: FormData, key: string): MenuItem[] {
@@ -55,6 +55,6 @@ export async function saveMenusAction(formData: FormData): Promise<void> {
   }
 
   // Header and Footer render on every page.
-  revalidatePath("/", "layout");
+  await revalidate("/", "layout");
   redirect("/admin/menus?saved=1");
 }

@@ -19,6 +19,10 @@ const REQUIRED = [
   ["GMAIL_USER", "Sends quote request emails."],
   ["GMAIL_APP_PASSWORD", "Gmail app password, not the account password."],
   ["NEXT_PUBLIC_SITE_URL", "Canonical URLs, sitemap, schema and llms.txt."],
+  [
+    "REVALIDATE_SECRET",
+    "Lets a panel running elsewhere refresh the live site's cache. Must match across environments.",
+  ],
 ] as const;
 
 const OPTIONAL = [

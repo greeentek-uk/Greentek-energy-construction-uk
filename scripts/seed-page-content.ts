@@ -14,7 +14,9 @@ config({ path: ".env.local" });
 
 const seedData: PageContentMap = {
   "home-hero": {
-    trustBadgeSuffix: "by 500+ Homeowners",
+    ratingLabel: "Excellent",
+    ratingScore: "4.4",
+    ratingUrl: "https://www.trustpilot.com/review/greentekenergy.co.uk",
     image: "/images/home-page/house-2.png",
     imageAlt: "Installer fitting solar panels to a tiled roof",
     headingLine1: "Bridging Construction",

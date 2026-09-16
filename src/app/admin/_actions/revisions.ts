@@ -1,7 +1,7 @@
 "use server";
 
 import { redirect } from "next/navigation";
-import { revalidatePath } from "next/cache";
+import { revalidate } from "@/lib/revalidate";
 import { getRevision } from "@/lib/db/revisions";
 import { updatePage } from "@/lib/db/pages";
 import { updateService } from "@/lib/db/services";
@@ -33,29 +33,29 @@ export async function restoreRevisionAction(formData: FormData): Promise<void> {
     switch (revision.scope) {
       case "pages":
         await updatePage(revision.docId, revision.snapshot as SitePage);
-        revalidatePath(`/${revision.docId}`);
+        await revalidate(`/${revision.docId}`);
         break;
       case "services": {
         const { slug, ...rest } = revision.snapshot as Service;
         await updateService(revision.docId, rest);
-        revalidatePath(`/services/${slug}`);
+        await revalidate(`/services/${slug}`);
         break;
       }
       case "locations": {
         const { slug, ...rest } = revision.snapshot as Location;
         await updateLocation(revision.docId, rest);
-        revalidatePath(`/locations/${slug}`);
+        await revalidate(`/locations/${slug}`);
         break;
       }
       case "projects": {
         const { slug, ...rest } = revision.snapshot as Project;
         await updateProject(revision.docId, rest);
-        revalidatePath(`/projects/${slug}`);
+        await revalidate(`/projects/${slug}`);
         break;
       }
       case "blogPosts":
         await updateBlogPost(revision.docId, revision.snapshot as BlogPost);
-        revalidatePath(`/blog/${revision.docId}`);
+        await revalidate(`/blog/${revision.docId}`);
         break;
       case "pageContent":
         await saveBlockDraft(
@@ -73,6 +73,6 @@ export async function restoreRevisionAction(formData: FormData): Promise<void> {
     redirect(`/admin/revisions?error=${encodeURIComponent(message)}`);
   }
 
-  revalidatePath("/sitemap.xml");
+  await revalidate("/sitemap.xml");
   redirect(`/admin/revisions?restored=${encodeURIComponent(revision.label)}`);
 }

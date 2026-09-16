@@ -1,7 +1,7 @@
 "use server";
 
 import { redirect } from "next/navigation";
-import { revalidatePath } from "next/cache";
+import { revalidate } from "@/lib/revalidate";
 import { saveRobotsConfig, saveLlmsConfig } from "@/lib/db/siteFiles";
 import { normalizeRobotsConfig, type RobotsConfig } from "@/lib/robotsConfig";
 import { normalizeLlmsConfig, type LlmsConfig } from "@/lib/llmsConfig";
@@ -33,7 +33,7 @@ export async function saveRobotsAction(formData: FormData): Promise<void> {
     fail(err instanceof Error ? err.message : "Unknown error");
   }
 
-  revalidatePath("/robots.txt");
+  await revalidate("/robots.txt");
   redirect("/admin/site-files?saved=robots");
 }
 
@@ -50,6 +50,6 @@ export async function saveLlmsAction(formData: FormData): Promise<void> {
     fail(err instanceof Error ? err.message : "Unknown error");
   }
 
-  revalidatePath("/llms.txt");
+  await revalidate("/llms.txt");
   redirect("/admin/site-files?saved=llms");
 }

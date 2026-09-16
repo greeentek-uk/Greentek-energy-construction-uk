@@ -1,9 +1,10 @@
 "use client";
-import { ArrowRight } from "lucide-react";
+import { Phone, MessageSquareMore } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import type { HomeHeroContent } from "@/data/pageContent";
 import HeroQuoteForm from "./HeroQuoteForm";
+import TrustRatingBadge from "@/components/site/TrustRatingBadge";
 
 function useFadeIn(delay = 0) {
   const ref = useRef<HTMLDivElement>(null);
@@ -35,7 +36,9 @@ function useFadeIn(delay = 0) {
  * distraction rather than a feature.
  */
 export default function HeroSectionClient({
-  trustBadgeSuffix,
+  ratingLabel,
+  ratingScore,
+  ratingUrl,
   image,
   imageAlt,
   headingLine1,
@@ -68,18 +71,36 @@ export default function HeroSectionClient({
           <div
             ref={heroFade.ref}
             className={`text-center sm:text-left transition-all duration-1000 ease-out ${
-              heroFade.visible ? "translate-y-0 opacity-100" : "translate-y-10 opacity-0"
+              heroFade.visible
+                ? "translate-y-0 opacity-100"
+                : "translate-y-10 opacity-0"
             }`}
           >
-            <div className="mx-auto sm:mx-0 font-medium text-white text-md mb-8 bg-white w-fit py-1.5 px-1 rounded-2xl text-sm">
-              <span className="bg-[#c5eb02] text-zinc-900 rounded-2xl px-3 py-1">
-                Trusted
-              </span>
-              <span className="mx-2 text-black">{trustBadgeSuffix}</span>
-            </div>
+            <TrustRatingBadge
+              label={ratingLabel}
+              score={ratingScore}
+              url={ratingUrl}
+              className="mx-auto sm:mx-0 mb-8"
+            />
 
-            <h1 className="text-white text-[2.5rem] md:text-[3.75rem] font-bold leading-[1.1] text-balance">
-              {headingLine1} <br className="hidden sm:block" />
+            {/*
+              Exactly two lines at every width.
+
+              The break is unconditional — hiding it below `sm` let the two
+              halves run together and wrap into four or five lines on phones.
+              `text-balance` is gone for the same reason: it redistributes
+              lines and fights an explicit break.
+
+              Sizes stay at the original 2.5rem / 3.75rem wherever those
+              already fit on two lines, which measurement showed is 540px to
+              1023px and 1440px upward. The two clamps cover only the ranges
+              that didn't: phones, and 1024–1439px, where the quote form takes
+              half the row and leaves the heading a narrower column. Each clamp
+              reaches its original size as soon as there is room for it.
+            */}
+            <h1 className="text-white font-bold leading-[1.1] text-[clamp(1.25rem,7.6vw,2.5rem)] md:text-[3.75rem] lg:text-[clamp(2rem,4.1vw,3.75rem)]">
+              {headingLine1}
+              <br />
               {headingLine2}
             </h1>
 
@@ -87,13 +108,20 @@ export default function HeroSectionClient({
               {body}
             </p>
 
-            <div className="mt-8 flex justify-center sm:justify-start">
+            <div className="mt-8 flex justify-center sm:justify-start gap-3">
               <a
-                href="/contact"
+                href="tel:+443335334567"
                 className="w-fit rounded px-4 py-3 text-sm md:text-[18px] font-semibold text-black backdrop-blur-sm transition active:scale-95 bg-[#c5eb02]"
               >
+                <Phone className="inline mr-2  rounded px-1 py-1 text-black" />
                 {ctaLabel}{" "}
-                <ArrowRight className="inline ml-2 bg-black rounded px-1 py-1 text-white" />
+              </a>
+              <a
+                href="https://wa.me/+443335334567"
+                className="w-fit rounded px-4 py-3 text-sm md:text-[18px] font-semibold text-black backdrop-blur-sm transition active:scale-95 bg-white"
+              >
+                <MessageSquareMore className="inline mr-2  rounded px-1 py-1 text-black" />
+                Contact on WhatsApp
               </a>
             </div>
           </div>

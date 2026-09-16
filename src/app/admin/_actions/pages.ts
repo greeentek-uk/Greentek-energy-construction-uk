@@ -1,7 +1,7 @@
 "use server";
 
 import { redirect } from "next/navigation";
-import { revalidatePath } from "next/cache";
+import { revalidate } from "@/lib/revalidate";
 import {
   createPage,
   updatePage,
@@ -81,9 +81,9 @@ export async function savePageAction(formData: FormData): Promise<void> {
     redirect(`${editingPath}?error=${encodeURIComponent(message)}`);
   }
 
-  revalidatePath(`/${slug}`);
-  if (!isNew && originalSlug !== slug) revalidatePath(`/${originalSlug}`);
-  revalidatePath("/sitemap.xml");
+  await revalidate(`/${slug}`);
+  if (!isNew && originalSlug !== slug) await revalidate(`/${originalSlug}`);
+  await revalidate("/sitemap.xml");
   redirect(`/admin/pages/${slug}?saved=1`);
 }
 
@@ -97,7 +97,7 @@ export async function deletePageAction(formData: FormData): Promise<void> {
     redirect(`/admin/pages?error=${encodeURIComponent(message)}`);
   }
 
-  revalidatePath(`/${slug}`);
-  revalidatePath("/sitemap.xml");
+  await revalidate(`/${slug}`);
+  await revalidate("/sitemap.xml");
   redirect("/admin/pages?deleted=1");
 }

@@ -1,7 +1,7 @@
 "use server";
 
 import { redirect } from "next/navigation";
-import { revalidatePath } from "next/cache";
+import { revalidate } from "@/lib/revalidate";
 import { updateSettings } from "@/lib/db/settings";
 
 interface OpeningHoursRow {
@@ -46,6 +46,6 @@ export async function saveLocalSeoAction(formData: FormData): Promise<void> {
   }
 
   // The LocalBusiness block is rendered in the root layout on every page.
-  revalidatePath("/", "layout");
+  await revalidate("/", "layout");
   redirect("/admin/local-seo?saved=1");
 }

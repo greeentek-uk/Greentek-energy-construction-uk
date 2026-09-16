@@ -50,6 +50,13 @@ export default function AreasClient({
               <h3 className="text-white text-xl md:text-2xl font-bold">
                 {largeArea.name}
               </h3>
+              {/* Same as the group intro on Verticals: editable in the panel,
+                  but never rendered, so the copy went nowhere. */}
+              {largeArea.stat && (
+                <p className="mt-1 text-[#c5eb02] text-sm font-semibold">
+                  {largeArea.stat}
+                </p>
+              )}
               {largeArea.note && (
                 <p className="text-white/70 text-xs mt-2 max-w-md">
                   {largeArea.note}

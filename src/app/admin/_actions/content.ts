@@ -1,7 +1,7 @@
 "use server";
 
 import { redirect } from "next/navigation";
-import { revalidatePath } from "next/cache";
+import { revalidate } from "@/lib/revalidate";
 import {
   createService,
   updateService,
@@ -39,29 +39,29 @@ function splitCommas(value: string): string[] {
     .filter(Boolean);
 }
 
-function revalidateServiceRoutes(slug: string) {
-  revalidatePath("/services");
-  revalidatePath(`/services/${slug}`);
-  revalidatePath("/locations/[locationSlug]/[serviceSlug]", "page");
-  revalidatePath("/");
-  revalidatePath("/sitemap.xml");
+async function revalidateServiceRoutes(slug: string) {
+  await revalidate("/services");
+  await revalidate(`/services/${slug}`);
+  await revalidate("/locations/[locationSlug]/[serviceSlug]", "page");
+  await revalidate("/");
+  await revalidate("/sitemap.xml");
 }
 
-function revalidateProjectRoutes(slug: string) {
-  revalidatePath("/projects");
-  revalidatePath(`/projects/${slug}`);
-  revalidatePath("/services/[slug]", "page");
-  revalidatePath("/locations/[locationSlug]/[serviceSlug]", "page");
-  revalidatePath("/");
-  revalidatePath("/sitemap.xml");
+async function revalidateProjectRoutes(slug: string) {
+  await revalidate("/projects");
+  await revalidate(`/projects/${slug}`);
+  await revalidate("/services/[slug]", "page");
+  await revalidate("/locations/[locationSlug]/[serviceSlug]", "page");
+  await revalidate("/");
+  await revalidate("/sitemap.xml");
 }
 
-function revalidateLocationRoutes(slug: string) {
-  revalidatePath("/locations");
-  revalidatePath(`/locations/${slug}`);
-  revalidatePath("/locations/[locationSlug]/[serviceSlug]", "page");
-  revalidatePath("/");
-  revalidatePath("/sitemap.xml");
+async function revalidateLocationRoutes(slug: string) {
+  await revalidate("/locations");
+  await revalidate(`/locations/${slug}`);
+  await revalidate("/locations/[locationSlug]/[serviceSlug]", "page");
+  await revalidate("/");
+  await revalidate("/sitemap.xml");
 }
 
 function readServiceFields(formData: FormData) {
@@ -91,7 +91,7 @@ export async function saveServiceAction(formData: FormData): Promise<void> {
     redirect(`/admin/services?error=${encodeURIComponent(message)}`);
   }
 
-  revalidateServiceRoutes(slug);
+  await revalidateServiceRoutes(slug);
   redirect("/admin/services?saved=1");
 }
 
@@ -120,7 +120,7 @@ export async function createServiceAction(formData: FormData): Promise<void> {
     redirect(`/admin/services/new?error=${encodeURIComponent(message)}`);
   }
 
-  revalidateServiceRoutes(slug);
+  await revalidateServiceRoutes(slug);
   redirect("/admin/services?saved=1");
 }
 
@@ -134,7 +134,7 @@ export async function deleteServiceAction(formData: FormData): Promise<void> {
     redirect(`/admin/services?error=${encodeURIComponent(message)}`);
   }
 
-  revalidateServiceRoutes(slug);
+  await revalidateServiceRoutes(slug);
   redirect("/admin/services?deleted=1");
 }
 
@@ -171,7 +171,7 @@ export async function saveProjectAction(formData: FormData): Promise<void> {
     redirect(`/admin/projects?error=${encodeURIComponent(message)}`);
   }
 
-  revalidateProjectRoutes(slug);
+  await revalidateProjectRoutes(slug);
   redirect("/admin/projects?saved=1");
 }
 
@@ -200,7 +200,7 @@ export async function createProjectAction(formData: FormData): Promise<void> {
     redirect(`/admin/projects/new?error=${encodeURIComponent(message)}`);
   }
 
-  revalidateProjectRoutes(slug);
+  await revalidateProjectRoutes(slug);
   redirect("/admin/projects?saved=1");
 }
 
@@ -214,7 +214,7 @@ export async function deleteProjectAction(formData: FormData): Promise<void> {
     redirect(`/admin/projects?error=${encodeURIComponent(message)}`);
   }
 
-  revalidateProjectRoutes(slug);
+  await revalidateProjectRoutes(slug);
   redirect("/admin/projects?deleted=1");
 }
 
@@ -246,7 +246,7 @@ export async function saveLocationAction(formData: FormData): Promise<void> {
     redirect(`/admin/locations?error=${encodeURIComponent(message)}`);
   }
 
-  revalidateLocationRoutes(slug);
+  await revalidateLocationRoutes(slug);
   redirect("/admin/locations?saved=1");
 }
 
@@ -275,7 +275,7 @@ export async function createLocationAction(formData: FormData): Promise<void> {
     redirect(`/admin/locations/new?error=${encodeURIComponent(message)}`);
   }
 
-  revalidateLocationRoutes(slug);
+  await revalidateLocationRoutes(slug);
   redirect("/admin/locations?saved=1");
 }
 
@@ -289,7 +289,7 @@ export async function deleteLocationAction(formData: FormData): Promise<void> {
     redirect(`/admin/locations?error=${encodeURIComponent(message)}`);
   }
 
-  revalidateLocationRoutes(slug);
+  await revalidateLocationRoutes(slug);
   redirect("/admin/locations?deleted=1");
 }
 
@@ -343,6 +343,6 @@ export async function saveSettingsAction(formData: FormData): Promise<void> {
     redirect(`/admin/settings?error=${encodeURIComponent(message)}`);
   }
 
-  revalidatePath("/", "layout");
+  await revalidate("/", "layout");
   redirect("/admin/settings?saved=1");
 }

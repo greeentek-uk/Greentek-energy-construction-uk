@@ -1,7 +1,7 @@
 "use server";
 
 import { redirect } from "next/navigation";
-import { revalidatePath } from "next/cache";
+import { revalidate } from "@/lib/revalidate";
 import {
   createBlogPost,
   updateBlogPost,
@@ -13,13 +13,13 @@ import type { BlogPost } from "@/data/blogs";
 import { parseContentBlocks } from "./contentBlocks";
 import { parseFaqs } from "./faqs";
 
-function revalidateBlogRoutes(slug: string, previousSlug?: string) {
-  revalidatePath("/blog");
-  revalidatePath(`/blog/${slug}`);
+async function revalidateBlogRoutes(slug: string, previousSlug?: string) {
+  await revalidate("/blog");
+  await revalidate(`/blog/${slug}`);
   if (previousSlug && previousSlug !== slug) {
-    revalidatePath(`/blog/${previousSlug}`);
+    await revalidate(`/blog/${previousSlug}`);
   }
-  revalidatePath("/sitemap.xml");
+  await revalidate("/sitemap.xml");
 }
 
 export async function saveBlogPostAction(formData: FormData): Promise<void> {
@@ -93,7 +93,7 @@ export async function saveBlogPostAction(formData: FormData): Promise<void> {
     redirect(`${editingPath}?error=${encodeURIComponent(message)}`);
   }
 
-  revalidateBlogRoutes(slug, isNew ? undefined : originalSlug);
+  await revalidateBlogRoutes(slug, isNew ? undefined : originalSlug);
   redirect(`/admin/blog/${slug}?saved=1`);
 }
 
@@ -107,6 +107,6 @@ export async function deleteBlogPostAction(formData: FormData): Promise<void> {
     redirect(`/admin/blog?error=${encodeURIComponent(message)}`);
   }
 
-  revalidateBlogRoutes(slug);
+  await revalidateBlogRoutes(slug);
   redirect("/admin/blog?deleted=1");
 }

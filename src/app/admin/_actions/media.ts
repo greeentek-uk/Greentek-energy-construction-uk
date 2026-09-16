@@ -1,7 +1,7 @@
 "use server";
 
 import { redirect } from "next/navigation";
-import { revalidatePath } from "next/cache";
+import { revalidate } from "@/lib/revalidate";
 import { deleteMedia } from "@/lib/cloudinary";
 
 export async function deleteMediaAction(formData: FormData): Promise<void> {
@@ -27,6 +27,6 @@ export async function deleteMediaAction(formData: FormData): Promise<void> {
     redirect(`/admin/media?error=${encodeURIComponent(message)}`);
   }
 
-  revalidatePath("/admin/media");
+  await revalidate("/admin/media");
   redirect("/admin/media?deleted=1");
 }

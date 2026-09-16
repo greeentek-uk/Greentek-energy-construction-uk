@@ -31,14 +31,14 @@ export default function HomePage() {
 
       <div className="flex-1">
         <HeroSection />
+        <Projects />
+        <Testimonials />
         <AboutUs />
         <Stats />
         <Verticals />
         <WhyChooseUs />
         <Process />
-        <Projects />
         <CtaSection />
-        <Testimonials />
         <Areas />
         <FAQSection />
       </div>

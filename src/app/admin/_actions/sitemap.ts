@@ -1,7 +1,7 @@
 "use server";
 
 import { redirect } from "next/navigation";
-import { revalidatePath } from "next/cache";
+import { revalidate } from "@/lib/revalidate";
 import { saveSitemapConfig } from "@/lib/db/sitemapSettings";
 import {
   normalizeSitemapConfig,
@@ -45,6 +45,6 @@ export async function saveSitemapConfigAction(formData: FormData): Promise<void>
     redirect(`/admin/sitemap?error=${encodeURIComponent(message)}`);
   }
 
-  revalidatePath("/sitemap.xml");
+  await revalidate("/sitemap.xml");
   redirect("/admin/sitemap?saved=1");
 }

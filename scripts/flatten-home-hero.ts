@@ -1,8 +1,11 @@
 /**
  * One-time: collapses the home-hero block from a three-slide carousel to the
- * single hero shape. Keeps the first slide's copy and image, and adds the
- * default form headings. Safe to re-run — a block that has already been
- * flattened is left alone.
+ * single hero shape. Keeps the first slide's copy and image, and fills in the
+ * form headings and rating badge defaults. Safe to re-run — a block that has
+ * already been flattened is left alone.
+ *
+ * Still here because a database that hasn't been through this yet would
+ * otherwise render a hero with no content at all.
  */
 import { config } from "dotenv";
 config({ path: ".env.local" });
@@ -26,7 +29,11 @@ function flatten(block: Record<string, unknown> | undefined) {
   if (!first) return null;
 
   return {
-    trustBadgeSuffix: String(block.trustBadgeSuffix ?? "by 500+ Homeowners"),
+    ratingLabel: String(block.ratingLabel ?? "Excellent"),
+    ratingScore: String(block.ratingScore ?? "4.4"),
+    ratingUrl: String(
+      block.ratingUrl ?? "https://www.trustpilot.com/review/greentekenergy.co.uk",
+    ),
     image: first.image,
     ...(first.imageAlt ? { imageAlt: first.imageAlt } : {}),
     headingLine1: first.headingLine1,
