@@ -136,6 +136,14 @@ function parseBlockFields(key: PageContentKey, formData: FormData): PageContentM
         eyebrow: str(formData, "eyebrow"),
         heading: str(formData, "heading"),
         body: str(formData, "body"),
+        cards: [0, 1].map((i) => ({
+          title: str(formData, `card${i}_title`),
+          body: str(formData, `card${i}_body`),
+          image: str(formData, `card${i}_image`),
+          imageAlt: str(formData, `card${i}_imageAlt`),
+          linkLabel: str(formData, `card${i}_linkLabel`),
+          href: str(formData, `card${i}_href`),
+        })),
       };
     case "projects-preview":
       return {

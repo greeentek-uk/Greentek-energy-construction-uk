@@ -1,31 +1,10 @@
 "use client";
 
-import {
-  ArrowRight,
-  ChevronLeft,
-  ChevronRight,
-  Pause,
-  Play,
-} from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useMemo, useRef, useState } from "react";
-import type { Project } from "@/data/site";
-import type { AboutUsSlideContent } from "@/data/pageContent";
-
-type Slide = {
-  image: string;
-  title: string;
-  text: string;
-  href?: string;
-  date?: string;
-};
-
-const FEATURED_PROJECT_SLUGS = [
-  "solar-pv-installation",
-  "full-property-refurbishment",
-];
-
-const SLIDE_DURATION = 3000;
+import { ArrowRight } from "lucide-react";
+import type { AboutCard, AboutUsSlideContent } from "@/data/pageContent";
 
 function useFadeIn(delay = 0) {
   const ref = useRef<HTMLDivElement>(null);
@@ -42,7 +21,7 @@ function useFadeIn(delay = 0) {
           observer.disconnect();
         }
       },
-      { threshold: 0.1 },
+      { threshold: 0.15 },
     );
 
     observer.observe(el);
@@ -52,79 +31,66 @@ function useFadeIn(delay = 0) {
   return { ref, visible };
 }
 
+/**
+ * Copy on the left, image on the right — the layout from the reference — built
+ * with the site's own card surface and type scale rather than the reference's
+ * green panels.
+ *
+ * The image column only exists once an image is uploaded, so a freshly created
+ * card shows clean text instead of an empty box on the live site.
+ */
+function FeatureCard({ card }: { card: AboutCard }) {
+  return (
+    <div className="flex h-full flex-col overflow-hidden rounded-xl border border-white/10 bg-[#101314] sm:flex-row sm:items-stretch">
+      <div className="flex flex-1 flex-col justify-center gap-4 p-6 md:p-8">
+        <h3 className="text-xl md:text-2xl font-bold leading-[1.25] text-white text-balance">
+          {card.title}
+        </h3>
+        {card.body && (
+          <p className="text-md font-normal leading-relaxed text-white/80">{card.body}</p>
+        )}
+        {card.linkLabel && card.href && (
+          <Link
+            href={card.href}
+            className="group mt-2 inline-flex w-fit items-center gap-2 rounded-full border border-white/30 px-5 py-2 text-sm font-semibold text-white transition-colors hover:border-[#c5eb02] hover:text-[#c5eb02]"
+          >
+            {card.linkLabel}
+            <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+          </Link>
+        )}
+      </div>
+
+      {card.image && (
+        <div className="relative min-h-[220px] w-full sm:min-h-0 sm:w-[46%] shrink-0">
+          <Image
+            src={card.image}
+            alt={card.imageAlt || card.title}
+            fill
+            // Each card is half the row from lg, and the image is just under half the card.
+            sizes="(min-width: 1024px) 280px, (min-width: 640px) 46vw, 100vw"
+            className="object-contain object-bottom p-4 sm:p-0 sm:pt-6"
+          />
+        </div>
+      )}
+    </div>
+  );
+}
+
 export default function AboutUsClient({
-  projects,
   eyebrow,
   heading,
   body,
-}: { projects: Project[] } & AboutUsSlideContent) {
+  cards,
+}: AboutUsSlideContent) {
+  const visibleCards = (cards ?? []).filter((card) => card.title);
   const headerFade = useFadeIn(0);
-  const showFade = useFadeIn(100);
-
-  const slides: Slide[] = useMemo(
-    () =>
-      FEATURED_PROJECT_SLUGS.map((slug) => {
-        const project = projects.find((p) => p.slug === slug)!;
-        return {
-          image: project.after,
-          href: `/projects/${project.slug}`,
-          title: project.title,
-          text: project.description,
-        };
-      }),
-    [projects],
-  );
-
-  const [index, setIndex] = useState(0);
-  const [paused, setPaused] = useState(false);
-  const [progress, setProgress] = useState(0);
-  const elapsed = useRef(0);
-
-  useEffect(() => {
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      setPaused(true);
-    }
-  }, []);
-
-  useEffect(() => {
-    elapsed.current = 0;
-    setProgress(0);
-  }, [index]);
-
-  // Autoplay.
-  useEffect(() => {
-    if (paused || slides.length < 2) return;
-
-    let frame = 0;
-    let last = performance.now();
-
-    const step = (now: number) => {
-      elapsed.current += now - last;
-      last = now;
-
-      const ratio = Math.min(elapsed.current / SLIDE_DURATION, 1);
-      setProgress(ratio);
-
-      if (ratio >= 1) {
-        setIndex((i) => (i + 1) % slides.length);
-        return;
-      }
-      frame = requestAnimationFrame(step);
-    };
-
-    frame = requestAnimationFrame(step);
-    return () => cancelAnimationFrame(frame);
-  }, [index, paused, slides.length]);
-
-  const go = (next: number) => setIndex((next + slides.length) % slides.length);
 
   return (
     <section className="py-12 md:py-14 lg:py-18 overflow-hidden px-4 md:px-10">
-      <div className="mx-auto max-w-7xl px-2 md:px-6 grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-center">
-        {/* ---------- Left: copy ---------- */}
+      <div className="mx-auto max-w-7xl px-2 md:px-6">
         <div
           ref={headerFade.ref}
-          className={`transition-all duration-700 ease-out ${
+          className={`flex flex-col items-center transition-all duration-700 ease-out ${
             headerFade.visible
               ? "translate-y-0 opacity-100"
               : "translate-y-6 opacity-0"
@@ -133,125 +99,25 @@ export default function AboutUsClient({
           <p className="text-[10px] md:text-[16px] font-semibold uppercase mb-6 bg-[#28282C] text-[#c5eb02] rounded-2xl px-3 py-1 w-fit">
             {eyebrow}
           </p>
-          <h2 className="text-[1.625rem] md:text-[2.5rem] font-bold leading-[1.2] text-white">
+          <h2 className="text-[1.625rem] md:text-[2.5rem] font-bold leading-[1.2] text-white text-center">
             {heading}
           </h2>
-          <p className="mt-4 text-md md:text-xl text-white/80 leading-relaxed font-normal">
+          <p className="mt-4 text-md md:text-xl text-white/80 leading-relaxed font-normal text-center">
             {body}
           </p>
         </div>
 
-        <div
-          ref={showFade.ref}
-          className={`relative w-full h-80 sm:h-[26rem] lg:h-[30rem] rounded-xl overflow-hidden bg-[#111827] transition-all duration-700 ease-out ${
-            showFade.visible
-              ? "translate-y-0 opacity-100"
-              : "translate-y-6 opacity-0"
-          }`}
-        >
-          {slides.map((slide, i) => {
-            const active = i === index;
-            const slideClassName = `group absolute inset-0 bg-center bg-cover transition-opacity duration-700 ${
-              active ? "opacity-100" : "opacity-0 pointer-events-none"
-            }`;
-            const slideStyle = { backgroundImage: `url('${slide.image}')` };
-
-            const content = (
-              <div className="h-full flex flex-col justify-end px-6 py-6 text-white bg-linear-to-b from-transparent from-45% to-[#111827] to-100%">
-                {slide.date && (
-                  <span className="text-sm text-white/75 mb-1">
-                    {slide.date}
-                  </span>
-                )}
-                <h3 className="text-xl md:text-2xl font-bold mb-2 group-hover:text-[#c5eb02] transition-colors">
-                  {slide.title}
-                </h3>
-                <p className="text-md font-normal max-w-[46ch]">{slide.text}</p>
-              </div>
-            );
-
-            if (slide.href) {
-              return (
-                <Link
-                  key={slide.title}
-                  href={slide.href}
-                  aria-hidden={!active}
-                  tabIndex={active ? undefined : -1}
-                  className={slideClassName}
-                  style={slideStyle}
-                >
-                  {content}
-                </Link>
-              );
-            }
-
-            return (
-              <div
-                key={slide.title}
-                aria-hidden={!active}
-                tabIndex={active ? undefined : -1}
-                className={slideClassName}
-                style={slideStyle}
-              >
-                {content}
-              </div>
-            );
-          })}
-
-          {/* progress bars */}
-          <div className="absolute top-5 left-5 right-[7.5rem] z-20 flex gap-2">
-            {slides.map((slide, i) => (
-              <div
-                key={slide.title}
-                className="h-[3px] flex-1 rounded-full bg-white/35 overflow-hidden"
-              >
-                <div
-                  className="h-full rounded-full bg-white"
-                  style={{
-                    width:
-                      i < index
-                        ? "100%"
-                        : i === index
-                          ? `${progress * 100}%`
-                          : "0%",
-                  }}
-                />
-              </div>
+        {visibleCards.length > 0 && (
+          <div
+            className={`mt-10 md:mt-12 grid gap-6 ${
+              visibleCards.length > 1 ? "lg:grid-cols-2" : ""
+            }`}
+          >
+            {visibleCards.map((card) => (
+              <FeatureCard key={card.title} card={card} />
             ))}
           </div>
-
-          {/* pause / play */}
-          <button
-            type="button"
-            onClick={() => setPaused((p) => !p)}
-            aria-label={paused ? "Play slideshow" : "Pause slideshow"}
-            className="absolute top-3 right-3 z-20 grid h-9 w-9 place-items-center rounded-full bg-black/45 text-white backdrop-blur transition-colors hover:bg-black/75 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#c5eb02]"
-          >
-            {paused ? (
-              <Play className="h-4 w-4" />
-            ) : (
-              <Pause className="h-4 w-4" />
-            )}
-          </button>
-
-          {/* prev / next */}
-          <button
-            type="button"
-            onClick={() => go(index - 1)}
-            aria-label="Previous slide"
-            className="absolute left-3 top-1/2 z-20 -translate-y-1/2 grid h-10 w-10 place-items-center rounded-full bg-black/45 text-white backdrop-blur transition-colors hover:bg-black/75 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#c5eb02]"
-          >
-            <ChevronLeft className="h-5 w-5" />
-          </button>
-          <button
-            type="button"
-            onClick={() => go(index + 1)}
-            aria-label="Next slide"
-            className="absolute right-3 top-1/2 z-20 -translate-y-1/2 grid h-10 w-10 place-items-center rounded-full bg-black/45 text-white backdrop-blur transition-colors hover:bg-black/75 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#c5eb02]"
-          >
-            <ChevronRight className="h-5 w-5" />
-          </button>
-        </div>
+        )}
       </div>
     </section>
   );

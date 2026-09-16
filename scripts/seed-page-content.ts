@@ -275,6 +275,24 @@ const seedData: PageContentMap = {
     eyebrow: "About Us",
     heading: "A Home That Works Harder, For Less.",
     body: "We believe you shouldn't need three different companies to power your property, fix your heating, and renovate your space. That's why Greentek brings solar, heat pumps, and energy storage together with expert construction and renovation both residential and commercial, so everything gets handled by one accredited team, properly, from day one.",
+    cards: [
+      {
+        title: "Solar & Renewable Solutions",
+        body: "We design and install solar PV, battery storage and air source heat pumps that cut running costs and future-proof your property.",
+        image: "",
+        imageAlt: "",
+        linkLabel: "Find out more",
+        href: "/energy-solutions",
+      },
+      {
+        title: "Construction & Renovation",
+        body: "From extensions and loft conversions to full refurbishments, one in-house team delivers the build to the same standard as our energy work.",
+        image: "",
+        imageAlt: "",
+        linkLabel: "Find out more",
+        href: "/home-solutions",
+      },
+    ],
   },
   "projects-preview": {
     eyebrow: "Our Work",

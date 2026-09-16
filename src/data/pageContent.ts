@@ -140,10 +140,23 @@ export interface StatsContent {
   items: { value: string; label: string; description: string }[];
 }
 
+/** One of the two feature cards under the About heading: copy left, image right. */
+export interface AboutCard {
+  title: string;
+  body: string;
+  /** Uploaded in the panel. The card renders text-only until one is set. */
+  image: string;
+  imageAlt: string;
+  linkLabel: string;
+  href: string;
+}
+
 export interface AboutUsSlideContent {
   eyebrow: string;
   heading: string;
   body: string;
+  /** Always two — solar on the left, construction on the right. */
+  cards: AboutCard[];
 }
 
 export interface ProjectsPreviewContent {
@@ -292,7 +305,7 @@ export const PAGE_CONTENT_META: Record<PageContentKey, PageContentMeta> = {
     ],
   },
   "about-us-slide": {
-    label: "About Us (Home Slide)",
+    label: "About Us",
     group: "Shared Sections",
     routes: ["/", "/about"],
   },
