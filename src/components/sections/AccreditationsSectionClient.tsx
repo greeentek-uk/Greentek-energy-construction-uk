@@ -1,32 +1,12 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useFadeIn } from "@/hooks/useFadeIn";
 import Image from "next/image";
 import type { AccreditationsContent } from "@/data/pageContent";
 
-function useFadeIn(delay = 0) {
-  const ref = useRef<HTMLDivElement>(null);
-  const [visible, setVisible] = useState(false);
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    const obs = new IntersectionObserver(
-      ([e]) => {
-        if (e.isIntersecting) {
-          setTimeout(() => setVisible(true), delay);
-          obs.disconnect();
-        }
-      },
-      { threshold: 0.2 },
-    );
-    obs.observe(el);
-    return () => obs.disconnect();
-  }, [delay]);
-  return { ref, visible };
-}
 
 export default function AccreditationsSectionClient({ heading, logos }: AccreditationsContent) {
-  const introFade = useFadeIn(0);
+  const [introFadeRef, introFadeVisible] = useFadeIn(0, 0.2);
 
   return (
     <section
@@ -36,9 +16,9 @@ export default function AccreditationsSectionClient({ heading, logos }: Accredit
       <div className="mx-auto max-w-7xl px-6">
         {/* Heading Block */}
         <div
-          ref={introFade.ref}
+          ref={introFadeRef}
           className={`max-w-4xl mb-8 transition-all duration-700 ease-out ${
-            introFade.visible
+            introFadeVisible
               ? "translate-y-0 opacity-100"
               : "translate-y-6 opacity-0"
           }`}

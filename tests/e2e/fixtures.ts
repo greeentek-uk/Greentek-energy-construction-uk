@@ -96,6 +96,9 @@ export const test = base.extend<{ captured: Captured }>({
         // Next's image optimiser isn't available in a local `next start` with a
         // custom loader; on Vercel the same URL returns 200.
         if (isLocal(baseURL || "") && /status of 404/.test(text) && /\/_next\/image/.test(url)) return;
+        // Same for a static file whose name contains a comma: 404 under local
+        // `next start`, 200 on Vercel (checked by links.spec with the comma encoded).
+        if (isLocal(baseURL || "") && /status of 404/.test(text) && /\/images\/.*,/.test(url)) return;
         captured.errors.push(`console: ${text}${url ? ` (${url})` : ""}`);
       });
 

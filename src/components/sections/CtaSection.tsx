@@ -1,41 +1,11 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useFadeIn } from "@/hooks/useFadeIn";
+import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { newEventId, track } from "@/lib/analytics";
 import { serviceOptions, timelineOptions } from "@/lib/quoteForm";
 
-function useFadeIn(delay = 0) {
-  const ref = useRef<HTMLDivElement>(null);
-  const [visible, setVisible] = useState(false);
-
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setTimeout(() => setVisible(true), delay);
-          observer.disconnect();
-        }
-      },
-      { threshold: 0.1 },
-    );
-
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, [delay]);
-
-  return { ref, visible };
-}
-
-const checklist = [
-  "Free professional site survey",
-  "Tailored savings estimate within 24 hours",
-  "Hassle-free grant & finance guidance",
-  "Written warranty on every completed job",
-];
 
 const contactDetails = [
   {
@@ -134,8 +104,8 @@ export default function CtaSection({
   description = "Solar, heating, insulation, or a full refurb, tell us what you're looking at and we'll come back within one business day with a straight answer, a plan and a real quote.",
   defaultService = "",
 }: CtaSectionProps) {
-  const contentFade = useFadeIn(0);
-  const formFade = useFadeIn(150);
+  const [contentFadeRef, contentFadeVisible] = useFadeIn(0);
+  const [formFadeRef, formFadeVisible] = useFadeIn(150);
 
   const initialState: FormState = {
     full_name: "",
@@ -223,9 +193,9 @@ export default function CtaSection({
         <div className="relative z-10 grid lg:grid-cols-12 gap-10 p-6 sm:p-10 md:p-14">
           {/* Left: copy + checklist + contact */}
           <div
-            ref={contentFade.ref}
+            ref={contentFadeRef}
             className={`lg:col-span-6 flex flex-col justify-center transition-all duration-1000 ease-out ${
-              contentFade.visible
+              contentFadeVisible
                 ? "translate-y-0 opacity-100"
                 : "translate-y-8 opacity-0"
             }`}
@@ -286,9 +256,9 @@ export default function CtaSection({
 
           {/* Right: form card */}
           <div
-            ref={formFade.ref}
+            ref={formFadeRef}
             className={`lg:col-span-6 bg-black/50 backdrop-blur-sm border border-white/50 rounded-xl p-6 sm:p-8 shadow-2xl transition-all duration-1000 ease-out ${
-              formFade.visible
+              formFadeVisible
                 ? "translate-y-0 opacity-100"
                 : "translate-y-8 opacity-0"
             }`}

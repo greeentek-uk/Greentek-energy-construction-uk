@@ -94,7 +94,7 @@ export default async function Footer() {
                     Phone
                   </span>
                   <a
-                    href={`tel:${siteConfig.phone}`}
+                    href={`tel:${siteConfig.phone.replace(/[^\d+]/g, "")}`}
                     className="hover:text-[#c5eb02] transition-colors"
                   >
                     {siteConfig.phone}

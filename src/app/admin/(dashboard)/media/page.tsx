@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { listMedia } from "@/lib/cloudinary";
 import { collectImageUsage } from "@/lib/mediaUsage";
 import { deleteMediaAction } from "../../_actions/media";
@@ -54,7 +55,7 @@ export default async function MediaPage({ searchParams }: Props) {
       </div>
 
       <div className="flex gap-2 mb-4">
-        <a
+        <Link
           href="/admin/media"
           className={`rounded-lg px-3 py-1.5 text-sm font-semibold ${
             params.filter !== "missing-alt"
@@ -63,8 +64,8 @@ export default async function MediaPage({ searchParams }: Props) {
           }`}
         >
           All in use ({usage.length})
-        </a>
-        <a
+        </Link>
+        <Link
           href="/admin/media?filter=missing-alt"
           className={`rounded-lg px-3 py-1.5 text-sm font-semibold ${
             params.filter === "missing-alt"
@@ -73,7 +74,7 @@ export default async function MediaPage({ searchParams }: Props) {
           }`}
         >
           Missing alt ({missingAlt.length})
-        </a>
+        </Link>
       </div>
 
       <div className="bg-[#101314] border border-white/10 rounded-xl divide-y divide-white/10 mb-8">

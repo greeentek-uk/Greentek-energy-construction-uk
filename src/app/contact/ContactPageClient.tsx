@@ -1,36 +1,12 @@
 "use client";
 
+import { useFadeIn } from "@/hooks/useFadeIn";
 import CtaSection from "@/components/sections/CtaSection";
-import { useEffect, useRef, useState } from "react";
 
-function useFadeIn(delay = 0) {
-  const ref = useRef<HTMLDivElement>(null);
-  const [visible, setVisible] = useState(false);
-
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setTimeout(() => setVisible(true), delay);
-          observer.disconnect();
-        }
-      },
-      { threshold: 0.1 },
-    );
-
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, [delay]);
-
-  return { ref, visible };
-}
 
 export default function ContactPageClient() {
-  const headerFade = useFadeIn(0);
-  const mapHeaderFade = useFadeIn(0);
+  const [headerFadeRef, headerFadeVisible] = useFadeIn(0);
+  const [mapHeaderFadeRef, mapHeaderFadeVisible] = useFadeIn(0);
 
   return (
     <main className="flex-1">
@@ -38,9 +14,9 @@ export default function ContactPageClient() {
       <section className="relative  bg-[url('/images/footer/footer-bg.webp')] bg-cover overflow-hidden">
         <div className="bg-black/70 pt-30 py-20">
           <div
-            ref={headerFade.ref}
+            ref={headerFadeRef}
             className={`relative mx-auto max-w-7xl px-6 text-center transition-all duration-1000 ease-out ${
-              headerFade.visible
+              headerFadeVisible
                 ? "translate-y-0 opacity-100"
                 : "translate-y-10 opacity-0"
             }`}
@@ -60,9 +36,9 @@ export default function ContactPageClient() {
       <section className="py-16 md:py-20">
         <div className="mx-auto max-w-7xl px-6">
           <div
-            ref={mapHeaderFade.ref}
+            ref={mapHeaderFadeRef}
             className={`text-center max-w-3xl mx-auto mb-12 transition-all duration-1000 ease-out ${
-              mapHeaderFade.visible
+              mapHeaderFadeVisible
                 ? "translate-y-0 opacity-100"
                 : "translate-y-10 opacity-0"
             }`}

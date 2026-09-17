@@ -14,10 +14,14 @@ export default function HeaderClient({ siteConfig }: { siteConfig: SiteConfig })
 
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
 
-  useEffect(() => {
+  // Close the mobile menu after navigating. Done while rendering rather than in
+  // an effect, so the page doesn't render once with the menu still open.
+  const [menuPath, setMenuPath] = useState(pathname);
+  if (menuPath !== pathname) {
+    setMenuPath(pathname);
     setIsMenuOpen(false);
     setOpenDropdown(null);
-  }, [pathname]);
+  }
 
   useEffect(() => {
     if (isMenuOpen) {
@@ -199,7 +203,8 @@ export default function HeaderClient({ siteConfig }: { siteConfig: SiteConfig })
               href="tel:03335334567"
               className="hidden lg:flex items-center gap-2 text-white font-medium hover:text-[#c5eb02] transition"
             >
-              {/* SVG as plain img (avoids Next.js image issues) */}
+              {/* An animated SVG: nothing for the image optimiser to do. */}
+              {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src="/animations/phone-ring.svg"
                 alt="Phone Icon"

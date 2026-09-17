@@ -85,7 +85,7 @@ export default async function TermsPage() {
             <section>
               <h2 className="text-sm font-bold text-zinc-900 mb-4 uppercase">7. Governing Law</h2>
               <p>
-                Any claim related to Greentek Construction's website shall be governed by the laws of England & Wales 
+                Any claim related to Greentek Construction&apos;s website shall be governed by the laws of England & Wales 
                 without regards to its conflict of law provisions.
               </p>
             </section>

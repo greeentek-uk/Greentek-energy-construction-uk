@@ -29,7 +29,7 @@ export default async function PrivacyPage() {
             <section>
               <h2 className="text-sm font-bold text-zinc-900 mb-4 uppercase">1. Introduction</h2>
               <p>
-                Greentek Construction ("we", "our", or "us") is committed to protecting and respecting your privacy. 
+                Greentek Construction (&ldquo;we&rdquo;, &ldquo;our&rdquo;, or &ldquo;us&rdquo;) is committed to protecting and respecting your privacy. 
                 This policy sets out the basis on which any personal data we collect from you, or that you provide to us, 
                 will be processed by us.
               </p>

@@ -1,32 +1,12 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useFadeIn } from "@/hooks/useFadeIn";
 import Image from "next/image";
 import type { BrandsContent } from "@/data/pageContent";
 
-function useFadeIn(delay = 0) {
-  const ref = useRef<HTMLDivElement>(null);
-  const [visible, setVisible] = useState(false);
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setTimeout(() => setVisible(true), delay);
-          observer.disconnect();
-        }
-      },
-      { threshold: 0.1 },
-    );
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, [delay]);
-  return { ref, visible };
-}
 
 export default function BrandsSectionClient({ eyebrow, heading, subheading, logos }: BrandsContent) {
-  const introFade = useFadeIn(0);
+  const [introFadeRef, introFadeVisible] = useFadeIn(0);
 
   return (
     <section
@@ -36,9 +16,9 @@ export default function BrandsSectionClient({ eyebrow, heading, subheading, logo
       <div className="mx-auto max-w-7xl px-6">
         {/* Heading Block */}
         <div
-          ref={introFade.ref}
+          ref={introFadeRef}
           className={`text-center max-w-4xl mx-auto mb-10 md:mb-10 transition-all duration-700 ease-out ${
-            introFade.visible
+            introFadeVisible
               ? "translate-y-0 opacity-100"
               : "translate-y-6 opacity-0"
           }`}

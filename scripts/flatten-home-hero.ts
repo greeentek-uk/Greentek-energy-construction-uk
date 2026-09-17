@@ -42,7 +42,7 @@ function flatten(block: Record<string, unknown> | undefined) {
     ctaLabel: first.ctaLabel,
     formHeading: String(block.formHeading ?? "Get a free quote"),
     formSubheading: String(
-      block.formSubheading ?? "Two quick steps. We reply within one business day.",
+      block.formSubheading ?? "Four quick steps. We reply within one business day.",
     ),
   };
 }

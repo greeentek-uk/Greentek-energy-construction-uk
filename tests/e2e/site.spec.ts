@@ -40,7 +40,7 @@ test("footer: WhatsApp, free quote, call and cookie settings", async ({ page }) 
   await expect(page.getByRole("contentinfo").getByRole("button", { name: "Cookie settings" })).toBeVisible();
 });
 
-test("homepage: trust badge, finance banner, projects, featured services, FAQs", async ({ page }) => {
+test("homepage: trust badge, finance banner, projects, featured services, FAQs", async ({ page, request }) => {
   await page.goto("/");
   await settle(page);
 
@@ -52,7 +52,10 @@ test("homepage: trust badge, finance banner, projects, featured services, FAQs",
 
   const projectCards = page.locator('a[aria-label^="View "][href^="/projects/"]');
   const count = await projectCards.count();
-  expect([3, 6, 9], `homepage project count is ${count}`).toContain(count);
+  // The panel offers 3, 6 or 9; fewer show when fewer projects exist.
+  const sitemap = await (await request.get("/sitemap.xml")).text();
+  const existing = new Set(sitemap.match(/\/projects\/[a-z0-9-]+/g) ?? []).size;
+  expect([3, 6, 9].map((n) => Math.min(n, existing)), `homepage shows ${count} of ${existing} projects`).toContain(count);
 
   const strip = page.getByRole("region", { name: "Accreditations" }).or(page.locator('[aria-label="Accreditations"]')).first();
   await expect(strip, "accreditation strip").toBeAttached();
@@ -76,9 +79,17 @@ test("testimonials slider pauses on hover", async ({ page }, testInfo) => {
   await page.goto("/");
   const track = page.locator('[style*="animation-play-state"]').first();
   test.skip((await track.count()) === 0, "no testimonials slider on the page");
-  await track.scrollIntoViewIfNeeded();
+  // The track is always moving, so Playwright's "wait until stable" never settles.
+  await track.evaluate((el) => el.scrollIntoView({ block: "center" }));
+  await page.waitForTimeout(600); // let the section's fade-in finish
   await expect(track).toHaveCSS("animation-play-state", "running");
-  await track.locator("> *").first().hover();
+  // Move the real mouse onto a card that's currently on screen.
+  const point = await track.evaluate((el) => {
+    const card = [...el.children].map((c) => c.getBoundingClientRect()).find((r) => r.left > 50 && r.right < window.innerWidth - 50);
+    return card ? { x: card.left + card.width / 2, y: card.top + card.height / 2 } : null;
+  });
+  expect(point, "a review card on screen").toBeTruthy();
+  await page.mouse.move(point!.x, point!.y);
   await expect(track).toHaveCSS("animation-play-state", "paused");
 });
 

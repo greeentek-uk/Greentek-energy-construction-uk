@@ -1,4 +1,6 @@
 "use client";
+import Image from "next/image";
+import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import type { AreasContent } from "@/data/pageContent";
 
@@ -35,15 +37,19 @@ export default function AreasClient({
 
         {/* Mosaic grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {/* Large tile — home base */}
-          <div
-            className="lg:row-span-2 lg:col-span-2 relative rounded-md overflow-hidden min-h-[280px] lg:min-h-0"
-            onClick={() => (window.location.href = largeArea.path)}
+          {/* Large tile — home base. Tiles are real links (they were divs with a
+              click handler), so they work with a keyboard, open in a new tab
+              and pass link value to the location pages. */}
+          <Link
+            href={largeArea.path}
+            className="group lg:row-span-2 lg:col-span-2 relative block rounded-md overflow-hidden min-h-[280px] lg:min-h-0"
           >
-            <img
+            <Image
               src={largeArea.image}
               alt={largeArea.imageAlt || largeArea.name}
-              className="absolute inset-0 w-full h-full object-cover position-center group-hover:scale-105 transition-transform duration-500"
+              fill
+              sizes="(min-width: 1024px) 860px, 100vw"
+              className="object-cover group-hover:scale-105 transition-transform duration-500"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
             <div className="relative z-10 h-full flex flex-col justify-end p-6">
@@ -63,26 +69,28 @@ export default function AreasClient({
                 </p>
               )}
             </div>
-          </div>
+          </Link>
 
           {/* Small tiles */}
           {smallAreas.map((area) => (
-            <div
+            <Link
               key={area.name}
-              className="relative rounded-md overflow-hidden min-h-[160px]"
-              onClick={() => (window.location.href = area.path)}
+              href={area.path}
+              className="relative block rounded-md overflow-hidden min-h-[160px]"
             >
-              <img
+              <Image
                 src={area.image}
                 alt={area.imageAlt || area.name}
-                className="absolute inset-0 w-full h-full object-cover"
+                fill
+                sizes="(min-width: 1024px) 420px, (min-width: 768px) 50vw, 100vw"
+                className="object-cover"
               />
 
               <div className="absolute inset-0 bg-gradient-to-t from- 20% from-black/75 via-black/10 to-transparent" />
               <div className="relative z-10 h-full flex flex-col justify-end p-4">
                 <h4 className="text-white text-lg font-bold">{area.name}</h4>
               </div>
-            </div>
+            </Link>
           ))}
         </div>
 
@@ -109,13 +117,13 @@ export default function AreasClient({
           </div>
         </div>
         <div className="mt-16 flex justify-center items-center">
-          <a
+          <Link
             href="/locations"
             className="w-fit rounded px-4 py-3 text-sm md:text-[18px] font-semibold text-black backdrop-blur-sm transition active:scale-95 bg-[#c5eb02]"
           >
             {ctaLabel}{" "}
             <ArrowRight className="inline ml-2 bg-black rounded px-1 py-1 text-white" />
-          </a>
+          </Link>
         </div>
       </div>
 

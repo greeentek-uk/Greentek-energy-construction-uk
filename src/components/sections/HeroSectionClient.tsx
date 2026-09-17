@@ -1,31 +1,11 @@
 "use client";
-import { Phone, MessageSquareMore } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+
+import { useFadeIn } from "@/hooks/useFadeIn";import { Phone, MessageSquareMore } from "lucide-react";
 import Image from "next/image";
 import type { HomeHeroContent } from "@/data/pageContent";
 import HeroQuoteForm from "./HeroQuoteForm";
 import TrustRatingBadge from "@/components/site/TrustRatingBadge";
 
-function useFadeIn(delay = 0) {
-  const ref = useRef<HTMLDivElement>(null);
-  const [visible, setVisible] = useState(false);
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setTimeout(() => setVisible(true), delay);
-          observer.disconnect();
-        }
-      },
-      { threshold: 0.1 },
-    );
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, [delay]);
-  return { ref, visible };
-}
 
 /**
  * Homepage hero: one static panel, copy on the left and the two-step quote
@@ -48,7 +28,7 @@ export default function HeroSectionClient({
   formHeading,
   formSubheading,
 }: HomeHeroContent) {
-  const heroFade = useFadeIn(100);
+  const [heroFadeRef, heroFadeVisible] = useFadeIn(100);
 
   return (
     <section className="relative overflow-hidden">
@@ -69,9 +49,9 @@ export default function HeroSectionClient({
       <div className="relative px-5 sm:px-15 pt-28 sm:pt-32 lg:pt-36 pb-20 sm:pb-24 lg:pb-28">
         <div className="grid gap-10 lg:grid-cols-[1.15fr_minmax(360px,0.85fr)] lg:gap-14 items-center">
           <div
-            ref={heroFade.ref}
+            ref={heroFadeRef}
             className={`text-center sm:text-left transition-all duration-1000 ease-out ${
-              heroFade.visible
+              heroFadeVisible
                 ? "translate-y-0 opacity-100"
                 : "translate-y-10 opacity-0"
             }`}

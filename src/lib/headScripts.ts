@@ -87,7 +87,6 @@ export function parseSnippet(raw: string): ScriptTag[] {
     const attrs = parseAttributes(match[1]);
     // async/defer are read from the attribute map below rather than spread onto
     // the tag as strings, so they're destructured out of `rest` here.
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { src, async, defer, ...rest } = attrs;
     const code = match[2].trim();
     tags.push({

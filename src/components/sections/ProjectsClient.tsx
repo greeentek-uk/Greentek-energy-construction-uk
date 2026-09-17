@@ -1,35 +1,12 @@
 "use client";
 
+import { useFadeIn } from "@/hooks/useFadeIn";
 import { ArrowRight, MoveHorizontal } from "lucide-react";
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { Project } from "@/data/site";
 import type { ProjectsPreviewContent } from "@/data/pageContent";
 
-function useFadeIn(delay = 0) {
-  const ref = useRef<HTMLDivElement>(null);
-  const [visible, setVisible] = useState(false);
-
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setTimeout(() => setVisible(true), delay);
-          observer.disconnect();
-        }
-      },
-      { threshold: 0.1 },
-    );
-
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, [delay]);
-
-  return { ref, visible };
-}
 
 function GalleryCard({
   project,
@@ -40,7 +17,7 @@ function GalleryCard({
   delay: number;
   beforeBadgeLabel: string;
 }) {
-  const cardFade = useFadeIn(delay);
+  const [cardFadeRef, cardFadeVisible] = useFadeIn(delay);
   const containerRef = useRef<HTMLDivElement>(null);
   const [sliderPos, setSliderPos] = useState(50);
   const [containerWidth, setContainerWidth] = useState(0);
@@ -81,9 +58,9 @@ function GalleryCard({
 
   return (
     <div
-      ref={cardFade.ref}
+      ref={cardFadeRef}
       className={`transition-all duration-700 ease-out ${
-        cardFade.visible
+        cardFadeVisible
           ? "translate-y-0 opacity-100"
           : "translate-y-6 opacity-0"
       }`}
@@ -96,7 +73,10 @@ function GalleryCard({
         onPointerUp={handlePointerUp}
         onPointerLeave={handlePointerUp}
       >
+        {/* Plain <img>: the before image is sized to the container in pixels as
+            the slider moves, which next/image's fixed sizing can't follow. */}
         {/* After image (base layer) */}
+        {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={project.after}
           alt={project.afterAlt || `${project.title} — after`}
@@ -109,6 +89,7 @@ function GalleryCard({
           className="absolute inset-0 overflow-hidden pointer-events-none"
           style={{ width: `${sliderPos}%` }}
         >
+          {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={project.before}
             alt={project.beforeAlt || `${project.title} — before`}
@@ -173,15 +154,15 @@ export default function ProjectsClient({
   beforeBadgeLabel,
   ctaLabel,
 }: { projects: Project[] } & ProjectsPreviewContent) {
-  const headerFade = useFadeIn(0);
+  const [headerFadeRef, headerFadeVisible] = useFadeIn(0);
 
   return (
     <section className="py-10 md:py-20 lg:py-24 overflow-hidden px-4 md:px-10">
       <div className="mx-auto max-w-7xl px-6">
         <div
-          ref={headerFade.ref}
+          ref={headerFadeRef}
           className={`text-center max-w-4xl mx-auto mb-12 md:mb-14 transition-all duration-700 ease-out ${
-            headerFade.visible
+            headerFadeVisible
               ? "translate-y-0 opacity-100"
               : "translate-y-6 opacity-0"
           }`}
@@ -213,13 +194,13 @@ export default function ProjectsClient({
         ))}
       </div>
       <div className="mt-14 md:mt-16 flex justify-center items-center">
-        <a
+        <Link
           href="/projects"
           className="w-fit rounded px-4 py-3 text-sm md:text-[18px] font-semibold text-black backdrop-blur-sm transition active:scale-95 bg-[#c5eb02]"
         >
           {ctaLabel}{" "}
           <ArrowRight className="inline ml-2 bg-black rounded px-1 py-1 text-white" />
-        </a>
+        </Link>
       </div>
     </section>
   );

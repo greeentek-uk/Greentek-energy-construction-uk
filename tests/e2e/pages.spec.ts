@@ -76,7 +76,7 @@ test("thank-you page is noindex and shows the follow-up copy", async ({ page, co
       "A member of the team will contact you within one business day to discuss your property and arrange the next step.",
     ),
   ).toBeVisible();
-  const call = page.getByRole("link", { name: /0333 533 4567/ });
+  const call = page.getByRole("main").getByRole("link", { name: /0333 533 4567/ });
   await expect(page.getByText(/Need to speak sooner\? Call/)).toBeVisible();
   await expect(call).toHaveAttribute("href", "tel:03335334567");
 });

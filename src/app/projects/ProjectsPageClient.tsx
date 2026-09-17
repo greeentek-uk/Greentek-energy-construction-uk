@@ -1,44 +1,20 @@
 "use client";
 
+import { useFadeIn } from "@/hooks/useFadeIn";
 import BeforeAfterSlider from "@/components/ui/BeforeAfterSlider";
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
 import type { Project } from "@/data/site";
 import type { PageHeaderContent } from "@/data/pageContent";
 
-function useFadeIn(delay = 0) {
-  const ref = useRef<HTMLDivElement>(null);
-  const [visible, setVisible] = useState(false);
-
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setTimeout(() => setVisible(true), delay);
-          observer.disconnect();
-        }
-      },
-      { threshold: 0.1 },
-    );
-
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, [delay]);
-
-  return { ref, visible };
-}
 
 function ProjectCard({ project, delay }: { project: Project; delay: number }) {
-  const cardFade = useFadeIn(delay);
+  const [cardFadeRef, cardFadeVisible] = useFadeIn(delay);
 
   return (
     <div
-      ref={cardFade.ref}
+      ref={cardFadeRef}
       className={`transition-all duration-700 ease-out ${
-        cardFade.visible
+        cardFadeVisible
           ? "translate-y-0 opacity-100"
           : "translate-y-6 opacity-0"
       }`}

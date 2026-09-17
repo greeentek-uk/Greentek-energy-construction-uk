@@ -1,32 +1,8 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useFadeIn } from "@/hooks/useFadeIn";
 import type { CorePillarsContent } from "@/data/pageContent";
 
-function useFadeIn(delay = 0) {
-  const ref = useRef<HTMLDivElement>(null);
-  const [visible, setVisible] = useState(false);
-
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setTimeout(() => setVisible(true), delay);
-          observer.disconnect();
-        }
-      },
-      { threshold: 0.15 },
-    );
-
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, [delay]);
-
-  return { ref, visible };
-}
 
 // Inline SVG path data stays code-owned, zipped by [pillarIndex][itemIndex] against the fetched item labels.
 const PILLAR_ICONS = [
@@ -59,15 +35,15 @@ const PILLAR_ICONS = [
 ];
 
 export default function CorePillarsClient({ heading, intro, pillars }: CorePillarsContent) {
-  const sectionFade = useFadeIn(0);
+  const [sectionFadeRef, sectionFadeVisible] = useFadeIn(0, 0.15);
 
   return (
     <section className="bg-white py-12 md:py-16 lg:py-24" aria-labelledby="pillars-heading">
       <div className="mx-auto max-w-7xl px-6">
         <div
-          ref={sectionFade.ref}
+          ref={sectionFadeRef}
           className={`transition-all duration-1000 ease-out ${
-            sectionFade.visible ? "translate-y-0 opacity-100" : "translate-y-10 opacity-0"
+            sectionFadeVisible ? "translate-y-0 opacity-100" : "translate-y-10 opacity-0"
           }`}
         >
           {/* Header Block */}

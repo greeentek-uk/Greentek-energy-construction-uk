@@ -1,44 +1,20 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useFadeIn } from "@/hooks/useFadeIn";
 import type { VerticalsContent } from "@/data/pageContent";
 import { ServiceGroup } from "@/components/site/ServiceCards";
 
-function useFadeIn(delay = 0) {
-  const ref = useRef<HTMLDivElement>(null);
-  const [visible, setVisible] = useState(false);
-
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setTimeout(() => setVisible(true), delay);
-          observer.disconnect();
-        }
-      },
-      { threshold: 0.1 },
-    );
-
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, [delay]);
-
-  return { ref, visible };
-}
 
 export default function VerticalsClient({ eyebrow, heading, subheading, groups }: VerticalsContent) {
-  const headerFade = useFadeIn(0);
+  const [headerFadeRef, headerFadeVisible] = useFadeIn(0);
 
   return (
     <section className="py-10 md:py-20 lg:py-24">
       <div className="mx-auto max-w-7xl px-6">
         <div
-          ref={headerFade.ref}
+          ref={headerFadeRef}
           className={`mx-auto mb-12 max-w-3xl text-center transition-all duration-700 ease-out ${
-            headerFade.visible
+            headerFadeVisible
               ? "translate-y-0 opacity-100"
               : "translate-y-6 opacity-0"
           }`}

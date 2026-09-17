@@ -1,35 +1,11 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useFadeIn } from "@/hooks/useFadeIn";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import type { AboutCard, AboutUsSlideContent } from "@/data/pageContent";
 
-function useFadeIn(delay = 0) {
-  const ref = useRef<HTMLDivElement>(null);
-  const [visible, setVisible] = useState(false);
-
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setTimeout(() => setVisible(true), delay);
-          observer.disconnect();
-        }
-      },
-      { threshold: 0.15 },
-    );
-
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, [delay]);
-
-  return { ref, visible };
-}
 
 /**
  * Copy on the left, image on the right — the layout from the reference — built
@@ -85,15 +61,15 @@ export default function AboutUsClient({
   cards,
 }: AboutUsSlideContent) {
   const visibleCards = (cards ?? []).filter((card) => card.title);
-  const headerFade = useFadeIn(0);
+  const [headerFadeRef, headerFadeVisible] = useFadeIn(0, 0.15);
 
   return (
     <section className="py-10 md:py-20 lg:py-24 overflow-hidden px-4 md:px-10">
       <div className="mx-auto max-w-7xl px-2 md:px-6">
         <div
-          ref={headerFade.ref}
+          ref={headerFadeRef}
           className={`flex flex-col items-center transition-all duration-700 ease-out ${
-            headerFade.visible
+            headerFadeVisible
               ? "translate-y-0 opacity-100"
               : "translate-y-6 opacity-0"
           }`}

@@ -33,6 +33,9 @@ test("internal links and images all resolve", async ({ request }) => {
     // custom loader (it is on Vercel), so check the original file instead.
     let target = url;
     if (url.startsWith("/_next/image")) target = new URL(url, "http://x").searchParams.get("url") || url;
+    // A raw comma in a static file path 404s under local `next start` but not on
+    // Vercel; encoding it checks whether the file itself exists.
+    if (target.startsWith("/")) target = encodeURI(decodeURI(target)).replace(/,/g, "%2C");
     const res = await request.get(target, { maxRedirects: 5, timeout: 30_000 }).catch((e) => ({ status: () => `failed: ${e}` }));
     const status = res.status();
     if (typeof status !== "number" || status >= 400) broken.push(`${url} → ${status} (on ${from})`);

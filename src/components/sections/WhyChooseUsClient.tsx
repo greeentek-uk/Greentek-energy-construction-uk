@@ -1,7 +1,8 @@
 "use client";
 
+import { useFadeIn } from "@/hooks/useFadeIn";
 import Image from "next/image";
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import type { LucideIcon } from "lucide-react";
 import {
   ArrowRight,
@@ -15,30 +16,6 @@ import {
 } from "lucide-react";
 import type { WhyChooseUsContent } from "@/data/pageContent";
 
-function useFadeIn(delay = 0) {
-  const ref = useRef<HTMLDivElement>(null);
-  const [visible, setVisible] = useState(false);
-
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setTimeout(() => setVisible(true), delay);
-          observer.disconnect();
-        }
-      },
-      { threshold: 0.1 },
-    );
-
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, [delay]);
-
-  return { ref, visible };
-}
 
 // Icons stay code-owned, zipped by index against the fetched items.
 const REASON_ICONS: LucideIcon[] = [ShieldCheck, Users, Banknote, PiggyBank, Award, MapPin];
@@ -49,8 +26,8 @@ export default function WhyChooseUsClient({
   subheading,
   items,
 }: WhyChooseUsContent) {
-  const headerFade = useFadeIn(0);
-  const bodyFade = useFadeIn(150);
+  const [headerFadeRef, headerFadeVisible] = useFadeIn(0);
+  const [bodyFadeRef, bodyFadeVisible] = useFadeIn(150);
   const [active, setActive] = useState(0);
 
   const reasons = items.map((item, i) => ({ ...item, icon: REASON_ICONS[i] ?? ShieldCheck }));
@@ -59,9 +36,9 @@ export default function WhyChooseUsClient({
     <section className="py-10 md:py-20 lg:py-24">
       <div className="mx-auto max-w-7xl px-6">
         <div
-          ref={headerFade.ref}
+          ref={headerFadeRef}
           className={`mx-auto mb-12 max-w-3xl text-center transition-all duration-700 ease-out md:mb-16 ${
-            headerFade.visible
+            headerFadeVisible
               ? "translate-y-0 opacity-100"
               : "translate-y-6 opacity-0"
           }`}
@@ -78,9 +55,9 @@ export default function WhyChooseUsClient({
         </div>
 
         <div
-          ref={bodyFade.ref}
+          ref={bodyFadeRef}
           className={`grid grid-cols-1 gap-3 rounded-xl bg-[#101314] p-3 transition-all duration-700 ease-out lg:grid-cols-2 ${
-            bodyFade.visible
+            bodyFadeVisible
               ? "translate-y-0 opacity-100"
               : "translate-y-6 opacity-0"
           }`}

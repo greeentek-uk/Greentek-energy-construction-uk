@@ -1,34 +1,11 @@
 "use client";
 
+import { useFadeIn } from "@/hooks/useFadeIn";
 import { CheckCircle2, ShieldCheck, Wrench } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import type { LucideIcon } from "lucide-react";
 import type { StatsContent } from "@/data/pageContent";
 
-function useFadeIn(delay = 0) {
-  const ref = useRef<HTMLDivElement>(null);
-  const [visible, setVisible] = useState(false);
-
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setTimeout(() => setVisible(true), delay);
-          observer.disconnect();
-        }
-      },
-      { threshold: 0.1 },
-    );
-
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, [delay]);
-
-  return { ref, visible };
-}
 
 // Icons stay code-owned, zipped by index against the fetched items.
 const STAT_ICONS: LucideIcon[] = [Wrench, ShieldCheck, CheckCircle2];
@@ -70,7 +47,7 @@ function CountUp({
 }
 
 function StatCard({ stat, delay }: { stat: Stat; delay: number }) {
-  const fade = useFadeIn(delay);
+  const [fadeRef, fadeVisible] = useFadeIn(delay);
   const Icon = stat.icon;
 
   const numericMatch = stat.value.match(/(\d+(\.\d+)?)/);
@@ -80,9 +57,9 @@ function StatCard({ stat, delay }: { stat: Stat; delay: number }) {
 
   return (
     <div
-      ref={fade.ref}
+      ref={fadeRef}
       className={`bg-[#000000] rounded-2xl px-8 py-7 md:px-8 md:py-8 transition-all duration-700 ${
-        fade.visible ? "translate-y-0 opacity-100" : "translate-y-8 opacity-0"
+        fadeVisible ? "translate-y-0 opacity-100" : "translate-y-8 opacity-0"
       }`}
     >
       <div className="flex items-center gap-4">
@@ -95,14 +72,14 @@ function StatCard({ stat, delay }: { stat: Stat; delay: number }) {
             {target !== null ? (
               isDecimal ? (
                 <span>
-                  {(fade.visible ? target : 0).toFixed(1)}
+                  {(fadeVisible ? target : 0).toFixed(1)}
                   {suffix}
                 </span>
               ) : (
                 <CountUp
                   target={target}
                   suffix={suffix}
-                  visible={fade.visible}
+                  visible={fadeVisible}
                 />
               )
             ) : (

@@ -1,34 +1,10 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useFadeIn } from "@/hooks/useFadeIn";
 import { Award, Handshake, Users } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import type { WhyUsContent } from "@/data/pageContent";
 
-function useFadeIn(delay = 0) {
-  const ref = useRef<HTMLDivElement>(null);
-  const [visible, setVisible] = useState(false);
-
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setTimeout(() => setVisible(true), delay);
-          observer.disconnect();
-        }
-      },
-      { threshold: 0.1 },
-    );
-
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, [delay]);
-
-  return { ref, visible };
-}
 
 const ITEM_ICONS: LucideIcon[] = [Award, Users, Handshake];
 
@@ -39,7 +15,7 @@ export default function WhyUsClient({
   subheading,
   items,
 }: WhyUsContent) {
-  const headerFade = useFadeIn(0);
+  const [headerFadeRef, headerFadeVisible] = useFadeIn(0);
 
   return (
     <section className="gap-4 md:gap-6 py-12 md:py-16 lg:py-24 overflow-hidden mx-auto px-4 md:px-10">
@@ -47,9 +23,9 @@ export default function WhyUsClient({
       <div>
         {/* Centered heading block */}
         <div
-          ref={headerFade.ref}
+          ref={headerFadeRef}
           className={`mx-auto mb-10 md:mb-10 transition-all duration-700 ease-out ${
-            headerFade.visible
+            headerFadeVisible
               ? "translate-y-0 opacity-100"
               : "translate-y-6 opacity-0"
           }`}

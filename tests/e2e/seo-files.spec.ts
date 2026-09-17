@@ -16,7 +16,7 @@ test("llms.txt is served as text", async ({ request }) => {
   expect((await res.text()).length).toBeGreaterThan(100);
 });
 
-test("sitemap.xml is valid and excludes private pages", async ({ request }) => {
+test("sitemap.xml is valid and excludes private pages", async ({ request, baseURL }) => {
   const res = await request.get("/sitemap.xml");
   expect(res.status()).toBe(200);
   const xml = await res.text();
@@ -24,7 +24,9 @@ test("sitemap.xml is valid and excludes private pages", async ({ request }) => {
   const locs = [...xml.matchAll(/<loc>([^<]+)<\/loc>/g)].map((m) => m[1]);
   expect(locs.length).toBeGreaterThan(10);
   for (const loc of locs) {
-    expect.soft(loc, "absolute https URL").toMatch(/^https:\/\//);
+    // Locally the site URL comes from .env.local (http://localhost); live it must be https.
+    const local = /localhost|127\.0\.0\.1/.test(baseURL || "");
+    expect.soft(loc, "absolute URL").toMatch(local ? /^https?:\/\// : /^https:\/\//);
     expect.soft(loc, "no admin/thank-you/api pages").not.toMatch(/\/(admin|thank-you|api)(\/|$)/);
   }
   expect(new Set(locs).size, "no duplicate URLs").toBe(locs.length);

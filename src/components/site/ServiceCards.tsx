@@ -1,7 +1,8 @@
 "use client";
 
+import { useFadeIn } from "@/hooks/useFadeIn";
 import Link from "next/link";
-import { createElement, useEffect, useRef, useState } from "react";
+import { createElement } from "react";
 import type { LucideIcon } from "lucide-react";
 import {
   ArrowRight,
@@ -46,40 +47,16 @@ function iconFor(href: string): LucideIcon {
   return SERVICE_ICONS[slug] ?? Wrench;
 }
 
-function useFadeIn(delay = 0) {
-  const ref = useRef<HTMLDivElement>(null);
-  const [visible, setVisible] = useState(false);
-
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setTimeout(() => setVisible(true), delay);
-          observer.disconnect();
-        }
-      },
-      { threshold: 0.1 },
-    );
-
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, [delay]);
-
-  return { ref, visible };
-}
 
 /** The homepage service card, shared by the homepage and every services listing. */
 export function ServiceCard({ service, delay = 0 }: { service: ServiceCardData; delay?: number }) {
-  const fade = useFadeIn(delay);
+  const [fadeRef, fadeVisible] = useFadeIn(delay);
 
   return (
     <div
-      ref={fade.ref}
+      ref={fadeRef}
       className={`transition-all duration-700 ${
-        fade.visible ? "translate-y-0 opacity-100" : "translate-y-8 opacity-0"
+        fadeVisible ? "translate-y-0 opacity-100" : "translate-y-8 opacity-0"
       }`}
     >
       <Link
@@ -143,14 +120,14 @@ export function ServiceGroup({
   offset?: number;
   showLink?: boolean;
 }) {
-  const fade = useFadeIn(offset);
+  const [fadeRef, fadeVisible] = useFadeIn(offset);
 
   return (
     <div>
       <div
-        ref={fade.ref}
+        ref={fadeRef}
         className={`mb-8 flex flex-col gap-3 px-1 md:flex-row md:items-end md:justify-between transition-all duration-700 ${
-          fade.visible ? "translate-y-0 opacity-100" : "translate-y-6 opacity-0"
+          fadeVisible ? "translate-y-0 opacity-100" : "translate-y-6 opacity-0"
         }`}
       >
         <div>

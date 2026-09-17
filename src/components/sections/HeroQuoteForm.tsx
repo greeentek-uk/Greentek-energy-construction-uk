@@ -203,7 +203,6 @@ export default function HeroQuoteForm({
     const eventId = newEventId();
     try {
       // project_type is carried in the service value itself (energy_… / construction_…).
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { project_type, ...fields } = form;
       await submitQuoteRequest({
         ...fields,

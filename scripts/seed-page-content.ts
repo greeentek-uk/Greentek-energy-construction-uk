@@ -25,7 +25,7 @@ const seedData: PageContentMap = {
     body: "One team for solar, heat pumps, insulation, and full property renovation, residential and commercial, across the West Midlands and Wales.",
     ctaLabel: "Consult an Expert",
     formHeading: "Get a free quote",
-    formSubheading: "Two quick steps. We reply within one business day.",
+    formSubheading: "Four quick steps. We reply within one business day.",
   },
   "why-us": {
     eyebrow: "Why Greentek",

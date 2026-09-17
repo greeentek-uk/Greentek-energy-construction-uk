@@ -1,33 +1,13 @@
 "use client";
 
+import { useFadeIn } from "@/hooks/useFadeIn";
 import { useState } from "react";
-import { useEffect, useRef } from "react";
 import type { FaqContent } from "@/data/pageContent";
 
-function useFadeIn(delay = 0) {
-  const ref = useRef<HTMLDivElement>(null);
-  const [visible, setVisible] = useState(false);
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setTimeout(() => setVisible(true), delay);
-          observer.disconnect();
-        }
-      },
-      { threshold: 0.1 },
-    );
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, [delay]);
-  return { ref, visible };
-}
 
 export default function FAQSectionClient({ eyebrow, heading, items }: FaqContent) {
   const [openIndex, setOpenIndex] = useState<number | null>(0);
-  const sectionFade = useFadeIn(0);
+  const [sectionFadeRef, sectionFadeVisible] = useFadeIn(0);
 
   return (
     <section
@@ -36,9 +16,9 @@ export default function FAQSectionClient({ eyebrow, heading, items }: FaqContent
     >
       <div className="mx-auto max-w-4xl px-6">
         <div
-          ref={sectionFade.ref}
+          ref={sectionFadeRef}
           className={`transition-all duration-1000 ease-out ${
-            sectionFade.visible
+            sectionFadeVisible
               ? "translate-y-0 opacity-100"
               : "translate-y-10 opacity-0"
           }`}

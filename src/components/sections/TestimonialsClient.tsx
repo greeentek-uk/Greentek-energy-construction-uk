@@ -1,31 +1,12 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useFadeIn } from "@/hooks/useFadeIn";
+import { useState } from "react";
 import type { TestimonialsContent } from "@/data/pageContent";
 import ReviewIdentity, {
   ReviewSourceBadge,
 } from "@/components/site/ReviewIdentity";
 
-function useFadeIn(delay = 0) {
-  const ref = useRef<HTMLDivElement>(null);
-  const [visible, setVisible] = useState(false);
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    const obs = new IntersectionObserver(
-      ([e]) => {
-        if (e.isIntersecting) {
-          setTimeout(() => setVisible(true), delay);
-          obs.disconnect();
-        }
-      },
-      { threshold: 0.2 },
-    );
-    obs.observe(el);
-    return () => obs.disconnect();
-  }, [delay]);
-  return { ref, visible };
-}
 
 type Review = TestimonialsContent["items"][number];
 
@@ -100,7 +81,7 @@ export default function TestimonialsClient({
   subheading,
   items,
 }: TestimonialsContent) {
-  const headerFade = useFadeIn(0);
+  const [headerFadeRef, headerFadeVisible] = useFadeIn(0, 0.2);
   const [paused, setPaused] = useState(false);
   // duplicate the list so the loop is seamless
   const marqueeReviews = [...items, ...items];
@@ -111,9 +92,9 @@ export default function TestimonialsClient({
         <div className="mx-auto">
           {/* Centered heading block */}
           <div
-            ref={headerFade.ref}
+            ref={headerFadeRef}
             className={`text-center max-w-4xl mx-auto mb-10 md:mb-10 transition-all duration-700 ease-out ${
-              headerFade.visible
+              headerFadeVisible
                 ? "translate-y-0 opacity-100"
                 : "translate-y-6 opacity-0"
             }`}
