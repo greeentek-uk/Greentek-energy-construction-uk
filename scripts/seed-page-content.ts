@@ -9,6 +9,7 @@ import { config } from "dotenv";
 import { getDb } from "../src/lib/db/mongodb";
 import { seedBlockIfMissing } from "../src/lib/db/pageContent";
 import type { PageContentMap } from "../src/data/pageContent";
+import { FEATURED_SERVICES, ACCREDITATION_LOGOS } from "./featured-content";
 
 config({ path: ".env.local" });
 
@@ -228,12 +229,7 @@ const seedData: PageContentMap = {
   },
   accreditations: {
     heading: "Fully Accredited & Certified.",
-    logos: [
-      { name: "Gas Safe Register", image: "/images/accreditations/gas-safe.png" },
-      { name: "HIES", image: "/images/accreditations/hies.png" },
-      { name: "Quality Mark", image: "/images/accreditations/qualitymark.png" },
-      { name: "SWIGA", image: "/images/accreditations/swiga.png" },
-    ],
+    logos: ACCREDITATION_LOGOS,
   },
   process: {
     eyebrow: "Our Process",
@@ -294,6 +290,7 @@ const seedData: PageContentMap = {
       },
     ],
   },
+  "featured-services": FEATURED_SERVICES,
   "projects-preview": {
     eyebrow: "Our Work",
     heading: "See the Difference.",

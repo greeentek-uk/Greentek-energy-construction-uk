@@ -43,5 +43,5 @@ export interface SitePage {
 export const RESERVED_SLUGS = [
   "about", "blog", "contact", "services", "projects", "locations",
   "privacy", "terms", "energy-solutions", "home-solutions", "finance",
-  "admin", "api", "sitemap.xml", "robots.txt", "llms.txt", "_next",
+  "admin", "api", "sitemap.xml", "robots.txt", "llms.txt", "_next", "thank-you",
 ];

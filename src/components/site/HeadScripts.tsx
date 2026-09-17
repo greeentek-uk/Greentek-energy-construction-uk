@@ -1,4 +1,10 @@
-import type { ScriptEntry, ScriptPlacement, ScriptTag } from "@/lib/headScripts";
+import {
+  scriptConsentOf,
+  type ScriptConsent,
+  type ScriptEntry,
+  type ScriptPlacement,
+  type ScriptTag,
+} from "@/lib/headScripts";
 
 /** HTML attribute names React expects in camelCase (or under a different name entirely). */
 const REACT_ATTRIBUTE_NAMES: Record<string, string> = {
@@ -20,6 +26,30 @@ function toReactProps(attributes: Record<string, string> = {}): Record<string, s
     props[key] = value === "" ? true : value;
   }
   return props;
+}
+
+/**
+ * A snippet waiting for consent is rendered inert — `type="text/plain"` is
+ * never executed — with everything needed to run it later kept in data
+ * attributes. activateConsentedScripts() turns it into a real script once the
+ * visitor accepts that category.
+ */
+function renderGatedTag(tag: ScriptTag, key: string, consent: ScriptConsent) {
+  // A <noscript> fallback only renders with JavaScript off, when no one can
+  // give consent, so a gated one is dropped entirely.
+  if (tag.noscript) return null;
+
+  return (
+    <script
+      key={key}
+      type="text/plain"
+      data-consent={consent}
+      {...(tag.src ? { "data-src": tag.src } : {})}
+      {...(tag.async ? { "data-async": "1" } : {})}
+      {...(tag.attributes ? { "data-attrs": JSON.stringify(tag.attributes) } : {})}
+      dangerouslySetInnerHTML={{ __html: tag.code ?? "" }}
+    />
+  );
 }
 
 function renderTag(tag: ScriptTag, key: string) {
@@ -68,9 +98,14 @@ export default function HeadScripts({
 
   return (
     <>
-      {active.flatMap((entry) =>
-        entry.tags.map((tag, index) => renderTag(tag, `${entry.id}-${index}`)),
-      )}
+      {active.flatMap((entry) => {
+        const consent = scriptConsentOf(entry);
+        return entry.tags.map((tag, index) =>
+          consent === "necessary"
+            ? renderTag(tag, `${entry.id}-${index}`)
+            : renderGatedTag(tag, `${entry.id}-${index}`, consent),
+        );
+      })}
     </>
   );
 }

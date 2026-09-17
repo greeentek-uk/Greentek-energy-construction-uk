@@ -131,7 +131,7 @@ export default function StatsClient({ items }: StatsContent) {
   }));
 
   return (
-    <section className="py-12 md:py-14 lg:py-18">
+    <section className="py-10 md:py-20 lg:py-24">
       <div className="mx-auto max-w-7xl px-3 py-3 rounded-xl grid grid-cols-1 md:grid-cols-3 gap-3 bg-[#101314]">
         {stats.map((stat, i) => (
           <StatCard key={stat.label} stat={stat} delay={i * 100} />

@@ -3,9 +3,14 @@
 import { redirect } from "next/navigation";
 import { revalidate } from "@/lib/revalidate";
 import { getHeadScripts, saveHeadScripts } from "@/lib/db/headScripts";
+import { saveMetaPixelSettings } from "@/lib/db/metaPixel";
+import { saveClaritySettings } from "@/lib/db/clarity";
+import { saveGoogleAnalyticsSettings } from "@/lib/db/googleAnalytics";
 import {
   normalizeDomains,
   parseSnippet,
+  SCRIPT_CONSENTS,
+  type ScriptConsent,
   type ScriptEntry,
   type ScriptPlacement,
 } from "@/lib/headScripts";
@@ -26,10 +31,12 @@ export async function saveScriptAction(formData: FormData): Promise<void> {
   const raw = String(formData.get("raw") || "").trim();
   const placement = String(formData.get("placement") || "head") as ScriptPlacement;
   const enabled = formData.get("enabled") === "on";
+  const consent = String(formData.get("consent") || "analytics") as ScriptConsent;
 
   if (!name) fail("Give the script a name so you can recognise it later.");
   if (!raw) fail("Paste the snippet before saving.");
   if (!PLACEMENTS.includes(placement)) fail("Unknown placement.");
+  if (!SCRIPT_CONSENTS.includes(consent)) fail("Unknown cookie category.");
 
   const tags = parseSnippet(raw);
   if (!tags.length) {
@@ -42,6 +49,7 @@ export async function saveScriptAction(formData: FormData): Promise<void> {
     name,
     enabled,
     placement,
+    consent,
     tags,
     raw,
     updatedAt: new Date().toISOString(),
@@ -96,4 +104,45 @@ export async function saveAllowedDomainsAction(formData: FormData): Promise<void
   // — but the admin page itself renders the current list.
   await revalidate("/admin/scripts");
   redirect("/admin/scripts?domains=1");
+}
+
+export async function saveMetaPixelAction(formData: FormData): Promise<void> {
+  const pixelId = String(formData.get("pixelId") || "").trim();
+  const testEventCode = String(formData.get("testEventCode") || "").trim();
+
+  if (pixelId && !/^\d{10,20}$/.test(pixelId)) {
+    fail("A Meta Pixel ID is a long number — copy it from Events Manager → Data sources.");
+  }
+
+  const consent = formData.get("consent") === "marketing" ? "marketing" : "necessary";
+
+  await saveMetaPixelSettings({ pixelId, testEventCode, consent });
+
+  // The pixel id is rendered into every page.
+  await revalidate("/", "layout");
+  redirect("/admin/scripts?saved=1");
+}
+
+export async function saveClarityAction(formData: FormData): Promise<void> {
+  const projectId = String(formData.get("clarityProjectId") || "").trim();
+
+  if (projectId && !/^[a-z0-9]{6,20}$/i.test(projectId)) {
+    fail("A Clarity project ID is a short code like yjfzqaq5fv — copy it from Clarity → Settings → Overview.");
+  }
+
+  await saveClaritySettings({ projectId });
+  await revalidate("/", "layout");
+  redirect("/admin/scripts?saved=1");
+}
+
+export async function saveGoogleAnalyticsAction(formData: FormData): Promise<void> {
+  const measurementId = String(formData.get("measurementId") || "").trim().toUpperCase();
+
+  if (measurementId && !/^G-[A-Z0-9]{4,20}$/.test(measurementId)) {
+    fail("A GA4 measurement ID looks like G-WMBE8DEKZ7 — copy it from Admin → Data streams.");
+  }
+
+  await saveGoogleAnalyticsSettings({ measurementId });
+  await revalidate("/", "layout");
+  redirect("/admin/scripts?saved=1");
 }

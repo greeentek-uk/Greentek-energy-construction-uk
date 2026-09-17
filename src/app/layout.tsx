@@ -7,10 +7,15 @@ import { inter, hankenGrotesk } from "@/lib/fonts";
 import { getHeadScripts } from "@/lib/db/headScripts";
 import { getSeoTemplates } from "@/lib/db/seoSettings";
 import { getImageDelivery } from "@/lib/db/imageDelivery";
-import {
-  imageDeliveryBootstrapScript,
-  setImageDeliveryConfig,
-} from "@/lib/imageDelivery";
+import { getMetaPixelSettings } from "@/lib/db/metaPixel";
+import { getClaritySettings } from "@/lib/db/clarity";
+import { getGoogleAnalyticsSettings } from "@/lib/db/googleAnalytics";
+import { CONSENT_MODE_DEFAULTS_SCRIPT } from "@/lib/consent";
+import { scriptConsentOf } from "@/lib/headScripts";
+import ConsentProvider from "@/components/site/ConsentProvider";
+import TrackingScripts from "@/components/site/TrackingScripts";
+import AnalyticsProvider from "@/components/site/AnalyticsProvider";
+import ImageDeliveryProvider from "@/components/site/ImageDeliveryProvider";
 import HeadScripts from "@/components/site/HeadScripts";
 import { GlobalCustomJsonLd } from "@/components/site/PageSchema";
 
@@ -92,27 +97,29 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const [siteConfig, headScripts, imageDelivery] = await Promise.all([
-    getCurrentSiteConfig(),
-    getHeadScripts(),
-    getImageDelivery(),
-  ]);
+  const [siteConfig, headScripts, imageDelivery, metaPixel, clarity, googleAnalytics] =
+    await Promise.all([
+      getCurrentSiteConfig(),
+      getHeadScripts(),
+      getImageDelivery(),
+      getMetaPixelSettings(),
+      getClaritySettings(),
+      getGoogleAnalyticsSettings(),
+    ]);
 
-  // The image loader runs synchronously on both sides of the render, so the
-  // server gets the config through a module singleton and the browser gets the
-  // identical values from the inline bootstrap script below.
-  setImageDeliveryConfig(imageDelivery);
+  const metaNecessary = Boolean(metaPixel.pixelId) && metaPixel.consent === "necessary";
+  // The banner only offers a Marketing choice when something actually waits for it.
+  const showMarketing =
+    (Boolean(metaPixel.pixelId) && metaPixel.consent === "marketing") ||
+    headScripts.entries.some((e) => e.enabled && scriptConsentOf(e) === "marketing");
 
   const jsonLd = buildLocalBusinessJsonLd(siteConfig, SITE_URL);
 
   return (
     <html lang="en" className={`${inter.variable} ${hankenGrotesk.variable}`}>
       <head>
-        <script
-          dangerouslySetInnerHTML={{
-            __html: imageDeliveryBootstrapScript(imageDelivery),
-          }}
-        />
+        {/* Must come before any Google tag, so each starts with the visitor's choice. */}
+        <script dangerouslySetInnerHTML={{ __html: CONSENT_MODE_DEFAULTS_SCRIPT }} />
         <HeadScripts entries={headScripts.entries} placement="head" />
       </head>
       <body className="font-sans antialiased selection:bg-[#101314] selection:text-[#c5eb02]">
@@ -122,10 +129,23 @@ export default async function RootLayout({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
         <GlobalCustomJsonLd />
-        <div className="relative flex min-h-screen flex-col overflow-x-hidden">
-          {children}
-          <OpenWidget />
-        </div>
+        <ImageDeliveryProvider config={imageDelivery}>
+          <ConsentProvider showMarketing={showMarketing} metaNecessary={metaNecessary}>
+            <TrackingScripts
+              gaMeasurementId={googleAnalytics.measurementId}
+              clarityProjectId={clarity.projectId}
+            />
+            <AnalyticsProvider
+              pixelId={metaPixel.pixelId}
+              pixelNeedsConsent={metaPixel.consent === "marketing"}
+            >
+              <div className="relative flex min-h-screen flex-col overflow-x-hidden">
+                {children}
+                <OpenWidget />
+              </div>
+            </AnalyticsProvider>
+          </ConsentProvider>
+        </ImageDeliveryProvider>
         <HeadScripts entries={headScripts.entries} placement="body-end" />
       </body>
     </html>

@@ -23,6 +23,18 @@ function isCloudinary(src: string): boolean {
  */
 export default function cloudinaryLoader({ src, width, quality }: LoaderArgs): string {
   if (!isCloudinary(src)) {
+    // With a custom loader configured, Next doesn't register its own
+    // /_next/image route when running locally — only Vercel provides it, at the
+    // platform level. So in development local files are served as-is (every
+    // /images/* asset was otherwise blank in `pnpm dev`), while production on
+    // Vercel keeps resizing and compressing them. The width query is ignored by
+    // the static file server; it's there so each srcSet entry stays distinct.
+    if (process.env.NODE_ENV !== "production") {
+      // encodeURI, not the raw path: a file under a folder with spaces (e.g.
+      // "External Wall Insulation/") would otherwise break srcset, where a
+      // space separates each URL from its width descriptor.
+      return `${encodeURI(src)}?w=${width}`;
+    }
     return `/_next/image?url=${encodeURIComponent(src)}&w=${width}&q=${quality || 75}`;
   }
 

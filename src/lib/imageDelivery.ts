@@ -1,15 +1,9 @@
 /**
  * Site-wide Cloudinary delivery settings.
  *
- * These drive `imageLoader.ts`, which Next calls synchronously on both the
- * server and the client — so the config has to be readable without awaiting.
- * The root layout reads the admin-saved values from Mongo once per render and
- * pushes them in here (server) and onto `window` (client, via an inline script
- * emitted before any markup that hydrates), keeping both sides in lockstep so
- * the generated srcSet matches and React doesn't warn about a mismatch.
- *
- * The values are site-wide rather than per-request, so a module-level cache is
- * safe across concurrent renders.
+ * These drive `imageLoader.ts`, which Next calls synchronously wherever an
+ * image renders — so the settings live in module state, set by
+ * ImageDeliveryProvider in both the server render and the browser.
  */
 
 export interface ImageDeliveryConfig {
@@ -41,28 +35,21 @@ export const QUALITY_OPTIONS = [
   { value: "60", label: "Fixed 60 — small" },
 ];
 
-const GLOBAL_KEY = "__GREENTEK_IMAGE_DELIVERY__";
+let currentConfig: ImageDeliveryConfig = DEFAULT_IMAGE_DELIVERY;
 
-let serverConfig: ImageDeliveryConfig = DEFAULT_IMAGE_DELIVERY;
-
-/** Called by the root layout with the admin-saved values. */
+/**
+ * Called by ImageDeliveryProvider during render, which runs in both the
+ * server's client-component render and the browser — so both build identical
+ * srcSets. Also called directly by server code that runs the loader itself,
+ * such as the admin preview.
+ */
 export function setImageDeliveryConfig(config: ImageDeliveryConfig): void {
-  serverConfig = config;
+  currentConfig = config;
 }
 
-/** Sync read used by the image loader. Falls back to defaults before the layout has run. */
+/** Sync read used by the image loader. Defaults until the provider has rendered. */
 export function getImageDeliveryConfig(): ImageDeliveryConfig {
-  if (typeof window !== "undefined") {
-    const fromWindow = (window as unknown as Record<string, unknown>)[GLOBAL_KEY];
-    if (fromWindow) return fromWindow as ImageDeliveryConfig;
-    return DEFAULT_IMAGE_DELIVERY;
-  }
-  return serverConfig;
-}
-
-/** The inline `<script>` body the layout emits so the client loader sees the same values the server used. */
-export function imageDeliveryBootstrapScript(config: ImageDeliveryConfig): string {
-  return `window.${GLOBAL_KEY}=${JSON.stringify(config)}`;
+  return currentConfig;
 }
 
 export function normalizeImageDeliveryConfig(

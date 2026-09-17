@@ -17,6 +17,7 @@ import { getLocationServiceContentByKeys } from "@/lib/db/locationServiceContent
 import PageSchema from "@/components/site/PageSchema";
 import Breadcrumbs from "@/components/site/Breadcrumbs";
 import FaqSection from "@/components/site/FaqSection";
+import TrackViewContent from "@/components/site/TrackViewContent";
 
 interface Props {
   params: {
@@ -105,6 +106,11 @@ export default async function LocationServicePage({ params }: Props) {
   return (
     <div className="flex flex-col min-h-screen bg-black">
       <PageSchema path={`/locations/${location.slug}/${service.slug}`} defaultJsonLd={jsonLd} />
+      <TrackViewContent
+        name={`${service.title} in ${location.name}`}
+        category={service.formCategory}
+        id={service.slug}
+      />
       <Breadcrumbs
         crumbs={[
           { label: "Locations", href: "/locations" },

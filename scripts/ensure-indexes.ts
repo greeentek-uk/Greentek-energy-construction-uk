@@ -28,6 +28,8 @@ import { getDb } from "@/lib/db/mongodb";
     ["redirects", { enabled: 1 }, "enabled"],
     // getPages() / getPublishedPages() ordering.
     ["pages", { published: 1, order: 1 }, "published_order"],
+    // claimStaleEnquiry() — finding unsent forms whose photos need deleting.
+    ["enquirySessions", { submittedAt: 1, cleanedAt: 1, createdAt: 1 }, "unsent_by_age"],
   ];
 
   for (const [collection, keys, name] of plan) {

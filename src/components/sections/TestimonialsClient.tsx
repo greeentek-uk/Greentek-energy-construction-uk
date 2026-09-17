@@ -2,7 +2,9 @@
 
 import { useEffect, useRef, useState } from "react";
 import type { TestimonialsContent } from "@/data/pageContent";
-import ReviewIdentity, { ReviewSourceBadge } from "@/components/site/ReviewIdentity";
+import ReviewIdentity, {
+  ReviewSourceBadge,
+} from "@/components/site/ReviewIdentity";
 
 function useFadeIn(delay = 0) {
   const ref = useRef<HTMLDivElement>(null);
@@ -105,7 +107,7 @@ export default function TestimonialsClient({
 
   return (
     <section className="bg-[url('/images/home-page/Solar-field-bg.avif')] bg-cover bg-center overflow-hidden">
-      <div className="py-12 md:py-16 lg:py-24 bg-linear-to-b from-white to-transparent">
+      <div className="py-10 md:py-20 lg:py-24 bg-linear-to-b from-white to-transparent">
         <div className="mx-auto">
           {/* Centered heading block */}
           <div

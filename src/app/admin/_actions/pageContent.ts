@@ -145,6 +145,15 @@ function parseBlockFields(key: PageContentKey, formData: FormData): PageContentM
           href: str(formData, `card${i}_href`),
         })),
       };
+    case "featured-services":
+      return {
+        eyebrow: str(formData, "eyebrow"),
+        heading: str(formData, "heading"),
+        subheading: str(formData, "subheading"),
+        items: items(formData, "items"),
+        accreditationHeading: str(formData, "accreditationHeading"),
+        accreditationBody: str(formData, "accreditationBody"),
+      } as PageContentMap["featured-services"];
     case "projects-preview":
       return {
         eyebrow: str(formData, "eyebrow"),

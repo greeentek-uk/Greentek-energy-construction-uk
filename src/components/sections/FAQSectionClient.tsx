@@ -31,7 +31,7 @@ export default function FAQSectionClient({ eyebrow, heading, items }: FaqContent
 
   return (
     <section
-      className="py-12 md:py-16 lg:py-24 overflow-hidden"
+      className="py-10 md:py-20 lg:py-24 overflow-hidden"
       aria-labelledby="faq-heading"
     >
       <div className="mx-auto max-w-4xl px-6">

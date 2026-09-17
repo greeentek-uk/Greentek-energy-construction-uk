@@ -26,6 +26,7 @@ const REQUIRED = [
 ] as const;
 
 const OPTIONAL = [
+  ["META_CAPI_ACCESS_TOKEN", "Meta Conversions API — without it only the browser pixel runs."],
   ["CONTACT_TO_EMAIL", "Defaults to info@greentekenergy.co.uk."],
   ["CLOUDINARY_UPLOAD_FOLDER", "Defaults to 'greentek'."],
 ] as const;

@@ -88,7 +88,7 @@ export default function AboutUsClient({
   const headerFade = useFadeIn(0);
 
   return (
-    <section className="py-12 md:py-14 lg:py-18 overflow-hidden px-4 md:px-10">
+    <section className="py-10 md:py-20 lg:py-24 overflow-hidden px-4 md:px-10">
       <div className="mx-auto max-w-7xl px-2 md:px-6">
         <div
           ref={headerFade.ref}

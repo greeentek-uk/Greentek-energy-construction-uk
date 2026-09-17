@@ -33,7 +33,7 @@ export default function VerticalsClient({ eyebrow, heading, subheading, groups }
   const headerFade = useFadeIn(0);
 
   return (
-    <section className="py-12 md:py-14 lg:py-18">
+    <section className="py-10 md:py-20 lg:py-24">
       <div className="mx-auto max-w-7xl px-6">
         <div
           ref={headerFade.ref}

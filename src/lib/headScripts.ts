@@ -1,6 +1,14 @@
 /** Where a script tag is injected into the document. */
 export type ScriptPlacement = "head" | "body-start" | "body-end";
 
+export type ScriptConsent = "necessary" | "analytics" | "marketing";
+
+export const SCRIPT_CONSENTS: ScriptConsent[] = ["necessary", "analytics", "marketing"];
+
+export function scriptConsentOf(entry: Pick<ScriptEntry, "consent">): ScriptConsent {
+  return entry.consent && SCRIPT_CONSENTS.includes(entry.consent) ? entry.consent : "analytics";
+}
+
 export interface ScriptTag {
   /** External script: the `src` URL. Mutually exclusive with `code`. */
   src?: string;
@@ -20,6 +28,13 @@ export interface ScriptEntry {
   name: string;
   enabled: boolean;
   placement: ScriptPlacement;
+  /**
+   * Which cookie consent the snippet waits for. Analytics and marketing
+   * snippets don't run until the visitor accepts that category; necessary ones
+   * run for everyone. Missing (entries saved before consent existed) is treated
+   * as analytics — the safe side for a tracker nobody has categorised.
+   */
+  consent?: ScriptConsent;
   /** One pasted snippet can expand to several tags (GTM = a script + a noscript). */
   tags: ScriptTag[];
   /** The original pasted markup, kept so the admin can re-read and re-edit it. */
@@ -124,23 +139,25 @@ function extractUrlsFromCode(code: string): string[] {
 const HOSTNAME_RE = /^[a-z0-9]([a-z0-9-]*[a-z0-9])?(\.[a-z0-9]([a-z0-9-]*[a-z0-9])?)+$/i;
 
 /**
- * Keeps only well-formed `https://host` origins, so a typo can't widen the CSP
- * unexpectedly. `new URL()` alone isn't enough — it happily accepts
- * "https://!!bad" — so the hostname is checked separately.
+ * Keeps only well-formed origins, so a typo can't widen the CSP unexpectedly.
+ *
+ * `new URL()` alone isn't enough — it accepts "https://!!bad" — so the host is
+ * checked separately. A leading `*.` wildcard is allowed: CSP supports it, and
+ * vendors like Microsoft Clarity serve from several subdomains that can't all
+ * be listed one by one. A bare `*` or a wildcard on a single-label host is not.
  */
 export function normalizeDomains(lines: string[]): string[] {
   const out = new Set<string>();
   for (const line of lines) {
     const value = line.trim();
     if (!value) continue;
-    try {
-      const url = new URL(value.includes("://") ? value : `https://${value}`);
-      if (!HOSTNAME_RE.test(url.hostname)) continue;
-      if (url.protocol !== "https:" && url.protocol !== "http:") continue;
-      out.add(url.origin);
-    } catch {
-      // Skip unparseable entries rather than emitting a broken CSP directive.
-    }
+    // A full URL pasted from a vendor snippet is trimmed to its origin — the
+    // path and query have no meaning in a CSP host source.
+    const match = value.match(/^(https?:\/\/)?(\*\.)?([^/:?#]+)(:\d+)?(?:[/?#].*)?$/i);
+    if (!match) continue;
+    const [, scheme = "https://", wildcard = "", host, port = ""] = match;
+    if (!HOSTNAME_RE.test(host)) continue;
+    out.add(`${scheme.toLowerCase()}${wildcard}${host.toLowerCase()}${port}`);
   }
   return [...out].sort();
 }

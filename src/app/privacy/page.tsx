@@ -82,8 +82,29 @@ export default async function PrivacyPage() {
               </p>
             </section>
 
+            <section id="cookies" className="scroll-mt-28">
+              <h2 className="text-sm font-bold text-zinc-900 mb-4 uppercase">7. Cookies</h2>
+              <p>
+                Cookies are small files stored on your device. We use two kinds, and you can change
+                your choice at any time from the Cookie settings link at the bottom of every page.
+              </p>
+              <p className="mt-4">
+                <strong>Necessary</strong> — always on. These keep the site secure and working,
+                remember your cookie choice and help us measure how our advertising performs (Meta
+                Pixel, used to see which Meta adverts lead to enquiries). When you send us an
+                enquiry, your email address and phone number are shared with Meta in a scrambled
+                (hashed) form so the enquiry can be matched to the advert that brought you here.
+              </p>
+              <p className="mt-4">
+                <strong>Analytics</strong> — only with your permission. These show us how visitors
+                use the site so we can improve it: Google Analytics, which measures visits and page
+                views, and Microsoft Clarity, which records anonymised page interactions such as
+                clicks and scrolling. Your choice is kept for six months, after which we ask again.
+              </p>
+            </section>
+
             <section>
-              <h2 className="text-sm font-bold text-zinc-900 mb-4 uppercase">7. Contact</h2>
+              <h2 className="text-sm font-bold text-zinc-900 mb-4 uppercase">8. Contact</h2>
               <p>
                 Questions, comments and requests regarding this privacy policy are welcomed and should be addressed to: 
                 <br />

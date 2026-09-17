@@ -25,6 +25,7 @@ import StatsForm from "../../../_components/pageContent/StatsForm";
 import AboutUsSlideForm from "../../../_components/pageContent/AboutUsSlideForm";
 import ProjectsPreviewForm from "../../../_components/pageContent/ProjectsPreviewForm";
 import FinanceBannerForm from "../../../_components/pageContent/FinanceBannerForm";
+import FeaturedServicesForm from "../../../_components/pageContent/FeaturedServicesForm";
 import PageHeaderForm from "../../../_components/pageContent/PageHeaderForm";
 import AboutPageForm from "../../../_components/pageContent/AboutPageForm";
 
@@ -124,6 +125,8 @@ export default async function EditPageContentPage({ params, searchParams }: Prop
               return <AboutUsSlideForm content={content as PageContentMap["about-us-slide"]} />;
             case "projects-preview":
               return <ProjectsPreviewForm content={content as PageContentMap["projects-preview"]} />;
+            case "featured-services":
+              return <FeaturedServicesForm content={content as PageContentMap["featured-services"]} />;
             case "finance-banner":
               return <FinanceBannerForm content={content as PageContentMap["finance-banner"]} />;
             case "services-page-header":

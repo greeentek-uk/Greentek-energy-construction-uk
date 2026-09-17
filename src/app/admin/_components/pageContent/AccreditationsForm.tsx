@@ -12,10 +12,11 @@ export default function AccreditationsForm({ content }: { content: Accreditation
       <RepeatingFieldList
         name="logos"
         defaultValue={content.logos}
-        emptyItem={{ name: "", image: "", imageAlt: "" }}
+        emptyItem={{ name: "", image: "", imageAlt: "", url: "" }}
         itemLabel={(i) => i.name}
         fields={[
           { key: "name", label: "Name (alt text)" },
+          { key: "url", label: "Link (your listing on their register is best)" },
           {
             key: "image",
             label: "Logo",

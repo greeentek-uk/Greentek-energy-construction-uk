@@ -1,13 +1,33 @@
 "use client";
 
 import { useState } from "react";
-import { parseSnippet, extractOrigins, type ScriptEntry } from "@/lib/headScripts";
+import {
+  parseSnippet,
+  extractOrigins,
+  scriptConsentOf,
+  type ScriptEntry,
+} from "@/lib/headScripts";
 import { saveScriptAction } from "../_actions/scripts";
 
 const PLACEMENTS = [
   { value: "head", label: "Head — before the page renders (GTM, GA4, consent tools)" },
   { value: "body-start", label: "Body start — right after <body> opens (GTM noscript)" },
   { value: "body-end", label: "Body end — after the page content (chat widgets, non-critical)" },
+];
+
+const CONSENTS = [
+  {
+    value: "analytics",
+    label: "Analytics — after the visitor accepts analytics cookies (GA4, Hotjar)",
+  },
+  {
+    value: "marketing",
+    label: "Marketing — after the visitor accepts marketing cookies (TikTok, LinkedIn, Google Ads)",
+  },
+  {
+    value: "necessary",
+    label: "Necessary — for everyone, no consent asked (only what the site can't work without)",
+  },
 ];
 
 /**
@@ -61,6 +81,27 @@ export default function ScriptEntryForm({
             ))}
           </select>
         </div>
+      </div>
+
+      <div>
+        <label className="block text-xs font-semibold text-white/70 mb-1">
+          Cookie consent — when this runs
+        </label>
+        <select
+          name="consent"
+          defaultValue={entry ? scriptConsentOf(entry) : "analytics"}
+          className="w-full rounded-lg border border-white/15 bg-white/5 px-3 py-2 text-sm text-white outline-none focus:border-[#c5eb02] focus:ring-2 focus:ring-[#c5eb02]/20 transition-all"
+        >
+          {CONSENTS.map((c) => (
+            <option key={c.value} value={c.value}>
+              {c.label}
+            </option>
+          ))}
+        </select>
+        <p className="text-xs text-white/40 mt-1">
+          UK law requires a visitor to agree before trackers run. Only choose Necessary for
+          things like a chat widget — never for analytics or advertising tags.
+        </p>
       </div>
 
       <div>

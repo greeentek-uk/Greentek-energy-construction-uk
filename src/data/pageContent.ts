@@ -118,7 +118,31 @@ export interface VerticalsContent {
 
 export interface AccreditationsContent {
   heading: string;
-  logos: { name: string; image: string; imageAlt?: string }[];
+  /** `url` points to the accrediting body — or better, your listing on its register. */
+  logos: { name: string; image: string; imageAlt?: string; url?: string }[];
+}
+
+/**
+ * A type alias rather than an interface: RepeatingFieldList needs an implicit
+ * index signature, which a named interface doesn't carry.
+ */
+export type FeaturedServiceItem = {
+  title: string;
+  body: string;
+  image: string;
+  imageAlt?: string;
+  linkLabel: string;
+  href: string;
+};
+
+export interface FeaturedServicesContent {
+  eyebrow: string;
+  heading: string;
+  subheading: string;
+  /** Alternating rows; the accreditation strip sits between the second and third. */
+  items: FeaturedServiceItem[];
+  accreditationHeading: string;
+  accreditationBody: string;
 }
 
 export interface ProcessContent {
@@ -214,6 +238,7 @@ export interface PageContentMap {
   brands: BrandsContent;
   stats: StatsContent;
   "about-us-slide": AboutUsSlideContent;
+  "featured-services": FeaturedServicesContent;
   "projects-preview": ProjectsPreviewContent;
   "finance-banner": FinanceBannerContent;
   "services-page-header": PageHeaderContent;
@@ -238,6 +263,7 @@ export const PAGE_CONTENT_KEYS = [
   "brands",
   "stats",
   "about-us-slide",
+  "featured-services",
   "projects-preview",
   "finance-banner",
   "services-page-header",
@@ -308,6 +334,11 @@ export const PAGE_CONTENT_META: Record<PageContentKey, PageContentMeta> = {
     label: "About Us",
     group: "Shared Sections",
     routes: ["/", "/about"],
+  },
+  "featured-services": {
+    label: "Featured Services",
+    group: "Shared Sections",
+    routes: ["/"],
   },
   "projects-preview": {
     label: "Our Work (Home Preview)",

@@ -55,3 +55,17 @@ export async function listMedia(max = 200): Promise<MediaAsset[]> {
 export async function deleteMedia(publicId: string): Promise<void> {
   await cloudinary.uploader.destroy(publicId);
 }
+
+/**
+ * Deletes every image in a folder, then the folder itself. Used to remove the
+ * photos of enquiry forms that were never sent.
+ */
+export async function deleteFolder(folder: string): Promise<void> {
+  await cloudinary.api.delete_resources_by_prefix(`${folder}/`, { invalidate: true });
+  try {
+    await cloudinary.api.delete_folder(folder);
+  } catch {
+    // Cloudinary can briefly report a just-emptied folder as non-empty; the
+    // empty folder left behind takes no storage.
+  }
+}

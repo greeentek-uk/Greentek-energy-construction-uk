@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
+import { newEventId, track } from "@/lib/analytics";
 import { serviceOptions, timelineOptions } from "@/lib/quoteForm";
 
 function useFadeIn(delay = 0) {
@@ -148,6 +150,8 @@ export default function CtaSection({
     consent: false,
   };
 
+  const router = useRouter();
+  const started = useRef(false);
   const [form, setForm] = useState<FormState>(initialState);
   const [status, setStatus] = useState<
     "idle" | "submitting" | "success" | "error"
@@ -175,6 +179,13 @@ export default function CtaSection({
     setForm((prev) => ({ ...prev, is_homeowner: value }));
   }
 
+  /** StartQuote, once per visit to the form — on the first field someone engages with. */
+  function markStarted() {
+    if (started.current) return;
+    started.current = true;
+    track("StartQuote", { content_name: "Enquiry form" });
+  }
+
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
 
@@ -184,18 +195,21 @@ export default function CtaSection({
     }
 
     setStatus("submitting");
+    // Shared by the server's Lead and the thank-you page's pixel Lead.
+    const eventId = newEventId();
 
     try {
       const res = await fetch("/api/quote-request", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
+        body: JSON.stringify({ ...form, event_id: eventId, page_url: window.location.href }),
       });
 
       if (!res.ok) throw new Error("Request failed");
 
       setStatus("success");
       setForm(initialState);
+      router.push(`/thank-you?eid=${encodeURIComponent(eventId)}`);
     } catch (err) {
       console.error(err);
       setStatus("error");
@@ -279,7 +293,7 @@ export default function CtaSection({
                 : "translate-y-8 opacity-0"
             }`}
           >
-            <form className="space-y-5" onSubmit={handleSubmit}>
+            <form className="space-y-5" onSubmit={handleSubmit} onFocusCapture={markStarted}>
               {/* Name + Email */}
               <div className="grid sm:grid-cols-2 gap-5">
                 <div className="space-y-1.5">

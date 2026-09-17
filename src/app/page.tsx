@@ -15,6 +15,7 @@ import Projects from "@/components/sections/Projects";
 import AboutUs from "@/components/sections/AboutUs";
 import PageSchema from "@/components/site/PageSchema";
 import FinanceBanner from "@/components/sections/FinanceBanner";
+import FeaturedServices from "@/components/sections/FeaturedServices";
 export async function generateMetadata(): Promise<Metadata> {
   return withSeoOverride("/", {
     kind: "home",
@@ -36,11 +37,9 @@ export default function HomePage() {
         <Projects />
         <Testimonials />
         <AboutUs />
-        <Verticals />
-        <WhyChooseUs />
+        <FeaturedServices />
         <Stats />
         <Process />
-        <CtaSection />
         <Areas />
         <FAQSection />
       </div>

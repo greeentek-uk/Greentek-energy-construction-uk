@@ -56,7 +56,7 @@ export default function WhyChooseUsClient({
   const reasons = items.map((item, i) => ({ ...item, icon: REASON_ICONS[i] ?? ShieldCheck }));
 
   return (
-    <section className="py-12 md:py-16 lg:py-24">
+    <section className="py-10 md:py-20 lg:py-24">
       <div className="mx-auto max-w-7xl px-6">
         <div
           ref={headerFade.ref}

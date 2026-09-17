@@ -18,6 +18,14 @@ const BASE = {
     "'unsafe-eval'",
     "https://cdn.openwidget.com",
     "https://api.openwidget.com",
+    // Meta Pixel is loaded by the site itself (AnalyticsProvider), so it can't
+    // depend on the panel allowlist still containing these.
+    "https://connect.facebook.net",
+    // Microsoft Clarity (ClarityInit): tag, main script and collectors all live
+    // on different clarity.ms subdomains, so a single host isn't enough.
+    "https://*.clarity.ms",
+    // Google Analytics 4 (TrackingScripts) — built in, like the two above.
+    "https://www.googletagmanager.com",
   ],
   "style-src": ["'self'", "'unsafe-inline'"],
   "img-src": [
@@ -27,6 +35,13 @@ const BASE = {
     "https://*.google.com",
     "https://*.gstatic.com",
     "https://res.cloudinary.com",
+    // OpenWidget chat agent avatars.
+    "https://cdn.livechat-static.com",
+    "https://www.facebook.com",
+    "https://*.clarity.ms",
+    "https://c.bing.com",
+    "https://*.google-analytics.com",
+    "https://www.googletagmanager.com",
   ],
   "font-src": ["'self'", "data:"],
   "connect-src": [
@@ -34,6 +49,13 @@ const BASE = {
     "https://api.openwidget.com",
     "https://api.livechatinc.com",
     "https://api.cloudinary.com",
+    "https://www.facebook.com",
+    "https://connect.facebook.net",
+    "https://*.clarity.ms",
+    "https://c.bing.com",
+    "https://*.google-analytics.com",
+    "https://*.analytics.google.com",
+    "https://www.googletagmanager.com",
   ],
   "frame-src": ["'self'", "https://www.google.com", "https://cdn.openwidget.com", "https://secure.livechatinc.com"],
   "frame-ancestors": ["'none'"],

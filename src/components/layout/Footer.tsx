@@ -1,6 +1,8 @@
 import Link from "next/link";
+import CookieSettingsButton from "@/components/site/CookieSettingsButton";
 import Image from "next/image";
 import { getCurrentSiteConfig } from "@/lib/cms";
+import { whatsappUrl } from "@/lib/whatsapp";
 import { ArrowRight } from "lucide-react";
 
 export default async function Footer() {
@@ -21,14 +23,24 @@ export default async function Footer() {
             Join thousands of happy customers who are already enjoying clean
             energy and significant savings. Get your free consultation today.
           </p>
-          <div className="mt-12 mb-12">
+          <div className="mt-12 mb-12 flex flex-wrap items-center justify-center gap-3 px-4">
             <a
-              href="/contact"
+              href={whatsappUrl(siteConfig.phone)}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Consult an expert on WhatsApp (opens in a new tab)"
               className="w-fit rounded px-4 py-3 text-sm md:text-[18px] font-semibold text-black backdrop-blur-sm transition active:scale-95 bg-[#c5eb02]"
             >
               Consult an Expert{" "}
               <ArrowRight className="inline ml-2 bg-black rounded px-1 py-1 text-white" />
             </a>
+            <Link
+              href="/contact"
+              className="w-fit rounded px-4 py-3 text-sm md:text-[18px] font-semibold text-black backdrop-blur-sm transition active:scale-95 bg-white"
+            >
+              Get a Free Quote{" "}
+              <ArrowRight className="inline ml-2 bg-black rounded px-1 py-1 text-white" />
+            </Link>
           </div>
         </div>
         <div className="mx-auto max-w-7xl">
@@ -198,6 +210,12 @@ export default async function Footer() {
                   </Link>
                 </span>
               ))}
+              <span className="flex items-center gap-2">
+                {siteConfig.footerLinks.length > 0 && (
+                  <span className="text-gray-600 text-xs">·</span>
+                )}
+                <CookieSettingsButton className="text-xs text-[#c5eb02] transition-colors" />
+              </span>
             </div>
           </div>
         </div>

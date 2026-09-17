@@ -16,7 +16,7 @@ export default function AreasClient({
   const tickerItems = [...uniqueTickerItems, ...uniqueTickerItems];
 
   return (
-    <section className="py-12 md:py-16 lg:py-24">
+    <section className="py-10 md:py-20 lg:py-24">
       <div className="mx-auto max-w-7xl px-4">
         {/* Header row */}
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6 mb-8">

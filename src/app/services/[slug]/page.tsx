@@ -16,6 +16,7 @@ import { buildServiceJsonLd, SITE_URL } from "@/lib/structuredData";
 import PageSchema from "@/components/site/PageSchema";
 import Breadcrumbs from "@/components/site/Breadcrumbs";
 import FaqSection from "@/components/site/FaqSection";
+import TrackViewContent from "@/components/site/TrackViewContent";
 
 interface Props {
   params: {
@@ -76,6 +77,11 @@ export default async function ServiceDetailPage({ params }: Props) {
   return (
     <div className="flex flex-col min-h-screen bg-black">
       <PageSchema path={`/services/${service.slug}`} defaultJsonLd={jsonLd} />
+      <TrackViewContent
+        name={service.title}
+        category={service.formCategory}
+        id={service.slug}
+      />
       <Breadcrumbs
         crumbs={[
           { label: "Services", href: "/services" },
