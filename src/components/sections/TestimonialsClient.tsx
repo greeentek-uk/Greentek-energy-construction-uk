@@ -1,23 +1,22 @@
 "use client";
 
 import { useFadeIn } from "@/hooks/useFadeIn";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { TestimonialsContent } from "@/data/pageContent";
 import ReviewIdentity, {
   ReviewSourceBadge,
 } from "@/components/site/ReviewIdentity";
 
-
 type Review = TestimonialsContent["items"][number];
 
 function ReviewCard({
   review,
-  onPause,
-  onResume,
+  onStop,
+  onClickCapture,
 }: {
   review: Review;
-  onPause: () => void;
-  onResume: () => void;
+  onStop: () => void;
+  onClickCapture: (event: React.MouseEvent) => void;
 }) {
   const inner = (
     <>
@@ -44,13 +43,14 @@ function ReviewCard({
   const shell =
     "flex flex-col justify-between w-[320px] md:w-[380px] bg-black/40 backdrop-blur-[2px] border border-[#c5eb02]/60 rounded-xl px-4 md:px-6 py-2 md:py-4 mx-3";
 
-  // Focus pauses as well as hover, so someone tabbing through the links can
-  // actually reach them instead of chasing a moving target.
+  // Keyboard focus counts as interacting, so the slider stops for good and the
+  // links can be reached instead of chased.
   const handlers = {
-    onMouseEnter: onPause,
-    onMouseLeave: onResume,
-    onFocus: onPause,
-    onBlur: onResume,
+    onFocus: onStop,
+    // A drag ends with a click on whatever card is under the pointer; that
+    // click must not open the review.
+    onClickCapture: onClickCapture,
+    draggable: false,
   };
 
   if (review.url) {
@@ -82,7 +82,17 @@ export default function TestimonialsClient({
   items,
 }: TestimonialsContent) {
   const [headerFadeRef, headerFadeVisible] = useFadeIn(0, 0.2);
-  const [paused, setPaused] = useState(false);
+  const {
+    trackRef,
+    stopped,
+    stop,
+    onPointerEnter,
+    onPointerLeave,
+    onPointerDown,
+    onPointerMove,
+    onPointerUp,
+    onClickCapture,
+  } = useDraggableMarquee();
   // duplicate the list so the loop is seamless
   const marqueeReviews = [...items, ...items];
 
@@ -110,38 +120,158 @@ export default function TestimonialsClient({
             </p>
           </div>
 
-          {/* Marquee */}
-          <div className="relative w-full overflow-hidden">
-            <div
-              className="flex w-max animate-marquee"
-              style={{ animationPlayState: paused ? "paused" : "running" }}
-            >
+          {/* Marquee: scrolls on its own, and can be dragged with a mouse or
+              swiped on a phone. Once someone drags it, it stays where they
+              left it. */}
+          <div
+            className="relative w-full overflow-hidden cursor-grab select-none active:cursor-grabbing"
+            style={{ touchAction: "pan-y" }}
+            onPointerEnter={onPointerEnter}
+            onPointerLeave={onPointerLeave}
+            onPointerDown={onPointerDown}
+            onPointerMove={onPointerMove}
+            onPointerUp={onPointerUp}
+            onPointerCancel={onPointerUp}
+            data-testid="testimonials-marquee"
+            data-stopped={stopped || undefined}
+          >
+            <div ref={trackRef} className="flex w-max will-change-transform">
               {marqueeReviews.map((review, idx) => (
                 <ReviewCard
                   key={`${review.name}-${idx}`}
                   review={review}
-                  onPause={() => setPaused(true)}
-                  onResume={() => setPaused(false)}
+                  onStop={stop}
+                  onClickCapture={onClickCapture}
                 />
               ))}
             </div>
           </div>
         </div>
       </div>
-
-      <style jsx>{`
-        @keyframes marquee {
-          from {
-            transform: translateX(0);
-          }
-          to {
-            transform: translateX(-50%);
-          }
-        }
-        .animate-marquee {
-          animation: marquee 30s linear infinite;
-        }
-      `}</style>
     </section>
   );
+}
+
+/** How long one full loop takes when nobody is touching it, as before. */
+const LOOP_SECONDS = 30;
+/** Movement (px) before a press counts as a drag rather than a click. */
+const DRAG_THRESHOLD = 6;
+
+/**
+ * Drives the testimonials marquee from JavaScript rather than a CSS animation,
+ * so it can be dragged: the position is one number, moved by time while it
+ * runs and by the pointer while it's held.
+ *
+ * - Hovering anywhere over it pauses it until the pointer leaves. (Hover is
+ *   tracked on the whole strip, not per card: cards slide under a still
+ *   pointer without firing enter/leave, so a pointer resting in a gap would
+ *   never pause it.)
+ * - Dragging, swiping or focusing a card stops it for good — someone reading
+ *   shouldn't have the text move away from them again.
+ * - Visitors who ask for reduced motion get no automatic movement at all.
+ */
+function useDraggableMarquee() {
+  const trackRef = useRef<HTMLDivElement>(null);
+  const offset = useRef(0);
+  const hovering = useRef(false);
+  const stoppedRef = useRef(false);
+  const [stopped, setStopped] = useState(false);
+  const drag = useRef<{ pointerId: number; startX: number; startOffset: number; moved: boolean } | null>(null);
+  const suppressClick = useRef(false);
+
+  useEffect(() => {
+    const track = trackRef.current;
+    if (!track) return;
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    let frame = 0;
+    let last = performance.now();
+
+    const tick = (now: number) => {
+      const dt = Math.min((now - last) / 1000, 0.1);
+      last = now;
+      // The list is rendered twice, so half the width is one full loop.
+      const loop = track.scrollWidth / 2;
+      if (loop > 0) {
+        if (!reducedMotion && !stoppedRef.current && !hovering.current && !drag.current) {
+          offset.current -= (loop / LOOP_SECONDS) * dt;
+        }
+        // Wrap in both directions, so dragging right past the start keeps going.
+        offset.current = ((offset.current % loop) - loop) % loop;
+        track.style.transform = `translate3d(${offset.current}px, 0, 0)`;
+      }
+      frame = requestAnimationFrame(tick);
+    };
+
+    frame = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(frame);
+  }, []);
+
+  function stop() {
+    stoppedRef.current = true;
+    setStopped(true);
+  }
+
+  function onPointerEnter(event: React.PointerEvent<HTMLDivElement>) {
+    if (event.pointerType === "mouse") hovering.current = true;
+  }
+
+  function onPointerLeave(event: React.PointerEvent<HTMLDivElement>) {
+    if (event.pointerType === "mouse") hovering.current = false;
+  }
+
+  function onPointerDown(event: React.PointerEvent<HTMLDivElement>) {
+    if (event.pointerType === "mouse" && event.button !== 0) return;
+    drag.current = {
+      pointerId: event.pointerId,
+      startX: event.clientX,
+      startOffset: offset.current,
+      moved: false,
+    };
+    // Touching the slider on a phone is interacting with it, even before it moves.
+    if (event.pointerType !== "mouse") stop();
+  }
+
+  function onPointerMove(event: React.PointerEvent<HTMLDivElement>) {
+    const current = drag.current;
+    if (!current || current.pointerId !== event.pointerId) return;
+    const dx = event.clientX - current.startX;
+    if (!current.moved) {
+      if (Math.abs(dx) < DRAG_THRESHOLD) return;
+      current.moved = true;
+      stop();
+      // Keep receiving moves even if the pointer leaves the slider.
+      event.currentTarget.setPointerCapture(event.pointerId);
+    }
+    offset.current = current.startOffset + dx;
+  }
+
+  function onPointerUp(event: React.PointerEvent<HTMLDivElement>) {
+    const current = drag.current;
+    if (!current || current.pointerId !== event.pointerId) return;
+    suppressClick.current = current.moved;
+    drag.current = null;
+    if (event.currentTarget.hasPointerCapture(event.pointerId)) {
+      event.currentTarget.releasePointerCapture(event.pointerId);
+    }
+  }
+
+  function onClickCapture(event: React.MouseEvent) {
+    if (!suppressClick.current) return;
+    suppressClick.current = false;
+    event.preventDefault();
+    event.stopPropagation();
+  }
+
+  return {
+    trackRef,
+    stopped,
+    stop,
+    onPointerEnter,
+    onPointerLeave,
+    onPointerDown,
+    onPointerMove,
+    onPointerUp,
+    onClickCapture,
+  };
 }

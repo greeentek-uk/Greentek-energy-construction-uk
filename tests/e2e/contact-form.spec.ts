@@ -1,4 +1,4 @@
-import { test, expect, presetConsent } from "./fixtures";
+import { test, expect, presetConsent, waitForHydration } from "./fixtures";
 
 /** The full enquiry form on /contact (also used on service and location pages). */
 
@@ -6,6 +6,7 @@ test.beforeEach(async ({ page, context, baseURL }) => {
   await presetConsent(context, baseURL);
   await page.goto("/contact");
   await expect(page.locator("#full_name")).toBeVisible();
+  await waitForHydration(page, "#full_name");
 });
 
 test("the browser blocks sending until required fields and consent are given", async ({ page, captured }) => {

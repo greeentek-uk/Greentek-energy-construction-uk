@@ -21,7 +21,10 @@ const baseURL = process.env.E2E_BASE_URL || `http://localhost:${PORT}`;
 export default defineConfig({
   testDir: "tests/e2e",
   fullyParallel: true,
-  workers: process.env.CI ? 2 : 4,
+  // Each worker is a full browser driving a production server. On a laptop
+  // that's also running a dev server and a browser, more than two starves
+  // hydration and turns timing-based checks flaky. Override with --workers.
+  workers: 2,
   retries: 0,
   timeout: 60_000,
   expect: { timeout: 10_000 },

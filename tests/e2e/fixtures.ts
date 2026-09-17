@@ -1,8 +1,13 @@
 import { test as base, expect, type BrowserContext, type Page } from "@playwright/test";
 import { execFileSync } from "node:child_process";
 
-/** Third-party trackers: blocked in every test, but recorded so consent tests can see what tried to load. */
-const VENDOR_HOST = /(^|\.)(facebook\.net|facebook\.com|google-analytics\.com|googletagmanager\.com|analytics\.google\.com|clarity\.ms|bing\.com)$/;
+/**
+ * Third-party services: blocked in every test, but recorded so consent tests
+ * can see what tried to load. The OpenWidget chat is included because its
+ * pop-ups appear at unpredictable moments and can cover whatever a test is
+ * about to tap.
+ */
+const VENDOR_HOST = /(^|\.)(facebook\.net|facebook\.com|google-analytics\.com|googletagmanager\.com|analytics\.google\.com|clarity\.ms|bing\.com|openwidget\.com|livechatinc\.com|livechat-static\.com)$/;
 
 export const FAKE_CLOUD = "e2e-test-cloud";
 export const FAKE_ENQUIRY = { number: 7, token: "11111111-1111-4111-8111-111111111111" };
@@ -134,9 +139,26 @@ export function sitemapPaths(): string[] {
   }
 }
 
+/**
+ * Waits until React has hydrated an element, so clicks and typing reach its
+ * handlers. Server-rendered HTML is visible (and clickable) before that, and
+ * on a slow or busy machine a click can land on a button that does nothing yet.
+ */
+export async function waitForHydration(page: Page, selector = "body") {
+  await page.waitForFunction(
+    (sel) => {
+      const el = document.querySelector(sel);
+      return !!el && Object.keys(el).some((k) => k.startsWith("__reactFiber$"));
+    },
+    selector,
+    { timeout: 30_000 },
+  );
+}
+
 /** Waits until the page has hydrated and trackers have had a chance to run. */
 export async function settle(page: Page) {
   await page.waitForLoadState("load");
+  await waitForHydration(page);
   await page.waitForTimeout(400);
 }
 

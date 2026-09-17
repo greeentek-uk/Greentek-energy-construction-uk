@@ -1,5 +1,5 @@
 import sharp from "sharp";
-import { test, expect, presetConsent, FAKE_CLOUD, FAKE_ENQUIRY } from "./fixtures";
+import { test, expect, presetConsent, waitForHydration, FAKE_CLOUD, FAKE_ENQUIRY } from "./fixtures";
 import type { Page } from "@playwright/test";
 
 /**
@@ -20,6 +20,7 @@ test.beforeEach(async ({ page, context, baseURL }) => {
   await presetConsent(context, baseURL, { analytics: false, marketing: false });
   await page.goto("/");
   await expect(page.locator("#hero_service")).toBeVisible();
+  await waitForHydration(page, "#hero_postcode");
 });
 
 test("step 1 — construction is selected by default and the service list follows the switch", async ({ page }) => {

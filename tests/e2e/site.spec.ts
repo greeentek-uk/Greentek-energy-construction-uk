@@ -1,4 +1,4 @@
-import { test, expect, presetConsent, settle } from "./fixtures";
+import { test, expect, presetConsent, settle, waitForHydration } from "./fixtures";
 
 /** Header, footer and the homepage's interactive sections. */
 
@@ -8,6 +8,7 @@ test.beforeEach(async ({ context, baseURL }) => {
 
 test("header navigation works on this screen size", async ({ page }, testInfo) => {
   await page.goto("/");
+  await settle(page);
   if (testInfo.project.name === "mobile") {
     const open = page.getByRole("button", { name: "Open menu" });
     await open.click();
@@ -32,6 +33,7 @@ test("header navigation works on this screen size", async ({ page }, testInfo) =
 
 test("footer: WhatsApp, free quote, call and cookie settings", async ({ page }) => {
   await page.goto("/");
+  await settle(page);
   const footer = page.getByRole("contentinfo");
   await expect(footer.locator('a[href^="https://wa.me/"]').first()).toHaveAttribute("href", "https://wa.me/443335334567");
   await expect(footer.locator('a[href^="https://wa.me/"]').first()).toHaveAttribute("target", "_blank");
@@ -74,23 +76,99 @@ test("homepage: trust badge, finance banner, projects, featured services, FAQs",
   }
 });
 
-test("testimonials slider pauses on hover", async ({ page }, testInfo) => {
+/** Current horizontal position of the testimonials track, in px. */
+const trackX = (page: import("@playwright/test").Page) =>
+  page.getByTestId("testimonials-marquee").locator("> div").evaluate((el) => new DOMMatrix(getComputedStyle(el).transform).m41);
+
+async function showTestimonials(page: import("@playwright/test").Page) {
+  const marquee = page.getByTestId("testimonials-marquee");
+  await waitForHydration(page, '[data-testid="testimonials-marquee"]');
+  // The site scrolls smoothly, so jump instead and wait until it has stopped
+  // moving — otherwise the pointer lands where the slider was mid-scroll.
+  await marquee.evaluate((el) => el.scrollIntoView({ block: "center", behavior: "instant" }));
+  await expect.poll(async () => {
+    const a = (await marquee.boundingBox())!.y;
+    await page.waitForTimeout(150);
+    return Math.abs((await marquee.boundingBox())!.y - a);
+  }).toBeLessThan(1);
+  await page.waitForTimeout(600); // let the section's fade-in finish
+  const box = (await marquee.boundingBox())!;
+  return { marquee, box };
+}
+
+test("testimonials scroll on their own and pause while hovered", async ({ page }, testInfo) => {
   test.skip(testInfo.project.name === "mobile", "hover is a desktop interaction");
   await page.goto("/");
-  const track = page.locator('[style*="animation-play-state"]').first();
-  test.skip((await track.count()) === 0, "no testimonials slider on the page");
-  // The track is always moving, so Playwright's "wait until stable" never settles.
-  await track.evaluate((el) => el.scrollIntoView({ block: "center" }));
-  await page.waitForTimeout(600); // let the section's fade-in finish
-  await expect(track).toHaveCSS("animation-play-state", "running");
-  // Move the real mouse onto a card that's currently on screen.
-  const point = await track.evaluate((el) => {
-    const card = [...el.children].map((c) => c.getBoundingClientRect()).find((r) => r.left > 50 && r.right < window.innerWidth - 50);
-    return card ? { x: card.left + card.width / 2, y: card.top + card.height / 2 } : null;
-  });
-  expect(point, "a review card on screen").toBeTruthy();
-  await page.mouse.move(point!.x, point!.y);
-  await expect(track).toHaveCSS("animation-play-state", "paused");
+  const { marquee, box } = await showTestimonials(page);
+
+  const a = await trackX(page);
+  await page.waitForTimeout(500);
+  expect(await trackX(page), "moves by itself").toBeLessThan(a - 2);
+
+  await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
+  await page.waitForTimeout(150);
+  const held = await trackX(page);
+  await page.waitForTimeout(500);
+  expect(Math.abs((await trackX(page)) - held), "paused while hovered").toBeLessThan(1);
+
+  await page.mouse.move(box.x + box.width / 2, box.y - 200);
+  await page.waitForTimeout(500);
+  expect(await trackX(page), "resumes when the pointer leaves").toBeLessThan(held - 2);
+  await expect(marquee).not.toHaveAttribute("data-stopped", /.*/);
+});
+
+test("testimonials can be dragged with a mouse, then stay put", async ({ page, context }, testInfo) => {
+  test.skip(testInfo.project.name === "mobile", "mouse drag");
+  await page.goto("/");
+  const { marquee, box } = await showTestimonials(page);
+  const y = box.y + box.height / 2;
+  const x = box.x + box.width / 2;
+
+  const pages: string[] = [];
+  context.on("page", (p) => pages.push(p.url()));
+
+  await page.mouse.move(x, y);
+  await page.mouse.down();
+  const before = await trackX(page);
+  for (let i = 1; i <= 10; i++) await page.mouse.move(x - i * 30, y);
+  const dragged = await trackX(page);
+  await page.mouse.up();
+
+  // The strip loops, so compare the distance moved modulo one loop.
+  const loop = await marquee.locator("> div").evaluate((el) => el.scrollWidth / 2);
+  const moved = (((dragged - before) % loop) + loop) % loop;
+  const expected = ((-300 % loop) + loop) % loop;
+  expect(Math.abs(moved - expected), "follows the pointer").toBeLessThan(40);
+  await expect(marquee).toHaveAttribute("data-stopped", "true");
+
+  // Moving away doesn't restart it.
+  await page.mouse.move(x, box.y - 200);
+  await page.waitForTimeout(700);
+  expect(Math.abs((await trackX(page)) - dragged), "stays where it was left").toBeLessThan(1);
+  expect(pages, "releasing a drag over a review doesn't open it").toEqual([]);
+});
+
+test("testimonials can be swiped on a phone, then stay put", async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== "mobile", "touch swipe");
+  await page.goto("/");
+  const { marquee, box } = await showTestimonials(page);
+  const cdp = await page.context().newCDPSession(page);
+  const y = box.y + box.height / 2;
+  const x = box.x + box.width * 0.8;
+  const touch = (type: "touchStart" | "touchMove" | "touchEnd", px: number) =>
+    cdp.send("Input.dispatchTouchEvent", {
+      type,
+      touchPoints: type === "touchEnd" ? [] : [{ x: px, y }],
+    });
+
+  await touch("touchStart", x);
+  for (let i = 1; i <= 8; i++) await touch("touchMove", x - i * 25);
+  const swiped = await trackX(page);
+  await touch("touchEnd", x - 200);
+
+  await expect(marquee).toHaveAttribute("data-stopped", "true");
+  await page.waitForTimeout(700);
+  expect(Math.abs((await trackX(page)) - swiped)).toBeLessThan(1);
 });
 
 test("hero heading fits on two lines", async ({ page }) => {

@@ -13,7 +13,10 @@
     "flatten:home-hero": "tsx scripts/flatten-home-hero.ts",
     "db:indexes": "tsx scripts/ensure-indexes.ts",
     "preflight": "tsx scripts/preflight.ts",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit && tsc -p tests/tsconfig.json",
+    "check": "pnpm lint && pnpm typecheck && pnpm test"
   },
   "dependencies": {
     "@lottiefiles/dotlottie-react": "^0.19.12",
@@ -39,9 +42,12 @@
     "dotenv": "^17.4.2",
     "eslint": "^9",
     "eslint-config-next": "16.2.4",
+    "jsdom": "^30.0.1",
+    "sharp": "^0.34.5",
     "tailwindcss": "^4",
     "tsx": "^4.23.12",
-    "typescript": "^5"
+    "typescript": "^5",
+    "vitest": "^5.0.1"
   },
   "packageManager": "pnpm@11.25.0",
   "engines": {
