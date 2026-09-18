@@ -1,11 +1,11 @@
 "use client";
 
-import { useFadeIn } from "@/hooks/useFadeIn";import { Phone, MessageSquareMore } from "lucide-react";
+import { useFadeIn } from "@/hooks/useFadeIn";
+import { Phone, MessageSquareMore } from "lucide-react";
 import Image from "next/image";
 import type { HomeHeroContent } from "@/data/pageContent";
 import HeroQuoteForm from "./HeroQuoteForm";
 import TrustRatingBadge from "@/components/site/TrustRatingBadge";
-
 
 /**
  * Homepage hero: one static panel, copy on the left and the two-step quote
@@ -78,7 +78,7 @@ export default function HeroSectionClient({
               half the row and leaves the heading a narrower column. Each clamp
               reaches its original size as soon as there is room for it.
             */}
-            <h1 className="text-white font-bold leading-[1.1] text-[clamp(1.25rem,7.6vw,2.5rem)] md:text-[3.75rem] lg:text-[clamp(2rem,4.1vw,3.75rem)]">
+            <h1 className="text-white font-bold leading-[1.1] text-[1.5rem] md:text-[2rem] lg:text-[3.5rem]">
               {headingLine1}
               <br />
               {headingLine2}
