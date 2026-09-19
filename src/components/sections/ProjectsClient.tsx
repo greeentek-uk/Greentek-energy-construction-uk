@@ -12,10 +12,12 @@ function GalleryCard({
   project,
   delay,
   beforeBadgeLabel,
+  afterBadgeLabel,
 }: {
   project: Project;
   delay: number;
   beforeBadgeLabel: string;
+  afterBadgeLabel: string;
 }) {
   const [cardFadeRef, cardFadeVisible] = useFadeIn(delay);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -55,6 +57,10 @@ function GalleryCard({
   const handlePointerUp = () => {
     draggingRef.current = false;
   };
+
+  // Names whichever photo fills most of the frame — the same rule as the
+  // shared BeforeAfterSlider, so every project card on the site behaves alike.
+  const badgeLabel = sliderPos >= 50 ? beforeBadgeLabel : afterBadgeLabel;
 
   return (
     <div
@@ -100,8 +106,11 @@ function GalleryCard({
         </div>
 
         {/* Labels */}
-        <span className="absolute top-3 left-3 z-10 rounded-full bg-[#28282C] px-2.5 py-1 text-[10px] font-semibold uppercase text-[#c5eb02] pointer-events-none">
-          {beforeBadgeLabel}
+        <span
+          aria-hidden
+          className="absolute top-3 left-3 z-10 rounded-full bg-[#28282C] px-2.5 py-1 text-[10px] font-semibold uppercase text-[#c5eb02] pointer-events-none"
+        >
+          {badgeLabel}
         </span>
         <Link
           href={`/projects/${project.slug}`}
@@ -152,6 +161,7 @@ export default function ProjectsClient({
   heading,
   subheading,
   beforeBadgeLabel,
+  afterBadgeLabel,
   ctaLabel,
 }: { projects: Project[] } & ProjectsPreviewContent) {
   const [headerFadeRef, headerFadeVisible] = useFadeIn(0);
@@ -190,6 +200,7 @@ export default function ProjectsClient({
             project={project}
             delay={i * 100}
             beforeBadgeLabel={beforeBadgeLabel}
+            afterBadgeLabel={afterBadgeLabel || "After"}
           />
         ))}
       </div>

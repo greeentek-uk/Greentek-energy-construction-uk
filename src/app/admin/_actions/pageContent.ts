@@ -160,6 +160,7 @@ function parseBlockFields(key: PageContentKey, formData: FormData): PageContentM
         heading: str(formData, "heading"),
         subheading: str(formData, "subheading"),
         beforeBadgeLabel: str(formData, "beforeBadgeLabel"),
+        afterBadgeLabel: str(formData, "afterBadgeLabel") || "After",
         ctaLabel: str(formData, "ctaLabel"),
         // Anything not on the list falls back to the default rather than
         // being stored and quietly breaking the grid later.

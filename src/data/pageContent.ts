@@ -188,6 +188,8 @@ export interface ProjectsPreviewContent {
   heading: string;
   subheading: string;
   beforeBadgeLabel: string;
+  /** Shown once the divider is dragged past halfway. Falls back to "After". */
+  afterBadgeLabel?: string;
   ctaLabel: string;
   /** How many projects the homepage shows. Multiples of the 3-column grid. */
   projectCount: PROJECT_COUNT;

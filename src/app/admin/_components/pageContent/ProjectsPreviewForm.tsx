@@ -16,6 +16,7 @@ export default function ProjectsPreviewForm({ content }: { content: ProjectsPrev
       <Field label="Subheading" name="subheading" textarea defaultValue={content.subheading} required />
       <div className="grid sm:grid-cols-2 gap-4">
         <Field label={'"Before" Badge Label'} name="beforeBadgeLabel" defaultValue={content.beforeBadgeLabel} required />
+        <Field label={'"After" Badge Label'} name="afterBadgeLabel" defaultValue={content.afterBadgeLabel || "After"} required />
         <Field label="CTA Button Label" name="ctaLabel" defaultValue={content.ctaLabel} required />
       </div>
       <div>
