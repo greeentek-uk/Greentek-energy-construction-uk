@@ -33,6 +33,7 @@ export default async function AdminHomePage({ searchParams }: Props) {
     },
     { href: "/admin/pages", label: "Pages", count: `${pageCount} pages` },
     { href: "/admin/menus", label: "Menus", count: "Header & footer links" },
+    { href: "/admin/footer-cta", label: "Footer CTA", count: "Footer heading & buttons, per page" },
     { href: "/admin/blog", label: "Blog Posts", count: `${posts.length} posts` },
     { href: "/admin/services", label: "Services", count: `${site.services.length} services` },
     { href: "/admin/projects", label: "Projects", count: `${site.projects.length} projects` },

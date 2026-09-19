@@ -115,7 +115,7 @@ export default async function BlogDetailPage({ params }: Props) {
 
         {/* Content Section */}
         <section className="py-12 lg:py-24">
-          <div className="mx-auto max-w-4xl px-6">
+          <div className="site-container">
             <ContentBlocks blocks={post.content} />
 
             {/* Related Links */}
@@ -201,7 +201,7 @@ export default async function BlogDetailPage({ params }: Props) {
 
         {/* Back to Blog */}
         <section className="py-12 border-t border-[#c5eb02]">
-          <div className="mx-auto max-w-4xl px-6">
+          <div className="site-container">
             <Link
               href="/blog"
               className="inline-flex items-center gap-2 text-[#c5eb02] font-bold hover:text-[#c5eb02]/80"

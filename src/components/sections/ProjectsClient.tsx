@@ -157,8 +157,8 @@ export default function ProjectsClient({
   const [headerFadeRef, headerFadeVisible] = useFadeIn(0);
 
   return (
-    <section className="py-10 md:py-20 lg:py-24 overflow-hidden px-4 md:px-10">
-      <div className="mx-auto max-w-7xl px-6">
+    <section className="py-10 md:py-20 lg:py-24 overflow-hidden">
+      <div className="site-container">
         <div
           ref={headerFadeRef}
           className={`text-center max-w-4xl mx-auto mb-12 md:mb-14 transition-all duration-700 ease-out ${
@@ -183,7 +183,7 @@ export default function ProjectsClient({
           category, title and description below the image, so stacked rows need
           more separation than side-by-side cards do. px-6 matches the header
           above so the cards line up with the heading. */}
-      <div className="w-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-x-6 gap-y-12 md:gap-y-14 max-w-7xl mx-auto px-6">
+      <div className="site-container grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-x-6 gap-y-12 md:gap-y-14">
         {projects.map((project, i) => (
           <GalleryCard
             key={project.slug}

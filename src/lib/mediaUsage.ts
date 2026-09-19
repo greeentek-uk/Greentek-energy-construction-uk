@@ -37,10 +37,12 @@ export async function collectImageUsage(): Promise<ImageUsage[]> {
 
   for (const service of site.services) {
     record(service.image, `Service: ${service.title}`, service.imageAlt);
+    record(service.heroImage, `Service: ${service.title} (hero)`, service.heroImageAlt);
     for (const block of service.content ?? []) record(block.src, `Service: ${service.title}`, block.alt);
   }
   for (const location of site.locations) {
     record(location.image, `Location: ${location.name}`, location.imageAlt);
+    record(location.heroImage, `Location: ${location.name} (hero)`, location.heroImageAlt);
     for (const block of location.content ?? []) record(block.src, `Location: ${location.name}`, block.alt);
   }
   for (const project of site.projects) {

@@ -14,7 +14,7 @@ export default function FAQSectionClient({ eyebrow, heading, items }: FaqContent
       className="py-10 md:py-20 lg:py-24 overflow-hidden"
       aria-labelledby="faq-heading"
     >
-      <div className="mx-auto max-w-4xl px-6">
+      <div className="site-container">
         <div
           ref={sectionFadeRef}
           className={`transition-all duration-1000 ease-out ${

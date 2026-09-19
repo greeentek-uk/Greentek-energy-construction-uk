@@ -31,6 +31,11 @@ import PropertyPhotoPicker, { type EnquiryRef, type PhotoItem } from "./Property
  *
  * Posts to the same endpoint as the full form further down the page; `source`
  * distinguishes them in the inbox.
+ *
+ * On a page about one service, `fixedService` drops the first two questions:
+ * someone reading the solar page has already told us it's solar, and asking
+ * again reads as a form that wasn't paying attention. The value is still
+ * submitted, so the inbox sees no difference.
  */
 const fieldClass =
   "w-full min-h-12 px-4 py-3 rounded-xl bg-white/15 backdrop-blur-sm border border-white/20 focus:border-[#c5eb02] focus:ring-4 focus:ring-[#c5eb02]/10 transition-all outline-none font-medium text-white placeholder:text-white/60 text-base sm:text-sm";
@@ -100,12 +105,26 @@ const STEP_TITLES = ["What you need", "Property & budget", "Photos & notes", "Yo
 
 type Step = 1 | 2 | 3 | 4;
 
+/** The one service a page is about, when the form doesn't need to ask. */
+export interface FixedService {
+  /** Submitted as `service`; must be a value `serviceLabel()` recognises. */
+  value: string;
+  /** Shown back to the reader as confirmation of what they're enquiring about. */
+  label: string;
+}
+
 export default function HeroQuoteForm({
   heading,
   subheading,
+  source = "Homepage hero",
+  fixedService,
 }: {
   heading: string;
   subheading: string;
+  /** Names this form in the enquiry email's "Came from" line and in StartQuote. */
+  source?: string;
+  /** Set on a single-service page to skip the project type and service questions. */
+  fixedService?: FixedService;
 }) {
   const router = useRouter();
   const started = useRef(false);
@@ -119,7 +138,7 @@ export default function HeroQuoteForm({
   const [form, setForm] = useState({
     // Construction is the default — most enquiries are for building work.
     project_type: "construction" as ProjectType,
-    service: "",
+    service: fixedService?.value ?? "",
     postcode: "",
     property_type: "" as "" | "residential" | "commercial",
     is_homeowner: "",
@@ -152,7 +171,7 @@ export default function HeroQuoteForm({
   function markStarted() {
     if (started.current) return;
     started.current = true;
-    track("StartQuote", { content_name: "Homepage hero" });
+    track("StartQuote", { content_name: source });
   }
 
   function goTo(next: Step) {
@@ -169,7 +188,7 @@ export default function HeroQuoteForm({
   }
 
   function continueFromStepOne() {
-    if (!form.service) return setError("Pick what you need help with.");
+    if (!fixedService && !form.service) return setError("Pick what you need help with.");
     if (!form.postcode.trim()) return setError("Enter your postcode.");
     if (!isLikelyPostcode(form.postcode)) return setError("That postcode doesn't look right.");
     goTo(2);
@@ -209,7 +228,7 @@ export default function HeroQuoteForm({
         // A photo that failed to upload is left out rather than blocking the enquiry.
         photos: photos.flatMap((p) => (p.status === "done" && p.url ? [p.url] : [])),
         enquiry,
-        source: "Homepage hero",
+        source,
         event_id: eventId,
         page_url: window.location.href,
       });
@@ -252,45 +271,58 @@ export default function HeroQuoteForm({
           tabIndex={-1}
           className="text-sm font-bold uppercase tracking-wide text-[#c5eb02] outline-none"
         >
-          {STEP_TITLES[step - 1]}
+          {step === 1 && fixedService ? "Where you are" : STEP_TITLES[step - 1]}
         </p>
 
         {step === 1 && (
           <>
-            {/* Segmented switch: the choice changes the service list below it. */}
-            <div
-              role="radiogroup"
-              aria-label="Type of project"
-              className="grid grid-cols-2 gap-1 rounded-xl border border-white/20 bg-white/10 p-1"
-            >
-              {projectTypeOptions.map((option) => (
-                <button
-                  key={option.value}
-                  type="button"
-                  role="radio"
-                  aria-checked={form.project_type === option.value}
-                  onClick={() => setProjectType(option.value)}
-                  className={`min-h-11 rounded-lg text-sm font-bold transition-colors ${
-                    form.project_type === option.value
-                      ? "bg-[#c5eb02] text-black"
-                      : "text-white/80 hover:text-white"
-                  }`}
+            {fixedService ? (
+              // Confirmation, not a question: it tells the reader the enquiry
+              // is about the page they're on, without making them restate it.
+              <div className="rounded-xl border border-white/20 bg-white/10 px-4 py-3">
+                <p className="text-xs font-bold text-white/60">Your enquiry</p>
+                <p className="text-sm font-bold text-[#c5eb02]">{fixedService.label}</p>
+              </div>
+            ) : (
+              <>
+                {/* Segmented switch: the choice changes the service list below it. */}
+                <div
+                  role="radiogroup"
+                  aria-label="Type of project"
+                  className="grid grid-cols-2 gap-1 rounded-xl border border-white/20 bg-white/10 p-1"
                 >
-                  {option.label}
-                </button>
-              ))}
-            </div>
+                  {projectTypeOptions.map((option) => (
+                    <button
+                      key={option.value}
+                      type="button"
+                      role="radio"
+                      aria-checked={form.project_type === option.value}
+                      onClick={() => setProjectType(option.value)}
+                      className={`min-h-11 rounded-lg text-sm font-bold transition-colors ${
+                        form.project_type === option.value
+                          ? "bg-[#c5eb02] text-black"
+                          : "text-white/80 hover:text-white"
+                      }`}
+                    >
+                      {option.label}
+                    </button>
+                  ))}
+                </div>
 
-            <SelectField
-              id="hero_service"
-              label="What can we help with?"
-              placeholder={
-                form.project_type === "energy" ? "Choose an energy upgrade" : "Choose a project"
-              }
-              options={heroServiceOptions[form.project_type]}
-              value={form.service}
-              onChange={(value) => set("service", value)}
-            />
+                <SelectField
+                  id="hero_service"
+                  label="What can we help with?"
+                  placeholder={
+                    form.project_type === "energy"
+                      ? "Choose an energy upgrade"
+                      : "Choose a project"
+                  }
+                  options={heroServiceOptions[form.project_type]}
+                  value={form.service}
+                  onChange={(value) => set("service", value)}
+                />
+              </>
+            )}
 
             <div>
               <label htmlFor="hero_postcode" className="sr-only">

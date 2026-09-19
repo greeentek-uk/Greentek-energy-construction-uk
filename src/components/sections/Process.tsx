@@ -6,7 +6,7 @@ export default async function Process() {
 
   return (
     <section className="bg-black py-10 md:py-20 lg:py-24">
-      <div className="mx-auto max-w-7xl px-4">
+      <div className="site-container">
         {/* items-start is what lets the left column stick — don't change it
             to items-center, and keep overflow-hidden off every ancestor. */}
         <div className="grid grid-cols-1 items-start gap-10 lg:grid-cols-2 lg:gap-16">

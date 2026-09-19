@@ -93,7 +93,7 @@ export default async function ProjectDetailPage({ params }: Props) {
 
         {/* Before / After Slider */}
         <section className="py-12 lg:py-24">
-          <div className="mx-auto max-w-4xl px-6">
+          <div className="site-container">
             <BeforeAfterSlider
               before={project.before}
               after={project.after}
@@ -114,13 +114,13 @@ export default async function ProjectDetailPage({ params }: Props) {
           project.gallery?.length ||
           relatedService) && (
           <section className="pb-12 lg:pb-24">
-            <div className="mx-auto max-w-4xl px-6">
+            <div className="site-container">
               {project.overview && project.overview.length > 0 && (
                 <>
                   <h2 className="text-[1.625rem] md:text-[2.5rem] font-bold leading-[1.2] text-white mb-6">
                     About This Project
                   </h2>
-                  <div className="space-y-4 mb-10">
+                  <div className="site-prose space-y-4 mb-10">
                     {project.overview.map((paragraph, idx) => (
                       <p
                         key={idx}
@@ -197,7 +197,7 @@ export default async function ProjectDetailPage({ params }: Props) {
 
         {/* CTA */}
         <section className="pb-12 lg:pb-24">
-          <div className="mx-auto max-w-4xl px-6">
+          <div className="site-container">
             <div className="p-8 md:p-12 bg-white/5 rounded-xl border border-[#c5eb02]">
               {relatedService ? (
                 <>
@@ -207,7 +207,7 @@ export default async function ProjectDetailPage({ params }: Props) {
                   <h3 className="text-xl md:text-2xl font-bold text-white mb-4">
                     Want the same results?
                   </h3>
-                  <p className="text-lg text-white/80 mb-8 font-medium">
+                  <p className="site-prose text-lg text-white/80 mb-8 font-medium">
                     This project was completed as part of our{" "}
                     {relatedService.title} service. Explore what&apos;s
                     included, or get a free quote for your own property.
@@ -232,7 +232,7 @@ export default async function ProjectDetailPage({ params }: Props) {
                   <h3 className="text-xl md:text-2xl font-bold text-white mb-4">
                     Considering a similar project?
                   </h3>
-                  <p className="text-lg text-white/80 mb-8 font-medium">
+                  <p className="site-prose text-lg text-white/80 mb-8 font-medium">
                     Get in touch for a free, no-obligation survey and quote
                     tailored to your property.
                   </p>
@@ -250,7 +250,7 @@ export default async function ProjectDetailPage({ params }: Props) {
 
         {/* Other Projects */}
         <section className="py-12 lg:py-24 border-t border-[#c5eb02]">
-          <div className="mx-auto max-w-4xl px-6">
+          <div className="site-container">
             <h3 className="text-[1.25rem] md:text-[1.5rem] font-bold leading-[1.3] text-white mb-8">
               More Projects
             </h3>

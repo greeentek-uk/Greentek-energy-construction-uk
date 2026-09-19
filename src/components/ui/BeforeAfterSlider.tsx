@@ -14,6 +14,8 @@ interface BeforeAfterSliderProps {
   /** Width this slider actually occupies, so Cloudinary is asked for that size. */
   sizes?: string;
   className?: string;
+  /** Badge wording; the case study says "Before Greentek" / "After Greentek". */
+  labels?: { before: string; after: string };
 }
 
 export default function BeforeAfterSlider({
@@ -24,6 +26,7 @@ export default function BeforeAfterSlider({
   afterAlt,
   sizes = "(min-width: 768px) 50vw, 100vw",
   className = "h-100",
+  labels = { before: "Before", after: "After" },
 }: BeforeAfterSliderProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [sliderPos, setSliderPos] = useState(50);
@@ -62,6 +65,11 @@ export default function BeforeAfterSlider({
   const handlePointerUp = () => {
     draggingRef.current = false;
   };
+
+  // The badge names whichever photo fills most of the frame. Hard-coded to
+  // "Before", it kept labelling the after photo "Before" once someone had
+  // dragged the divider across to see the result.
+  const showingLabel = sliderPos >= 50 ? labels.before : labels.after;
 
   return (
     <div
@@ -102,8 +110,11 @@ export default function BeforeAfterSlider({
       </div>
 
       {/* Labels */}
-      <span className="absolute top-3 left-3 bg-[#28282C] text-[#c5eb02] text-[10px] font-semibold uppercase px-2.5 py-1 rounded-full pointer-events-none">
-        Before
+      <span
+        aria-hidden
+        className="absolute top-3 left-3 bg-[#28282C] text-[#c5eb02] text-[10px] font-semibold uppercase px-2.5 py-1 rounded-full pointer-events-none"
+      >
+        {showingLabel}
       </span>
       <span className="absolute top-3 right-3 h-10 w-10 rounded-full bg-white flex items-center justify-center pointer-events-none">
         <ArrowRight className="h-5 w-5 text-black" />

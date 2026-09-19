@@ -2,50 +2,24 @@ import Link from "next/link";
 import CookieSettingsButton from "@/components/site/CookieSettingsButton";
 import Image from "next/image";
 import { getCurrentSiteConfig } from "@/lib/cms";
-import { whatsappUrl } from "@/lib/whatsapp";
-import { ArrowRight } from "lucide-react";
+import { getFooterCtaSettings } from "@/lib/db/footerCta";
+import FooterCta from "./FooterCta";
 
 export default async function Footer() {
-  const siteConfig = await getCurrentSiteConfig();
+  const [siteConfig, footerCta] = await Promise.all([
+    getCurrentSiteConfig(),
+    getFooterCtaSettings(),
+  ]);
   const currentYear = new Date().getFullYear();
 
   return (
     <footer className="bg-[url('/images/footer/footer-bg.webp')] bg-cover bg-center border-t border-zinc-900">
       <div className="bg-black/60 pt-18">
-        <div className="mx-auto w-full flex flex-col items-center justify-center">
-          <p className="text-[10px] md:text-[16px] font-semibold uppercase mb-6 bg-[#28282C] text-[#c5eb02] rounded-2xl px-3 py-1 w-fit mx-auto">
-            Get In Touch
-          </p>
-          <h2 className="text-white text-[1.8rem] md:text-[2.8rem] font-bold leading-[1.15] max-w-[90%] sm:max-w-lg md:max-w-2xl text-center px-4">
-            Ready to Switch to Solar <br /> and Save for Years?
-          </h2>
-          <p className="mt-4 text-lg md:text-xl text-white/80 leading-relaxed text-center max-w-[90%] sm:max-w-md mx-auto font-normal">
-            Join thousands of happy customers who are already enjoying clean
-            energy and significant savings. Get your free consultation today.
-          </p>
-          <div className="mt-12 mb-12 flex flex-wrap items-center justify-center gap-3 px-4">
-            <a
-              href={whatsappUrl(siteConfig.phone)}
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label="Consult an expert on WhatsApp (opens in a new tab)"
-              className="w-fit rounded px-4 py-3 text-sm md:text-[18px] font-semibold text-black backdrop-blur-sm transition active:scale-95 bg-[#c5eb02]"
-            >
-              Consult an Expert{" "}
-              <ArrowRight className="inline ml-2 bg-black rounded px-1 py-1 text-white" />
-            </a>
-            <Link
-              href="/contact"
-              className="w-fit rounded px-4 py-3 text-sm md:text-[18px] font-semibold text-black backdrop-blur-sm transition active:scale-95 bg-white"
-            >
-              Get a Free Quote{" "}
-              <ArrowRight className="inline ml-2 bg-black rounded px-1 py-1 text-white" />
-            </Link>
-          </div>
-        </div>
-        <div className="mx-auto max-w-7xl">
+        {/* Editable site-wide and per page in Admin → Footer CTA. */}
+        <FooterCta settings={footerCta} phone={siteConfig.phone} />
+        <div className="site-container">
           {/* FOOTER CARD — one responsive layout for mobile & desktop */}
-          <div className="mx-4 sm:mx-6 lg:mx-0 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 sm:gap-10 px-6 py-10 md:py-12 bg-black/50 backdrop-blur-sm border border-white/50 rounded-xl text-white ">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 sm:gap-10 px-6 py-10 md:py-12 bg-black/50 backdrop-blur-sm border border-white/50 rounded-xl text-white ">
             {/* Column 1 — Brand */}
             <div className="space-y-4 flex items-center justify-center flex-col text-center">
               <Link href="/" className="inline-block">
@@ -191,7 +165,7 @@ export default async function Footer() {
           </div>
 
           {/* Bottom bar */}
-          <div className="mx-4 sm:mx-6 lg:mx-6 border-t border-zinc-900 pt-4 pb-6 text-center flex flex-col items-center gap-2">
+          <div className="border-t border-zinc-900 pt-4 pb-6 text-center flex flex-col items-center gap-2">
             <p className="text-sm md:text-md text-white/90">
               © {currentYear} {siteConfig.name}. All rights reserved.
             </p>

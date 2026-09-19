@@ -20,12 +20,12 @@ export default async function PrivacyPage() {
       <PageSchema path="/privacy" />
       <Header />
       <main className="flex-1 pt-24 pb-20">
-        <div className="mx-auto max-w-4xl px-6">
+        <div className="site-container">
           <h1 className="text-[2rem] md:text-[3.5rem] font-bold leading-[1.15] text-zinc-900 mb-8">
             Privacy <span className="text-green-600">Policy.</span>
           </h1>
           
-          <div className="prose prose-zinc prose-sm md:prose-base max-w-none text-zinc-600 space-y-8 font-medium">
+          <div className="prose prose-zinc prose-sm md:prose-base site-prose text-zinc-600 space-y-8 font-medium">
             <section>
               <h2 className="text-sm font-bold text-zinc-900 mb-4 uppercase">1. Introduction</h2>
               <p>

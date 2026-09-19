@@ -1,13 +1,14 @@
 import Link from "next/link";
 import ServiceForm from "../../../_components/ServiceForm";
 import SaveBanner from "../../../_components/SaveBanner";
+import { getCurrentSiteConfig } from "@/lib/cms";
 
 interface Props {
   searchParams: Promise<{ error?: string }>;
 }
 
 export default async function NewServicePage({ searchParams }: Props) {
-  const params = await searchParams;
+  const [params, { projects }] = await Promise.all([searchParams, getCurrentSiteConfig()]);
 
   return (
     <div>
@@ -19,7 +20,7 @@ export default async function NewServicePage({ searchParams }: Props) {
       <SaveBanner error={params.error} />
 
       <div className="bg-[#101314] border border-white/10 rounded-xl p-6">
-        <ServiceForm />
+        <ServiceForm projects={projects} />
       </div>
     </div>
   );

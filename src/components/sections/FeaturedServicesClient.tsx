@@ -2,120 +2,10 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { Fragment, useState } from "react";
+import { Fragment } from "react";
 import { ArrowRight } from "lucide-react";
-import type { AccreditationsContent, FeaturedServicesContent } from "@/data/pageContent";
-
-type Logo = AccreditationsContent["logos"][number];
-
-/**
- * Accreditation logos scrolling beside a short heading.
- *
- * Pausing is React state driving `animationPlayState` inline, so it can't lose
- * a specificity fight with the keyframes below. Hover and keyboard focus both
- * pause it — a logo is a link, and you can't click something that keeps moving.
- */
-function AccreditationStrip({
-  heading,
-  body,
-  logos,
-}: {
-  heading: string;
-  body: string;
-  logos: Logo[];
-}) {
-  const [paused, setPaused] = useState(false);
-  if (!logos.length) return null;
-
-  // Rendered twice so the loop joins up seamlessly.
-  const loop = [...logos, ...logos];
-  const pause = { onMouseEnter: () => setPaused(true), onMouseLeave: () => setPaused(false),
-                  onFocus: () => setPaused(true), onBlur: () => setPaused(false) };
-
-  return (
-    <div className="grid items-center gap-6 rounded-xl border border-white/10 bg-[#101314] p-6 md:p-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,2.2fr)] lg:gap-10">
-      <div className="text-center lg:text-left">
-        <p className="text-xl font-semibold text-white md:text-2xl text-balance">{heading}</p>
-        {body && <p className="mt-2 text-sm text-white/70 md:text-base">{body}</p>}
-      </div>
-
-      <div
-        className="accr-viewport relative overflow-hidden motion-reduce:overflow-x-auto"
-        role="region"
-        aria-label="Accreditations"
-      >
-        <ul
-          className="accr-marquee flex w-max items-center"
-          style={{
-            animationPlayState: paused ? "paused" : "running",
-            // Scales with the logo count so speed stays constant as logos are added.
-            animationDuration: `${logos.length * 3.5}s`,
-          }}
-        >
-          {loop.map((logo, i) => {
-            // The second copy exists only for the visual loop — hide it from
-            // screen readers and the tab order so each body is announced once.
-            const duplicate = i >= logos.length;
-            const chip = (
-              <span className="relative block h-full w-full">
-                <Image
-                  src={logo.image}
-                  alt={duplicate ? "" : logo.imageAlt || logo.name}
-                  fill
-                  sizes="144px"
-                  className="object-contain"
-                />
-              </span>
-            );
-            const chipClass =
-              "mx-2 flex h-20 w-36 shrink-0 items-center justify-center rounded-xl bg-white p-3 transition-transform";
-
-            return (
-              <li key={`${logo.name}-${i}`} aria-hidden={duplicate || undefined}>
-                {logo.url ? (
-                  <a
-                    href={logo.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    tabIndex={duplicate ? -1 : undefined}
-                    aria-label={duplicate ? undefined : `${logo.name} (opens in a new tab)`}
-                    className={`${chipClass} hover:scale-105 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#c5eb02]`}
-                    {...pause}
-                  >
-                    {chip}
-                  </a>
-                ) : (
-                  <span className={chipClass} {...pause}>
-                    {chip}
-                  </span>
-                )}
-              </li>
-            );
-          })}
-        </ul>
-      </div>
-
-      <style jsx>{`
-        @keyframes accr-scroll {
-          from { transform: translateX(0); }
-          to { transform: translateX(-50%); }
-        }
-        .accr-marquee {
-          animation-name: accr-scroll;
-          animation-timing-function: linear;
-          animation-iteration-count: infinite;
-        }
-        .accr-viewport {
-          mask-image: linear-gradient(to right, transparent, black 8%, black 92%, transparent);
-        }
-        @media (prefers-reduced-motion: reduce) {
-          .accr-marquee { animation: none; }
-          .accr-viewport { mask-image: none; }
-        }
-      `}</style>
-    </div>
-  );
-}
+import type { FeaturedServicesContent } from "@/data/pageContent";
+import AccreditationStrip, { type AccreditationLogo } from "./AccreditationStrip";
 
 /**
  * Featured services as alternating image/text rows, with the accreditation
@@ -132,12 +22,12 @@ export default function FeaturedServicesClient({
   accreditationHeading,
   accreditationBody,
   logos,
-}: FeaturedServicesContent & { logos: Logo[] }) {
+}: FeaturedServicesContent & { logos: AccreditationLogo[] }) {
   const stripAfter = Math.min(1, items.length - 1);
 
   return (
     <section className="py-10 md:py-20 lg:py-24">
-      <div className="mx-auto max-w-7xl px-6">
+      <div className="site-container">
         <div className="mx-auto mb-12 max-w-3xl text-center md:mb-16">
           <p className="mx-auto mb-6 w-fit rounded-2xl bg-[#28282C] px-3 py-1 text-[10px] font-semibold uppercase text-[#c5eb02] md:text-[16px]">
             {eyebrow}

@@ -18,9 +18,9 @@ export default function WhyUsClient({
   const [headerFadeRef, headerFadeVisible] = useFadeIn(0);
 
   return (
-    <section className="gap-4 md:gap-6 py-12 md:py-16 lg:py-24 overflow-hidden mx-auto px-4 md:px-10">
+    <section className="gap-4 md:gap-6 py-12 md:py-16 lg:py-24 overflow-hidden">
       {" "}
-      <div>
+      <div className="site-container">
         {/* Centered heading block */}
         <div
           ref={headerFadeRef}
@@ -42,7 +42,7 @@ export default function WhyUsClient({
           </p>
         </div>
       </div>
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 md:gap-4 max-w-7xl mx-auto">
+      <div className="site-container grid grid-cols-1 sm:grid-cols-3 gap-3 md:gap-4">
         {items.map((item, i) => {
           const Icon = ITEM_ICONS[i] ?? Award;
           return (

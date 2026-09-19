@@ -29,7 +29,9 @@ export default function AboutPageClient({
           <div className="relative mx-auto max-w-7xl px-6 text-center">
             <h1 className="text-[2rem] md:text-[3.5rem] font-bold leading-[1.15] text-white">
               {content.heroHeadingLine1} <br />
-              <span className="text-[#C5EB02]">{content.heroHeadingHighlight}</span>
+              <span className="text-[#C5EB02]">
+                {content.heroHeadingHighlight}
+              </span>
             </h1>
             <p className="mt-6 text-xl text-white/80 max-w-2xl mx-auto leading-relaxed">
               {content.heroSubheading}
@@ -38,7 +40,7 @@ export default function AboutPageClient({
         </div>
       </section>
       <section className="py-12 md:py-16 lg:py-24">
-        <div className="mx-auto max-w-7xl px-6">
+        <div className="site-container">
           <div className="grid lg:grid-cols-2 gap-16 items-center">
             <div>
               <h2 className="text-[1.625rem] md:text-[2.5rem] font-bold leading-[1.2] text-white mb-6">
@@ -71,7 +73,6 @@ export default function AboutPageClient({
       {whyUsSlot}
       {aboutUsSlot}
       {whyChooseUsSlot}
-      {brandsSlot}
       {processSlot}
     </main>
   );

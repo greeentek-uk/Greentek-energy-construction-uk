@@ -34,14 +34,14 @@ export default function FaqSection({
   };
 
   return (
-    <section className="px-5 sm:px-15 py-16 md:py-20">
+    <section className="py-16 md:py-20">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
           __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c"),
         }}
       />
-      <div className="mx-auto max-w-3xl">
+      <div className="site-container">
         <h2 className="text-[1.625rem] md:text-[2.5rem] font-bold leading-[1.2] text-white mb-8">
           {heading}
         </h2>
@@ -55,7 +55,7 @@ export default function FaqSection({
                 </span>
               </summary>
               <div
-                className="mt-3 text-lg leading-relaxed text-white/70 font-medium [&_a]:text-[#c5eb02] [&_a]:underline [&_b]:font-bold [&_strong]:font-bold [&_i]:italic [&_em]:italic"
+                className="mt-3 site-prose text-lg leading-relaxed text-white/70 font-medium [&_a]:text-[#c5eb02] [&_a]:underline [&_b]:font-bold [&_strong]:font-bold [&_i]:italic [&_em]:italic"
                 dangerouslySetInnerHTML={{ __html: faq.answer }}
               />
             </details>

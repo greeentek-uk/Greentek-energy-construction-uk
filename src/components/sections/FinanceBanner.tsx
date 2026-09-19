@@ -16,8 +16,8 @@ export default async function FinanceBanner() {
   if (!content.heading && !content.linkLabel) return null;
 
   return (
-    <section className="px-4 sm:px-10 py-2 md:py-4 bg-[#101314]">
-      <div className="mx-auto flex max-w-4xl flex items-center gap-4 text-center ">
+    <section className="py-2 md:py-4 bg-[#101314]">
+      <div className="site-container flex items-center justify-center gap-4 text-center">
         {content.heading && (
           <p className="text-md font-semibold text-white md:text-xl text-balance">
             {content.heading}

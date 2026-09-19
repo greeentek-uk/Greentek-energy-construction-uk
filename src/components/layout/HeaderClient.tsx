@@ -64,8 +64,10 @@ export default function HeaderClient({ siteConfig }: { siteConfig: SiteConfig })
       `}</style>
 
       {/* Header Container */}
-      <header className="w-full px-8 sticky top-0 left-0 z-[60] flex justify-center bg-black/10 backdrop-blur-3xl border-b border-[#c5eb02]">
-        <div className="flex w-full items-center justify-between px-4 py-3 bg-transparent">
+      {/* The bar is full-bleed; its contents sit in the shared container so
+          the logo lines up with the left edge of every section below it. */}
+      <header className="w-full sticky top-0 left-0 z-[60] flex justify-center bg-black/10 backdrop-blur-3xl border-b border-[#c5eb02]">
+        <div className="site-container flex items-center justify-between py-3 bg-transparent">
           {/* Logo */}
           <Link href="/" className="flex items-center z-[70]">
             <Image

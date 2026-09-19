@@ -45,7 +45,7 @@ export default async function HomeSolutionsPage() {
         </section>
 
         <section className="py-12 lg:py-24">
-          <div className="mx-auto max-w-7xl px-6">
+          <div className="site-container">
             {/* Same card as the homepage's Verticals section. */}
             <ServiceCardGrid services={group.services} />
           </div>

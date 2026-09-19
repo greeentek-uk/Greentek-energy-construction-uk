@@ -12,7 +12,7 @@ interface Props {
 
 export default async function ServicesAdminPage({ searchParams }: Props) {
   const params = await searchParams;
-  const { services } = await getCurrentSiteConfig();
+  const { services, projects } = await getCurrentSiteConfig();
 
   return (
     <div>
@@ -62,7 +62,7 @@ export default async function ServicesAdminPage({ searchParams }: Props) {
                   currentPath={`/services/${service.slug}`}
                 />
                 <div className="mt-4">
-                  <ServiceForm initial={service} />
+                  <ServiceForm initial={service} projects={projects} />
                 </div>
               </div>
             </details>

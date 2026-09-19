@@ -43,7 +43,7 @@ export default async function ServicesPage() {
         </section>
 
         <section className="py-12 lg:py-24">
-          <div className="mx-auto flex max-w-7xl flex-col gap-12 px-6 md:gap-14">
+          <div className="site-container flex flex-col gap-12 md:gap-14">
             {/* Both groups, laid out like the homepage's Verticals section. */}
             {groups.map((group, i) => (
               <ServiceGroup

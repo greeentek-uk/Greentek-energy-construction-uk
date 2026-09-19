@@ -64,8 +64,8 @@ export default function AboutUsClient({
   const [headerFadeRef, headerFadeVisible] = useFadeIn(0, 0.15);
 
   return (
-    <section className="py-10 md:py-20 lg:py-24 overflow-hidden px-4 md:px-10">
-      <div className="mx-auto max-w-7xl px-2 md:px-6">
+    <section className="py-10 md:py-20 lg:py-24 overflow-hidden">
+      <div className="site-container">
         <div
           ref={headerFadeRef}
           className={`flex flex-col items-center transition-all duration-700 ease-out ${

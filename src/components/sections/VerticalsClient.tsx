@@ -10,7 +10,7 @@ export default function VerticalsClient({ eyebrow, heading, subheading, groups }
 
   return (
     <section className="py-10 md:py-20 lg:py-24">
-      <div className="mx-auto max-w-7xl px-6">
+      <div className="site-container">
         <div
           ref={headerFadeRef}
           className={`mx-auto mb-12 max-w-3xl text-center transition-all duration-700 ease-out ${

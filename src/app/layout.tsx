@@ -139,7 +139,9 @@ export default async function RootLayout({
               pixelId={metaPixel.pixelId}
               pixelNeedsConsent={metaPixel.consent === "marketing"}
             >
-              <div className="relative flex min-h-screen flex-col overflow-x-hidden">
+              {/* overflow-x-clip, not -hidden: see the html/body rule in
+                  globals.css — `hidden` here breaks every sticky element. */}
+              <div className="relative flex min-h-screen flex-col overflow-x-clip">
                 {children}
                 <OpenWidget />
               </div>

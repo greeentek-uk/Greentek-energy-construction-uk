@@ -39,7 +39,7 @@ export default function CorePillarsClient({ heading, intro, pillars }: CorePilla
 
   return (
     <section className="bg-white py-12 md:py-16 lg:py-24" aria-labelledby="pillars-heading">
-      <div className="mx-auto max-w-7xl px-6">
+      <div className="site-container">
         <div
           ref={sectionFadeRef}
           className={`transition-all duration-1000 ease-out ${

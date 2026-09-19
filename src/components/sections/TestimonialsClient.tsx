@@ -122,7 +122,10 @@ export default function TestimonialsClient({
 
           {/* Marquee: scrolls on its own, and can be dragged with a mouse or
               swiped on a phone. Once someone drags it, it stays where they
-              left it. */}
+              left it.
+
+              Deliberately full-bleed — unlike every other section it is not
+              held to site-container. */}
           <div
             className="relative w-full overflow-hidden cursor-grab select-none active:cursor-grabbing"
             style={{ touchAction: "pan-y" }}

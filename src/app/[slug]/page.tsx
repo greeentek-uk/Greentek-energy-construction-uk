@@ -82,8 +82,8 @@ export default async function DynamicPage({ params }: Props) {
           </section>
         )}
 
-        <section className="px-5 sm:px-15 pb-8">
-          <div className="mx-auto max-w-3xl">
+        <section className="pb-8">
+          <div className="site-container">
             <ContentBlocks blocks={page.content} />
           </div>
         </section>

@@ -13,7 +13,7 @@ export default function BrandsSectionClient({ eyebrow, heading, subheading, logo
       className="py-12 md:py-16 lg:py-24 overflow-hidden px-4 md:px-10"
       aria-labelledby="brands-heading"
     >
-      <div className="mx-auto max-w-7xl px-6">
+      <div className="site-container">
         {/* Heading Block */}
         <div
           ref={introFadeRef}

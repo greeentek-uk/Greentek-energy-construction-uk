@@ -20,7 +20,9 @@ export default function ContentBlocks({ blocks }: { blocks?: ContentBlock[] }) {
   if (!blocks || blocks.length === 0) return null;
 
   return (
-    <article className="prose prose-invert max-w-none">
+    // site-prose: callers now place this in the full-width site container, so
+    // the body copy holds its own reading width, left-aligned to the page edge.
+    <article className="prose prose-invert site-prose">
       {blocks.map((block, idx) => {
         if (block.type === "heading") {
           const Tag = block.level === 3 ? "h3" : "h2";

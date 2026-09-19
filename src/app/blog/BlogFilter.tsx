@@ -44,7 +44,7 @@ export function BlogFilterClient({ posts: blogPosts }: { posts: BlogPost[] }) {
     <>
       {/* Search & Filter Section */}
       <section className="py-10 md:py-12 border-b border-[#c5eb02]">
-        <div className="mx-auto max-w-5xl px-6">
+        <div className="site-container">
           {/* Search Bar */}
           <div className="mb-8">
             <div className="relative">
@@ -93,7 +93,7 @@ export function BlogFilterClient({ posts: blogPosts }: { posts: BlogPost[] }) {
       {/* Featured Article Section */}
       {featuredPost && (
         <section className="py-12 md:py-16 border-b border-[#c5eb02]">
-          <div className="mx-auto max-w-5xl px-6">
+          <div className="site-container">
             <h2 className="text-[1.625rem] md:text-[2.5rem] font-bold leading-[1.2] text-[#c5eb02] mb-10 md:mb-12 mx-auto text-center">
               Featured Article
             </h2>
@@ -156,7 +156,7 @@ export function BlogFilterClient({ posts: blogPosts }: { posts: BlogPost[] }) {
 
       {/* Latest Insights Grid */}
       <section className="py-12 md:py-16">
-        <div className="mx-auto max-w-5xl px-6">
+        <div className="site-container">
           <h2 className="text-[1.625rem] md:text-[2.5rem] font-bold leading-[1.2] text-[#c5eb02] mb-10 md:mb-12 mx-auto text-center">
             {activeCategory === "All" && !searchQuery
               ? "Latest Insights"
@@ -245,7 +245,7 @@ export function BlogFilterClient({ posts: blogPosts }: { posts: BlogPost[] }) {
 
       {/* Follow on Instagram CTA */}
       <section className="py-12 md:py-16 border-t border-[#c5eb02]">
-        <div className="mx-auto max-w-5xl px-6">
+        <div className="site-container">
           <div className="p-8 md:p-12 rounded-xl border border-[#c5eb02] text-center">
             <div className="flex justify-center mb-6">
               <div className="w-14 h-14 bg-gradient-to-br from-pink-500 via-purple-500 to-blue-500 rounded-full flex items-center justify-center">

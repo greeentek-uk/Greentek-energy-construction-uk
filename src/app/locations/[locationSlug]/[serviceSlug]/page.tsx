@@ -1,12 +1,13 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import Image from "next/image";
-import { Phone } from "lucide-react";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import { getCurrentSiteConfig } from "@/lib/cms";
 import type { SiteConfig } from "@/data/site";
+import PageQuoteHero from "@/components/sections/PageQuoteHero";
+import FinanceBanner from "@/components/sections/FinanceBanner";
+import ProblemSection from "@/components/sections/ProblemSection";
 import Stats from "@/components/sections/Stats";
 import CtaSection from "@/components/sections/CtaSection";
 import AccreditationsSection from "@/components/sections/AccreditationsSection";
@@ -89,7 +90,6 @@ export default async function LocationServicePage({ params }: Props) {
     .filter((s) => s.slug !== service.slug)
     .slice(0, 4);
 
-  const phoneHref = `tel:${siteConfig.phone.replace(/\s/g, "")}`;
 
   const override = await getLocationServiceContentByKeys(location.slug, service.slug);
 
@@ -121,75 +121,44 @@ export default async function LocationServicePage({ params }: Props) {
       <Header />
 
       <main className="flex-1">
-        {/* Hero */}
-        <section className="py-12 md:py-20 border-b border-[#c5eb02]">
-          <div className="mx-auto max-w-4xl px-6 flex flex-col items-center justify-center text-center">
-            <div className="flex flex-wrap items-center gap-2 text-sm mb-6">
-              <Link
-                href="/locations"
-                className="text-[#c5eb02] font-bold hover:text-[#c5eb02]/80"
-              >
-                Locations
-              </Link>
-              <span className="text-white/40">/</span>
-              <Link
-                href={`/locations/${location.slug}`}
-                className="text-[#c5eb02] font-bold hover:text-[#c5eb02]/80"
-              >
-                {location.name}
-              </Link>
-              <span className="text-white/40">/</span>
-              <span className="text-white/60">{service.shortName}</span>
-            </div>
+        {/*
+          Hero. The service is fixed here too, so the form skips that question
+          — the reader has already picked both a service and an area to land on
+          this URL.
 
-            <h1 className="text-[2rem] md:text-[3.5rem] font-bold leading-[1.15] text-white mb-6">
-              {service.shortName} in{" "}
-              <span className="text-[#c5eb02]">{location.name}</span>
-            </h1>
-            <p className="text-lg md:text-xl text-white/70 leading-relaxed font-medium max-w-3xl mb-4">
-              {introText}
-            </p>
-            <p className="text-lg text-white/70 leading-relaxed font-medium max-w-3xl mb-8">
-              {localNoteText}
-            </p>
+          The standalone cover image that used to sit under this hero is gone:
+          the hero now renders the same service photo full-bleed behind the
+          copy, so keeping it would show the identical image twice in a row.
+        */}
+        <PageQuoteHero
+          image={service.heroImage || service.image}
+          imageAlt={
+            service.heroImageAlt ||
+            service.imageAlt ||
+            `${service.title} in ${location.name}`
+          }
+          heading={`${service.shortName} in`}
+          headingHighlight={location.name}
+          body={introText}
+          secondaryBody={localNoteText}
+          source={`${service.title} in ${location.name}`}
+          fixedService={{ value: service.formCategory, label: service.title }}
+        />
 
-            <div className="flex flex-col sm:flex-row gap-4">
-              <Link
-                href="#quote"
-                className="inline-flex items-center justify-center px-6 md:px-8 py-4 rounded-full bg-[#c5eb02] text-black text-sm font-bold hover:bg-[#c5eb02]/80 transition-all shadow-xl shadow-zinc-900/10"
-              >
-                Get a Free Quote in {location.name}
-              </Link>
-              <a
-                href={phoneHref}
-                className="inline-flex items-center justify-center gap-2 px-6 md:px-8 py-4 rounded-full border border-white/30 text-white text-sm font-bold hover:border-[#c5eb02] hover:text-[#c5eb02] transition-all"
-              >
-                <Phone className="w-4 h-4" />
-                Call {siteConfig.phone}
-              </a>
-            </div>
-          </div>
-        </section>
+        <FinanceBanner />
 
-        {/* Cover Image */}
-        <div className="relative h-96 md:h-125 w-full bg-black overflow-hidden flex items-center justify-center border-b border-[#c5eb02]">
-          <Image
-            src={service.image}
-            sizes="100vw"
-            alt={service.imageAlt || `${service.title} in ${location.name}`}
-            fill
-            className="object-contain object-center"
-            priority
-          />
-        </div>
+        {/* The reader's problem, named before the page describes the fix.
+            Service-level content, so a location + service page shows its
+            service's block. */}
+        <ProblemSection content={service.problem} />
 
         {/* Highlights */}
-        <section className="py-12 lg:py-24">
-          <div className="mx-auto max-w-4xl px-6">
+        <section className="py-10 lg:py-16">
+          <div className="site-container">
             <h2 className="text-[1.625rem] md:text-[2.5rem] font-bold leading-[1.2] text-white mb-8">
               What&apos;s Included
             </h2>
-            <ul className="space-y-4">
+            <ul className="grid gap-4 md:grid-cols-2">
               {highlights.map((item, idx) => (
                 <li
                   key={idx}
@@ -241,8 +210,8 @@ export default async function LocationServicePage({ params }: Props) {
 
         {/* Related Projects */}
         {relatedProjects.length > 0 && (
-          <section className="py-12 lg:py-24 border-t border-[#c5eb02]">
-            <div className="mx-auto max-w-6xl px-6">
+          <section className="py-10 lg:py-16">
+            <div className="site-container">
               <h3 className="text-[1.25rem] md:text-[1.5rem] font-bold leading-[1.3] text-white mb-2">
                 {service.shortName} Work
               </h3>
@@ -295,8 +264,8 @@ export default async function LocationServicePage({ params }: Props) {
         <AccreditationsSection />
 
         {/* Other services in this location */}
-        <section className="py-12 lg:py-24 border-t border-[#c5eb02]">
-          <div className="mx-auto max-w-6xl px-6">
+        <section className="py-10 lg:py-16">
+          <div className="site-container">
             <h3 className="text-[1.25rem] md:text-[1.5rem] font-bold leading-[1.3] text-white mb-8">
               Other Services in {location.name}
             </h3>

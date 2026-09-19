@@ -5,15 +5,61 @@
   --font-heading: var(--font-hanken-grotesk);
 }
 
+/*
+ * The one content width for the whole site.
+ *
+ * Every section — card grids, trays, both sliders, the header, the heroes'
+ * copy and form, the footer — sits inside this, so their edges line up as you
+ * scroll. Sections used to each pick their own width (4xl, 5xl, 6xl, 7xl) and
+ * some put side padding on the <section> as well as the container, so no two
+ * edges matched at any screen size.
+ *
+ * Side padding lives here and nowhere else. A <section> wrapping one of these
+ * carries vertical padding and its background only; the background stays
+ * full-bleed, the content is what's constrained.
+ */
+@utility site-container {
+  width: 100%;
+  max-width: 80rem;
+  margin-inline: auto;
+  padding-inline: 1.25rem;
+
+  @media (width >= 40rem) {
+    padding-inline: 1.5rem;
+  }
+
+  @media (width >= 64rem) {
+    padding-inline: 2rem;
+  }
+}
+
+/*
+ * Reading width for long-form text inside a site-container.
+ *
+ * Left-aligned rather than centred, deliberately: prose then shares the left
+ * edge of every card grid on the page, while lines stay short enough to read.
+ * Stretching body copy to the full container gives ~170-character lines.
+ */
+@utility site-prose {
+  max-width: 56rem;
+}
+
 :root {
   --background: #000;
   --foreground: #ffffff;
 }
 
+/*
+ * `clip`, not `hidden`. Both stop sideways scrolling, but `hidden` quietly
+ * turns the element into a scroll container (the other axis computes to
+ * `auto`), and every `position: sticky` descendant then sticks to a box that
+ * never scrolls — i.e. never sticks. That's what broke the Process section's
+ * pinned heading. `clip` hides the overflow without creating a scroll container.
+ */
 html,
 body {
   max-width: 100vw;
-  overflow-x: hidden;
+  overflow-x: clip;
   position: relative;
 }
 

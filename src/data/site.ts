@@ -1,6 +1,21 @@
 import type { ContentBlock } from "./content";
 import type { FaqItem } from "./pages";
 
+/**
+ * A problem-agitation block: names the reader's frustration in their own terms
+ * before the page describes the fix. Shown on the service page and on every
+ * location + service page for that service.
+ */
+export interface ProblemSection {
+  heading: string;
+  /** Paragraphs separated by a blank line. */
+  intro: string;
+  /** Up to four; blank slots are dropped on save. */
+  cards: { title: string; body: string }[];
+  /** Button text; the button scrolls to the page's enquiry form. */
+  ctaLabel: string;
+}
+
 export interface Service {
   slug: string;
   title: string;
@@ -9,6 +24,10 @@ export interface Service {
   image: string;
   /** Alt text for `image`. Falls back to the service title when blank. */
   imageAlt?: string;
+  /** Background for this page's own hero. Falls back to `image`, which is framed as a card thumbnail and doesn't always work full-bleed behind text. */
+  heroImage?: string;
+  /** Alt text for `heroImage`. Falls back to `imageAlt`, then the service title. */
+  heroImageAlt?: string;
   formCategory: string;
   highlights: string[];
   metaTitle?: string;
@@ -16,6 +35,13 @@ export interface Service {
   content?: ContentBlock[];
   /** Page-specific FAQs, rendered on the page and marked up as FAQPage schema. */
   faqs?: FaqItem[];
+  /** Null when cleared in the panel; the section is then not rendered. */
+  problem?: ProblemSection | null;
+  /**
+   * Slug of the project shown as this page's case study. Blank means
+   * automatic: the first project linked to this service, or none.
+   */
+  caseStudyProject?: string;
 }
 
 export interface Project {
@@ -44,6 +70,10 @@ export interface Location {
   image: string;
   /** Alt text for `image`. Falls back to the location name when blank. */
   imageAlt?: string;
+  /** Background for this page's own hero. Falls back to `image`. */
+  heroImage?: string;
+  /** Alt text for `heroImage`. Falls back to `imageAlt`, then the location name. */
+  heroImageAlt?: string;
   tagline: string;
   blurb: string;
   nearbyAreas: string[];

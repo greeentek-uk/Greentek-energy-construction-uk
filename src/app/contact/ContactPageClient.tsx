@@ -34,7 +34,7 @@ export default function ContactPageClient() {
       <CtaSection />
       {/* Map Section */}
       <section className="py-16 md:py-20">
-        <div className="mx-auto max-w-7xl px-6">
+        <div className="site-container">
           <div
             ref={mapHeaderFadeRef}
             className={`text-center max-w-3xl mx-auto mb-12 transition-all duration-1000 ease-out ${

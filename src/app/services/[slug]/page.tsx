@@ -1,15 +1,16 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import Link from "next/link";
-import { Phone } from "lucide-react";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import { getCurrentSiteConfig } from "@/lib/cms";
+import PageQuoteHero from "@/components/sections/PageQuoteHero";
+import FinanceBanner from "@/components/sections/FinanceBanner";
+import ProblemSection from "@/components/sections/ProblemSection";
+import ProjectCaseStudy from "@/components/sections/ProjectCaseStudy";
 import Process from "@/components/sections/Process";
 import Stats from "@/components/sections/Stats";
 import CtaSection from "@/components/sections/CtaSection";
 import AccreditationsSection from "@/components/sections/AccreditationsSection";
-import BeforeAfterSlider from "@/components/ui/BeforeAfterSlider";
 import ContentBlocks from "@/components/ui/ContentBlocks";
 import { withSeoOverride } from "@/lib/seo";
 import { buildServiceJsonLd, SITE_URL } from "@/lib/structuredData";
@@ -60,18 +61,14 @@ export default async function ServiceDetailPage({ params }: Props) {
     notFound();
   }
 
-  const relatedProjects = siteConfig.projects.filter(
-    (p) => p.service === service.slug,
-  );
-  const fallbackProjects = relatedProjects.length
-    ? []
-    : siteConfig.projects.slice(0, 2);
+  // The project picked in the panel, else this service's own first project.
+  // No fallback to an unrelated job: a solar install shown as the kitchen
+  // page's case study would mislead, so with neither there's no case study.
+  const caseStudy =
+    siteConfig.projects.find((p) => p.slug === service.caseStudyProject) ??
+    siteConfig.projects.find((p) => p.service === service.slug);
 
-  const otherServices = siteConfig.services
-    .filter((s) => s.slug !== service.slug)
-    .slice(0, 3);
 
-  const phoneHref = `tel:${siteConfig.phone.replace(/\s/g, "")}`;
   const jsonLd = buildServiceJsonLd(service, siteConfig, SITE_URL);
 
   return (
@@ -91,53 +88,30 @@ export default async function ServiceDetailPage({ params }: Props) {
       <Header />
 
       <main className="flex-1">
-        {/* Hero Section */}
-        <section
-          className="relative bg-cover bg-center overflow-hidden"
-          style={{ backgroundImage: `url(${service.image})` }}
-        >
-          <div className="bg-black/60 pt-30 py-20">
-            <div className="mx-auto max-w-4xl px-6">
-              <Link
-                href="/services"
-                className="inline-flex items-center gap-2 text-[#c5eb02] font-bold text-sm mb-6 hover:text-[#c5eb02]/80"
-              >
-                ← All Services
-              </Link>
-              <h1 className="text-[2rem] md:text-[3.5rem] font-bold leading-[1.15] text-white mb-6">
-                {service.title}
-              </h1>
-              <p className="text-lg md:text-xl text-white/80 leading-relaxed font-medium max-w-3xl mb-8">
-                {service.description}
-              </p>
+        {/* Hero — the service is fixed, so the form doesn't ask for it. */}
+        <PageQuoteHero
+          image={service.heroImage || service.image}
+          imageAlt={service.heroImageAlt || service.imageAlt || service.title}
+          heading={service.title}
+          body={service.description}
+          source={`Service page — ${service.title}`}
+          fixedService={{ value: service.formCategory, label: service.title }}
+        />
 
-              {/* Dual CTA */}
-              <div className="flex flex-col sm:flex-row gap-4">
-                <Link
-                  href="#quote"
-                  className="inline-flex items-center justify-center px-6 md:px-8 py-4 rounded-full bg-[#c5eb02] text-black text-sm font-bold hover:bg-[#c5eb02]/80 transition-all shadow-xl shadow-zinc-900/10"
-                >
-                  Get a Free {service.shortName} Quote
-                </Link>
-                <a
-                  href={phoneHref}
-                  className="inline-flex items-center justify-center gap-2 px-6 md:px-8 py-4 rounded-full border border-white/30 text-white text-sm font-bold hover:border-[#c5eb02] hover:text-[#c5eb02] transition-all"
-                >
-                  <Phone className="w-4 h-4" />
-                  Call {siteConfig.phone}
-                </a>
-              </div>
-            </div>
-          </div>
-        </section>
+        <FinanceBanner />
+
+        {/* The reader's problem, named before the page describes the fix.
+            Service-level content, so a location + service page shows its
+            service's block. */}
+        <ProblemSection content={service.problem} />
 
         {/* Highlights Section */}
-        <section className="py-12 lg:py-24">
-          <div className="mx-auto max-w-4xl px-6">
+        <section className="py-10 lg:py-16">
+          <div className="site-container">
             <h2 className="text-[1.625rem] md:text-[2.5rem] font-bold leading-[1.2] text-white mb-8">
               What&apos;s Included
             </h2>
-            <ul className="space-y-4">
+            <ul className="grid gap-4 md:grid-cols-2">
               {service.highlights.map((item, idx) => (
                 <li
                   key={idx}
@@ -169,8 +143,8 @@ export default async function ServiceDetailPage({ params }: Props) {
 
         {/* Long-form content */}
         {service.content && service.content.length > 0 && (
-          <section className="pb-12 lg:pb-24">
-            <div className="mx-auto max-w-4xl px-6">
+          <section className="pb-10 lg:pb-16">
+            <div className="site-container">
               <ContentBlocks blocks={service.content} />
             </div>
           </section>
@@ -179,59 +153,9 @@ export default async function ServiceDetailPage({ params }: Props) {
         {/* Trust bar */}
         <Stats />
 
-        {/* Related Projects */}
-        {(relatedProjects.length > 0 || fallbackProjects.length > 0) && (
-          <section className="py-12 lg:py-24 border-t border-[#c5eb02]">
-            <div className="mx-auto max-w-6xl px-6">
-              <h3 className="text-[1.25rem] md:text-[1.5rem] font-bold leading-[1.3] text-white mb-2">
-                {relatedProjects.length > 0
-                  ? `${service.title} Projects`
-                  : "From Our Project Gallery"}
-              </h3>
-              <p className="text-white/60 text-sm mb-8">
-                {relatedProjects.length > 0
-                  ? `Real ${service.shortName.toLowerCase()} work completed by our in-house team.`
-                  : "More examples of our completed work."}
-              </p>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8">
-                {(relatedProjects.length > 0
-                  ? relatedProjects
-                  : fallbackProjects
-                ).map((project) => (
-                  <div key={project.slug}>
-                    <BeforeAfterSlider
-                      before={project.before}
-                      after={project.after}
-                      title={project.title}
-                      beforeAlt={project.beforeAlt}
-                      afterAlt={project.afterAlt}
-                      className="h-72"
-                    />
-                    <div className="pt-4">
-                      <Link
-                        href={`/projects/${project.slug}`}
-                        className="group"
-                      >
-                        <h4 className="text-lg font-bold text-white mb-1 group-hover:text-[#c5eb02] transition-colors">
-                          {project.title}
-                        </h4>
-                      </Link>
-                      <p className="text-white/70 text-sm mb-2">
-                        {project.description}
-                      </p>
-                      <Link
-                        href={`/projects/${project.slug}`}
-                        className="text-[#c5eb02] font-bold text-sm hover:text-[#c5eb02]/80"
-                      >
-                        View Project →
-                      </Link>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </section>
-        )}
+        {/* Case study: the project picked in the panel, or this service's
+            own. The only project display on the page — no card grid. */}
+        {caseStudy && <ProjectCaseStudy project={caseStudy} />}
 
         {/* Quote Form */}
         <div id="quote">
@@ -246,34 +170,6 @@ export default async function ServiceDetailPage({ params }: Props) {
 
         <Process />
         <AccreditationsSection />
-
-        {/* Other Services */}
-        <section className="py-12 lg:py-24 border-t border-[#c5eb02]">
-          <div className="mx-auto max-w-6xl px-6">
-            <h3 className="text-[1.25rem] md:text-[1.5rem] font-bold leading-[1.3] text-white mb-8">
-              Other Services
-            </h3>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {otherServices.map((other) => (
-                <Link
-                  key={other.slug}
-                  href={`/services/${other.slug}`}
-                  className="group p-6 rounded-xl bg-white/5 border border-white/10 hover:border-[#c5eb02] hover:bg-white/10 transition-all"
-                >
-                  <h4 className="text-lg font-bold text-white mb-2 group-hover:text-[#c5eb02] transition-colors">
-                    {other.title}
-                  </h4>
-                  <p className="text-white/70 text-sm mb-4">
-                    {other.description}
-                  </p>
-                  <span className="text-[#c5eb02] font-bold text-sm">
-                    Learn More →
-                  </span>
-                </Link>
-              ))}
-            </div>
-          </div>
-        </section>
       </main>
 
       <Footer />

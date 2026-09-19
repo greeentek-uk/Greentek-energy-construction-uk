@@ -42,8 +42,14 @@ const SERVICE_ICONS: Record<string, LucideIcon> = {
   "commercial-planned-maintenance": Wrench,
 };
 
+/**
+ * The service slug is the last path segment, whether the card links to
+ * `/services/loft-insulation` or to `/locations/cardiff/loft-insulation` —
+ * matching on a `/services/` prefix meant every card on a location page fell
+ * through to the default icon.
+ */
 function iconFor(href: string): LucideIcon {
-  const slug = href.replace(/^\/services\//, "").replace(/\/$/, "");
+  const slug = href.split("?")[0].split("/").filter(Boolean).pop() ?? "";
   return SERVICE_ICONS[slug] ?? Wrench;
 }
 

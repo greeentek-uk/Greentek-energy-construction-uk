@@ -5,6 +5,7 @@ import { CheckCircle2, ShieldCheck, Wrench } from "lucide-react";
 import { useEffect, useState } from "react";
 import type { LucideIcon } from "lucide-react";
 import type { StatsContent } from "@/data/pageContent";
+import { parseStat, type ParsedStat } from "@/lib/stats";
 
 
 // Icons stay code-owned, zipped by index against the fetched items.
@@ -13,34 +14,45 @@ const STAT_ICONS: LucideIcon[] = [Wrench, ShieldCheck, CheckCircle2];
 type Stat = StatsContent["items"][number] & { icon: LucideIcon };
 
 function CountUp({
-  target,
-  suffix = "",
+  stat,
   visible,
 }: {
-  target: number;
-  suffix?: string;
+  stat: ParsedStat;
   visible: boolean;
 }) {
+  const { target, decimals, grouped, prefix, suffix } = stat;
+  // Starts at 0 on the server and in the browser alike, so hydration matches.
   const [count, setCount] = useState(0);
+
   useEffect(() => {
     if (!visible) return;
-    let start = 0;
-    const duration = 2000;
-    const step = Math.ceil(target / (duration / 16));
-    const timer = setInterval(() => {
-      start += step;
-      if (start >= target) {
-        setCount(target);
-        clearInterval(timer);
-      } else {
-        setCount(start);
-      }
-    }, 16);
-    return () => clearInterval(timer);
+    // Reduced motion: zero duration, so the first frame lands on the real
+    // figure — no animation, but still set from a frame callback, not
+    // synchronously in the effect.
+    const duration = window.matchMedia("(prefers-reduced-motion: reduce)").matches ? 0 : 2000;
+    const start = performance.now();
+    let frame = 0;
+    const tick = (now: number) => {
+      const t = duration === 0 ? 1 : Math.min(1, (now - start) / duration);
+      // Ease out, so it slows into the final figure rather than stopping dead.
+      setCount(target * (1 - Math.pow(1 - t, 3)));
+      if (t < 1) frame = requestAnimationFrame(tick);
+    };
+    frame = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(frame);
   }, [visible, target]);
+
+  const shown = grouped
+    ? count.toLocaleString("en-GB", {
+        minimumFractionDigits: decimals,
+        maximumFractionDigits: decimals,
+      })
+    : count.toFixed(decimals);
+
   return (
     <span>
-      {count}
+      {prefix}
+      {shown}
       {suffix}
     </span>
   );
@@ -50,10 +62,7 @@ function StatCard({ stat, delay }: { stat: Stat; delay: number }) {
   const [fadeRef, fadeVisible] = useFadeIn(delay);
   const Icon = stat.icon;
 
-  const numericMatch = stat.value.match(/(\d+(\.\d+)?)/);
-  const target = numericMatch ? parseFloat(numericMatch[0]) : null;
-  const suffix = numericMatch ? stat.value.replace(numericMatch[0], "") : "";
-  const isDecimal = numericMatch ? numericMatch[0].includes(".") : false;
+  const parsed = parseStat(stat.value);
 
   return (
     <div
@@ -69,22 +78,7 @@ function StatCard({ stat, delay }: { stat: Stat; delay: number }) {
 
         <div className="min-w-0">
           <div className="text-3xl sm:text-5xl font-bold text-white leading-none">
-            {target !== null ? (
-              isDecimal ? (
-                <span>
-                  {(fadeVisible ? target : 0).toFixed(1)}
-                  {suffix}
-                </span>
-              ) : (
-                <CountUp
-                  target={target}
-                  suffix={suffix}
-                  visible={fadeVisible}
-                />
-              )
-            ) : (
-              stat.value
-            )}
+            {parsed ? <CountUp stat={parsed} visible={fadeVisible} /> : stat.value}
           </div>
           <p className="mt-1.5 text-xs sm:text-sm font-semibold uppercase text-[#c5eb02]">
             {stat.label}
@@ -109,10 +103,15 @@ export default function StatsClient({ items }: StatsContent) {
 
   return (
     <section className="py-10 md:py-20 lg:py-24">
-      <div className="mx-auto max-w-7xl px-3 py-3 rounded-xl grid grid-cols-1 md:grid-cols-3 gap-3 bg-[#101314]">
-        {stats.map((stat, i) => (
-          <StatCard key={stat.label} stat={stat} delay={i * 100} />
-        ))}
+      {/* The tray sits inside the shared container rather than being it, so
+          it keeps the same side margins as every other section on a phone
+          instead of running to the screen edge. */}
+      <div className="site-container">
+        <div className="px-3 py-3 rounded-xl grid grid-cols-1 md:grid-cols-3 gap-3 bg-[#101314]">
+          {stats.map((stat, i) => (
+            <StatCard key={stat.label} stat={stat} delay={i * 100} />
+          ))}
+        </div>
       </div>
     </section>
   );

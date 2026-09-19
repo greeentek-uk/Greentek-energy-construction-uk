@@ -16,6 +16,7 @@ const navItems = [
   { href: "/admin/page-content", label: "Page Content" },
   { href: "/admin/pages", label: "Pages" },
   { href: "/admin/menus", label: "Menus" },
+  { href: "/admin/footer-cta", label: "Footer CTA" },
   { href: "/admin/blog", label: "Blog Posts" },
   { href: "/admin/services", label: "Services" },
   { href: "/admin/projects", label: "Projects" },

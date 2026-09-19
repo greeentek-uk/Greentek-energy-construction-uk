@@ -41,60 +41,48 @@ export default function FinancePage() {
 
       <main className="flex-1">
         {/* Hero */}
-        <section className="py-12 md:py-20 border-b border-[#c5eb02]">
-          <div className="mx-auto max-w-4xl px-6 text-center">
-            <p className="text-[10px] md:text-[16px] font-semibold uppercase mb-6 bg-[#28282C] text-[#c5eb02] rounded-2xl px-3 py-1 w-fit mx-auto">
-              Finance
-            </p>
-            <h1 className="text-[2rem] md:text-[3.5rem] font-bold leading-[1.15] text-white mb-6">
-              Spread the cost with{" "}
-              <span className="text-[#c5eb02]">flexible finance</span>
-            </h1>
-            <p className="text-lg md:text-xl text-white/70 leading-relaxed font-medium max-w-2xl mx-auto mb-10">
-              At Greentek Energy Ltd, we understand that customers may prefer
-              to pay with finance, so we&apos;ve partnered with established
-              credit brokers, Ideal4Finance, to enable you to spread the cost
-              with monthly payments.
-            </p>
+        <section className="relative bg-[url('/images/footer/footer-bg.webp')] bg-cover overflow-hidden">
+          <div className="bg-black/70 pt-20 py-14">
+            <div className="mx-auto max-w-4xl px-6 text-center">
+              <p className="text-[10px] md:text-[16px] font-semibold uppercase mb-6 bg-[#28282C] text-[#c5eb02] rounded-2xl px-3 py-1 w-fit mx-auto">
+                Finance
+              </p>
+              <h1 className="text-[2rem] md:text-[3.5rem] font-bold leading-[1.15] text-white mb-6">
+                Spread the cost with{" "}
+                <span className="text-[#c5eb02]">flexible finance</span>
+              </h1>
+              <p className="text-lg md:text-xl text-white/80 leading-relaxed font-medium max-w-2xl mx-auto mb-10">
+                At Greentek Energy Ltd, we understand that customers may prefer
+                to pay with finance, so we&apos;ve partnered with established
+                credit brokers, Ideal4Finance, to enable you to spread the cost
+                with monthly payments.
+              </p>
 
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <a
-                href={APPLY_URL}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center justify-center px-6 md:px-8 py-4 rounded-full bg-[#c5eb02] text-black text-sm font-bold hover:bg-[#c5eb02]/80 transition-all shadow-xl shadow-zinc-900/10"
-              >
-                Apply Now
-                <ArrowRight className="ml-2 h-4 w-4" />
-              </a>
-              <a
-                href="#calculator"
-                className="inline-flex items-center justify-center gap-2 px-6 md:px-8 py-4 rounded-full border border-white/30 text-white text-sm font-bold hover:border-[#c5eb02] hover:text-[#c5eb02] transition-all"
-              >
-                <Calculator className="w-4 h-4" />
-                Calculate Repayments
-              </a>
+              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <a
+                  href={APPLY_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center justify-center px-6 md:px-8 py-4 rounded-full bg-[#c5eb02] text-black text-sm font-bold hover:bg-[#c5eb02]/80 transition-all shadow-xl shadow-zinc-900/10"
+                >
+                  Apply Now
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </a>
+                <a
+                  href="#calculator"
+                  className="inline-flex items-center justify-center gap-2 px-6 md:px-8 py-4 rounded-full border border-white/30 text-white text-sm font-bold hover:border-[#c5eb02] hover:text-[#c5eb02] transition-all"
+                >
+                  <Calculator className="w-4 h-4" />
+                  Calculate Repayments
+                </a>
+              </div>
             </div>
           </div>
         </section>
 
-        {/* Calculator */}
-        <section id="calculator" className="py-12 lg:py-24 scroll-mt-24">
-          <div className="mx-auto max-w-2xl px-6">
-            <h2 className="text-[1.625rem] md:text-[2.5rem] font-bold leading-[1.2] text-white mb-4 text-center">
-              Calculate your repayments
-            </h2>
-            <p className="text-white/70 text-lg mb-8 max-w-xl mx-auto text-center">
-              Enter a purchase price to see estimated monthly repayments
-              across our available finance options.
-            </p>
-            <FinanceCalculator />
-          </div>
-        </section>
-
         {/* Options */}
-        <section className="py-12 lg:py-24">
-          <div className="mx-auto max-w-4xl px-6">
+        <section className="py-10 lg:py-16">
+          <div className="site-container">
             <h2 className="text-[1.625rem] md:text-[2.5rem] font-bold leading-[1.2] text-white mb-8">
               Your finance options
             </h2>
@@ -121,7 +109,7 @@ export default function FinancePage() {
               A deposit might be payable, and we will agree this before you
               begin your application.
             </p>
-            <p className="text-white/70 leading-relaxed">
+            <p className="site-prose text-white/70 leading-relaxed">
               Ideal4Finance help thousands of people secure finance for their
               purchases. They use only reputable lenders and are
               Trustpilot-rated &lsquo;Excellent&rsquo;. You can apply online
@@ -134,8 +122,8 @@ export default function FinancePage() {
         </section>
 
         {/* Representative example */}
-        <section className="py-12 lg:py-24 border-t border-[#c5eb02]">
-          <div className="mx-auto max-w-4xl px-6">
+        <section className="py-10 lg:py-16">
+          <div className="site-container">
             <h2 className="text-[1.625rem] md:text-[2.5rem] font-bold leading-[1.2] text-white mb-4">
               Representative example
             </h2>
@@ -143,7 +131,7 @@ export default function FinancePage() {
               Here is a representative example of a £5,000 purchase made over
               5 years with a 25% deposit:
             </p>
-            <div className="rounded-xl bg-white/5 border border-white/10 overflow-hidden">
+            <div className="site-prose rounded-xl bg-white/5 border border-white/10 overflow-hidden">
               {EXAMPLE_ROWS.map((row, idx) => (
                 <div
                   key={row.label}
@@ -163,9 +151,28 @@ export default function FinancePage() {
           </div>
         </section>
 
+        {/* Calculator */}
+        <section id="calculator" className="py-10 lg:py-16 scroll-mt-24">
+          {/* A centred widget, so it keeps its own narrow width inside the
+              shared container — centred content has no edge to misalign. */}
+          <div className="site-container">
+            <div className="mx-auto max-w-2xl">
+              <h2 className="text-[1.625rem] md:text-[2.5rem] font-bold leading-[1.2] text-white mb-4 text-center">
+                Calculate your repayments
+              </h2>
+              <p className="text-white/70 text-lg mb-8 max-w-xl mx-auto text-center">
+                Enter a purchase price to see estimated monthly repayments
+                across our available finance options.
+              </p>
+              <FinanceCalculator />
+            </div>
+          </div>
+        </section>
+
         {/* Risk warning + disclaimer */}
-        <section className="py-12 lg:py-24 border-t border-[#c5eb02]">
-          <div className="mx-auto max-w-4xl px-6 space-y-6">
+        <section className="py-10 lg:py-16">
+          <div className="site-container">
+            <div className="site-prose space-y-6">
             <div className="flex gap-4 rounded-xl bg-white/5 border border-white/10 px-6 py-5">
               <ShieldAlert className="h-6 w-6 flex-shrink-0 text-[#c5eb02]" />
               <p className="text-white/70 text-sm leading-relaxed">
@@ -205,6 +212,7 @@ export default function FinancePage() {
               always provisional and will depend upon your personal
               circumstances, the loan amount and the term.
             </p>
+            </div>
           </div>
         </section>
       </main>

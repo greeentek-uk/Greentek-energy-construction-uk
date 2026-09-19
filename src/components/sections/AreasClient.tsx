@@ -10,16 +10,19 @@ export default function AreasClient({
   subheading,
   largeArea,
   smallAreas,
-  tickerItems: uniqueTickerItems,
+  tickerLinks: uniqueTickerLinks,
   tickerLabel,
   ctaLabel,
-}: AreasContent) {
+}: AreasContent & {
+  /** Ticker names resolved to a page by the server component (see resolveAreaHref). */
+  tickerLinks: { name: string; href: string }[];
+}) {
   // Duplicate the list so the marquee loops seamlessly
-  const tickerItems = [...uniqueTickerItems, ...uniqueTickerItems];
+  const tickerLinks = [...uniqueTickerLinks, ...uniqueTickerLinks];
 
   return (
     <section className="py-10 md:py-20 lg:py-24">
-      <div className="mx-auto max-w-7xl px-4">
+      <div className="site-container">
         {/* Header row */}
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6 mb-8">
           <div className="w-full mb-4 ">
@@ -102,17 +105,31 @@ export default function AreasClient({
             </p>
           </div>
 
-          <div className="relative flex-1 overflow-hidden h-full">
+          <div className="relative flex-1 overflow-hidden motion-reduce:overflow-x-auto h-full">
+            {/* Pauses on hover and keyboard focus — the names are links now,
+                and you can't click something that keeps moving. */}
             <div className="absolute inset-0 flex items-center animate-marquee whitespace-nowrap">
-              {tickerItems.map((city, i) => (
-                <span
-                  key={`${city}-${i}`}
-                  className="flex items-center text-white/80 text-sm font-semibold px-4"
-                >
-                  {city}
-                  <span className="w-1.5 h-1.5 rounded-full bg-[#C5EB02] ml-4" />
-                </span>
-              ))}
+              {tickerLinks.map((area, i) => {
+                // The second copy exists only for the visual loop — hidden
+                // from screen readers and the tab order so each is announced once.
+                const duplicate = i >= uniqueTickerLinks.length;
+                return (
+                  <span
+                    key={`${area.name}-${i}`}
+                    className="flex items-center text-sm font-semibold px-4"
+                    aria-hidden={duplicate || undefined}
+                  >
+                    <Link
+                      href={area.href}
+                      tabIndex={duplicate ? -1 : undefined}
+                      className="text-white/80 underline-offset-4 transition-colors hover:text-[#c5eb02] hover:underline focus-visible:text-[#c5eb02] focus-visible:underline"
+                    >
+                      {area.name}
+                    </Link>
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#C5EB02] ml-4" />
+                  </span>
+                );
+              })}
             </div>
           </div>
         </div>
@@ -139,6 +156,15 @@ export default function AreasClient({
         .animate-marquee {
           animation: marquee 30s linear infinite;
           width: max-content;
+        }
+        .animate-marquee:hover,
+        .animate-marquee:focus-within {
+          animation-play-state: paused;
+        }
+        @media (prefers-reduced-motion: reduce) {
+          .animate-marquee {
+            animation: none;
+          }
         }
       `}</style>
     </section>

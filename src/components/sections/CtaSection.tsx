@@ -188,7 +188,8 @@ export default function CtaSection({
 
   return (
     <section className="py-12 md:py-16 lg:py-24">
-      <div className="relative mx-auto max-w-7xl bg-[url('/images/form-bg.avif')] rounded-xl bg-cover bg-center overflow-hidden">
+      <div className="site-container">
+      <div className="relative bg-[url('/images/form-bg.avif')] rounded-xl bg-cover bg-center overflow-hidden">
         <div className="absolute inset-0 bg-black/70 rounded-xl" />
         <div className="relative z-10 grid lg:grid-cols-12 gap-10 p-6 sm:p-10 md:p-14">
           {/* Left: copy + checklist + contact */}
@@ -485,6 +486,7 @@ export default function CtaSection({
             </form>
           </div>
         </div>
+      </div>
       </div>
     </section>
   );

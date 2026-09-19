@@ -18,6 +18,8 @@ pnpm preflight            # env-var audit before deploying
 pnpm db:indexes           # idempotent; run after deploy
 pnpm seed:page-content    # required or public pages throw (see getPageContent)
 pnpm seed:service-location-content
+pnpm seed:service-seo-content  # problem sections + service/combo FAQs + homepage FAQ draft.
+                               # DRY RUN unless --write; only fills empty fields
 pnpm migrate              # one-off src/data/*.json → Mongo
 ```
 
@@ -92,7 +94,15 @@ a generated `llms.txt`, internal-link *suggestions* (never auto-inserted, by des
 **Lead capture.** Two forms post to `/api/quote-request`: the 4-step hero form
 (`HeroQuoteForm.tsx`, job → property/budget → photos → contact last) and the full contact form
 (`CtaSection.tsx`); `source` distinguishes them. Enquiries get a sequential number from a Mongo
-counter. Photos go **straight from the phone to Cloudinary** via a signed upload
+counter.
+
+`HeroQuoteForm` takes an optional `fixedService` — on a page about one service the project-type
+switch and service dropdown are replaced by a read-only confirmation, and step 1 becomes postcode
+only. `PageQuoteHero` (+ `PageQuoteHeroClient`) wraps that form in the homepage hero's layout and
+is used by `/services/[slug]`, `/locations/[locationSlug]` and `/locations/[loc]/[svc]`, with
+`FinanceBanner` immediately below it on all three. The Trustpilot figures and the form's
+heading/subheading are read from the `home-hero` block, so one panel screen drives the badge on
+all 77 pages. Hero background is `heroImage || image` on the service/location record. Photos go **straight from the phone to Cloudinary** via a signed upload
 (`/api/quote-upload`) — folder, formats and a `c_limit,w_2000,q_auto:good,f_jpg` transform are all
 inside the signature, so the browser can't widen them. Caps at three levels (per enquiry, per IP
 per window, per day). Photos from forms that were never sent are swept opportunistically on later
@@ -115,6 +125,20 @@ doesn't exist with a custom loader). Delivery settings (quality, `f_auto`, max w
 are admin-controlled and pushed into module state by `ImageDeliveryProvider` on both server and
 client so srcSets match. `lib/mediaUsage.ts` answers "which images still have no alt text".
 
+**Service pages** (`/services/[slug]`) run: hero → finance banner → `ProblemSection`
+(`service.problem`, editable in the service form; also shown on every location + service page) →
+What's Included → content → stats → `ProjectCaseStudy` → FAQs + quote form → process →
+accreditations. The case study is `service.caseStudyProject` (picked in the panel) or else the
+service's first linked project — **never an unrelated fallback**, so a service with neither shows
+none. There is no project card grid and no "Other Services" section, by the owner's decision.
+
+**Footer CTA** (heading, text, two buttons) is editable at Admin → Footer CTA: a default plus
+per-path overrides, where a path ending `/*` covers a section and the most specific match wins
+(`lib/footerCta.ts`). It is resolved **in the browser** via `usePathname` (`FooterCta.tsx`)
+because the footer is on every statically generated page; reading the path on the server would
+make all of them dynamic. Button links can be a URL, or WhatsApp / call built from the company
+phone.
+
 **Other.** Version history (5 snapshots per doc, count-capped, restore is itself snapshotted so it
 can be undone). 404 logger feeding the redirects screen. Finance page + calculator (Ideal4Finance).
 OpenWidget chat. WhatsApp/phone floating actions.
@@ -125,6 +149,19 @@ OpenWidget chat. WhatsApp/phone floating actions.
   tried and failed. Match that; don't strip them.
 - `@/*` → `src/*`. Strict TypeScript.
 - Brand colour is `#c5eb02` on near-black (`#101314` panels).
+- **Widths: every section's content goes in `site-container`** (defined in `globals.css`:
+  `max-w-7xl`, side padding 1.25/1.5/2rem). Never put `px-*` on a `<section>` that wraps one —
+  side padding lives only in the container, and doubling it is what made edges drift. Long-form
+  text inside uses `site-prose` (56rem, left-aligned, not centred, so it shares the grid's left
+  edge). Centred compositions (hero intro copy, the finance calculator) may keep their own
+  `max-w-* mx-auto` inside the container.
+  **Exempt, by the owner's explicit decision — do not "fix" these:** every hero (homepage,
+  `PageQuoteHero`, and the about/contact/blog/finance/article title heroes keep their original
+  `px-5 sm:px-15` / `max-w-*` widths) and the testimonials marquee (full-bleed).
+- **Never `overflow-x: hidden` on an ancestor of page content** — use `overflow-x: clip`.
+  `hidden` makes the element a scroll container, which silently disables every `position: sticky`
+  inside it. That is what had broken both the sticky header and the Process section's pinned
+  heading (fixed 2026-09-19 in `globals.css` and `layout.tsx`).
 - Admin rich text is sanitized **on write** (`lib/richText.ts`), never at render.
 - Shared option lists (`lib/quoteForm.ts`, `lib/reviewSources.ts`) exist so the public form and the
   admin form can't drift apart. Add values there, not inline.
@@ -139,6 +176,24 @@ OpenWidget chat. WhatsApp/phone floating actions.
   1. `/images/brands/swip.png` 404s on `/about` and in the media library. The file isn't in
      `public/images/brands/`; the reference lives in the **`brands` pageContent block in Mongo**,
      not in the repo, so fix it in the admin panel (or re-add the asset), not in code.
-  2. The hero heading wraps to 3 lines instead of 2 on both desktop and mobile.
+  2. The hero heading wraps past 2 lines on desktop and mobile. **Cause is content, not layout**:
+     the `home-hero` block's `headingLine2` was edited to ~60 characters ("Renewable Energy
+     Installers across the West Midlands & Wales"); the hero is designed for two short lines.
+     Fix by shortening it in Page Content → Home Hero, not by shrinking the font.
 - `docs/client-brief.md`, `docs/site1-content-map.md` and `docs/site1-qa-checklist.md` are empty
-  placeholders. `README.md` still describes the original scaffold and is badly out of date.
+  placeholders. `README.md` was rewritten on 2026-09-19 and is current.
+- 2026-09-19: `pnpm seed:service-seo-content --write` **was run** at the owner's instruction —
+  11 problem sections, 11 service FAQ sets, 66 location + service FAQ sets, and the homepage FAQ
+  (published). FAQs were verified live after a cache refresh. Problem sections are in the database
+  but only render once this session's code changes are **deployed** — the live build predates
+  `ProblemSection`. Re-running the seed is safe: it skips anything already filled.
+- Only 4 of 11 services have a project (solar, heat pumps, external wall insulation, full home
+  renovation); the other 7 show no case study until one is picked in the panel.
+- 2026-09-19: 301 added in the redirects table, `/services/complete-heating-system-upgrades` →
+  `/services/heating-system-upgrades` (the old URL was derived from the service *title*, which
+  differs from its slug). Verified live.
+- Playwright's bundled browser isn't installed on the dev machine; run e2e with
+  `PW_CHROMIUM_PATH=/usr/bin/chromium-browser pnpm test:e2e`. On 2026-09-19 `site.spec` +
+  `pages.spec` gave 227 passed / 2 failed (both the hero heading above). `links`, `admin`,
+  `hero-form`, `consent`, `tracking` and `api` specs were not re-run after the site-container and
+  PageQuoteHero changes; `hero-form.spec.ts` covers only the homepage form instance.

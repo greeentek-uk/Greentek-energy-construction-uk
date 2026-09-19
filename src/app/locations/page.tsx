@@ -38,7 +38,7 @@ export default async function LocationsPage() {
         </section>
 
         <section className="py-12 lg:py-24">
-          <div className="mx-auto max-w-6xl px-4">
+          <div className="site-container">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8">
               {locations.map((location) => (
                 <Link

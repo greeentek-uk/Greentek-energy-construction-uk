@@ -52,15 +52,25 @@ export default function LocationForm({ initial }: { initial?: Location }) {
           />
         </div>
       </div>
-      <ImageUploadField
-        name="image"
-        label="Image"
-        defaultValue={initial?.image}
-        required
-        altName="imageAlt"
-        altDefaultValue={initial?.imageAlt}
-        altFallback={initial?.name}
-      />
+      <div className="grid sm:grid-cols-2 gap-4">
+        <ImageUploadField
+          name="image"
+          label="Image"
+          defaultValue={initial?.image}
+          required
+          altName="imageAlt"
+          altDefaultValue={initial?.imageAlt}
+          altFallback={initial?.name}
+        />
+        <ImageUploadField
+          name="heroImage"
+          label="Hero Background (optional — falls back to Image)"
+          defaultValue={initial?.heroImage}
+          altName="heroImageAlt"
+          altDefaultValue={initial?.heroImageAlt}
+          altFallback={initial?.imageAlt || initial?.name}
+        />
+      </div>
       <div>
         <label className="block text-xs font-semibold text-white/70 mb-1">
           Tagline

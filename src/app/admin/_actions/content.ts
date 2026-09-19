@@ -21,7 +21,7 @@ import {
   getLocationBySlug,
 } from "@/lib/db/locations";
 import { updateSettings } from "@/lib/db/settings";
-import type { Service, Project, Location } from "@/data/site";
+import type { Service, Project, Location, ProblemSection } from "@/data/site";
 import { parseContentBlocks } from "./contentBlocks";
 import { parseFaqs } from "./faqs";
 
@@ -64,6 +64,26 @@ async function revalidateLocationRoutes(slug: string) {
   await revalidate("/sitemap.xml");
 }
 
+/**
+ * The service's problem section, or null when its heading or every card is
+ * blank — null rather than a half-empty object, so clearing the heading in the
+ * panel reliably hides the section.
+ */
+function readProblemSection(formData: FormData): ProblemSection | null {
+  const text = (name: string) => String(formData.get(name) || "").trim();
+  const cards = [0, 1, 2, 3]
+    .map((i) => ({ title: text(`problemCardTitle_${i}`), body: text(`problemCardBody_${i}`) }))
+    .filter((card) => card.title);
+  const heading = text("problemHeading");
+  if (!heading || cards.length === 0) return null;
+  return {
+    heading,
+    intro: String(formData.get("problemIntro") || "").trim(),
+    cards,
+    ctaLabel: text("problemCta") || "Get a free survey",
+  };
+}
+
 function readServiceFields(formData: FormData) {
   return {
     title: String(formData.get("title") || "").trim(),
@@ -71,12 +91,16 @@ function readServiceFields(formData: FormData) {
     description: String(formData.get("description") || "").trim(),
     image: String(formData.get("image") || "").trim(),
     imageAlt: String(formData.get("imageAlt") || "").trim(),
+    heroImage: String(formData.get("heroImage") || "").trim(),
+    heroImageAlt: String(formData.get("heroImageAlt") || "").trim(),
     formCategory: String(formData.get("formCategory") || "").trim(),
     highlights: splitLines(String(formData.get("highlights") || "")),
     metaTitle: String(formData.get("metaTitle") || "").trim(),
     metaDescription: String(formData.get("metaDescription") || "").trim(),
     content: parseContentBlocks(formData),
     faqs: parseFaqs(formData),
+    problem: readProblemSection(formData),
+    caseStudyProject: String(formData.get("caseStudyProject") || "").trim(),
   };
 }
 
@@ -224,6 +248,8 @@ function readLocationFields(formData: FormData) {
     region: String(formData.get("region") || "").trim(),
     image: String(formData.get("image") || "").trim(),
     imageAlt: String(formData.get("imageAlt") || "").trim(),
+    heroImage: String(formData.get("heroImage") || "").trim(),
+    heroImageAlt: String(formData.get("heroImageAlt") || "").trim(),
     tagline: String(formData.get("tagline") || "").trim(),
     blurb: String(formData.get("blurb") || "").trim(),
     nearbyAreas: splitCommas(String(formData.get("nearbyAreas") || "")),
