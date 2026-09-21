@@ -9,9 +9,12 @@ import PageQuoteHero from "@/components/sections/PageQuoteHero";
 import FinanceBanner from "@/components/sections/FinanceBanner";
 import ProblemSection from "@/components/sections/ProblemSection";
 import Stats from "@/components/sections/Stats";
+import Testimonials from "@/components/sections/Testimonials";
+import Process from "@/components/sections/Process";
+import ProjectCaseStudy from "@/components/sections/ProjectCaseStudy";
+import ServicePricingSection from "@/components/sections/ServicePricingSection";
 import CtaSection from "@/components/sections/CtaSection";
 import AccreditationsSection from "@/components/sections/AccreditationsSection";
-import BeforeAfterSlider from "@/components/ui/BeforeAfterSlider";
 import { withSeoOverride } from "@/lib/seo";
 import { buildLocalizedServiceJsonLd, SITE_URL } from "@/lib/structuredData";
 import { getLocationServiceContentByKeys } from "@/lib/db/locationServiceContent";
@@ -82,9 +85,11 @@ export default async function LocationServicePage({ params }: Props) {
     notFound();
   }
 
-  const relatedProjects = siteConfig.projects.filter(
-    (p) => p.service === service.slug,
-  );
+  // Same rule as the service page: the project picked in the panel, else this
+  // service's own. Never an unrelated job dressed up as a case study.
+  const caseStudy =
+    siteConfig.projects.find((p) => p.slug === service.caseStudyProject) ??
+    siteConfig.projects.find((p) => p.service === service.slug);
 
   const otherServicesHere = siteConfig.services
     .filter((s) => s.slug !== service.slug)
@@ -147,12 +152,12 @@ export default async function LocationServicePage({ params }: Props) {
 
         <FinanceBanner />
 
-        {/* The reader's problem, named before the page describes the fix.
+        {/* 2 — The reader's problem and who this is for, named before the page
             Service-level content, so a location + service page shows its
             service's block. */}
         <ProblemSection content={service.problem} />
 
-        {/* Highlights */}
+        {/* 3 — What the service includes, plus the nearby towns covered */}
         <section className="py-10 lg:py-16">
           <div className="site-container">
             <h2 className="text-[1.625rem] md:text-[2.5rem] font-bold leading-[1.2] text-white mb-8">
@@ -206,62 +211,22 @@ export default async function LocationServicePage({ params }: Props) {
           </div>
         </section>
 
+        {/* 4 — Proof: a real job, the numbers, and customers by name. */}
+        {caseStudy && <ProjectCaseStudy project={caseStudy} />}
         <Stats />
+        <Testimonials />
 
-        {/* Related Projects */}
-        {relatedProjects.length > 0 && (
-          <section className="py-10 lg:py-16">
-            <div className="site-container">
-              <h3 className="text-[1.25rem] md:text-[1.5rem] font-bold leading-[1.3] text-white mb-2">
-                {service.shortName} Work
-              </h3>
-              <p className="text-white/60 text-sm mb-8">
-                Examples of completed {service.shortName.toLowerCase()} work
-                from our in-house team.
-              </p>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8">
-                {relatedProjects.map((project) => (
-                  <div key={project.slug}>
-                    <BeforeAfterSlider
-                      before={project.before}
-                      after={project.after}
-                      title={project.title}
-                      beforeAlt={project.beforeAlt}
-                      afterAlt={project.afterAlt}
-                      className="h-72"
-                    />
-                    <div className="pt-4">
-                      <Link
-                        href={`/projects/${project.slug}`}
-                        className="group"
-                      >
-                        <h4 className="text-lg font-bold text-white mb-1 group-hover:text-[#c5eb02] transition-colors">
-                          {project.title}
-                        </h4>
-                      </Link>
-                      <p className="text-white/70 text-sm">
-                        {project.description}
-                      </p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </section>
-        )}
+        {/* 5 — How we work */}
+        <Process />
 
-        {/* Quote form */}
-        <div id="quote">
-          <FaqSection faqs={override?.faqs} />
-          <CtaSection
-            eyebrow="Free Local Quote"
-            heading={`Get a Free ${service.shortName} Quote in ${location.name}`}
-            description={`Tell us about your ${service.shortName.toLowerCase()} project in ${location.name} and we'll come back within one business day with a straight answer, a plan and a real quote.`}
-            defaultService={service.formCategory}
-          />
-        </div>
-
+        {/* 6 — Credentials */}
         <AccreditationsSection />
+
+        {/* 7 — What it costs. Service-level content, no figures. */}
+        <ServicePricingSection content={service.pricing} />
+
+        {/* 8 — FAQs for this service in this area, also emitted as FAQPage schema. */}
+        <FaqSection faqs={override?.faqs} />
 
         {/* Other services in this location */}
         <section className="py-10 lg:py-16">
@@ -301,6 +266,16 @@ export default async function LocationServicePage({ params }: Props) {
             </div>
           </div>
         </section>
+
+        {/* 9 — Final CTA. #quote is the target every button on the page uses. */}
+        <div id="quote">
+          <CtaSection
+            eyebrow="Free Local Quote"
+            heading={`Get a Free ${service.shortName} Quote in ${location.name}`}
+            description={`Tell us about your ${service.shortName.toLowerCase()} project in ${location.name} and we'll come back within one business day with a straight answer, a plan and a real quote.`}
+            defaultService={service.formCategory}
+          />
+        </div>
       </main>
 
       <Footer />
