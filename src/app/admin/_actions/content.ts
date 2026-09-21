@@ -26,6 +26,7 @@ import type {
   Project,
   Location,
   ProblemSection,
+  ProjectReview,
   ServicePricing,
 } from "@/data/site";
 import { parseContentBlocks } from "./contentBlocks";
@@ -193,7 +194,22 @@ function readProjectFields(formData: FormData) {
   const galleryAlt = formData.getAll("galleryAlt").map((v) => String(v).trim());
   const overview = splitLines(String(formData.get("overview") || ""));
 
+  const reviewQuote = String(formData.get("reviewQuote") || "").trim();
+  const reviewName = String(formData.get("reviewName") || "").trim();
+  // Null rather than a half-empty object, so clearing the quote hides the section.
+  const review: ProjectReview | null = reviewQuote
+    ? {
+        quote: reviewQuote,
+        name: reviewName || "Greentek customer",
+        role: String(formData.get("reviewRole") || "").trim(),
+        rating: Number(formData.get("reviewRating") || 0),
+      }
+    : null;
+
   return {
+    review,
+    content: parseContentBlocks(formData),
+    faqs: parseFaqs(formData),
     category: String(formData.get("category") || "").trim(),
     service: String(formData.get("service") || "").trim(),
     title: String(formData.get("title") || "").trim(),

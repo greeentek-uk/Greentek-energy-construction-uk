@@ -21,7 +21,7 @@ export default function ProjectCaseStudy({ project }: { project: Project }) {
     <section className="py-10 lg:py-16">
       <div className="site-container">
         <div className="grid items-center gap-6 rounded-xl bg-[#101314] p-3 lg:grid-cols-12 lg:gap-10">
-          <div className="lg:col-span-7">
+          <div className="lg:col-span-5">
             <BeforeAfterSlider
               before={project.before}
               after={project.after}
@@ -29,15 +29,14 @@ export default function ProjectCaseStudy({ project }: { project: Project }) {
               beforeAlt={project.beforeAlt}
               afterAlt={project.afterAlt}
               labels={{ before: "Before Greentek", after: "After Greentek" }}
-              sizes="(min-width: 1024px) 720px, 100vw"
-              className="h-80 md:h-[28rem]"
+              sizes="(min-width: 1024px) 480px, 100vw"
             />
             <p className="mt-3 text-center text-xs font-medium text-white/50">
               Drag the slider to compare
             </p>
           </div>
 
-          <div className="px-3 pb-5 lg:col-span-5 lg:px-2 lg:py-6">
+          <div className="px-3 pb-5 lg:col-span-7 lg:px-2 lg:py-6">
             <p className="mb-5 w-fit rounded-2xl bg-[#28282C] px-3 py-1 text-[10px] font-semibold uppercase text-[#c5eb02] md:text-[14px]">
               Case study
             </p>

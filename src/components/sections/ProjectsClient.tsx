@@ -73,7 +73,7 @@ function GalleryCard({
     >
       <div
         ref={containerRef}
-        className="relative aspect-[4/5] max-h-[400px] w-full select-none touch-none overflow-hidden rounded-xl cursor-ew-resize"
+        className="relative aspect-[4/5] w-full select-none touch-none overflow-hidden rounded-xl cursor-ew-resize"
         onPointerDown={handlePointerDown}
         onPointerMove={handlePointerMove}
         onPointerUp={handlePointerUp}

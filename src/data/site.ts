@@ -82,6 +82,22 @@ export interface Project {
   /** Alt text per gallery image, positionally matched to `gallery`. */
   galleryAlt?: string[];
   overview?: string[];
+  /** The property owner's own words about this job. Null when cleared. */
+  review?: ProjectReview | null;
+  /** Long-form body copy, the same block editor the services use. */
+  content?: ContentBlock[];
+  /** Page-specific FAQs, rendered and marked up as FAQPage schema. */
+  faqs?: FaqItem[];
+}
+
+/** What the customer said about one project, added in the panel. */
+export interface ProjectReview {
+  quote: string;
+  name: string;
+  /** "Homeowner, Solihull" — optional context under the name. */
+  role?: string;
+  /** 1–5. Zero or missing hides the stars. */
+  rating?: number;
 }
 
 export interface Location {

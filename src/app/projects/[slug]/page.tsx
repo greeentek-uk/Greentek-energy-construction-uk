@@ -6,6 +6,18 @@ import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import { getCurrentSiteConfig } from "@/lib/cms";
 import BeforeAfterSlider from "@/components/ui/BeforeAfterSlider";
+import PageQuoteHero from "@/components/sections/PageQuoteHero";
+import FinanceBanner from "@/components/sections/FinanceBanner";
+import ProblemSection from "@/components/sections/ProblemSection";
+import ServicePricingSection from "@/components/sections/ServicePricingSection";
+import ProjectOwnerReview from "@/components/sections/ProjectOwnerReview";
+import Stats from "@/components/sections/Stats";
+import Testimonials from "@/components/sections/Testimonials";
+import Process from "@/components/sections/Process";
+import AccreditationsSection from "@/components/sections/AccreditationsSection";
+import ContentBlocks from "@/components/ui/ContentBlocks";
+import CtaSection from "@/components/sections/CtaSection";
+import FaqSection from "@/components/site/FaqSection";
 import { withSeoOverride } from "@/lib/seo";
 import PageSchema from "@/components/site/PageSchema";
 import Breadcrumbs from "@/components/site/Breadcrumbs";
@@ -72,27 +84,28 @@ export default async function ProjectDetailPage({ params }: Props) {
       <Header />
 
       <main className="flex-1">
-        {/* Hero Section */}
-        <section className="py-12 md:py-20 border-b border-[#c5eb02]">
-          <div className="mx-auto max-w-4xl px-6">
-            <Link
-              href="/projects"
-              className="inline-flex items-center gap-2 text-[#c5eb02] font-bold text-sm mb-6 hover:text-[#c5eb02]/80"
-            >
-              ← All Projects
-            </Link>
+        {/* 1 — Same hero as the service pages: the finished job behind the
+            copy and the quote form, with the service already chosen. */}
+        <PageQuoteHero
+          image={project.after || project.before}
+          imageAlt={project.afterAlt || `${project.title} — after`}
+          heading={project.title}
+          body={project.description}
+          source={`Project page — ${project.title}`}
+          {...(relatedService
+            ? {
+                fixedService: {
+                  value: relatedService.formCategory,
+                  label: relatedService.title,
+                },
+              }
+            : {})}
+        />
 
-            <h1 className="text-[2rem] md:text-[3.5rem] font-bold leading-[1.15] text-white mb-6">
-              {project.title}
-            </h1>
-            <p className="text-lg md:text-xl text-white/70 leading-relaxed font-medium max-w-3xl">
-              {project.description}
-            </p>
-          </div>
-        </section>
-
+        {/* 2 — The before and after, then the write-up. The photos are the
+            point of a case study, so they come straight after the hero. */}
         {/* Before / After Slider */}
-        <section className="py-12 lg:py-24">
+        <section className="py-10 lg:py-16">
           <div className="site-container">
             <BeforeAfterSlider
               before={project.before}
@@ -100,8 +113,8 @@ export default async function ProjectDetailPage({ params }: Props) {
               title={project.title}
               beforeAlt={project.beforeAlt}
               afterAlt={project.afterAlt}
-              sizes="(min-width: 1280px) 1100px, 100vw"
-              className="h-80 md:h-125"
+              sizes="(min-width: 768px) 576px, 100vw"
+              className="aspect-[4/5] mx-auto max-w-xl"
             />
             <p className="text-center text-white/50 text-sm mt-4 font-medium">
               Drag the slider to compare before and after
@@ -109,11 +122,11 @@ export default async function ProjectDetailPage({ params }: Props) {
           </div>
         </section>
 
-        {/* About This Project */}
+        {/* 3 — About this project: the write-up, scope and gallery */}
         {(project.overview?.length ||
           project.gallery?.length ||
           relatedService) && (
-          <section className="pb-12 lg:pb-24">
+          <section className="pb-10 lg:pb-16">
             <div className="site-container">
               {project.overview && project.overview.length > 0 && (
                 <>
@@ -195,8 +208,42 @@ export default async function ProjectDetailPage({ params }: Props) {
           </section>
         )}
 
+        {/* 3b — Finance strip */}
+        <FinanceBanner />
+
+        {/* 4 — The problem this kind of job solves, from the linked service. */}
+        <ProblemSection content={relatedService?.problem} />
+
+        {/* 5 — Long-form body copy, for the SEO team to expand. */}
+        {project.content && project.content.length > 0 && (
+          <section className="pb-10 lg:pb-16">
+            <div className="site-container">
+              <ContentBlocks blocks={project.content} />
+            </div>
+          </section>
+        )}
+
+        {/* 6 — Proof: the owner's words, the numbers, the reviews. */}
+        {/* Owner review — the customer whose property is in the photos. */}
+        <ProjectOwnerReview review={project.review} />
+
+        <Stats />
+        <Testimonials />
+
+        {/* 7 — How we work */}
+        <Process />
+
+        {/* 8 — Credentials */}
+        <AccreditationsSection />
+
+        {/* 9 — What it costs, from the linked service. No figures. */}
+        <ServicePricingSection content={relatedService?.pricing} />
+
+        {/* 10 — FAQs, also emitted as FAQPage schema by the component. */}
+        <FaqSection faqs={project.faqs} />
+
         {/* CTA */}
-        <section className="pb-12 lg:pb-24">
+        <section className="pb-10 lg:pb-16">
           <div className="site-container">
             <div className="p-8 md:p-12 bg-white/5 rounded-xl border border-[#c5eb02]">
               {relatedService ? (
@@ -249,7 +296,7 @@ export default async function ProjectDetailPage({ params }: Props) {
         </section>
 
         {/* Other Projects */}
-        <section className="py-12 lg:py-24 border-t border-[#c5eb02]">
+        <section className="py-10 lg:py-16">
           <div className="site-container">
             <h3 className="text-[1.25rem] md:text-[1.5rem] font-bold leading-[1.3] text-white mb-8">
               More Projects
@@ -278,6 +325,16 @@ export default async function ProjectDetailPage({ params }: Props) {
             </div>
           </div>
         </section>
+        {/* 11 — More projects above, then the final CTA. #quote is the
+            target every button on the page uses. */}
+        <div id="quote">
+          <CtaSection
+            eyebrow="Free Quote"
+            heading="Want results like this at your place?"
+            description="Tell us about your property and we'll come back within one business day with a straight answer, a plan and a real quote."
+            {...(relatedService ? { defaultService: relatedService.formCategory } : {})}
+          />
+        </div>
       </main>
 
       <Footer />

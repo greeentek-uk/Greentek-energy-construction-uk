@@ -13,6 +13,12 @@ interface BeforeAfterSliderProps {
   afterAlt?: string;
   /** Width this slider actually occupies, so Cloudinary is asked for that size. */
   sizes?: string;
+  /**
+   * Defaults to the site-wide project image ratio. Override the width around
+   * it rather than this, so one uploaded photo is cropped identically on every
+   * page — it used to be 4/5 on the cards, 1.6:1 in the case study and 2.4:1
+   * on the project page, so a photo framed for one was cut badly on the others.
+   */
   className?: string;
   /** Badge wording; the case study says "Before Greentek" / "After Greentek". */
   labels?: { before: string; after: string };
@@ -25,7 +31,7 @@ export default function BeforeAfterSlider({
   beforeAlt,
   afterAlt,
   sizes = "(min-width: 768px) 50vw, 100vw",
-  className = "h-100",
+  className = "aspect-[4/5]",
   labels = { before: "Before", after: "After" },
 }: BeforeAfterSliderProps) {
   const containerRef = useRef<HTMLDivElement>(null);

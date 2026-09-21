@@ -17,9 +17,20 @@ export default async function FinanceBanner() {
 
   return (
     <section className="py-2 md:py-4 bg-[#101314]">
-      <div className="site-container flex items-center justify-center gap-4 text-center">
+      {/*
+        One horizontal line at every width, phone included.
+
+        Each column used to wrap independently, so on a phone the strip became
+        three narrow stacks of three or four words. Nothing wraps now: the type
+        and logo step down instead, and below `sm` the link gives way to its
+        arrow — the whole strip is the link, so it stays one clear tap target.
+      */}
+      <Link
+        href={content.linkHref || "/finance"}
+        className="site-container group flex items-center justify-center gap-2 sm:gap-4"
+      >
         {content.heading && (
-          <p className="text-md font-semibold text-white md:text-xl text-balance">
+          <p className="whitespace-nowrap text-[11px] font-semibold leading-tight text-white sm:text-base md:text-xl">
             {content.heading}
           </p>
         )}
@@ -30,25 +41,20 @@ export default async function FinanceBanner() {
             width={320}
             height={90}
             sizes="200px"
-            className="h-12 w-auto object-contain md:h-14 ml-3 mr-8"
+            className="h-6 w-auto shrink-0 object-contain sm:h-10 md:h-14"
           />
         ) : (
           content.providerName && (
-            <p className="text-lg font-bold text-white md:text-xl">
+            <p className="whitespace-nowrap text-sm font-bold text-white sm:text-lg md:text-xl">
               {content.providerName}
             </p>
           )
         )}
-        {content.linkLabel && (
-          <Link
-            href={content.linkHref || "/finance"}
-            className="group mt-2 inline-flex items-center gap-2 text-sm font-semibold text-[#c5eb02] transition-colors hover:text-[#c5eb02]/80 md:text-base"
-          >
-            {content.linkLabel}
-            <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
-          </Link>
-        )}
-      </div>
+        <span className="inline-flex shrink-0 items-center gap-1.5 whitespace-nowrap text-[11px] font-semibold text-[#c5eb02] transition-colors group-hover:text-[#c5eb02]/80 sm:text-sm md:text-base">
+          <span className="hidden sm:inline">{content.linkLabel}</span>
+          <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+        </span>
+      </Link>
     </section>
   );
 }

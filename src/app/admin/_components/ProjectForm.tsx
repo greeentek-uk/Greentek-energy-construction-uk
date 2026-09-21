@@ -4,6 +4,8 @@ import type { Project, Service } from "@/data/site";
 import { saveProjectAction, createProjectAction } from "../_actions/content";
 import ImageUploadField from "./ImageUploadField";
 import MultiImageUploadField from "./MultiImageUploadField";
+import ContentBlocksEditor from "./ContentBlocksEditor";
+import FaqEditor from "./FaqEditor";
 
 export default function ProjectForm({
   initial,
@@ -124,6 +126,55 @@ export default function ProjectForm({
         altName="galleryAlt"
         altDefaultValue={initial?.galleryAlt}
       />
+      {/* Owner review — the customer whose property is in the photos above. */}
+      <div className="border-t border-white/10 pt-4 space-y-4">
+        <div>
+          <h3 className="font-bold text-white text-sm">Owner Review</h3>
+          <p className="text-xs text-white/50 mt-1">
+            What the property owner said about this job. Shown under the photos. Leave the
+            quote blank to hide the section.
+          </p>
+        </div>
+        <div>
+          <label className="block text-xs font-semibold text-white/70 mb-1">Quote</label>
+          <textarea name="reviewQuote" defaultValue={initial?.review?.quote} rows={3} className="w-full rounded-lg border border-white/15 bg-white/5 px-3 py-2 text-sm text-white placeholder:text-white/30 outline-none focus:border-[#c5eb02] focus:ring-2 focus:ring-[#c5eb02]/20 transition-all" />
+        </div>
+        <div className="grid sm:grid-cols-3 gap-4">
+          <div>
+            <label className="block text-xs font-semibold text-white/70 mb-1">Name</label>
+            <input name="reviewName" defaultValue={initial?.review?.name} className="w-full rounded-lg border border-white/15 bg-white/5 px-3 py-2 text-sm text-white placeholder:text-white/30 outline-none focus:border-[#c5eb02] focus:ring-2 focus:ring-[#c5eb02]/20 transition-all" />
+          </div>
+          <div>
+            <label className="block text-xs font-semibold text-white/70 mb-1">
+              Role or place (optional)
+            </label>
+            <input
+              name="reviewRole"
+              defaultValue={initial?.review?.role}
+              placeholder="Homeowner, Solihull"
+              className="w-full rounded-lg border border-white/15 bg-white/5 px-3 py-2 text-sm text-white placeholder:text-white/30 outline-none focus:border-[#c5eb02] focus:ring-2 focus:ring-[#c5eb02]/20 transition-all"
+            />
+          </div>
+          <div>
+            <label className="block text-xs font-semibold text-white/70 mb-1">Rating</label>
+            <select name="reviewRating" defaultValue={String(initial?.review?.rating ?? 5)} className="w-full rounded-lg border border-white/15 bg-white/5 px-3 py-2 text-sm text-white placeholder:text-white/30 outline-none focus:border-[#c5eb02] focus:ring-2 focus:ring-[#c5eb02]/20 transition-all">
+              {[5, 4, 3, 2, 1, 0].map((n) => (
+                <option key={n} value={n} className="text-black">
+                  {n === 0 ? "No stars" : `${n} star${n === 1 ? "" : "s"}`}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
+      </div>
+
+      {/* Long-form body and FAQs, the same editors the service pages use. */}
+      <div className="border-t border-white/10 pt-4">
+        <ContentBlocksEditor initial={initial?.content} />
+      </div>
+
+      <FaqEditor initial={initial?.faqs} />
+
       <button
         type="submit"
         className="rounded-lg bg-[#c5eb02] text-black text-sm font-semibold px-5 py-2.5 hover:bg-[#c5eb02]/80"
