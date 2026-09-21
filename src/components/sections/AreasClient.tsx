@@ -38,98 +38,101 @@ export default function AreasClient({
           </div>
         </div>
 
-        {/* Mosaic grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {/* Large tile — home base. Tiles are real links (they were divs with a
-              click handler), so they work with a keyboard, open in a new tab
-              and pass link value to the location pages. */}
-          <Link
-            href={largeArea.path}
-            className="group lg:row-span-2 lg:col-span-2 relative block rounded-md overflow-hidden min-h-[280px] lg:min-h-0"
-          >
-            <Image
-              src={largeArea.image}
-              alt={largeArea.imageAlt || largeArea.name}
-              fill
-              sizes="(min-width: 1024px) 860px, 100vw"
-              className="object-cover group-hover:scale-105 transition-transform duration-500"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
-            <div className="relative z-10 h-full flex flex-col justify-end p-6">
-              <h3 className="text-white text-xl md:text-2xl font-bold">
-                {largeArea.name}
-              </h3>
-              {/* Same as the group intro on Verticals: editable in the panel,
-                  but never rendered, so the copy went nowhere. */}
-              {largeArea.stat && (
-                <p className="mt-1 text-[#c5eb02] text-sm font-semibold">
-                  {largeArea.stat}
-                </p>
-              )}
-              {largeArea.note && (
-                <p className="text-white/70 text-xs mt-2 max-w-md">
-                  {largeArea.note}
-                </p>
-              )}
-            </div>
-          </Link>
-
-          {/* Small tiles */}
-          {smallAreas.map((area) => (
+        {/* Mosaic grid — the house card pattern: a #101314 tray holding the
+            tiles and the ticker, same radii and gap as the service cards. */}
+        <div className="rounded-xl bg-[#101314] p-3 space-y-3">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+            {/* Large tile — home base. Tiles are real links (they were divs with a
+                click handler), so they work with a keyboard, open in a new tab
+                and pass link value to the location pages. */}
             <Link
-              key={area.name}
-              href={area.path}
-              className="relative block rounded-md overflow-hidden min-h-[160px]"
+              href={largeArea.path}
+              className="group lg:row-span-2 lg:col-span-2 relative block rounded-2xl overflow-hidden min-h-[280px] lg:min-h-0"
             >
               <Image
-                src={area.image}
-                alt={area.imageAlt || area.name}
+                src={largeArea.image}
+                alt={largeArea.imageAlt || largeArea.name}
                 fill
-                sizes="(min-width: 1024px) 420px, (min-width: 768px) 50vw, 100vw"
-                className="object-cover"
+                sizes="(min-width: 1024px) 860px, 100vw"
+                className="object-cover group-hover:scale-105 transition-transform duration-500"
               />
-
-              <div className="absolute inset-0 bg-gradient-to-t from- 20% from-black/75 via-black/10 to-transparent" />
-              <div className="relative z-10 h-full flex flex-col justify-end p-4">
-                <h4 className="text-white text-lg font-bold">{area.name}</h4>
+              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+              <div className="relative z-10 h-full flex flex-col justify-end p-6">
+                <h3 className="text-white text-xl md:text-2xl font-bold">
+                  {largeArea.name}
+                </h3>
+                {/* Same as the group intro on Verticals: editable in the panel,
+                    but never rendered, so the copy went nowhere. */}
+                {largeArea.stat && (
+                  <p className="mt-1 text-[#c5eb02] text-sm font-semibold">
+                    {largeArea.stat}
+                  </p>
+                )}
+                {largeArea.note && (
+                  <p className="text-white/70 text-xs mt-2 max-w-md">
+                    {largeArea.note}
+                  </p>
+                )}
               </div>
             </Link>
-          ))}
-        </div>
 
-        {/* Marquee ticker */}
-        <div className="mt-4 relative flex items-center bg-zinc-900 rounded-md overflow-hidden h-16">
-          <div className="flex-shrink-0 z-10 h-full flex flex-col justify-center px-6 bg-zinc-900">
-            <p className="text-white text-sm font-semibold uppercase leading-none whitespace-nowrap">
-              {tickerLabel}
-            </p>
+            {/* Small tiles */}
+            {smallAreas.map((area) => (
+              <Link
+                key={area.name}
+                href={area.path}
+                className="relative block rounded-2xl overflow-hidden min-h-[160px]"
+              >
+                <Image
+                  src={area.image}
+                  alt={area.imageAlt || area.name}
+                  fill
+                  sizes="(min-width: 1024px) 420px, (min-width: 768px) 50vw, 100vw"
+                  className="object-cover"
+                />
+
+                <div className="absolute inset-0 bg-gradient-to-t from- 20% from-black/75 via-black/10 to-transparent" />
+                <div className="relative z-10 h-full flex flex-col justify-end p-4">
+                  <h4 className="text-white text-lg font-bold">{area.name}</h4>
+                </div>
+              </Link>
+            ))}
           </div>
 
-          <div className="relative flex-1 overflow-hidden motion-reduce:overflow-x-auto h-full">
-            {/* Pauses on hover and keyboard focus — the names are links now,
-                and you can't click something that keeps moving. */}
-            <div className="absolute inset-0 flex items-center animate-marquee whitespace-nowrap">
-              {tickerLinks.map((area, i) => {
-                // The second copy exists only for the visual loop — hidden
-                // from screen readers and the tab order so each is announced once.
-                const duplicate = i >= uniqueTickerLinks.length;
-                return (
-                  <span
-                    key={`${area.name}-${i}`}
-                    className="flex items-center text-sm font-semibold px-4"
-                    aria-hidden={duplicate || undefined}
-                  >
-                    <Link
-                      href={area.href}
-                      tabIndex={duplicate ? -1 : undefined}
-                      className="text-white/80 underline-offset-4 transition-colors hover:text-[#c5eb02] hover:underline focus-visible:text-[#c5eb02] focus-visible:underline"
+          {/* Marquee ticker */}
+          <div className="relative flex items-center bg-[#000000] rounded-2xl overflow-hidden h-16">
+            <div className="shrink-0 z-10 h-full flex flex-col justify-center px-6 bg-[#000000]">
+              <p className="text-white text-sm font-semibold uppercase leading-none whitespace-nowrap">
+                {tickerLabel}
+              </p>
+            </div>
+
+            <div className="relative flex-1 overflow-hidden motion-reduce:overflow-x-auto h-full">
+              {/* Pauses on hover and keyboard focus — the names are links now,
+                  and you can't click something that keeps moving. */}
+              <div className="absolute inset-0 flex items-center animate-marquee whitespace-nowrap">
+                {tickerLinks.map((area, i) => {
+                  // The second copy exists only for the visual loop — hidden
+                  // from screen readers and the tab order so each is announced once.
+                  const duplicate = i >= uniqueTickerLinks.length;
+                  return (
+                    <span
+                      key={`${area.name}-${i}`}
+                      className="flex items-center text-sm font-semibold px-4"
+                      aria-hidden={duplicate || undefined}
                     >
-                      {area.name}
-                    </Link>
-                    <span className="w-1.5 h-1.5 rounded-full bg-[#C5EB02] ml-4" />
-                  </span>
-                );
-              })}
+                      <Link
+                        href={area.href}
+                        tabIndex={duplicate ? -1 : undefined}
+                        className="text-white/80 underline-offset-4 transition-colors hover:text-[#c5eb02] hover:underline focus-visible:text-[#c5eb02] focus-visible:underline"
+                      >
+                        {area.name}
+                      </Link>
+                      <span className="w-1.5 h-1.5 rounded-full bg-[#C5EB02] ml-4" />
+                    </span>
+                  );
+                })}
+              </div>
             </div>
           </div>
         </div>

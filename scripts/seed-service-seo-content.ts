@@ -40,7 +40,7 @@ import { getLocations } from "../src/lib/db/locations";
 import { getAllLocationServiceContent } from "../src/lib/db/locationServiceContent";
 import { getBlockDraft, saveBlockDraft } from "../src/lib/db/pageContent";
 import { sanitizeRichText } from "../src/lib/richText";
-import type { Location, ProblemSection } from "../src/data/site";
+import type { Location, ProblemSection, ServicePricing } from "../src/data/site";
 import type { FaqItem } from "../src/data/pages";
 
 const WRITE = process.argv.includes("--write");
@@ -125,16 +125,46 @@ function coverageAnswer(area: Area, work: string): string {
 
 interface ServiceSeo {
   problem: ProblemSection;
+  pricing: ServicePricing;
   faqs: FaqItem[];
   /** Five local questions for one location + service page. */
   local: (area: Area) => FaqItem[];
 }
+
+/** Every quote carries the same promises, whatever the job. */
+const QUOTE_INCLUDES = [
+  "A free site survey, with no obligation to go ahead",
+  "A fixed price agreed in writing before any work starts",
+  "Materials, labour and making good, in one price",
+  "Our own team throughout \u2014 no subcontractors marking the job up",
+  "A written workmanship warranty on completion",
+];
+
+/** No figures anywhere, by the owner's decision: everything is quoted after a survey. */
+const PRICING_NOTE =
+  "We don't quote over the phone from a postcode \u2014 the survey is what makes the price fixed rather than an estimate that moves. Finance is available through Ideal4Finance, subject to status.";
+
+const PRICING_CTA = "Get a fixed-price quote";
 
 const FINANCE_LINK = `<a href="/finance">finance options</a>`;
 
 const CONTENT: Record<string, ServiceSeo> = {
   // ----------------------------------------------------------------- SOLAR
   "solar-pv-installations": {
+    pricing: {
+      heading: "What a solar installation costs",
+      intro:
+        "There's no single price for solar, because a system is sized to your roof and your electricity use, not sold by the panel. These are the four things that move the number.",
+      factors: [
+        { title: "System size", body: "How many panels your usage justifies, and how many the usable roof will take." },
+        { title: "Your roof", body: "Pitch, tile type, height and access, which decide the scaffolding and fixings needed." },
+        { title: "Battery storage", body: "Whether you add storage, and how much, to use more of what you generate." },
+        { title: "Electrical work", body: "Inverter choice, cable runs and any consumer unit work the install needs." },
+      ],
+      included: QUOTE_INCLUDES,
+      note: PRICING_NOTE,
+      ctaLabel: PRICING_CTA,
+    },
     problem: {
       heading: "Paying more for electricity every year, and using it mostly in daylight?",
       intro:
@@ -203,6 +233,20 @@ const CONTENT: Record<string, ServiceSeo> = {
 
   // ---------------------------------------------------------- HEAT PUMPS
   "air-source-heat-pump-installations": {
+    pricing: {
+      heading: "What a heat pump installation costs",
+      intro:
+        "A heat pump is priced from your home's heat loss, not its floor area. The survey measures that room by room, and everything else follows from it.",
+      factors: [
+        { title: "Your home's heat loss", body: "The calculated heat demand, which sets the size of the unit itself." },
+        { title: "Radiators and cylinder", body: "Which radiators need upsizing for lower flow temperatures, and the hot water cylinder." },
+        { title: "Siting and pipework", body: "Where the unit goes, and the pipe runs back to the cylinder and system." },
+        { title: "Grant eligibility", body: "The Boiler Upgrade Scheme can reduce what you pay if your property qualifies." },
+      ],
+      included: QUOTE_INCLUDES,
+      note: PRICING_NOTE,
+      ctaLabel: PRICING_CTA,
+    },
     problem: {
       heading: "Heard heat pumps don't work in UK homes?",
       intro:
@@ -271,6 +315,20 @@ const CONTENT: Record<string, ServiceSeo> = {
 
   // --------------------------------------------------------- HEATING/BOILER
   "heating-system-upgrades": {
+    pricing: {
+      heading: "What a new boiler or heating upgrade costs",
+      intro:
+        "A like-for-like boiler swap and a full system change are very different jobs. The survey establishes which yours is before any price is given.",
+      factors: [
+        { title: "Boiler type and output", body: "Combi, system or regular, sized to your hot water demand rather than guessed." },
+        { title: "Swap or system change", body: "Whether the boiler stays where it is, or the system type changes." },
+        { title: "Radiators and controls", body: "Any undersized radiators, a system flush, and the controls you want." },
+        { title: "Flue and pipework", body: "Flue routing and any gas or pipework alterations the install needs." },
+      ],
+      included: QUOTE_INCLUDES,
+      note: PRICING_NOTE,
+      ctaLabel: PRICING_CTA,
+    },
     problem: {
       heading: "A boiler that keeps breaking down, and rooms that never get warm?",
       intro:
@@ -335,6 +393,20 @@ const CONTENT: Record<string, ServiceSeo> = {
 
   // ---------------------------------------------------------- LOFT INSULATION
   "loft-insulation": {
+    pricing: {
+      heading: "What loft insulation costs",
+      intro:
+        "Loft insulation is one of the cheapest upgrades a home can have, and one of the quickest. Four things change the price.",
+      factors: [
+        { title: "Loft size", body: "The floor area to be covered, measured at survey." },
+        { title: "What's up there now", body: "Whether we top up the existing insulation or clear it out first." },
+        { title: "Access", body: "Hatch size, and how easy the loft is to work in safely." },
+        { title: "Boarding", body: "Whether you want raised boarding for storage above the new insulation." },
+      ],
+      included: QUOTE_INCLUDES,
+      note: PRICING_NOTE,
+      ctaLabel: PRICING_CTA,
+    },
     problem: {
       heading: "Heating the house, and losing the heat through the roof?",
       intro:
@@ -395,6 +467,20 @@ const CONTENT: Record<string, ServiceSeo> = {
 
   // ------------------------------------------------------ EXTERNAL WALL INS.
   "external-wall-insulation-rendering": {
+    pricing: {
+      heading: "What external wall insulation costs",
+      intro:
+        "External wall insulation is priced by the wall rather than by the house. These four factors set the number.",
+      factors: [
+        { title: "Wall area", body: "The total area to be insulated and rendered, measured at survey." },
+        { title: "Access and scaffolding", body: "Height, ground conditions and how much scaffolding the property needs." },
+        { title: "Insulation thickness", body: "The depth the walls need to reach the performance we're aiming for." },
+        { title: "Render and detailing", body: "The finish you choose, plus sills, eaves and openings, where this work is won or lost." },
+      ],
+      included: QUOTE_INCLUDES,
+      note: PRICING_NOTE,
+      ctaLabel: PRICING_CTA,
+    },
     problem: {
       heading: "Solid walls that let the heat straight out, and the damp in?",
       intro:
@@ -461,6 +547,20 @@ const CONTENT: Record<string, ServiceSeo> = {
 
   // -------------------------------------------------------- LOFT CONVERSIONS
   "loft-conversions": {
+    pricing: {
+      heading: "What a loft conversion costs",
+      intro:
+        "The type of conversion drives the price far more than the floor area does. We confirm what your roof allows before quoting.",
+      factors: [
+        { title: "Conversion type", body: "Rooflight, dormer, hip-to-gable or mansard, in rising order of cost." },
+        { title: "Structural work", body: "Steels, floor strengthening, and what the existing roof structure allows." },
+        { title: "Stairs", body: "Where a compliant staircase can go, and what it costs the floor below." },
+        { title: "Fit-out standard", body: "Whether the room includes an en-suite, and the standard of finish." },
+      ],
+      included: QUOTE_INCLUDES,
+      note: PRICING_NOTE,
+      ctaLabel: PRICING_CTA,
+    },
     problem: {
       heading: "Running out of space, but don't want to move?",
       intro:
@@ -525,6 +625,20 @@ const CONTENT: Record<string, ServiceSeo> = {
 
   // ----------------------------------------------------------------- KITCHEN
   "kitchen-renovations": {
+    pricing: {
+      heading: "What a kitchen renovation costs",
+      intro:
+        "Most of a kitchen price is the units, worktops and appliances you choose. The rest is the work behind them.",
+      factors: [
+        { title: "Size and layout", body: "The run of units, and whether the layout stays where it is." },
+        { title: "Units and worktops", body: "The range, the worktop material, and the appliances you specify." },
+        { title: "Plumbing and electrics", body: "Moving services, adding sockets, and any consumer unit work." },
+        { title: "Structural changes", body: "Removing a wall or widening an opening, if you're opening the space up." },
+      ],
+      included: QUOTE_INCLUDES,
+      note: PRICING_NOTE,
+      ctaLabel: PRICING_CTA,
+    },
     problem: {
       heading: "A kitchen that no longer works for the way you live?",
       intro:
@@ -589,6 +703,20 @@ const CONTENT: Record<string, ServiceSeo> = {
 
   // ---------------------------------------------------------------- EXTENSION
   "single-storey-extension": {
+    pricing: {
+      heading: "What a single-storey extension costs",
+      intro:
+        "An extension is priced from the ground up, literally. The survey checks what's under the plot before any figure is agreed.",
+      factors: [
+        { title: "Floor area", body: "The footprint of the extension, and the shape of the plot." },
+        { title: "Groundwork", body: "Foundation depth, drainage, and anything the ground throws up." },
+        { title: "Roof and glazing", body: "Flat or pitched, plus rooflights, bifolds or sliding doors." },
+        { title: "Internal fit-out", body: "How far the finish goes: plastering, flooring, heating, kitchen or bathroom." },
+      ],
+      included: QUOTE_INCLUDES,
+      note: PRICING_NOTE,
+      ctaLabel: PRICING_CTA,
+    },
     problem: {
       heading: "Need more space downstairs, without the upheaval of moving?",
       intro:
@@ -653,6 +781,20 @@ const CONTENT: Record<string, ServiceSeo> = {
 
   // ------------------------------------------------------------- LIVING ROOM
   "living-room-improvements": {
+    pricing: {
+      heading: "What a living room renovation costs",
+      intro:
+        "This one varies most of all, because it covers anything from a refresh to taking a wall out. The scope is agreed with you before it's priced.",
+      factors: [
+        { title: "Scope of work", body: "A decorating-led refresh, or structural changes to the room." },
+        { title: "Joinery and media walls", body: "Built-in storage, a media wall, and the cabling hidden inside it." },
+        { title: "Electrics and lighting", body: "New circuits, downlights, wall lights and controls." },
+        { title: "Finishes", body: "Flooring, plastering, mouldings and the standard of decoration." },
+      ],
+      included: QUOTE_INCLUDES,
+      note: PRICING_NOTE,
+      ctaLabel: PRICING_CTA,
+    },
     problem: {
       heading: "A living room that doesn't feel like the heart of the home?",
       intro:
@@ -713,6 +855,20 @@ const CONTENT: Record<string, ServiceSeo> = {
 
   // ------------------------------------------------------ FULL HOME RENOVATION
   "full-home-renovation": {
+    pricing: {
+      heading: "What a full renovation costs",
+      intro:
+        "A whole-property renovation is quoted from a full survey and an agreed scope, stage by stage, so you can see what each part of the work costs.",
+      factors: [
+        { title: "Property size and condition", body: "How much of the existing fabric, wiring and pipework has to be replaced." },
+        { title: "Rooms involved", body: "Which rooms are in scope, and how far each one goes." },
+        { title: "Structural work", body: "Wall removals, extensions, loft work, and anything needing steels." },
+        { title: "Standard of finish", body: "The specification you choose, which is the single biggest variable." },
+      ],
+      included: QUOTE_INCLUDES,
+      note: PRICING_NOTE,
+      ctaLabel: PRICING_CTA,
+    },
     problem: {
       heading: "The costliest renovation mistake? The right work in the wrong order.",
       intro:
@@ -777,6 +933,20 @@ const CONTENT: Record<string, ServiceSeo> = {
 
   // ---------------------------------------------------- COMMERCIAL MAINTENANCE
   "commercial-planned-maintenance": {
+    pricing: {
+      heading: "What planned maintenance costs",
+      intro:
+        "Maintenance is priced as a schedule rather than per call-out, so the cost is known in advance and spread across the year.",
+      factors: [
+        { title: "Number of sites", body: "How many premises the schedule covers, and how far apart they are." },
+        { title: "What's covered", body: "Heating, electrical, general building upkeep, or all of it." },
+        { title: "Visit frequency", body: "How often each site is inspected across the year." },
+        { title: "Access hours", body: "Whether visits need to fall outside your trading hours." },
+      ],
+      included: QUOTE_INCLUDES,
+      note: PRICING_NOTE,
+      ctaLabel: PRICING_CTA,
+    },
     problem: {
       heading: "Still paying emergency rates for problems you could have seen coming?",
       intro:
@@ -893,7 +1063,7 @@ async function run() {
   const comboByKey = new Map(combos.map((c) => [`${c.locationSlug}__${c.serviceSlug}`, c]));
   const areas = locations.map(toArea);
 
-  const plan = { problems: 0, serviceFaqs: 0, comboFaqs: 0, skipped: [] as string[] };
+  const plan = { problems: 0, pricing: 0, serviceFaqs: 0, comboFaqs: 0, skipped: [] as string[] };
 
   for (const service of services) {
     const content = CONTENT[service.slug];
@@ -902,15 +1072,18 @@ async function run() {
       continue;
     }
 
-    const updates: { problem?: ProblemSection; faqs?: FaqItem[] } = {};
+    const updates: { problem?: ProblemSection; pricing?: ServicePricing; faqs?: FaqItem[] } = {};
     if (!service.problem?.heading) updates.problem = content.problem;
     else plan.skipped.push(`service ${service.slug}: problem section already set`);
+    if (!service.pricing?.heading) updates.pricing = content.pricing;
+    else plan.skipped.push(`service ${service.slug}: pricing section already set`);
     if (!service.faqs?.length) updates.faqs = clean(content.faqs);
     else plan.skipped.push(`service ${service.slug}: FAQs already set`);
 
     if (updates.problem) plan.problems++;
+    if (updates.pricing) plan.pricing++;
     if (updates.faqs) plan.serviceFaqs++;
-    if (WRITE && (updates.problem || updates.faqs)) await updateService(service.slug, updates);
+    if (WRITE && (updates.problem || updates.pricing || updates.faqs)) await updateService(service.slug, updates);
 
     for (const area of areas) {
       const key = `${area.slug}__${service.slug}`;
@@ -941,6 +1114,7 @@ async function run() {
 
   console.log(WRITE ? "WROTE:" : "DRY RUN — nothing written. Would write:");
   console.log(`  problem sections       ${plan.problems}`);
+  console.log(`  pricing sections       ${plan.pricing}`);
   console.log(`  service FAQ sets       ${plan.serviceFaqs}`);
   console.log(`  location+service FAQs  ${plan.comboFaqs}`);
   console.log(`  homepage FAQ (draft)   ${homeDraft ? HOMEPAGE_FAQ.length + " questions" : "skipped — block not seeded"}`);

@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 import { usePathname } from "next/navigation";
-import { configureAnalytics, metaAllowed, track } from "@/lib/analytics";
+import { configureAnalytics, isAdminPath, metaAllowed, track } from "@/lib/analytics";
 import { useConsent } from "@/components/site/ConsentProvider";
 
 let lastPageView = "";
@@ -31,15 +31,20 @@ export default function AnalyticsProvider({
   const { consent } = useConsent();
   const marketing = Boolean(consent?.marketing);
 
+  const admin = isAdminPath(pathname);
+
   useEffect(() => {
     // Guards against the same page being counted twice — React runs effects
     // twice in development, and a re-render on one path isn't a new visit.
-    if (!metaAllowed() || lastPageView === pathname) return;
+    // The admin panel is never counted at all.
+    if (admin || !metaAllowed() || lastPageView === pathname) return;
     lastPageView = pathname;
     track("PageView");
-  }, [pathname, pixelId, marketing]);
+  }, [pathname, pixelId, marketing, admin]);
 
   useEffect(() => {
+    if (admin) return;
+
     // One listener for the whole document, so every phone number and email
     // link counts — including ones typed into the panel's rich text later.
     function onClick(event: MouseEvent) {
@@ -51,7 +56,7 @@ export default function AnalyticsProvider({
 
     document.addEventListener("click", onClick, true);
     return () => document.removeEventListener("click", onClick, true);
-  }, []);
+  }, [admin]);
 
   return <>{children}</>;
 }

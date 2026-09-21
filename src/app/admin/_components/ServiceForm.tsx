@@ -244,6 +244,89 @@ export default function ServiceForm({
         </div>
       </div>
 
+      {/* "What it costs" — cost transparency with no figures, by design. */}
+      <div className="border-t border-white/10 pt-4 space-y-4">
+        <div>
+          <h3 className="font-bold text-white text-sm">What It Costs Section</h3>
+          <p className="text-xs text-white/50 mt-1">
+            Answers the cost question without a price: what moves the price, and what every
+            quote covers. Appears after accreditations, before the FAQs. Leave the heading
+            blank to hide it. Don&apos;t put figures here — everything is quoted after a survey.
+          </p>
+        </div>
+        <div>
+          <label className="block text-xs font-semibold text-white/70 mb-1">Heading</label>
+          <input
+            name="pricingHeading"
+            defaultValue={initial?.pricing?.heading}
+            className="w-full rounded-lg border border-white/15 bg-white/5 px-3 py-2 text-sm text-white placeholder:text-white/30 outline-none focus:border-[#c5eb02] focus:ring-2 focus:ring-[#c5eb02]/20 transition-all"
+          />
+        </div>
+        <div>
+          <label className="block text-xs font-semibold text-white/70 mb-1">Intro</label>
+          <textarea
+            name="pricingIntro"
+            defaultValue={initial?.pricing?.intro}
+            rows={3}
+            className="w-full rounded-lg border border-white/15 bg-white/5 px-3 py-2 text-sm text-white placeholder:text-white/30 outline-none focus:border-[#c5eb02] focus:ring-2 focus:ring-[#c5eb02]/20 transition-all"
+          />
+        </div>
+        <div className="grid sm:grid-cols-2 gap-4">
+          {[0, 1, 2, 3].map((i) => (
+            <div key={i} className="rounded-lg border border-white/10 p-3 space-y-2">
+              <label className="block text-xs font-semibold text-white/70">
+                What moves the price {i + 1} — title
+              </label>
+              <input
+                name={`pricingFactorTitle_${i}`}
+                defaultValue={initial?.pricing?.factors?.[i]?.title}
+                className="w-full rounded-lg border border-white/15 bg-white/5 px-3 py-2 text-sm text-white placeholder:text-white/30 outline-none focus:border-[#c5eb02] focus:ring-2 focus:ring-[#c5eb02]/20 transition-all"
+              />
+              <label className="block text-xs font-semibold text-white/70">Text</label>
+              <textarea
+                name={`pricingFactorBody_${i}`}
+                defaultValue={initial?.pricing?.factors?.[i]?.body}
+                rows={2}
+                className="w-full rounded-lg border border-white/15 bg-white/5 px-3 py-2 text-sm text-white placeholder:text-white/30 outline-none focus:border-[#c5eb02] focus:ring-2 focus:ring-[#c5eb02]/20 transition-all"
+              />
+            </div>
+          ))}
+        </div>
+        <div>
+          <label className="block text-xs font-semibold text-white/70 mb-1">
+            Every quote includes (one per line)
+          </label>
+          <textarea
+            name="pricingIncluded"
+            defaultValue={initial?.pricing?.included?.join("\n")}
+            rows={4}
+            className="w-full rounded-lg border border-white/15 bg-white/5 px-3 py-2 text-sm text-white placeholder:text-white/30 outline-none focus:border-[#c5eb02] focus:ring-2 focus:ring-[#c5eb02]/20 transition-all"
+          />
+        </div>
+        <div className="grid sm:grid-cols-2 gap-4">
+          <div>
+            <label className="block text-xs font-semibold text-white/70 mb-1">
+              Closing note (finance, no-obligation survey…)
+            </label>
+            <textarea
+              name="pricingNote"
+              defaultValue={initial?.pricing?.note}
+              rows={2}
+              className="w-full rounded-lg border border-white/15 bg-white/5 px-3 py-2 text-sm text-white placeholder:text-white/30 outline-none focus:border-[#c5eb02] focus:ring-2 focus:ring-[#c5eb02]/20 transition-all"
+            />
+          </div>
+          <div>
+            <label className="block text-xs font-semibold text-white/70 mb-1">Button text</label>
+            <input
+              name="pricingCta"
+              defaultValue={initial?.pricing?.ctaLabel}
+              placeholder="Get a fixed-price quote"
+              className="w-full rounded-lg border border-white/15 bg-white/5 px-3 py-2 text-sm text-white placeholder:text-white/30 outline-none focus:border-[#c5eb02] focus:ring-2 focus:ring-[#c5eb02]/20 transition-all"
+            />
+          </div>
+        </div>
+      </div>
+
       <FaqEditor initial={initial?.faqs} />
 
       <button

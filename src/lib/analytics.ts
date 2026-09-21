@@ -24,6 +24,21 @@ let pixelId = "";
 let pixelNeedsConsent = false;
 let initialisedFor = "";
 
+/**
+ * The admin panel is not the public site, and nothing may track it.
+ *
+ * It shares an origin and the root layout with the public pages, so without
+ * this the panel was counted like any other page: a PageView per screen, a
+ * Contact event for any phone or email link inside it, and — worst — Clarity
+ * session recordings of someone working in the CMS. Checked here as well as in
+ * the providers because this is the one function every event passes through.
+ */
+export function isAdminPath(pathname?: string | null): boolean {
+  const path =
+    pathname ?? (typeof window === "undefined" ? "" : window.location.pathname);
+  return path === "/admin" || path.startsWith("/admin/");
+}
+
 /** Set by AnalyticsProvider during render, before any child tracks an event. */
 export function configureAnalytics(options: { pixelId: string; pixelNeedsConsent: boolean }): void {
   pixelId = options.pixelId;
@@ -102,6 +117,8 @@ export function track(
 ): string {
   const eventId = options.eventId ?? newEventId();
   if (typeof window === "undefined") return eventId;
+  // Never from the admin panel — no pixel, no GA, no Clarity, no server relay.
+  if (isAdminPath()) return eventId;
 
   // Google Analytics and Clarity only exist on the page once the visitor has
   // accepted analytics cookies, so their presence is the consent check.

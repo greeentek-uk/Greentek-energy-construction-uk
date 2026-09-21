@@ -163,6 +163,13 @@ OpenWidget chat. WhatsApp/phone floating actions.
   inside it. That is what had broken both the sticky header and the Process section's pinned
   heading (fixed 2026-09-19 in `globals.css` and `layout.tsx`).
 - Admin rich text is sanitized **on write** (`lib/richText.ts`), never at render.
+- **Nothing tracks `/admin`.** The panel shares an origin and the root layout with the public
+  site, so it was getting PageViews, Contact clicks and Clarity *session recordings* of the CMS.
+  Guarded in three places: `track()` returns early via `isAdminPath()` (`lib/analytics.ts`),
+  `AnalyticsProvider` skips the page view and the click listener, and `TrackingScripts` loads
+  neither GA, Clarity nor the panel's consent-gated snippets. Keep any new tracker behind the
+  same check. Note the root layout can't do this server-side: reading the path there would make
+  all 145 static pages dynamic.
 - Shared option lists (`lib/quoteForm.ts`, `lib/reviewSources.ts`) exist so the public form and the
   admin form can't drift apart. Add values there, not inline.
 - `lib/routes.ts` is the single enumeration of generated routes; the SEO editor and sitemap read it.

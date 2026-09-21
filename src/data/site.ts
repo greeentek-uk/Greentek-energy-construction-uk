@@ -16,6 +16,26 @@ export interface ProblemSection {
   ctaLabel: string;
 }
 
+/**
+ * "What it costs" — cost transparency without a price.
+ *
+ * Deliberately no figures: every job is quoted after a survey, and a number on
+ * the page would either be wrong or have to be hedged into uselessness. What
+ * the reader actually wants to know is what moves the price and what's always
+ * included, which is what this answers.
+ */
+export interface ServicePricing {
+  heading: string;
+  intro: string;
+  /** What changes the price on this kind of job. Up to four. */
+  factors: { title: string; body: string }[];
+  /** What every quote covers, one per line. */
+  included: string[];
+  /** Closing line — finance, no-obligation survey, fixed price. */
+  note: string;
+  ctaLabel: string;
+}
+
 export interface Service {
   slug: string;
   title: string;
@@ -37,6 +57,8 @@ export interface Service {
   faqs?: FaqItem[];
   /** Null when cleared in the panel; the section is then not rendered. */
   problem?: ProblemSection | null;
+  /** "What it costs" section. Null when cleared in the panel. */
+  pricing?: ServicePricing | null;
   /**
    * Slug of the project shown as this page's case study. Blank means
    * automatic: the first project linked to this service, or none.

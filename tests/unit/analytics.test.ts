@@ -3,7 +3,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 vi.mock("@microsoft/clarity", () => ({ default: { event: vi.fn() } }));
 import Clarity from "@microsoft/clarity";
-import { configureAnalytics, metaAllowed, track } from "@/lib/analytics";
+import { configureAnalytics, isAdminPath, metaAllowed, track } from "@/lib/analytics";
 import { writeConsent } from "@/lib/consent";
 
 type Queue = { queue: IArguments[] };
@@ -74,5 +74,48 @@ describe("track", () => {
     expect(gtag).toHaveBeenCalledWith("event", "view_service", { item_name: "Solar", item_category: "energy" });
     expect(Clarity.event).toHaveBeenCalledWith("Contact");
     expect(Clarity.event).toHaveBeenCalledTimes(1); // page and content views aren't tagged in Clarity
+  });
+});
+
+describe("the admin panel is never tracked", () => {
+  function goTo(pathname: string) {
+    window.history.replaceState({}, "", pathname);
+  }
+
+  it("recognises admin paths, and only those", () => {
+    expect(isAdminPath("/admin")).toBe(true);
+    expect(isAdminPath("/admin/blog/my-post")).toBe(true);
+    // Not a public page that merely starts with the same letters.
+    expect(isAdminPath("/administration-services")).toBe(false);
+    expect(isAdminPath("/")).toBe(false);
+    expect(isAdminPath("/services/loft-insulation")).toBe(false);
+  });
+
+  it("sends nothing at all from an admin page", () => {
+    configureAnalytics({ pixelId: "123", pixelNeedsConsent: false });
+    writeConsent({ analytics: true, marketing: true });
+    window.gtag = vi.fn();
+    (window as { clarity?: unknown }).clarity = {};
+
+    goTo("/admin/services");
+    track("PageView");
+    track("Contact", { content_name: "phone" });
+
+    // No pixel, no GA event, no Clarity tag, no server relay.
+    expect(window.fbq).toBeUndefined();
+    expect(window.gtag).not.toHaveBeenCalled();
+    expect(Clarity.event).not.toHaveBeenCalled();
+    expect(navigator.sendBeacon).not.toHaveBeenCalled();
+  });
+
+  it("still tracks the public site", () => {
+    configureAnalytics({ pixelId: "123", pixelNeedsConsent: false });
+    writeConsent({ analytics: true, marketing: true });
+
+    goTo("/services/loft-insulation");
+    track("PageView");
+
+    expect(window.fbq).toBeDefined();
+    expect(navigator.sendBeacon).toHaveBeenCalled();
   });
 });

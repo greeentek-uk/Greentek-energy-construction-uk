@@ -7,6 +7,8 @@ import PageQuoteHero from "@/components/sections/PageQuoteHero";
 import FinanceBanner from "@/components/sections/FinanceBanner";
 import ProblemSection from "@/components/sections/ProblemSection";
 import ProjectCaseStudy from "@/components/sections/ProjectCaseStudy";
+import ServicePricingSection from "@/components/sections/ServicePricingSection";
+import Testimonials from "@/components/sections/Testimonials";
 import Process from "@/components/sections/Process";
 import Stats from "@/components/sections/Stats";
 import CtaSection from "@/components/sections/CtaSection";
@@ -100,12 +102,12 @@ export default async function ServiceDetailPage({ params }: Props) {
 
         <FinanceBanner />
 
-        {/* The reader's problem, named before the page describes the fix.
-            Service-level content, so a location + service page shows its
-            service's block. */}
+        {/* 2 — The reader's problem and who this is for, named before the
+            page describes the fix. Service-level content, so a location +
+            service page shows its service's block. */}
         <ProblemSection content={service.problem} />
 
-        {/* Highlights Section */}
+        {/* 3 — What the service includes */}
         <section className="py-10 lg:py-16">
           <div className="site-container">
             <h2 className="text-[1.625rem] md:text-[2.5rem] font-bold leading-[1.2] text-white mb-8">
@@ -141,7 +143,7 @@ export default async function ServiceDetailPage({ params }: Props) {
           </div>
         </section>
 
-        {/* Long-form content */}
+        {/* 3b — Long-form body copy, for the SEO team to expand */}
         {service.content && service.content.length > 0 && (
           <section className="pb-10 lg:pb-16">
             <div className="site-container">
@@ -150,16 +152,25 @@ export default async function ServiceDetailPage({ params }: Props) {
           </section>
         )}
 
-        {/* Trust bar */}
-        <Stats />
-
-        {/* Case study: the project picked in the panel, or this service's
-            own. The only project display on the page — no card grid. */}
+        {/* 4 — Proof: a real job, the numbers behind it, and customers by name. */}
         {caseStudy && <ProjectCaseStudy project={caseStudy} />}
+        <Stats />
+        <Testimonials />
 
-        {/* Quote Form */}
+        {/* 5 — How we work */}
+        <Process />
+
+        {/* 6 — Credentials */}
+        <AccreditationsSection />
+
+        {/* 7 — What it costs. No figures: everything is quoted after a survey. */}
+        <ServicePricingSection content={service.pricing} />
+
+        {/* 8 — FAQs, also emitted as FAQPage schema by the component. */}
+        <FaqSection faqs={service.faqs} />
+
+        {/* 9 — Final CTA. #quote is the target every button on the page uses. */}
         <div id="quote">
-          <FaqSection faqs={service.faqs} />
           <CtaSection
             eyebrow="Free Quote"
             heading={`Get a Free ${service.shortName} Quote`}
@@ -167,9 +178,6 @@ export default async function ServiceDetailPage({ params }: Props) {
             defaultService={service.formCategory}
           />
         </div>
-
-        <Process />
-        <AccreditationsSection />
       </main>
 
       <Footer />

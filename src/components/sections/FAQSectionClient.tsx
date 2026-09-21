@@ -33,18 +33,21 @@ export default function FAQSectionClient({ eyebrow, heading, items }: FaqContent
             </h2>
           </div>
 
-          {/* Accordion */}
-          <div className="space-y-4">
+          {/* Accordion — the house card pattern: #000 cards in a #101314 tray,
+              as used by the service cards, stats and process sections. The
+              border was previously colourless, so it fell back to the text
+              colour and drew a near-white outline nothing else on the site has. */}
+          <div className="flex flex-col gap-3 rounded-xl bg-[#101314] p-3">
             {items.map((item, index) => (
               <div
                 key={index}
-                className="group border hover:border-[#c5eb02] rounded-xl overflow-hidden transition-all duration-300"
+                className="group rounded-2xl bg-[#000000] border border-transparent hover:border-[#c5eb02] overflow-hidden transition-all duration-300"
               >
                 <button
                   onClick={() =>
                     setOpenIndex(openIndex === index ? null : index)
                   }
-                  className="w-full flex items-center justify-between p-5 md:p-8 text-left transition-colors bg-[#101314] "
+                  className="w-full flex items-center justify-between p-5 md:p-8 text-left transition-colors"
                   aria-expanded={openIndex === index}
                 >
                   <span className="text-[1.05rem] md:text-[1.25rem] font-medium leading-[1.3] text-white pr-8">
@@ -76,7 +79,7 @@ export default function FAQSectionClient({ eyebrow, heading, items }: FaqContent
                       : "max-h-0 opacity-0"
                   }`}
                 >
-                  <div className="p-5 md:p-8 pt-0 text-white/80 leading-relaxed text-base sm:text-lg border-t border-zinc-50 bg-[#101314]">
+                  <div className="p-5 md:p-8 pt-5 md:pt-6 text-white/80 leading-relaxed text-base sm:text-lg border-t border-white/10">
                     {item.answer}
                   </div>
                 </div>

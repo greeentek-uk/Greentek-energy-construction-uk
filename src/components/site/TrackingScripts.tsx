@@ -1,9 +1,11 @@
 "use client";
 
 import { useEffect } from "react";
+import { usePathname } from "next/navigation";
 import Clarity from "@microsoft/clarity";
 import { useConsent } from "@/components/site/ConsentProvider";
 import { activateConsentedScripts } from "@/lib/consentScripts";
+import { isAdminPath } from "@/lib/analytics";
 
 let gaLoadedFor = "";
 
@@ -53,9 +55,12 @@ export default function TrackingScripts({
   const { consent } = useConsent();
   const analytics = Boolean(consent?.analytics);
   const marketing = Boolean(consent?.marketing);
+  // Nothing loads over the admin panel — not Google Analytics, not Clarity's
+  // session recording, not the panel's own consent-gated snippets.
+  const admin = isAdminPath(usePathname());
 
   useEffect(() => {
-    if (!consent) return;
+    if (admin || !consent) return;
 
     // Google Consent Mode: tells any Google tag what it may store. Defaults
     // were set from the cookie in <head>; this carries a choice made now.
@@ -75,7 +80,7 @@ export default function TrackingScripts({
     }
 
     void activateConsentedScripts({ analytics, marketing });
-  }, [consent, analytics, marketing, gaMeasurementId, clarityProjectId]);
+  }, [admin, consent, analytics, marketing, gaMeasurementId, clarityProjectId]);
 
   return null;
 }

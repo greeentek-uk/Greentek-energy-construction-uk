@@ -21,7 +21,13 @@ import {
   getLocationBySlug,
 } from "@/lib/db/locations";
 import { updateSettings } from "@/lib/db/settings";
-import type { Service, Project, Location, ProblemSection } from "@/data/site";
+import type {
+  Service,
+  Project,
+  Location,
+  ProblemSection,
+  ServicePricing,
+} from "@/data/site";
 import { parseContentBlocks } from "./contentBlocks";
 import { parseFaqs } from "./faqs";
 
@@ -84,6 +90,23 @@ function readProblemSection(formData: FormData): ProblemSection | null {
   };
 }
 
+/** The "What it costs" section, or null when the heading is blank. */
+function readPricingSection(formData: FormData): ServicePricing | null {
+  const text = (name: string) => String(formData.get(name) || "").trim();
+  const heading = text("pricingHeading");
+  if (!heading) return null;
+  return {
+    heading,
+    intro: text("pricingIntro"),
+    factors: [0, 1, 2, 3]
+      .map((i) => ({ title: text(`pricingFactorTitle_${i}`), body: text(`pricingFactorBody_${i}`) }))
+      .filter((f) => f.title),
+    included: splitLines(String(formData.get("pricingIncluded") || "")),
+    note: text("pricingNote"),
+    ctaLabel: text("pricingCta") || "Get a fixed-price quote",
+  };
+}
+
 function readServiceFields(formData: FormData) {
   return {
     title: String(formData.get("title") || "").trim(),
@@ -100,6 +123,7 @@ function readServiceFields(formData: FormData) {
     content: parseContentBlocks(formData),
     faqs: parseFaqs(formData),
     problem: readProblemSection(formData),
+    pricing: readPricingSection(formData),
     caseStudyProject: String(formData.get("caseStudyProject") || "").trim(),
   };
 }
