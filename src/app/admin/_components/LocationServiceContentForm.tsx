@@ -3,6 +3,7 @@
 import type { LocationServiceContent } from "@/data/site";
 import { saveLocationServiceContentAction } from "../_actions/locationServiceContent";
 import FaqEditor from "./FaqEditor";
+import PageSectionsEditor from "./PageSectionsEditor";
 
 export default function LocationServiceContentForm({
   locationSlug,
@@ -75,6 +76,8 @@ export default function LocationServiceContentForm({
         </div>
       </div>
       <FaqEditor initial={initial?.faqs} />
+
+      <PageSectionsEditor initial={initial?.sections} />
 
       <button
         type="submit"

@@ -12,8 +12,11 @@ import type { ProblemSection as ProblemSectionContent } from "@/data/site";
  */
 export default function ProblemSection({
   content,
+  eyebrow = "Sound familiar?",
 }: {
   content: ProblemSectionContent | null | undefined;
+  /** Reworded per page so 77 pages don't share one label. */
+  eyebrow?: string;
 }) {
   if (!content?.heading || !content.cards?.length) return null;
 
@@ -28,7 +31,7 @@ export default function ProblemSection({
         <div className="grid items-start gap-8 lg:grid-cols-12 lg:gap-12">
           <div className="lg:col-span-5">
             <p className="mb-5 w-fit rounded-2xl bg-[#28282C] px-3 py-1 text-[10px] font-semibold uppercase text-[#c5eb02] md:text-[14px]">
-              Sound familiar?
+              {eyebrow}
             </p>
             <h2
               id="problem-heading"

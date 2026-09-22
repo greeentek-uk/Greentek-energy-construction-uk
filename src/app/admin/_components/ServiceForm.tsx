@@ -5,6 +5,7 @@ import { saveServiceAction, createServiceAction } from "../_actions/content";
 import ImageUploadField from "./ImageUploadField";
 import ContentBlocksEditor from "./ContentBlocksEditor";
 import FaqEditor from "./FaqEditor";
+import PageSectionsEditor from "./PageSectionsEditor";
 
 const FORM_CATEGORIES = [
   "solar_storage",
@@ -328,6 +329,8 @@ export default function ServiceForm({
       </div>
 
       <FaqEditor initial={initial?.faqs} />
+
+      <PageSectionsEditor initial={initial?.sections} />
 
       <button
         type="submit"

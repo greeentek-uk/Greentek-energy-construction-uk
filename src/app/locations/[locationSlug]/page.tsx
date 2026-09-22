@@ -10,6 +10,7 @@ import Stats from "@/components/sections/Stats";
 import CtaSection from "@/components/sections/CtaSection";
 import AccreditationsSection from "@/components/sections/AccreditationsSection";
 import ContentBlocks from "@/components/ui/ContentBlocks";
+import { label } from "@/data/pageSections";
 import { withSeoOverride } from "@/lib/seo";
 import { buildLocationJsonLd, SITE_URL } from "@/lib/structuredData";
 import PageSchema from "@/components/site/PageSchema";
@@ -67,6 +68,8 @@ export default async function LocationDetailPage({ params }: Props) {
     href: `/locations/${location.slug}/${service.slug}`,
   }));
 
+  const sections = location.sections;
+
   const jsonLd = buildLocationJsonLd(location, siteConfig, SITE_URL);
 
   return (
@@ -108,7 +111,7 @@ export default async function LocationDetailPage({ params }: Props) {
           </div>
         </section>
 
-        <Stats />
+        <Stats override={sections?.stats} />
 
         {/* Long-form content */}
         {location.content && location.content.length > 0 && (
@@ -123,13 +126,17 @@ export default async function LocationDetailPage({ params }: Props) {
         <div id="quote">
           <FaqSection faqs={location.faqs} />
           <CtaSection
-            eyebrow="Free Local Quote"
-            heading={`Get a Free Quote in ${location.name}`}
-            description={`Tell us about your solar, heating, insulation or renovation project in ${location.name} and we'll come back within one business day with a straight answer, a plan and a real quote.`}
+            eyebrow={label(sections, "ctaEyebrow", "Free Local Quote")}
+            heading={label(sections, "ctaHeading", `Get a Free Quote in ${location.name}`)}
+            description={label(
+              sections,
+              "ctaDescription",
+              `Tell us about your solar, heating, insulation or renovation project in ${location.name} and we'll come back within one business day with a straight answer, a plan and a real quote.`,
+            )}
           />
         </div>
 
-        <AccreditationsSection />
+        <AccreditationsSection heading={sections?.labels?.accreditationsHeading} />
       </main>
 
       <Footer />

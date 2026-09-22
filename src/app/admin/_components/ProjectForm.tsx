@@ -6,6 +6,7 @@ import ImageUploadField from "./ImageUploadField";
 import MultiImageUploadField from "./MultiImageUploadField";
 import ContentBlocksEditor from "./ContentBlocksEditor";
 import FaqEditor from "./FaqEditor";
+import PageSectionsEditor from "./PageSectionsEditor";
 
 export default function ProjectForm({
   initial,
@@ -174,6 +175,8 @@ export default function ProjectForm({
       </div>
 
       <FaqEditor initial={initial?.faqs} />
+
+      <PageSectionsEditor initial={initial?.sections} />
 
       <button
         type="submit"

@@ -1,5 +1,6 @@
 import type { ContentBlock } from "./content";
 import type { FaqItem } from "./pages";
+import type { PageSectionOverrides } from "./pageSections";
 
 /**
  * A problem-agitation block: names the reader's frustration in their own terms
@@ -59,6 +60,8 @@ export interface Service {
   problem?: ProblemSection | null;
   /** "What it costs" section. Null when cleared in the panel. */
   pricing?: ServicePricing | null;
+  /** Per-page section overrides — see data/pageSections.ts. */
+  sections?: PageSectionOverrides | null;
   /**
    * Slug of the project shown as this page's case study. Blank means
    * automatic: the first project linked to this service, or none.
@@ -88,6 +91,8 @@ export interface Project {
   content?: ContentBlock[];
   /** Page-specific FAQs, rendered and marked up as FAQPage schema. */
   faqs?: FaqItem[];
+  /** Per-page section overrides — see data/pageSections.ts. */
+  sections?: PageSectionOverrides | null;
 }
 
 /** What the customer said about one project, added in the panel. */
@@ -120,6 +125,8 @@ export interface Location {
   content?: ContentBlock[];
   /** Page-specific FAQs, rendered on the page and marked up as FAQPage schema. */
   faqs?: FaqItem[];
+  /** Per-page section overrides — see data/pageSections.ts. */
+  sections?: PageSectionOverrides | null;
 }
 
 /** Per-combination overrides for a /locations/[locationSlug]/[serviceSlug] page, keyed by locationSlug+serviceSlug. Optional — a combo with no row here falls back to the templated defaults those pages already render. */
@@ -136,6 +143,8 @@ export interface LocationServiceContent {
   highlights?: string[];
   /** Combo-specific FAQs, rendered on the page and marked up as FAQPage schema. */
   faqs?: FaqItem[];
+  /** Per-page section overrides — see data/pageSections.ts. */
+  sections?: PageSectionOverrides | null;
 }
 
 export interface SiteConfig {

@@ -5,6 +5,7 @@ import { saveLocationAction, createLocationAction } from "../_actions/content";
 import ImageUploadField from "./ImageUploadField";
 import ContentBlocksEditor from "./ContentBlocksEditor";
 import FaqEditor from "./FaqEditor";
+import PageSectionsEditor from "./PageSectionsEditor";
 
 export default function LocationForm({ initial }: { initial?: Location }) {
   const isNew = !initial;
@@ -144,6 +145,8 @@ export default function LocationForm({ initial }: { initial?: Location }) {
       </div>
 
       <FaqEditor initial={initial?.faqs} />
+
+      <PageSectionsEditor initial={initial?.sections} />
 
       <button
         type="submit"

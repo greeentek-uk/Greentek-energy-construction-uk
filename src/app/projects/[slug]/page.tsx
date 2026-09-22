@@ -18,6 +18,7 @@ import AccreditationsSection from "@/components/sections/AccreditationsSection";
 import ContentBlocks from "@/components/ui/ContentBlocks";
 import CtaSection from "@/components/sections/CtaSection";
 import FaqSection from "@/components/site/FaqSection";
+import { label, type PageSectionOverrides } from "@/data/pageSections";
 import { withSeoOverride } from "@/lib/seo";
 import PageSchema from "@/components/site/PageSchema";
 import Breadcrumbs from "@/components/site/Breadcrumbs";
@@ -71,6 +72,14 @@ export default async function ProjectDetailPage({ params }: Props) {
   const relatedService = siteConfig.services.find(
     (s) => s.slug === project.service,
   );
+
+  // This project's own wording first, then the service it belongs to, then the
+  // shared defaults — so a service's steps cover its case studies too.
+  const sections: PageSectionOverrides = {
+    labels: { ...relatedService?.sections?.labels, ...project.sections?.labels },
+    process: project.sections?.process ?? relatedService?.sections?.process,
+    stats: project.sections?.stats ?? relatedService?.sections?.stats,
+  };
 
   return (
     <div className="flex flex-col min-h-screen bg-black">
@@ -212,7 +221,7 @@ export default async function ProjectDetailPage({ params }: Props) {
         <FinanceBanner />
 
         {/* 4 — The problem this kind of job solves, from the linked service. */}
-        <ProblemSection content={relatedService?.problem} />
+        <ProblemSection content={relatedService?.problem} eyebrow={sections.labels?.problemEyebrow} />
 
         {/* 5 — Long-form body copy, for the SEO team to expand. */}
         {project.content && project.content.length > 0 && (
@@ -227,17 +236,25 @@ export default async function ProjectDetailPage({ params }: Props) {
         {/* Owner review — the customer whose property is in the photos. */}
         <ProjectOwnerReview review={project.review} />
 
-        <Stats />
-        <Testimonials />
+        <Stats override={sections.stats} />
+        <Testimonials
+          eyebrow={sections.labels?.testimonialsEyebrow}
+          heading={sections.labels?.testimonialsHeading}
+          subheading={sections.labels?.testimonialsSubheading}
+        />
 
         {/* 7 — How we work */}
-        <Process />
+        <Process override={sections.process} />
 
         {/* 8 — Credentials */}
-        <AccreditationsSection />
+        <AccreditationsSection heading={sections.labels?.accreditationsHeading} />
 
         {/* 9 — What it costs, from the linked service. No figures. */}
-        <ServicePricingSection content={relatedService?.pricing} />
+        <ServicePricingSection
+          content={relatedService?.pricing}
+          eyebrow={sections.labels?.pricingEyebrow}
+          includedHeading={sections.labels?.pricingIncludedHeading}
+        />
 
         {/* 10 — FAQs, also emitted as FAQPage schema by the component. */}
         <FaqSection faqs={project.faqs} />
@@ -329,9 +346,13 @@ export default async function ProjectDetailPage({ params }: Props) {
             target every button on the page uses. */}
         <div id="quote">
           <CtaSection
-            eyebrow="Free Quote"
-            heading="Want results like this at your place?"
-            description="Tell us about your property and we'll come back within one business day with a straight answer, a plan and a real quote."
+            eyebrow={label(sections, "ctaEyebrow", "Free Quote")}
+            heading={label(sections, "ctaHeading", "Want results like this at your place?")}
+            description={label(
+              sections,
+              "ctaDescription",
+              "Tell us about your property and we'll come back within one business day with a straight answer, a plan and a real quote.",
+            )}
             {...(relatedService ? { defaultService: relatedService.formCategory } : {})}
           />
         </div>

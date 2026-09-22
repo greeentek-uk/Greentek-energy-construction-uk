@@ -12,8 +12,13 @@ import type { ServicePricing } from "@/data/site";
  */
 export default function ServicePricingSection({
   content,
+  eyebrow = "What it costs",
+  includedHeading = "Every quote includes",
 }: {
   content: ServicePricing | null | undefined;
+  /** Reworded per page. */
+  eyebrow?: string;
+  includedHeading?: string;
 }) {
   if (!content?.heading || (!content.factors?.length && !content.included?.length)) return null;
 
@@ -21,7 +26,7 @@ export default function ServicePricingSection({
     <section className="py-10 lg:py-16" aria-labelledby="pricing-heading">
       <div className="site-container">
         <p className="mb-5 w-fit rounded-2xl bg-[#28282C] px-3 py-1 text-[10px] font-semibold uppercase text-[#c5eb02] md:text-[14px]">
-          What it costs
+          {eyebrow}
         </p>
         <h2
           id="pricing-heading"
@@ -59,7 +64,7 @@ export default function ServicePricingSection({
               {content.included?.length > 0 && (
                 <>
                   <h3 className="text-lg font-semibold text-white md:text-xl">
-                    Every quote includes
+                    {includedHeading}
                   </h3>
                   <ul className="mt-4 space-y-3">
                     {content.included.map((item) => (

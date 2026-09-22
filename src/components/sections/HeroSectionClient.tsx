@@ -88,17 +88,17 @@ export default function HeroSectionClient({
               {body}
             </p>
 
-            <div className="mt-8 flex justify-center sm:justify-start gap-3">
+            <div className="mt-8 flex flex-col sm:flex-row sm:flex-wrap justify-center sm:justify-start gap-3">
               <a
                 href="tel:+443335334567"
-                className="w-fit rounded px-4 py-3 text-sm md:text-[18px] font-semibold text-black backdrop-blur-sm transition active:scale-95 bg-[#c5eb02]"
+                className="w-full sm:w-fit text-center rounded px-4 py-3 text-sm md:text-[18px] font-semibold text-black backdrop-blur-sm transition active:scale-95 bg-[#c5eb02]"
               >
                 <Phone className="inline mr-2  rounded px-1 py-1 text-black" />
                 {ctaLabel}{" "}
               </a>
               <a
                 href="https://wa.me/+443335334567"
-                className="w-fit rounded px-4 py-3 text-sm md:text-[18px] font-semibold text-black backdrop-blur-sm transition active:scale-95 bg-white"
+                className="w-full sm:w-fit text-center rounded px-4 py-3 text-sm md:text-[18px] font-semibold text-black backdrop-blur-sm transition active:scale-95 bg-white"
               >
                 <MessageSquareMore className="inline mr-2  rounded px-1 py-1 text-black" />
                 Contact on WhatsApp

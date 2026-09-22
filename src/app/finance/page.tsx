@@ -172,7 +172,9 @@ export default function FinancePage() {
         {/* Risk warning + disclaimer */}
         <section className="py-10 lg:py-16">
           <div className="site-container">
-            <div className="site-prose space-y-6">
+            {/* Centred, not left-aligned: it's the last block on the page and
+                sat off to one side under the full-width sections above it. */}
+            <div className="site-prose mx-auto space-y-6">
             <div className="flex gap-4 rounded-xl bg-white/5 border border-white/10 px-6 py-5">
               <ShieldAlert className="h-6 w-6 flex-shrink-0 text-[#c5eb02]" />
               <p className="text-white/70 text-sm leading-relaxed">

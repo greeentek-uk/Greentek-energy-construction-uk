@@ -1,8 +1,10 @@
 import { getPageContent } from "@/lib/cms";
+import type { ProcessContent } from "@/data/pageContent";
 
-export default async function Process() {
+/** `override` lets one page carry its own steps instead of the shared block. */
+export default async function Process({ override }: { override?: ProcessContent | null }) {
   const { eyebrow, headingLine1, headingLine2, subheading, steps } =
-    await getPageContent("process");
+    override?.steps?.length ? override : await getPageContent("process");
 
   return (
     <section className="bg-black py-10 md:py-20 lg:py-24">

@@ -31,6 +31,7 @@ import type {
 } from "@/data/site";
 import { parseContentBlocks } from "./contentBlocks";
 import { parseFaqs } from "./faqs";
+import { readPageSections } from "./pageSections";
 
 function splitLines(value: string): string[] {
   return value
@@ -125,6 +126,7 @@ function readServiceFields(formData: FormData) {
     faqs: parseFaqs(formData),
     problem: readProblemSection(formData),
     pricing: readPricingSection(formData),
+    sections: readPageSections(formData),
     caseStudyProject: String(formData.get("caseStudyProject") || "").trim(),
   };
 }
@@ -210,6 +212,7 @@ function readProjectFields(formData: FormData) {
     review,
     content: parseContentBlocks(formData),
     faqs: parseFaqs(formData),
+    sections: readPageSections(formData),
     category: String(formData.get("category") || "").trim(),
     service: String(formData.get("service") || "").trim(),
     title: String(formData.get("title") || "").trim(),
@@ -294,6 +297,7 @@ function readLocationFields(formData: FormData) {
     blurb: String(formData.get("blurb") || "").trim(),
     nearbyAreas: splitCommas(String(formData.get("nearbyAreas") || "")),
     isHomeBase: formData.get("isHomeBase") === "on",
+    sections: readPageSections(formData),
     metaTitle: String(formData.get("metaTitle") || "").trim(),
     metaDescription: String(formData.get("metaDescription") || "").trim(),
     content: parseContentBlocks(formData),

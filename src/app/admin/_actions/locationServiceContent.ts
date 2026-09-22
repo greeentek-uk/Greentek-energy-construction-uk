@@ -5,6 +5,7 @@ import { revalidate } from "@/lib/revalidate";
 import { upsertLocationServiceContent } from "@/lib/db/locationServiceContent";
 import type { LocationServiceContent } from "@/data/site";
 import { parseFaqs } from "./faqs";
+import { readPageSections } from "./pageSections";
 
 function splitLines(value: string): string[] {
   return value
@@ -40,6 +41,7 @@ export async function saveLocationServiceContentAction(formData: FormData): Prom
     ...(localNote ? { localNote } : {}),
     ...(highlights.length ? { highlights } : {}),
     ...(parseFaqs(formData).length ? { faqs: parseFaqs(formData) } : {}),
+    sections: readPageSections(formData),
   };
 
   try {

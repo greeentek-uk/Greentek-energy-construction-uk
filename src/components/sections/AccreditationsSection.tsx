@@ -10,7 +10,7 @@ import AccreditationStrip from "./AccreditationStrip";
  * appear. The heading still comes from this block's own `heading` field, which
  * is the one the panel already exposes for this section.
  */
-export default async function AccreditationsSection() {
+export default async function AccreditationsSection({ heading }: { heading?: string } = {}) {
   const content = await getPageContent("accreditations");
 
   return (
@@ -19,7 +19,7 @@ export default async function AccreditationsSection() {
         {/* A real h2 here: unlike the homepage, this strip is the whole
             section, so it needs to appear when navigating by heading. */}
         <AccreditationStrip
-          heading={content.heading}
+          heading={heading?.trim() || content.heading}
           logos={content.logos}
           headingAs="h2"
           headingId="accreditations-heading"

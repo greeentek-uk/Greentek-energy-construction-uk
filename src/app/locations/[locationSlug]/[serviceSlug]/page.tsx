@@ -15,6 +15,7 @@ import ProjectCaseStudy from "@/components/sections/ProjectCaseStudy";
 import ServicePricingSection from "@/components/sections/ServicePricingSection";
 import CtaSection from "@/components/sections/CtaSection";
 import AccreditationsSection from "@/components/sections/AccreditationsSection";
+import { label, type PageSectionOverrides } from "@/data/pageSections";
 import { withSeoOverride } from "@/lib/seo";
 import { buildLocalizedServiceJsonLd, SITE_URL } from "@/lib/structuredData";
 import { getLocationServiceContentByKeys } from "@/lib/db/locationServiceContent";
@@ -106,6 +107,17 @@ export default async function LocationServicePage({ params }: Props) {
   const localNoteText = override?.localNote || localIntro;
   const highlights = override?.highlights?.length ? override.highlights : service.highlights;
 
+  /**
+   * Section overrides layer: this combo's own first, then the service's, then
+   * the shared defaults. So setting a service's steps once covers its six
+   * location pages, and any one of them can still say something different.
+   */
+  const sections: PageSectionOverrides = {
+    labels: { ...service.sections?.labels, ...override?.sections?.labels },
+    process: override?.sections?.process ?? service.sections?.process,
+    stats: override?.sections?.stats ?? service.sections?.stats,
+  };
+
   const jsonLd = buildLocalizedServiceJsonLd(service, location, siteConfig, SITE_URL);
 
   return (
@@ -155,13 +167,13 @@ export default async function LocationServicePage({ params }: Props) {
         {/* 2 — The reader's problem and who this is for, named before the page
             Service-level content, so a location + service page shows its
             service's block. */}
-        <ProblemSection content={service.problem} />
+        <ProblemSection content={service.problem} eyebrow={sections.labels?.problemEyebrow} />
 
         {/* 3 — What the service includes, plus the nearby towns covered */}
         <section className="py-10 lg:py-16">
           <div className="site-container">
             <h2 className="text-[1.625rem] md:text-[2.5rem] font-bold leading-[1.2] text-white mb-8">
-              What&apos;s Included
+              {label(sections, "includedHeading", "What's Included")}
             </h2>
             <ul className="grid gap-4 md:grid-cols-2">
               {highlights.map((item, idx) => (
@@ -213,17 +225,25 @@ export default async function LocationServicePage({ params }: Props) {
 
         {/* 4 — Proof: a real job, the numbers, and customers by name. */}
         {caseStudy && <ProjectCaseStudy project={caseStudy} />}
-        <Stats />
-        <Testimonials />
+        <Stats override={sections.stats} />
+        <Testimonials
+          eyebrow={sections.labels?.testimonialsEyebrow}
+          heading={sections.labels?.testimonialsHeading}
+          subheading={sections.labels?.testimonialsSubheading}
+        />
 
         {/* 5 — How we work */}
-        <Process />
+        <Process override={sections.process} />
 
         {/* 6 — Credentials */}
-        <AccreditationsSection />
+        <AccreditationsSection heading={sections.labels?.accreditationsHeading} />
 
         {/* 7 — What it costs. Service-level content, no figures. */}
-        <ServicePricingSection content={service.pricing} />
+        <ServicePricingSection
+          content={service.pricing}
+          eyebrow={sections.labels?.pricingEyebrow}
+          includedHeading={sections.labels?.pricingIncludedHeading}
+        />
 
         {/* 8 — FAQs for this service in this area, also emitted as FAQPage schema. */}
         <FaqSection faqs={override?.faqs} />
@@ -270,9 +290,17 @@ export default async function LocationServicePage({ params }: Props) {
         {/* 9 — Final CTA. #quote is the target every button on the page uses. */}
         <div id="quote">
           <CtaSection
-            eyebrow="Free Local Quote"
-            heading={`Get a Free ${service.shortName} Quote in ${location.name}`}
-            description={`Tell us about your ${service.shortName.toLowerCase()} project in ${location.name} and we'll come back within one business day with a straight answer, a plan and a real quote.`}
+            eyebrow={label(sections, "ctaEyebrow", "Free Local Quote")}
+            heading={label(
+              sections,
+              "ctaHeading",
+              `Get a Free ${service.shortName} Quote in ${location.name}`,
+            )}
+            description={label(
+              sections,
+              "ctaDescription",
+              `Tell us about your ${service.shortName.toLowerCase()} project in ${location.name} and we'll come back within one business day with a straight answer, a plan and a real quote.`,
+            )}
             defaultService={service.formCategory}
           />
         </div>
