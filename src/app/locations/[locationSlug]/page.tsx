@@ -12,6 +12,7 @@ import AccreditationsSection from "@/components/sections/AccreditationsSection";
 import ContentBlocks from "@/components/ui/ContentBlocks";
 import { label } from "@/data/pageSections";
 import { withSeoOverride } from "@/lib/seo";
+import { getLocationServiceContentForLocation } from "@/lib/db/locationServiceContent";
 import { buildLocationJsonLd, SITE_URL } from "@/lib/structuredData";
 import PageSchema from "@/components/site/PageSchema";
 import Breadcrumbs from "@/components/site/Breadcrumbs";
@@ -61,12 +62,20 @@ export default async function LocationDetailPage({ params }: Props) {
     notFound();
   }
 
-  // Every service, pointed at its combination page for this area.
-  const serviceCards = siteConfig.services.map((service) => ({
-    title: `${service.shortName} in ${location.name}`,
-    body: service.description,
-    href: `/locations/${location.slug}/${service.slug}`,
-  }));
+  // Every service, pointed at its combination page for this area. Each card's
+  // wording is edited on that combination page, since the title is the anchor
+  // text of the link to it.
+  const comboBySlug = new Map(
+    (await getLocationServiceContentForLocation(location.slug)).map((c) => [c.serviceSlug, c]),
+  );
+  const serviceCards = siteConfig.services.map((service) => {
+    const combo = comboBySlug.get(service.slug);
+    return {
+      title: combo?.cardTitle || `${service.shortName} in ${location.name}`,
+      body: combo?.cardText || service.description,
+      href: `/locations/${location.slug}/${service.slug}`,
+    };
+  });
 
   const sections = location.sections;
 
@@ -88,9 +97,9 @@ export default async function LocationDetailPage({ params }: Props) {
         <PageQuoteHero
           image={location.heroImage || location.image}
           imageAlt={location.heroImageAlt || location.imageAlt || location.name}
-          heading="Renewable Energy & Construction in"
-          headingHighlight={location.name}
-          body={location.blurb}
+          heading={label(sections, "heroHeading", "Renewable Energy & Construction in")}
+          headingHighlight={label(sections, "heroHighlight", location.name)}
+          body={label(sections, "heroBody", location.blurb)}
           source={`Location page — ${location.name}`}
         />
 
@@ -100,11 +109,14 @@ export default async function LocationDetailPage({ params }: Props) {
         <section className="py-10 lg:py-16">
           <div className="site-container">
             <h2 className="text-[1.625rem] md:text-[2.5rem] font-bold leading-[1.2] text-white mb-4">
-              Services in {location.name}
+              {label(sections, "servicesHeading", `Services in ${location.name}`)}
             </h2>
             <p className="text-white/70 text-lg mb-10 max-w-2xl">
-              Every service below is delivered by our in-house team local to{" "}
-              {location.name} and the wider {location.region} area.
+              {label(
+                sections,
+                "servicesIntro",
+                `Every service below is delivered by our in-house team local to ${location.name} and the wider ${location.region} area.`,
+              )}
             </p>
             {/* The same card the vertical pages and the homepage use. */}
             <ServiceCardGrid services={serviceCards} />
@@ -124,7 +136,10 @@ export default async function LocationDetailPage({ params }: Props) {
 
         {/* Quote form */}
         <div id="quote">
-          <FaqSection faqs={location.faqs} />
+          <FaqSection
+            faqs={location.faqs}
+            heading={label(sections, "faqHeading", "Frequently asked questions")}
+          />
           <CtaSection
             eyebrow={label(sections, "ctaEyebrow", "Free Local Quote")}
             heading={label(sections, "ctaHeading", `Get a Free Quote in ${location.name}`)}

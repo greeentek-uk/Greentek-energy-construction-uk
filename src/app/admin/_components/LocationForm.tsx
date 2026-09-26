@@ -146,7 +146,19 @@ export default function LocationForm({ initial }: { initial?: Location }) {
 
       <FaqEditor initial={initial?.faqs} />
 
-      <PageSectionsEditor initial={initial?.sections} />
+      <PageSectionsEditor
+        initial={initial?.sections}
+        kind="location"
+        placeholders={
+          initial && {
+            heroHeading: "Renewable Energy & Construction in",
+            heroHighlight: initial.name,
+            heroBody: initial.blurb,
+            servicesHeading: `Services in ${initial.name}`,
+            ctaHeading: `Get a Free Quote in ${initial.name}`,
+          }
+        }
+      />
 
       <button
         type="submit"

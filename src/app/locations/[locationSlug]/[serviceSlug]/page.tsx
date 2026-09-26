@@ -16,7 +16,7 @@ import ServicePricingSection from "@/components/sections/ServicePricingSection";
 import CtaSection from "@/components/sections/CtaSection";
 import AccreditationsSection from "@/components/sections/AccreditationsSection";
 import ContentBlocks from "@/components/ui/ContentBlocks";
-import { label, type PageSectionOverrides } from "@/data/pageSections";
+import { caseStudyLabels, label, type PageSectionOverrides } from "@/data/pageSections";
 import { withSeoOverride } from "@/lib/seo";
 import { buildLocalizedServiceJsonLd, SITE_URL } from "@/lib/structuredData";
 import { getLocationServiceContentByKeys } from "@/lib/db/locationServiceContent";
@@ -30,6 +30,11 @@ interface Props {
     locationSlug: string;
     serviceSlug: string;
   };
+}
+
+/** Drops unset keys so they don't clobber inherited ones in a spread. */
+function stripBlank<T extends object>(obj: T): Partial<T> {
+  return Object.fromEntries(Object.entries(obj).filter(([, v]) => v)) as Partial<T>;
 }
 
 function findEntities(
@@ -92,10 +97,11 @@ export default async function LocationServicePage({ params }: Props) {
   // The project picked for this page, else the service page's rule: the one
   // picked for the service, else this service's own. Never an unrelated job
   // dressed up as a case study.
-  const caseStudy =
-    siteConfig.projects.find((p) => p.slug === override?.caseStudyProject) ??
+  const serviceCaseStudy =
     siteConfig.projects.find((p) => p.slug === service.caseStudyProject) ??
     siteConfig.projects.find((p) => p.service === service.slug);
+  const caseStudy =
+    siteConfig.projects.find((p) => p.slug === override?.caseStudyProject) ?? serviceCaseStudy;
 
   const otherServicesHere = siteConfig.services
     .filter((s) => s.slug !== service.slug)
@@ -123,7 +129,19 @@ export default async function LocationServicePage({ params }: Props) {
     stats: override?.sections?.stats ?? service.sections?.stats,
   };
 
-  const jsonLd = buildLocalizedServiceJsonLd(service, location, siteConfig, SITE_URL);
+  // The service's case study wording only carries over when this page shows
+  // the same project — otherwise it would describe a job that isn't here.
+  const ownCaseStudyLabels = caseStudyLabels(override?.sections);
+  const caseStudyWording =
+    caseStudy === serviceCaseStudy
+      ? { ...caseStudyLabels(service.sections), ...stripBlank(ownCaseStudyLabels) }
+      : ownCaseStudyLabels;
+
+  const jsonLd = {
+    ...buildLocalizedServiceJsonLd(service, location, siteConfig, SITE_URL),
+    // This page's own intro, not the service description every combo shares.
+    description: introText,
+  };
 
   return (
     <div className="flex flex-col min-h-screen bg-black">
@@ -240,7 +258,7 @@ export default async function LocationServicePage({ params }: Props) {
         )}
 
         {/* 4 — Proof: a real job, the numbers, and customers by name. */}
-        {caseStudy && <ProjectCaseStudy project={caseStudy} />}
+        {caseStudy && <ProjectCaseStudy project={caseStudy} labels={caseStudyWording} />}
         <Stats override={sections.stats} />
         <Testimonials
           eyebrow={sections.labels?.testimonialsEyebrow}
@@ -262,7 +280,10 @@ export default async function LocationServicePage({ params }: Props) {
         />
 
         {/* 8 — FAQs for this service in this area, also emitted as FAQPage schema. */}
-        <FaqSection faqs={override?.faqs} />
+        <FaqSection
+          faqs={override?.faqs}
+          heading={label(sections, "faqHeading", "Frequently asked questions")}
+        />
 
         {/* Other services in this location */}
         <section className="py-10 lg:py-16">
@@ -291,13 +312,13 @@ export default async function LocationServicePage({ params }: Props) {
                 href={`/locations/${location.slug}`}
                 className="text-[#c5eb02] font-bold text-sm hover:text-[#c5eb02]/80"
               >
-                ← All services in {location.name}
+                {override?.locationLinkLabel || `← All services in ${location.name}`}
               </Link>
               <Link
                 href={`/services/${service.slug}`}
                 className="text-[#c5eb02] font-bold text-sm hover:text-[#c5eb02]/80"
               >
-                More about {service.title} →
+                {override?.serviceLinkLabel || `More about ${service.title} →`}
               </Link>
             </div>
           </div>

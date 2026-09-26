@@ -209,7 +209,17 @@ export default function ServiceForm({
 
       <FaqEditor initial={initial?.faqs} />
 
-      <PageSectionsEditor initial={initial?.sections} />
+      <PageSectionsEditor
+        initial={initial?.sections}
+        kind="service"
+        placeholders={
+          initial && {
+            heroHeading: initial.title,
+            heroBody: initial.description,
+            ctaHeading: `Get a Free ${initial.shortName} Quote`,
+          }
+        }
+      />
 
       <button
         type="submit"

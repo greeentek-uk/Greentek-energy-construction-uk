@@ -186,19 +186,77 @@ export default function LocationServiceContentForm({
         }
       />
 
-      <div className="border-t border-white/10 pt-4">
-        <label className={label}>&quot;Other services&quot; heading</label>
-        <input
-          name="otherServicesHeading"
-          defaultValue={initial?.otherServicesHeading}
-          placeholder={`Other Services in ${location.name}`}
-          className={input}
-        />
+      <div className="border-t border-white/10 pt-4 space-y-4">
+        <h3 className="font-bold text-white text-sm">Links at the foot of the page</h3>
+        <div>
+          <label className={label}>&quot;Other services&quot; heading</label>
+          <input
+            name="otherServicesHeading"
+            defaultValue={initial?.otherServicesHeading}
+            placeholder={`Other Services in ${location.name}`}
+            className={input}
+          />
+        </div>
+        <div className="grid sm:grid-cols-2 gap-4">
+          <div>
+            <label className={label}>Link back to the location page</label>
+            <input
+              name="locationLinkLabel"
+              defaultValue={initial?.locationLinkLabel}
+              placeholder={`← All services in ${location.name}`}
+              className={input}
+            />
+          </div>
+          <div>
+            <label className={label}>Link to the service page</label>
+            <input
+              name="serviceLinkLabel"
+              defaultValue={initial?.serviceLinkLabel}
+              placeholder={`More about ${service.title} →`}
+              className={input}
+            />
+          </div>
+        </div>
+      </div>
+
+      <div className="border-t border-white/10 pt-4 space-y-4">
+        <div>
+          <h3 className="font-bold text-white text-sm">Card on the {location.name} page</h3>
+          <p className="text-xs text-white/50 mt-1">
+            How this page is listed under &quot;Services in {location.name}&quot;. The title is
+            the text of the link to this page.
+          </p>
+        </div>
+        <div>
+          <label className={label}>Card title</label>
+          <input
+            name="cardTitle"
+            defaultValue={initial?.cardTitle}
+            placeholder={`${service.shortName} in ${location.name}`}
+            className={input}
+          />
+        </div>
+        <div>
+          <label className={label}>Card text</label>
+          <textarea
+            name="cardText"
+            defaultValue={initial?.cardText}
+            placeholder={service.description}
+            rows={2}
+            className={input}
+          />
+        </div>
       </div>
 
       <FaqEditor initial={initial?.faqs} />
 
-      <PageSectionsEditor initial={initial?.sections} />
+      <PageSectionsEditor
+        initial={initial?.sections}
+        kind="locationService"
+        placeholders={{
+          ctaHeading: `Get a Free ${service.shortName} Quote in ${location.name}`,
+        }}
+      />
 
       <button
         type="submit"

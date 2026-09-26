@@ -1,4 +1,8 @@
-import type { PageSectionOverrides, SectionLabels } from "@/data/pageSections";
+import {
+  SECTION_LABEL_KEYS,
+  type PageSectionOverrides,
+  type SectionLabels,
+} from "@/data/pageSections";
 import type { ProcessContent, StatsContent } from "@/data/pageContent";
 
 /**
@@ -14,21 +18,8 @@ import type { ProcessContent, StatsContent } from "@/data/pageContent";
 export function readPageSections(formData: FormData): PageSectionOverrides | null {
   const text = (name: string) => String(formData.get(name) || "").trim();
 
-  const labelKeys: (keyof SectionLabels)[] = [
-    "problemEyebrow",
-    "includedHeading",
-    "pricingEyebrow",
-    "pricingIncludedHeading",
-    "accreditationsHeading",
-    "testimonialsEyebrow",
-    "testimonialsHeading",
-    "testimonialsSubheading",
-    "ctaEyebrow",
-    "ctaHeading",
-    "ctaDescription",
-  ];
   const labels: SectionLabels = {};
-  for (const key of labelKeys) {
+  for (const key of SECTION_LABEL_KEYS) {
     const value = text(`label_${key}`);
     if (value) labels[key] = value;
   }

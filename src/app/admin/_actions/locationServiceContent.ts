@@ -58,6 +58,10 @@ export async function saveLocationServiceContentAction(formData: FormData): Prom
     caseStudyProject: text("caseStudyProject"),
     nearbyAreasText: text("nearbyAreasText"),
     otherServicesHeading: text("otherServicesHeading"),
+    locationLinkLabel: text("locationLinkLabel"),
+    serviceLinkLabel: text("serviceLinkLabel"),
+    cardTitle: text("cardTitle"),
+    cardText: text("cardText"),
   };
 
   const entry: LocationServiceContent = {
@@ -86,6 +90,8 @@ export async function saveLocationServiceContentAction(formData: FormData): Prom
   }
 
   await revalidate(`/locations/${locationSlug}/${serviceSlug}`);
+  // The location page lists this page as a card, whose title/text live here.
+  await revalidate(`/locations/${locationSlug}`);
   await revalidate("/sitemap.xml");
   redirect(`${back}?saved=1`);
 }

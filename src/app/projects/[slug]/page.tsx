@@ -257,7 +257,10 @@ export default async function ProjectDetailPage({ params }: Props) {
         />
 
         {/* 10 — FAQs, also emitted as FAQPage schema by the component. */}
-        <FaqSection faqs={project.faqs} />
+        <FaqSection
+          faqs={project.faqs}
+          heading={label(sections, "faqHeading", "Frequently asked questions")}
+        />
 
         {/* CTA */}
         <section className="pb-10 lg:pb-16">

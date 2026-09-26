@@ -58,6 +58,7 @@ export async function restoreRevisionAction(formData: FormData): Promise<void> {
         const entry = revision.snapshot as LocationServiceContent;
         await replaceLocationServiceContent(entry);
         await revalidate(`/locations/${entry.locationSlug}/${entry.serviceSlug}`);
+        await revalidate(`/locations/${entry.locationSlug}`);
         break;
       }
       case "blogPosts":

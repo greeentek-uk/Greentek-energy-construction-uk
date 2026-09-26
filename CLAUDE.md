@@ -132,11 +132,20 @@ accreditations. The case study is `service.caseStudyProject` (picked in the pane
 service's first linked project — **never an unrelated fallback**, so a service with neither shows
 none. There is no project card grid and no "Other Services" section, by the owner's decision.
 
+**Per-page editing is the SEO person's job, by the owner's decision** — on service, location and
+location + service pages no visible wording should be fixed in code. Every heading, label, button
+and hero line goes through `SECTION_LABEL_KEYS` (`data/pageSections.ts`); `LABELS_BY_KIND` decides
+which fields each page's `PageSectionsEditor` offers, so it never shows a field the page doesn't
+render. Adding a label means adding the key there, its field in `PageSectionsEditor`, and reading
+it on the page — the unit test fails if a key is offered nowhere.
+
 **Location + service pages** (`/locations/[loc]/[svc]`, edited at Admin → Locations → Service
 content) can override, per page: meta, hero H1 (both halves), intro, local note, hero image,
 problem section, highlights, nearby-areas line, a long-form body, case study, pricing section,
-"Other services" heading, FAQs and the shared `PageSectionsEditor` labels/process/stats. Every
-field falls back to the service (or the templated default) when blank. The service's own body is
+footer links, FAQs, the shared labels/process/stats, and **their own card on the location page**
+(the card title is the internal link's anchor text). Every field falls back to the service (or
+the templated default) when blank. Labels inherit from the service, except case-study wording,
+which only carries over when the combo shows the same project as the service. The service's own body is
 never shown there, by design (it would duplicate `/services/[slug]`). Problem/pricing editors and
 readers are shared with the service form (`ServiceSectionFields.tsx`, `_actions/serviceSections.ts`).
 The admin save *replaces* the doc (`replaceLocationServiceContent`, snapshotted in Version History)

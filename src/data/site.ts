@@ -166,6 +166,16 @@ export interface LocationServiceContent {
   nearbyAreasText?: string;
   /** Replaces "Other Services in <location>". */
   otherServicesHeading?: string;
+  /** Replaces "← All services in <location>" at the foot of the page. */
+  locationLinkLabel?: string;
+  /** Replaces "More about <service title> →" at the foot of the page. */
+  serviceLinkLabel?: string;
+  /**
+   * This page's card on its location page. The title is the anchor text of the
+   * internal link to this page, which is why it's editable here.
+   */
+  cardTitle?: string;
+  cardText?: string;
   /** Per-page section overrides — see data/pageSections.ts. */
   sections?: PageSectionOverrides | null;
 }

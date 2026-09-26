@@ -14,7 +14,7 @@ import Stats from "@/components/sections/Stats";
 import CtaSection from "@/components/sections/CtaSection";
 import AccreditationsSection from "@/components/sections/AccreditationsSection";
 import ContentBlocks from "@/components/ui/ContentBlocks";
-import { label } from "@/data/pageSections";
+import { caseStudyLabels, label } from "@/data/pageSections";
 import { withSeoOverride } from "@/lib/seo";
 import { buildServiceJsonLd, SITE_URL } from "@/lib/structuredData";
 import PageSchema from "@/components/site/PageSchema";
@@ -98,8 +98,9 @@ export default async function ServiceDetailPage({ params }: Props) {
         <PageQuoteHero
           image={service.heroImage || service.image}
           imageAlt={service.heroImageAlt || service.imageAlt || service.title}
-          heading={service.title}
-          body={service.description}
+          heading={label(sections, "heroHeading", service.title)}
+          headingHighlight={sections?.labels?.heroHighlight?.trim() || undefined}
+          body={label(sections, "heroBody", service.description)}
           source={`Service page — ${service.title}`}
           fixedService={{ value: service.formCategory, label: service.title }}
         />
@@ -157,7 +158,9 @@ export default async function ServiceDetailPage({ params }: Props) {
         )}
 
         {/* 4 — Proof: a real job, the numbers behind it, and customers by name. */}
-        {caseStudy && <ProjectCaseStudy project={caseStudy} />}
+        {caseStudy && (
+          <ProjectCaseStudy project={caseStudy} labels={caseStudyLabels(sections)} />
+        )}
         <Stats override={sections?.stats} />
         <Testimonials
           eyebrow={sections?.labels?.testimonialsEyebrow}
@@ -179,7 +182,10 @@ export default async function ServiceDetailPage({ params }: Props) {
         />
 
         {/* 8 — FAQs, also emitted as FAQPage schema by the component. */}
-        <FaqSection faqs={service.faqs} />
+        <FaqSection
+          faqs={service.faqs}
+          heading={label(sections, "faqHeading", "Frequently asked questions")}
+        />
 
         {/* 9 — Final CTA. #quote is the target every button on the page uses. */}
         <div id="quote">

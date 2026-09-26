@@ -176,7 +176,7 @@ export default function ProjectForm({
 
       <FaqEditor initial={initial?.faqs} />
 
-      <PageSectionsEditor initial={initial?.sections} />
+      <PageSectionsEditor initial={initial?.sections} kind="project" />
 
       <button
         type="submit"

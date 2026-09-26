@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { label } from "@/data/pageSections";
+import { caseStudyLabels, label, LABELS_BY_KIND, SECTION_LABEL_KEYS } from "@/data/pageSections";
 import { readPageSections } from "@/app/admin/_actions/pageSections";
 
 function form(values: Record<string, string>): FormData {
@@ -78,5 +78,38 @@ describe("readPageSections", () => {
     expect(out?.stats?.items).toEqual([
       { value: "120+", label: "Solar installs", description: "Across the West Midlands." },
     ]);
+  });
+});
+
+describe("label coverage", () => {
+  it("offers every label on at least one kind of page, so none is stored but never shown", () => {
+    const offered = new Set(Object.values(LABELS_BY_KIND).flat());
+    expect(SECTION_LABEL_KEYS.filter((key) => !offered.has(key))).toEqual([]);
+  });
+
+  it("reads the hero, case study and FAQ labels back from the form", () => {
+    const out = readPageSections(
+      form({
+        label_heroHeading: "Solar panels fitted in",
+        label_caseStudyButton: "Get a result like this",
+        label_faqHeading: "Solar questions",
+      }),
+    );
+    expect(out?.labels).toEqual({
+      heroHeading: "Solar panels fitted in",
+      caseStudyButton: "Get a result like this",
+      faqHeading: "Solar questions",
+    });
+  });
+
+  it("maps case study labels into the component's shape, blanks as undefined", () => {
+    expect(caseStudyLabels({ labels: { caseStudyHeading: " A Solihull loft ", caseStudyText: "  " } }))
+      .toEqual({
+        eyebrow: undefined,
+        heading: "A Solihull loft",
+        text: "",
+        button: undefined,
+        link: undefined,
+      });
   });
 });
