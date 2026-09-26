@@ -132,6 +132,17 @@ accreditations. The case study is `service.caseStudyProject` (picked in the pane
 service's first linked project — **never an unrelated fallback**, so a service with neither shows
 none. There is no project card grid and no "Other Services" section, by the owner's decision.
 
+**Location + service pages** (`/locations/[loc]/[svc]`, edited at Admin → Locations → Service
+content) can override, per page: meta, hero H1 (both halves), intro, local note, hero image,
+problem section, highlights, nearby-areas line, a long-form body, case study, pricing section,
+"Other services" heading, FAQs and the shared `PageSectionsEditor` labels/process/stats. Every
+field falls back to the service (or the templated default) when blank. The service's own body is
+never shown there, by design (it would duplicate `/services/[slug]`). Problem/pricing editors and
+readers are shared with the service form (`ServiceSectionFields.tsx`, `_actions/serviceSections.ts`).
+The admin save *replaces* the doc (`replaceLocationServiceContent`, snapshotted in Version History)
+and deletes it when nothing is overridden; seed scripts keep the `$set` upsert so they can't wipe
+hand-written fields.
+
 **Footer CTA** (heading, text, two buttons) is editable at Admin → Footer CTA: a default plus
 per-path overrides, where a path ending `/*` covers a section and the most specific match wins
 (`lib/footerCta.ts`). It is resolved **in the browser** via `usePathname` (`FooterCta.tsx`)

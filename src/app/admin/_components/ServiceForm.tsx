@@ -6,6 +6,7 @@ import ImageUploadField from "./ImageUploadField";
 import ContentBlocksEditor from "./ContentBlocksEditor";
 import FaqEditor from "./FaqEditor";
 import PageSectionsEditor from "./PageSectionsEditor";
+import { ProblemSectionFields, PricingSectionFields } from "./ServiceSectionFields";
 
 const FORM_CATEGORIES = [
   "solar_storage",
@@ -183,150 +184,28 @@ export default function ServiceForm({
 
       {/* Problem section — shown on this service's page and on every
           location + service page for it. Leave the heading blank to hide it. */}
-      <div className="border-t border-white/10 pt-4 space-y-4">
-        <div>
-          <h3 className="font-bold text-white text-sm">Problem Section</h3>
-          <p className="text-xs text-white/50 mt-1">
+      <ProblemSectionFields
+        initial={initial?.problem}
+        help={
+          <>
             Names the reader&apos;s frustration before the page describes the fix. Appears after
-            the finance banner on this service&apos;s page and all of its location pages. Leave
-            the heading blank to hide it.
-          </p>
-        </div>
-        <div>
-          <label className="block text-xs font-semibold text-white/70 mb-1">Heading</label>
-          <input
-            name="problemHeading"
-            defaultValue={initial?.problem?.heading}
-            className="w-full rounded-lg border border-white/15 bg-white/5 px-3 py-2 text-sm text-white placeholder:text-white/30 outline-none focus:border-[#c5eb02] focus:ring-2 focus:ring-[#c5eb02]/20 transition-all"
-          />
-        </div>
-        <div>
-          <label className="block text-xs font-semibold text-white/70 mb-1">
-            Intro (leave a blank line between paragraphs)
-          </label>
-          <textarea
-            name="problemIntro"
-            defaultValue={initial?.problem?.intro}
-            rows={5}
-            className="w-full rounded-lg border border-white/15 bg-white/5 px-3 py-2 text-sm text-white placeholder:text-white/30 outline-none focus:border-[#c5eb02] focus:ring-2 focus:ring-[#c5eb02]/20 transition-all"
-          />
-        </div>
-        <div className="grid sm:grid-cols-2 gap-4">
-          {[0, 1, 2, 3].map((i) => (
-            <div key={i} className="rounded-lg border border-white/10 p-3 space-y-2">
-              <label className="block text-xs font-semibold text-white/70">
-                Card {i + 1} title
-              </label>
-              <input
-                name={`problemCardTitle_${i}`}
-                defaultValue={initial?.problem?.cards?.[i]?.title}
-                className="w-full rounded-lg border border-white/15 bg-white/5 px-3 py-2 text-sm text-white placeholder:text-white/30 outline-none focus:border-[#c5eb02] focus:ring-2 focus:ring-[#c5eb02]/20 transition-all"
-              />
-              <label className="block text-xs font-semibold text-white/70">Card {i + 1} text</label>
-              <textarea
-                name={`problemCardBody_${i}`}
-                defaultValue={initial?.problem?.cards?.[i]?.body}
-                rows={2}
-                className="w-full rounded-lg border border-white/15 bg-white/5 px-3 py-2 text-sm text-white placeholder:text-white/30 outline-none focus:border-[#c5eb02] focus:ring-2 focus:ring-[#c5eb02]/20 transition-all"
-              />
-            </div>
-          ))}
-        </div>
-        <div>
-          <label className="block text-xs font-semibold text-white/70 mb-1">
-            Button text (scrolls to the enquiry form)
-          </label>
-          <input
-            name="problemCta"
-            defaultValue={initial?.problem?.ctaLabel}
-            placeholder="Get a free survey"
-            className="w-full rounded-lg border border-white/15 bg-white/5 px-3 py-2 text-sm text-white placeholder:text-white/30 outline-none focus:border-[#c5eb02] focus:ring-2 focus:ring-[#c5eb02]/20 transition-all"
-          />
-        </div>
-      </div>
+            the finance banner on this service&apos;s page and all of its location pages (unless a
+            location page has its own). Leave the heading blank to hide it.
+          </>
+        }
+      />
 
       {/* "What it costs" — cost transparency with no figures, by design. */}
-      <div className="border-t border-white/10 pt-4 space-y-4">
-        <div>
-          <h3 className="font-bold text-white text-sm">What It Costs Section</h3>
-          <p className="text-xs text-white/50 mt-1">
+      <PricingSectionFields
+        initial={initial?.pricing}
+        help={
+          <>
             Answers the cost question without a price: what moves the price, and what every
             quote covers. Appears after accreditations, before the FAQs. Leave the heading
             blank to hide it. Don&apos;t put figures here — everything is quoted after a survey.
-          </p>
-        </div>
-        <div>
-          <label className="block text-xs font-semibold text-white/70 mb-1">Heading</label>
-          <input
-            name="pricingHeading"
-            defaultValue={initial?.pricing?.heading}
-            className="w-full rounded-lg border border-white/15 bg-white/5 px-3 py-2 text-sm text-white placeholder:text-white/30 outline-none focus:border-[#c5eb02] focus:ring-2 focus:ring-[#c5eb02]/20 transition-all"
-          />
-        </div>
-        <div>
-          <label className="block text-xs font-semibold text-white/70 mb-1">Intro</label>
-          <textarea
-            name="pricingIntro"
-            defaultValue={initial?.pricing?.intro}
-            rows={3}
-            className="w-full rounded-lg border border-white/15 bg-white/5 px-3 py-2 text-sm text-white placeholder:text-white/30 outline-none focus:border-[#c5eb02] focus:ring-2 focus:ring-[#c5eb02]/20 transition-all"
-          />
-        </div>
-        <div className="grid sm:grid-cols-2 gap-4">
-          {[0, 1, 2, 3].map((i) => (
-            <div key={i} className="rounded-lg border border-white/10 p-3 space-y-2">
-              <label className="block text-xs font-semibold text-white/70">
-                What moves the price {i + 1} — title
-              </label>
-              <input
-                name={`pricingFactorTitle_${i}`}
-                defaultValue={initial?.pricing?.factors?.[i]?.title}
-                className="w-full rounded-lg border border-white/15 bg-white/5 px-3 py-2 text-sm text-white placeholder:text-white/30 outline-none focus:border-[#c5eb02] focus:ring-2 focus:ring-[#c5eb02]/20 transition-all"
-              />
-              <label className="block text-xs font-semibold text-white/70">Text</label>
-              <textarea
-                name={`pricingFactorBody_${i}`}
-                defaultValue={initial?.pricing?.factors?.[i]?.body}
-                rows={2}
-                className="w-full rounded-lg border border-white/15 bg-white/5 px-3 py-2 text-sm text-white placeholder:text-white/30 outline-none focus:border-[#c5eb02] focus:ring-2 focus:ring-[#c5eb02]/20 transition-all"
-              />
-            </div>
-          ))}
-        </div>
-        <div>
-          <label className="block text-xs font-semibold text-white/70 mb-1">
-            Every quote includes (one per line)
-          </label>
-          <textarea
-            name="pricingIncluded"
-            defaultValue={initial?.pricing?.included?.join("\n")}
-            rows={4}
-            className="w-full rounded-lg border border-white/15 bg-white/5 px-3 py-2 text-sm text-white placeholder:text-white/30 outline-none focus:border-[#c5eb02] focus:ring-2 focus:ring-[#c5eb02]/20 transition-all"
-          />
-        </div>
-        <div className="grid sm:grid-cols-2 gap-4">
-          <div>
-            <label className="block text-xs font-semibold text-white/70 mb-1">
-              Closing note (finance, no-obligation survey…)
-            </label>
-            <textarea
-              name="pricingNote"
-              defaultValue={initial?.pricing?.note}
-              rows={2}
-              className="w-full rounded-lg border border-white/15 bg-white/5 px-3 py-2 text-sm text-white placeholder:text-white/30 outline-none focus:border-[#c5eb02] focus:ring-2 focus:ring-[#c5eb02]/20 transition-all"
-            />
-          </div>
-          <div>
-            <label className="block text-xs font-semibold text-white/70 mb-1">Button text</label>
-            <input
-              name="pricingCta"
-              defaultValue={initial?.pricing?.ctaLabel}
-              placeholder="Get a fixed-price quote"
-              className="w-full rounded-lg border border-white/15 bg-white/5 px-3 py-2 text-sm text-white placeholder:text-white/30 outline-none focus:border-[#c5eb02] focus:ring-2 focus:ring-[#c5eb02]/20 transition-all"
-            />
-          </div>
-        </div>
-      </div>
+          </>
+        }
+      />
 
       <FaqEditor initial={initial?.faqs} />
 

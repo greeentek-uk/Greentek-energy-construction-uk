@@ -15,6 +15,7 @@ import ProjectCaseStudy from "@/components/sections/ProjectCaseStudy";
 import ServicePricingSection from "@/components/sections/ServicePricingSection";
 import CtaSection from "@/components/sections/CtaSection";
 import AccreditationsSection from "@/components/sections/AccreditationsSection";
+import ContentBlocks from "@/components/ui/ContentBlocks";
 import { label, type PageSectionOverrides } from "@/data/pageSections";
 import { withSeoOverride } from "@/lib/seo";
 import { buildLocalizedServiceJsonLd, SITE_URL } from "@/lib/structuredData";
@@ -58,7 +59,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     description:
       override?.metaDescription ||
       `Professional ${service.shortName.toLowerCase()} in ${location.name}, ${location.region}. Free local survey, fixed-price quote and in-house installation team. Also covering ${location.nearbyAreas.join(", ")}.`,
-    image: service.image,
+    image: override?.heroImage || service.image,
     vars: {
       service: service.shortName,
       location: location.name,
@@ -86,18 +87,19 @@ export default async function LocationServicePage({ params }: Props) {
     notFound();
   }
 
-  // Same rule as the service page: the project picked in the panel, else this
-  // service's own. Never an unrelated job dressed up as a case study.
+  const override = await getLocationServiceContentByKeys(location.slug, service.slug);
+
+  // The project picked for this page, else the service page's rule: the one
+  // picked for the service, else this service's own. Never an unrelated job
+  // dressed up as a case study.
   const caseStudy =
+    siteConfig.projects.find((p) => p.slug === override?.caseStudyProject) ??
     siteConfig.projects.find((p) => p.slug === service.caseStudyProject) ??
     siteConfig.projects.find((p) => p.service === service.slug);
 
   const otherServicesHere = siteConfig.services
     .filter((s) => s.slug !== service.slug)
     .slice(0, 4);
-
-
-  const override = await getLocationServiceContentByKeys(location.slug, service.slug);
 
   const localIntro = location.isHomeBase
     ? `As our home base, ${location.name} gets same-week surveys and the fastest turnaround on ${service.shortName.toLowerCase()} work.`
@@ -106,6 +108,9 @@ export default async function LocationServicePage({ params }: Props) {
   const introText = override?.intro || service.description;
   const localNoteText = override?.localNote || localIntro;
   const highlights = override?.highlights?.length ? override.highlights : service.highlights;
+  // This page's own section when it has one, else the service's.
+  const problem = override?.problem ?? service.problem;
+  const pricing = override?.pricing ?? service.pricing;
 
   /**
    * Section overrides layer: this combo's own first, then the service's, then
@@ -148,14 +153,14 @@ export default async function LocationServicePage({ params }: Props) {
           copy, so keeping it would show the identical image twice in a row.
         */}
         <PageQuoteHero
-          image={service.heroImage || service.image}
+          image={override?.heroImage || service.heroImage || service.image}
           imageAlt={
-            service.heroImageAlt ||
-            service.imageAlt ||
+            (override?.heroImage && override.heroImageAlt) ||
+            (!override?.heroImage && (service.heroImageAlt || service.imageAlt)) ||
             `${service.title} in ${location.name}`
           }
-          heading={`${service.shortName} in`}
-          headingHighlight={location.name}
+          heading={override?.heroHeading || `${service.shortName} in`}
+          headingHighlight={override?.heroHighlight || location.name}
           body={introText}
           secondaryBody={localNoteText}
           source={`${service.title} in ${location.name}`}
@@ -165,9 +170,9 @@ export default async function LocationServicePage({ params }: Props) {
         <FinanceBanner />
 
         {/* 2 — The reader's problem and who this is for, named before the page
-            Service-level content, so a location + service page shows its
-            service's block. */}
-        <ProblemSection content={service.problem} eyebrow={sections.labels?.problemEyebrow} />
+            describes the fix. This page's own block if it has one, else its
+            service's. */}
+        <ProblemSection content={problem} eyebrow={sections.labels?.problemEyebrow} />
 
         {/* 3 — What the service includes, plus the nearby towns covered */}
         <section className="py-10 lg:py-16">
@@ -206,8 +211,8 @@ export default async function LocationServicePage({ params }: Props) {
             {/* Nearby areas */}
             <div className="mt-10 p-6 rounded-xl bg-white/5 border border-white/10">
               <p className="text-white/60 text-sm mb-3 font-medium">
-                We also deliver {service.shortName.toLowerCase()} work near{" "}
-                {location.name} in:
+                {override?.nearbyAreasText ||
+                  `We also deliver ${service.shortName.toLowerCase()} work near ${location.name} in:`}
               </p>
               <div className="flex flex-wrap gap-2">
                 {location.nearbyAreas.map((area) => (
@@ -222,6 +227,17 @@ export default async function LocationServicePage({ params }: Props) {
             </div>
           </div>
         </section>
+
+        {/* 3b — Long-form body for this page only. The service's own body is
+            deliberately not shown: it lives on /services/[slug], and repeating
+            it here would put the same text on seven URLs. */}
+        {override?.content && override.content.length > 0 && (
+          <section className="pb-10 lg:pb-16">
+            <div className="site-container">
+              <ContentBlocks blocks={override.content} />
+            </div>
+          </section>
+        )}
 
         {/* 4 — Proof: a real job, the numbers, and customers by name. */}
         {caseStudy && <ProjectCaseStudy project={caseStudy} />}
@@ -238,9 +254,9 @@ export default async function LocationServicePage({ params }: Props) {
         {/* 6 — Credentials */}
         <AccreditationsSection heading={sections.labels?.accreditationsHeading} />
 
-        {/* 7 — What it costs. Service-level content, no figures. */}
+        {/* 7 — What it costs, no figures. This page's own, else the service's. */}
         <ServicePricingSection
-          content={service.pricing}
+          content={pricing}
           eyebrow={sections.labels?.pricingEyebrow}
           includedHeading={sections.labels?.pricingIncludedHeading}
         />
@@ -252,7 +268,7 @@ export default async function LocationServicePage({ params }: Props) {
         <section className="py-10 lg:py-16">
           <div className="site-container">
             <h3 className="text-[1.25rem] md:text-[1.5rem] font-bold leading-[1.3] text-white mb-8">
-              Other Services in {location.name}
+              {override?.otherServicesHeading || `Other Services in ${location.name}`}
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               {otherServicesHere.map((other) => (

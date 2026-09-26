@@ -13,6 +13,7 @@ const SCOPE_LABELS: Record<string, string> = {
   services: "Service",
   locations: "Location",
   projects: "Project",
+  locationServiceContent: "Location + service page",
   pageContent: "Section",
   settings: "Settings",
 };

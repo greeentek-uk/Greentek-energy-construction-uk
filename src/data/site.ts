@@ -135,14 +135,37 @@ export interface LocationServiceContent {
   serviceSlug: string;
   metaTitle?: string;
   metaDescription?: string;
-  /** Unique paragraph replacing the reused service.description on this specific combo page. */
-  intro: string;
+  /**
+   * Unique paragraph replacing the reused service.description on this specific
+   * combo page. Optional since the other overrides arrived: a page that only
+   * wants its own hero heading shouldn't have to write an intro to get it.
+   */
+  intro?: string;
+  /** Hero H1, first part. Blank = "<service short name> in". */
+  heroHeading?: string;
+  /** Hero H1, highlighted part. Blank = the location name. */
+  heroHighlight?: string;
+  /** Hero background for this page only. Blank = the service's hero image. */
+  heroImage?: string;
+  heroImageAlt?: string;
   /** Optional second paragraph replacing the generic isHomeBase template sentence. */
   localNote?: string;
   /** Optional override of service.highlights for this combo; falls back to service.highlights when empty. */
   highlights?: string[];
   /** Combo-specific FAQs, rendered on the page and marked up as FAQPage schema. */
   faqs?: FaqItem[];
+  /** Long-form body for this page only. The service's own body is never shown here — it would duplicate /services/[slug]. */
+  content?: ContentBlock[];
+  /** Replaces the service's problem section on this page. Missing = the service's. */
+  problem?: ProblemSection;
+  /** Replaces the service's "What it costs" section on this page. Missing = the service's. */
+  pricing?: ServicePricing;
+  /** Case study for this page. Blank = whatever the service page shows. */
+  caseStudyProject?: string;
+  /** Replaces "We also deliver … work near <location> in:" above the nearby-area chips. */
+  nearbyAreasText?: string;
+  /** Replaces "Other Services in <location>". */
+  otherServicesHeading?: string;
   /** Per-page section overrides — see data/pageSections.ts. */
   sections?: PageSectionOverrides | null;
 }

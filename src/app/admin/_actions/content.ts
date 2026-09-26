@@ -25,13 +25,12 @@ import type {
   Service,
   Project,
   Location,
-  ProblemSection,
   ProjectReview,
-  ServicePricing,
 } from "@/data/site";
 import { parseContentBlocks } from "./contentBlocks";
 import { parseFaqs } from "./faqs";
 import { readPageSections } from "./pageSections";
+import { readProblemSection, readPricingSection } from "./serviceSections";
 
 function splitLines(value: string): string[] {
   return value
@@ -70,43 +69,6 @@ async function revalidateLocationRoutes(slug: string) {
   await revalidate("/locations/[locationSlug]/[serviceSlug]", "page");
   await revalidate("/");
   await revalidate("/sitemap.xml");
-}
-
-/**
- * The service's problem section, or null when its heading or every card is
- * blank — null rather than a half-empty object, so clearing the heading in the
- * panel reliably hides the section.
- */
-function readProblemSection(formData: FormData): ProblemSection | null {
-  const text = (name: string) => String(formData.get(name) || "").trim();
-  const cards = [0, 1, 2, 3]
-    .map((i) => ({ title: text(`problemCardTitle_${i}`), body: text(`problemCardBody_${i}`) }))
-    .filter((card) => card.title);
-  const heading = text("problemHeading");
-  if (!heading || cards.length === 0) return null;
-  return {
-    heading,
-    intro: String(formData.get("problemIntro") || "").trim(),
-    cards,
-    ctaLabel: text("problemCta") || "Get a free survey",
-  };
-}
-
-/** The "What it costs" section, or null when the heading is blank. */
-function readPricingSection(formData: FormData): ServicePricing | null {
-  const text = (name: string) => String(formData.get(name) || "").trim();
-  const heading = text("pricingHeading");
-  if (!heading) return null;
-  return {
-    heading,
-    intro: text("pricingIntro"),
-    factors: [0, 1, 2, 3]
-      .map((i) => ({ title: text(`pricingFactorTitle_${i}`), body: text(`pricingFactorBody_${i}`) }))
-      .filter((f) => f.title),
-    included: splitLines(String(formData.get("pricingIncluded") || "")),
-    note: text("pricingNote"),
-    ctaLabel: text("pricingCta") || "Get a fixed-price quote",
-  };
 }
 
 function readServiceFields(formData: FormData) {

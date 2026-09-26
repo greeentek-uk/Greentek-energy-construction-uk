@@ -8,9 +8,10 @@ import { updateService } from "@/lib/db/services";
 import { updateLocation } from "@/lib/db/locations";
 import { updateProject } from "@/lib/db/projects";
 import { updateBlogPost } from "@/lib/db/blogPosts";
+import { replaceLocationServiceContent } from "@/lib/db/locationServiceContent";
 import { saveBlockDraft } from "@/lib/db/pageContent";
 import type { SitePage } from "@/data/pages";
-import type { Service, Location, Project } from "@/data/site";
+import type { Service, Location, Project, LocationServiceContent } from "@/data/site";
 import type { BlogPost } from "@/data/blogs";
 import type { PageContentKey, PageContentMap } from "@/data/pageContent";
 
@@ -51,6 +52,12 @@ export async function restoreRevisionAction(formData: FormData): Promise<void> {
         const { slug, ...rest } = revision.snapshot as Project;
         await updateProject(revision.docId, rest);
         await revalidate(`/projects/${slug}`);
+        break;
+      }
+      case "locationServiceContent": {
+        const entry = revision.snapshot as LocationServiceContent;
+        await replaceLocationServiceContent(entry);
+        await revalidate(`/locations/${entry.locationSlug}/${entry.serviceSlug}`);
         break;
       }
       case "blogPosts":

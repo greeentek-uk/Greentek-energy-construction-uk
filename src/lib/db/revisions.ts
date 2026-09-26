@@ -12,6 +12,7 @@ export type RevisionScope =
   | "services"
   | "locations"
   | "projects"
+  | "locationServiceContent"
   | "pageContent"
   | "settings";
 

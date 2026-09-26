@@ -13,7 +13,7 @@ interface Props {
 export default async function LocationServiceContentPage({ params, searchParams }: Props) {
   const { locationSlug } = await params;
   const search = await searchParams;
-  const { locations, services } = await getCurrentSiteConfig();
+  const { locations, services, projects } = await getCurrentSiteConfig();
 
   const location = locations.find((l) => l.slug === locationSlug);
   if (!location) {
@@ -32,9 +32,10 @@ export default async function LocationServiceContentPage({ params, searchParams 
         Service content for {location.name}
       </h1>
       <p className="text-white/50 mb-6 text-sm">
-        Unique copy for each /locations/{location.slug}/[service] page. Leave a
-        service&apos;s intro blank and that page keeps rendering its current
-        templated default — nothing breaks while you work through the list.
+        Unique copy for each /locations/{location.slug}/[service] page: hero,
+        body, problem and cost sections, case study, headings and FAQs. Every
+        field is optional — anything left blank keeps the service&apos;s or the
+        templated default, so nothing breaks while you work through the list.
       </p>
 
       <SaveBanner saved={search.saved === "1"} error={search.error} />
@@ -59,8 +60,14 @@ export default async function LocationServiceContentPage({ params, searchParams 
               </summary>
               <div className="px-5 pb-5 pt-2">
                 <LocationServiceContentForm
-                  locationSlug={location.slug}
-                  serviceSlug={service.slug}
+                  location={{ slug: location.slug, name: location.name }}
+                  service={{
+                    slug: service.slug,
+                    title: service.title,
+                    shortName: service.shortName,
+                    description: service.description,
+                  }}
+                  projects={projects.map(({ slug, title, service }) => ({ slug, title, service }))}
                   initial={overrideBySlug.get(service.slug)}
                 />
               </div>
