@@ -1,7 +1,7 @@
 "use server";
 
 import { redirect } from "next/navigation";
-import { revalidate } from "@/lib/revalidate";
+import { getLastSyncError, revalidate } from "@/lib/revalidate";
 import {
   deleteLocationServiceContent,
   replaceLocationServiceContent,
@@ -93,5 +93,16 @@ export async function saveLocationServiceContentAction(formData: FormData): Prom
   // The location page lists this page as a card, whose title/text live here.
   await revalidate(`/locations/${locationSlug}`);
   await revalidate("/sitemap.xml");
+
+  // The save itself worked, but if the live site wasn't told, the editor
+  // would see "Saved" and a page that never changes — say so instead.
+  const syncError = getLastSyncError();
+  if (syncError) {
+    redirect(
+      `${back}?error=${encodeURIComponent(
+        `Saved, but the live site wasn't refreshed (${syncError}). Use "Refresh live site" on the dashboard.`,
+      )}`,
+    );
+  }
   redirect(`${back}?saved=1`);
 }

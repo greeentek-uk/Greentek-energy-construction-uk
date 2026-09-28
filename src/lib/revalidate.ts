@@ -1,6 +1,6 @@
 import { revalidatePath as nextRevalidatePath } from "next/cache";
 import { headers } from "next/headers";
-import { SITE_URL } from "@/lib/structuredData";
+import { PRODUCTION_SITE_URL, SITE_URL } from "@/lib/structuredData";
 
 type PathType = "page" | "layout";
 
@@ -30,6 +30,28 @@ interface Target {
   type?: PathType;
 }
 
+/**
+ * The public site a panel save has to clear.
+ *
+ * Deliberately not SITE_URL. That's the *canonical* origin, and in .env.local
+ * it's http://localhost:3000 so local canonicals and sitemaps point at the dev
+ * server. Using it here meant a panel on localhost decided it *was* the live
+ * site, skipped the push, and hid the "not the live site" warning — every
+ * change reached the database while production kept serving its old HTML.
+ *
+ * LIVE_SITE_URL wins when set (point it at a staging host, say). Otherwise
+ * SITE_URL when it's a real origin, else the production domain.
+ */
+export function resolveLiveSiteUrl(
+  env: { LIVE_SITE_URL?: string; [key: string]: string | undefined } = process.env,
+  siteUrl: string = SITE_URL,
+): string {
+  const explicit = env.LIVE_SITE_URL?.trim();
+  if (explicit) return explicit.replace(/\/$/, "");
+  if (!/localhost|127\.0\.0\.1/.test(siteUrl)) return siteUrl;
+  return PRODUCTION_SITE_URL;
+}
+
 /** Tracks failures so the panel can tell the editor rather than failing silently. */
 let lastSyncError: string | null = null;
 
@@ -50,9 +72,10 @@ export async function syncLiveSite(targets: Target[]): Promise<boolean> {
   const secret = process.env.REVALIDATE_SECRET;
   if (!secret) return true;
 
+  const liveUrl = resolveLiveSiteUrl();
   let liveHost: string;
   try {
-    liveHost = new URL(SITE_URL).host;
+    liveHost = new URL(liveUrl).host;
   } catch {
     return true;
   }
@@ -62,7 +85,7 @@ export async function syncLiveSite(targets: Target[]): Promise<boolean> {
   if (!host || host === liveHost) return true;
 
   try {
-    const response = await fetch(`${SITE_URL}/api/revalidate`, {
+    const response = await fetch(`${liveUrl}/api/revalidate`, {
       method: "POST",
       headers: { "Content-Type": "application/json", "x-revalidate-secret": secret },
       body: JSON.stringify({ targets }),
@@ -106,7 +129,7 @@ export interface PanelLocation {
 export async function getPanelLocation(): Promise<PanelLocation> {
   let liveHost = "";
   try {
-    liveHost = new URL(SITE_URL).host;
+    liveHost = new URL(resolveLiveSiteUrl()).host;
   } catch {
     liveHost = "";
   }

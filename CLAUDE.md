@@ -20,6 +20,8 @@ pnpm seed:page-content    # required or public pages throw (see getPageContent)
 pnpm seed:service-location-content
 pnpm seed:service-seo-content  # problem sections + service/combo FAQs + homepage FAQ draft.
                                # DRY RUN unless --write; only fills empty fields
+pnpm seed:combo-body           # long-form body for the 66 location + service pages
+                               # DRY RUN unless --write; only fills empty bodies
 pnpm migrate              # one-off src/data/*.json → Mongo
 ```
 
@@ -72,7 +74,11 @@ Everything else — services, pages, posts, settings — goes live on save.
 
 Event-driven, no timers. A save clears exactly what it changed via `lib/revalidate.ts`. When the
 panel runs somewhere other than the live host, it pushes to `/api/revalidate` using the shared
-`REVALIDATE_SECRET`; the admin layout warns loudly when that isn't configured. "Refresh live site"
+`REVALIDATE_SECRET`; the admin layout warns loudly when that isn't configured. The push goes to
+`resolveLiveSiteUrl()` (`LIVE_SITE_URL`, else `SITE_URL`, else production — **never localhost**),
+not `SITE_URL`: `.env.local`'s localhost canonical once made the local panel think it *was* the
+live site, so every save updated Mongo while production kept its old HTML. The combo save
+reports a failed push instead of "Saved". "Refresh live site"
 on the dashboard is the manual escape hatch.
 
 ## Feature areas
@@ -198,7 +204,7 @@ OpenWidget chat. WhatsApp/phone floating actions.
 
 ## Current state (2026-09-18)
 
-- Unit tests: **91 passing** across 9 files.
+- Unit tests: **132 passing** across 13 files (2026-09-28).
 - E2E: 4 known failures recorded in `test-results/` —
   1. `/images/brands/swip.png` 404s on `/about` and in the media library. The file isn't in
      `public/images/brands/`; the reference lives in the **`brands` pageContent block in Mongo**,
@@ -214,6 +220,9 @@ OpenWidget chat. WhatsApp/phone floating actions.
   (published). FAQs were verified live after a cache refresh. Problem sections are in the database
   but only render once this session's code changes are **deployed** — the live build predates
   `ProblemSection`. Re-running the seed is safe: it skips anything already filled.
+- 2026-09-28: `pnpm seed:combo-body --write` **was run** — all 66 location + service pages now
+  have their own body (area housing, survey, England/Wales rules, links to related services in
+  the same area). Verified live after a refresh. Editable per page in the panel.
 - Only 4 of 11 services have a project (solar, heat pumps, external wall insulation, full home
   renovation); the other 7 show no case study until one is picked in the panel.
 - 2026-09-19: 301 added in the redirects table, `/services/complete-heating-system-upgrades` →

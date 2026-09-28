@@ -3,6 +3,8 @@ import { describe, expect, it } from "vitest";
 import { whatsappUrl } from "@/lib/whatsapp";
 import { BROWSER_FORWARDABLE_EVENTS, isStandardEvent } from "@/lib/metaEvents";
 import { enquiryPhotoFolder } from "@/lib/db/enquiries";
+import { resolveLiveSiteUrl } from "@/lib/revalidate";
+import { PRODUCTION_SITE_URL } from "@/lib/structuredData";
 
 describe("whatsappUrl", () => {
   it.each([
@@ -49,5 +51,24 @@ describe("parseStat", () => {
 
   it("returns null when there's nothing to count", () => {
     expect(parseStat("Fully accredited")).toBeNull();
+  });
+});
+
+describe("resolveLiveSiteUrl", () => {
+  // A localhost canonical once made the local panel think it was the live
+  // site, so saves never cleared production's cache.
+  it("never targets localhost", () => {
+    expect(resolveLiveSiteUrl({}, "http://localhost:3000")).toBe(PRODUCTION_SITE_URL);
+    expect(resolveLiveSiteUrl({}, "http://127.0.0.1:3002")).toBe(PRODUCTION_SITE_URL);
+  });
+
+  it("uses a real canonical origin as-is", () => {
+    expect(resolveLiveSiteUrl({}, "https://www.example.co.uk")).toBe("https://www.example.co.uk");
+  });
+
+  it("prefers LIVE_SITE_URL, without a trailing slash", () => {
+    expect(
+      resolveLiveSiteUrl({ LIVE_SITE_URL: "https://staging.example.co.uk/" }, "http://localhost:3000"),
+    ).toBe("https://staging.example.co.uk");
   });
 });

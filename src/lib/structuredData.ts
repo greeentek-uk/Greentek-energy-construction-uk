@@ -1,9 +1,12 @@
 import type { SiteConfig, Service, Location } from "@/data/site";
 import type { BlogPost } from "@/data/blogs";
 
+/** The public origin, whatever NEXT_PUBLIC_SITE_URL says on this machine. */
+export const PRODUCTION_SITE_URL = "https://www.greentekenergy.co.uk";
+
 function resolveSiteUrl(): string {
   const configured = process.env.NEXT_PUBLIC_SITE_URL;
-  const fallback = "https://www.greentekenergy.co.uk";
+  const fallback = PRODUCTION_SITE_URL;
   if (!configured) return fallback;
 
   // Every canonical tag, sitemap entry, JSON-LD url and llms.txt link is built
