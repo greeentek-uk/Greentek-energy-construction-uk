@@ -4,14 +4,17 @@ import { listBlocksWithDirty } from "@/lib/db/pageContent";
 import { getContentPage, pagesShowingBlock } from "@/data/adminPages";
 import { PAGE_CONTENT_META } from "@/data/pageContent";
 import { EditorHeader } from "../../../_components/editor/EditorLayout";
+import FocusKeywordBox from "../../../_components/FocusKeywordBox";
+import SaveBanner from "../../../_components/SaveBanner";
 
 interface Props {
   params: Promise<{ pageId: string }>;
+  searchParams: Promise<{ keywordSaved?: string; error?: string }>;
 }
 
 /** One fixed page's sections, top to bottom, each opening its editor. */
-export default async function ContentPageSections({ params }: Props) {
-  const { pageId } = await params;
+export default async function ContentPageSections({ params, searchParams }: Props) {
+  const [{ pageId }, search] = await Promise.all([params, searchParams]);
   const page = getContentPage(pageId);
   if (!page) notFound();
 
@@ -32,6 +35,16 @@ export default async function ContentPageSections({ params }: Props) {
             : "Sections in the order they appear on the page."}
         </p>
       </EditorHeader>
+
+      {/* "Shared" is a set of blocks, not a page, so it has no keyword. */}
+      {!isShared && (
+        <FocusKeywordBox
+          path={page.path}
+          returnTo={`/admin/content/${page.id}`}
+          saved={search.keywordSaved === "1"}
+        />
+      )}
+      <SaveBanner error={search.error} />
 
       <ol className="bg-[#101314] border border-white/10 rounded-xl divide-y divide-white/10">
         {page.sections.map((section, i) => {

@@ -108,6 +108,13 @@ Footer CTA, Company settings) · **SEO** · **Media & tracking**.
   box) survives only for projects.
 - Verified 2026-09-28 by saving the Cardiff heat-pump combo, the heat-pump service and Cardiff
   unchanged and diffing Mongo: nothing lost.
+- **Focus keyword — panel only, never on the site.** A note for the SEO person of the keyword a
+  page is optimised for, in its own `focusKeywords` collection keyed by public path
+  (`lib/db/focusKeywords.ts`). Nothing public imports it — keep it that way, don't move it onto
+  the service/location/SEO docs. `FocusKeywordBox` (own form + Save, so it must sit *outside* an
+  editor's main form) is on the service, location, combo, Home/About/listing-page and Page SEO
+  editors; the Page SEO list shows each page's keyword. Its save doesn't revalidate — no public
+  page changes.
 
 **SEO.** Three-layer resolution, always in this order: per-route override → site-wide template for
 that page kind → the page's own computed default (`lib/seo.ts` `withSeoOverride`). Templates use

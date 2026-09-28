@@ -4,9 +4,10 @@ import { getAllRoutes } from "@/lib/routes";
 import { SITE_URL } from "@/lib/structuredData";
 import SaveBanner from "../../../_components/SaveBanner";
 import SeoOverrideForm from "../../../_components/SeoOverrideForm";
+import FocusKeywordBox from "../../../_components/FocusKeywordBox";
 
 interface Props {
-  searchParams: Promise<{ path?: string; saved?: string; error?: string }>;
+  searchParams: Promise<{ path?: string; saved?: string; error?: string; keywordSaved?: string }>;
 }
 
 export default async function EditSeoPage({ searchParams }: Props) {
@@ -25,6 +26,12 @@ export default async function EditSeoPage({ searchParams }: Props) {
         {route?.label || "Edit SEO"}
       </h1>
       <p className="text-white/50 mb-6 text-sm break-all">{path}</p>
+
+      <FocusKeywordBox
+        path={path}
+        returnTo={`/admin/seo/edit?path=${encodeURIComponent(path)}`}
+        saved={params.keywordSaved === "1"}
+      />
 
       <SaveBanner saved={params.saved === "1"} error={params.error} />
 

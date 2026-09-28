@@ -1,11 +1,13 @@
 import Link from "next/link";
 import { getAllRoutes } from "@/lib/routes";
 import { getCurrentSeoOverrides } from "@/lib/cms";
+import { getAllFocusKeywords } from "@/lib/db/focusKeywords";
 
 export default async function SeoListPage() {
-  const [routes, overrides] = await Promise.all([
+  const [routes, overrides, keywords] = await Promise.all([
     getAllRoutes(),
     getCurrentSeoOverrides(),
+    getAllFocusKeywords(),
   ]);
   const groups = Array.from(new Set(routes.map((r) => r.group)));
 
@@ -36,6 +38,14 @@ export default async function SeoListPage() {
                       {r.label}
                     </p>
                     <p className="text-xs text-white/40 truncate">{r.path}</p>
+                    {/* Panel-only note: what this page is being optimised for. */}
+                    <p className="text-xs truncate">
+                      {keywords[r.path] ? (
+                        <span className="text-[#c5eb02]/80">Focus: {keywords[r.path]}</span>
+                      ) : (
+                        <span className="text-white/25">No focus keyword</span>
+                      )}
+                    </p>
                   </div>
                   <div className="flex items-center gap-3 shrink-0">
                     {overrides[r.path]?.noindex && (

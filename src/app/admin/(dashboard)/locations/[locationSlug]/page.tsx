@@ -8,10 +8,11 @@ import ConfirmSubmitButton from "../../../_components/ConfirmSubmitButton";
 import InternalLinkSuggestions from "../../../_components/InternalLinkSuggestions";
 import { EditorHeader } from "../../../_components/editor/EditorLayout";
 import PageLinkGrid from "../../../_components/editor/PageLinkGrid";
+import FocusKeywordBox from "../../../_components/FocusKeywordBox";
 
 interface Props {
   params: Promise<{ locationSlug: string }>;
-  searchParams: Promise<{ saved?: string; error?: string }>;
+  searchParams: Promise<{ saved?: string; error?: string; keywordSaved?: string }>;
 }
 
 export default async function EditLocationPage({ params, searchParams }: Props) {
@@ -45,6 +46,12 @@ export default async function EditLocationPage({ params, searchParams }: Props) 
             </ConfirmSubmitButton>
           </form>
         }
+      />
+
+      <FocusKeywordBox
+        path={`/locations/${location.slug}`}
+        returnTo={`/admin/locations/${location.slug}`}
+        saved={search.keywordSaved === "1"}
       />
 
       <SaveBanner saved={search.saved === "1"} error={search.error} />

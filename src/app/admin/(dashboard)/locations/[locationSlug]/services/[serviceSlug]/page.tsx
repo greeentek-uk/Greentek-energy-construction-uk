@@ -6,10 +6,11 @@ import SaveBanner from "../../../../../_components/SaveBanner";
 import LocationServiceContentForm from "../../../../../_components/LocationServiceContentForm";
 import { EditorHeader } from "../../../../../_components/editor/EditorLayout";
 import PageLinkGrid from "../../../../../_components/editor/PageLinkGrid";
+import FocusKeywordBox from "../../../../../_components/FocusKeywordBox";
 
 interface Props {
   params: Promise<{ locationSlug: string; serviceSlug: string }>;
-  searchParams: Promise<{ saved?: string; error?: string }>;
+  searchParams: Promise<{ saved?: string; error?: string; keywordSaved?: string }>;
 }
 
 /**
@@ -83,6 +84,12 @@ export default async function EditLocationServicePage({ params, searchParams }: 
           />
         </details>
       </EditorHeader>
+
+      <FocusKeywordBox
+        path={`/locations/${location.slug}/${service.slug}`}
+        returnTo={comboHref(location.slug, service.slug)}
+        saved={search.keywordSaved === "1"}
+      />
 
       <SaveBanner saved={search.saved === "1"} error={search.error} />
 
