@@ -4,6 +4,7 @@ import { whatsappUrl } from "@/lib/whatsapp";
 import { BROWSER_FORWARDABLE_EVENTS, isStandardEvent } from "@/lib/metaEvents";
 import { enquiryPhotoFolder } from "@/lib/db/enquiries";
 import { resolveLiveSiteUrl } from "@/lib/revalidate";
+import { splitHeading } from "@/lib/heroHeading";
 import { PRODUCTION_SITE_URL } from "@/lib/structuredData";
 
 describe("whatsappUrl", () => {
@@ -70,5 +71,24 @@ describe("resolveLiveSiteUrl", () => {
     expect(
       resolveLiveSiteUrl({ LIVE_SITE_URL: "https://staging.example.co.uk/" }, "http://localhost:3000"),
     ).toBe("https://staging.example.co.uk");
+  });
+});
+
+describe("splitHeading", () => {
+  it("highlights the named words wherever they sit in the H1", () => {
+    expect(splitHeading("Cardiff's Loft Insulation Specialists", "Loft Insulation")).toEqual({
+      before: "Cardiff's ",
+      highlight: "Loft Insulation",
+      after: " Specialists",
+    });
+  });
+
+  it("ignores case but keeps the heading's own casing", () => {
+    expect(splitHeading("Solar PV in Cardiff", "cardiff")?.highlight).toBe("Cardiff");
+  });
+
+  // Blank or mistyped means plain white — never text appended to the H1.
+  it.each([undefined, "", "   ", "Swansea"])("no highlight for %j", (highlight) => {
+    expect(splitHeading("Solar PV in Cardiff", highlight)).toBeNull();
   });
 });

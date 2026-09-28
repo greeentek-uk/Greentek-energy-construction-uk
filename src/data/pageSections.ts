@@ -22,6 +22,8 @@ export const SECTION_LABEL_KEYS = [
   "heroBody",
   "servicesHeading",
   "servicesIntro",
+  "areasHeading",
+  "areasIntro",
   "problemEyebrow",
   "includedHeading",
   "caseStudyEyebrow",
@@ -82,6 +84,12 @@ export const LABELS_BY_KIND: Record<SectionPageKind, SectionLabelKey[]> = {
     "heroBody",
     "servicesHeading",
     "servicesIntro",
+    "areasHeading",
+    "areasIntro",
+    ...CASE_STUDY,
+    "testimonialsEyebrow",
+    "testimonialsHeading",
+    "testimonialsSubheading",
     "faqHeading",
     ...CTA,
     "accreditationsHeading",
@@ -104,7 +112,7 @@ export const LABELS_BY_KIND: Record<SectionPageKind, SectionLabelKey[]> = {
 /** Which of the Process / Stats overrides a kind of page renders. */
 export const BLOCKS_BY_KIND: Record<SectionPageKind, { process: boolean; stats: boolean }> = {
   service: { process: true, stats: true },
-  location: { process: false, stats: true },
+  location: { process: true, stats: true },
   locationService: { process: true, stats: true },
   project: { process: true, stats: true },
 };

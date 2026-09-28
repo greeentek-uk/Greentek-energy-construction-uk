@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getCurrentSiteConfig } from "@/lib/cms";
+import { getCurrentSiteConfig, getPageContent } from "@/lib/cms";
 import { getLocationServiceContentForLocation } from "@/lib/db/locationServiceContent";
 import SaveBanner from "../../../../_components/SaveBanner";
 import LocationServiceContentForm from "../../../../_components/LocationServiceContentForm";
@@ -13,7 +13,11 @@ interface Props {
 export default async function LocationServiceContentPage({ params, searchParams }: Props) {
   const { locationSlug } = await params;
   const search = await searchParams;
-  const { locations, services, projects } = await getCurrentSiteConfig();
+  const [{ locations, services, projects }, sharedProcess, sharedStats] = await Promise.all([
+    getCurrentSiteConfig(),
+    getPageContent("process"),
+    getPageContent("stats"),
+  ]);
 
   const location = locations.find((l) => l.slug === locationSlug);
   if (!location) {
@@ -66,6 +70,18 @@ export default async function LocationServiceContentPage({ params, searchParams 
                     title: service.title,
                     shortName: service.shortName,
                     description: service.description,
+                    highlights: service.highlights,
+                  }}
+                  // What each page shows while it has no copy of its own, so
+                  // the editor starts from it rather than from blank fields.
+                  inherited={{
+                    problem: service.problem,
+                    pricing: service.pricing,
+                    sections: {
+                      labels: service.sections?.labels,
+                      process: service.sections?.process ?? sharedProcess,
+                      stats: service.sections?.stats ?? sharedStats,
+                    },
                   }}
                   projects={projects.map(({ slug, title, service }) => ({ slug, title, service }))}
                   initial={overrideBySlug.get(service.slug)}

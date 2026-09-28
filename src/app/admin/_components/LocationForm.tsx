@@ -1,13 +1,24 @@
 "use client";
 
 import type { Location } from "@/data/site";
+import type { PageSectionOverrides } from "@/data/pageSections";
 import { saveLocationAction, createLocationAction } from "../_actions/content";
 import ImageUploadField from "./ImageUploadField";
 import ContentBlocksEditor from "./ContentBlocksEditor";
 import FaqEditor from "./FaqEditor";
 import PageSectionsEditor from "./PageSectionsEditor";
 
-export default function LocationForm({ initial }: { initial?: Location }) {
+export default function LocationForm({
+  initial,
+  projects = [],
+  inherited,
+}: {
+  initial?: Location;
+  /** Every project, for the case study picker. */
+  projects?: { slug: string; title: string }[];
+  /** The shared process/stats this page shows until it has its own. */
+  inherited?: PageSectionOverrides;
+}) {
   const isNew = !initial;
 
   return (
@@ -144,17 +155,39 @@ export default function LocationForm({ initial }: { initial?: Location }) {
         <ContentBlocksEditor initial={initial?.content} />
       </div>
 
+      <div className="border-t border-white/10 pt-4">
+        <label className="block text-xs font-semibold text-white/70 mb-1">
+          Case study project (optional — blank shows none)
+        </label>
+        <select
+          name="caseStudyProject"
+          defaultValue={initial?.caseStudyProject ?? ""}
+          className="w-full rounded-lg border border-white/15 bg-white/5 px-3 py-2 text-sm text-white outline-none focus:border-[#c5eb02]"
+        >
+          <option value="" className="text-black">
+            No case study
+          </option>
+          {projects.map((project) => (
+            <option key={project.slug} value={project.slug} className="text-black">
+              {project.title}
+            </option>
+          ))}
+        </select>
+      </div>
+
       <FaqEditor initial={initial?.faqs} />
 
       <PageSectionsEditor
         initial={initial?.sections}
+        inherited={inherited}
         kind="location"
         placeholders={
           initial && {
-            heroHeading: "Renewable Energy & Construction in",
+            heroHeading: `Renewable Energy & Construction in ${initial.name}`,
             heroHighlight: initial.name,
             heroBody: initial.blurb,
             servicesHeading: `Services in ${initial.name}`,
+            areasHeading: `Areas we cover around ${initial.name}`,
             ctaHeading: `Get a Free Quote in ${initial.name}`,
           }
         }

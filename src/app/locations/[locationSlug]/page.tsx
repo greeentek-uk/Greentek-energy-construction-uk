@@ -7,10 +7,13 @@ import { ServiceCardGrid } from "@/components/site/ServiceCards";
 import PageQuoteHero from "@/components/sections/PageQuoteHero";
 import FinanceBanner from "@/components/sections/FinanceBanner";
 import Stats from "@/components/sections/Stats";
+import ProjectCaseStudy from "@/components/sections/ProjectCaseStudy";
+import Testimonials from "@/components/sections/Testimonials";
+import Process from "@/components/sections/Process";
 import CtaSection from "@/components/sections/CtaSection";
 import AccreditationsSection from "@/components/sections/AccreditationsSection";
 import ContentBlocks from "@/components/ui/ContentBlocks";
-import { label } from "@/data/pageSections";
+import { caseStudyLabels, label } from "@/data/pageSections";
 import { withSeoOverride } from "@/lib/seo";
 import { getLocationServiceContentForLocation } from "@/lib/db/locationServiceContent";
 import { buildLocationJsonLd, SITE_URL } from "@/lib/structuredData";
@@ -79,6 +82,10 @@ export default async function LocationDetailPage({ params }: Props) {
 
   const sections = location.sections;
 
+  // Only the project picked for this area: projects carry no location, so any
+  // automatic choice could present a job done elsewhere as local proof.
+  const caseStudy = siteConfig.projects.find((p) => p.slug === location.caseStudyProject);
+
   const jsonLd = buildLocationJsonLd(location, siteConfig, SITE_URL);
 
   return (
@@ -97,8 +104,17 @@ export default async function LocationDetailPage({ params }: Props) {
         <PageQuoteHero
           image={location.heroImage || location.image}
           imageAlt={location.heroImageAlt || location.imageAlt || location.name}
-          heading={label(sections, "heroHeading", "Renewable Energy & Construction in")}
-          headingHighlight={label(sections, "heroHighlight", location.name)}
+          heading={label(
+            sections,
+            "heroHeading",
+            `Renewable Energy & Construction in ${location.name}`,
+          )}
+          // Unedited, the location name stays green as it always has. Once the
+          // H1 is rewritten, only the words the editor names are highlighted.
+          headingHighlight={
+            sections?.labels?.heroHighlight?.trim() ||
+            (sections?.labels?.heroHeading?.trim() ? undefined : location.name)
+          }
           body={label(sections, "heroBody", location.blurb)}
           source={`Location page — ${location.name}`}
         />
@@ -123,16 +139,56 @@ export default async function LocationDetailPage({ params }: Props) {
           </div>
         </section>
 
-        <Stats override={sections?.stats} />
+        {/* The towns around this one, which have no page of their own. */}
+        <section className="pb-10 lg:pb-16">
+          <div className="site-container">
+            <div className="p-6 md:p-8 rounded-xl bg-white/5 border border-white/10">
+              <h2 className="text-[1.375rem] md:text-[1.75rem] font-bold leading-[1.2] text-white mb-3">
+                {label(sections, "areasHeading", `Areas we cover around ${location.name}`)}
+              </h2>
+              <p className="text-white/70 text-base md:text-lg mb-5 max-w-3xl">
+                {label(
+                  sections,
+                  "areasIntro",
+                  `The same in-house team that works in ${location.name} covers the towns around it, with the same free survey, fixed-price quote and written workmanship warranty.`,
+                )}
+              </p>
+              <div className="flex flex-wrap gap-2">
+                {location.nearbyAreas.map((area) => (
+                  <span
+                    key={area}
+                    className="px-3 py-1.5 rounded-full bg-white/5 border border-white/10 text-white/80 text-sm font-medium"
+                  >
+                    {area}
+                  </span>
+                ))}
+              </div>
+            </div>
+          </div>
+        </section>
 
         {/* Long-form content */}
         {location.content && location.content.length > 0 && (
-          <section className="py-10 lg:py-16">
+          <section className="pb-10 lg:pb-16">
             <div className="site-container">
               <ContentBlocks blocks={location.content} />
             </div>
           </section>
         )}
+
+        {/* Proof: a job picked for this area, the numbers, customers by name. */}
+        <Stats override={sections?.stats} />
+        {caseStudy && (
+          <ProjectCaseStudy project={caseStudy} labels={caseStudyLabels(sections)} />
+        )}
+        <Testimonials
+          eyebrow={sections?.labels?.testimonialsEyebrow}
+          heading={sections?.labels?.testimonialsHeading}
+          subheading={sections?.labels?.testimonialsSubheading}
+        />
+
+        {/* How we work */}
+        <Process override={sections?.process} />
 
         {/* Quote form */}
         <div id="quote">

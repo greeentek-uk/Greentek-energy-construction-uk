@@ -9,6 +9,10 @@ import type { ProblemSection, ServicePricing } from "@/data/site";
  * With `overrideName` the section gets a tick box and is an *override*: left
  * unticked (or ticked but blank) the page keeps the service's own section, so
  * 66 location + service pages don't all need filling in to keep working.
+ *
+ * `inherited` is what the page shows today when it isn't overridden. The
+ * fields start from it, so ticking the box means editing the real copy rather
+ * than rewriting a section from an empty form. It is only saved once ticked.
  */
 
 const input =
@@ -49,15 +53,19 @@ function SectionHeader({
 }
 
 export function ProblemSectionFields({
-  initial,
+  initial: own,
+  inherited,
   overrideName,
   help,
 }: {
   initial?: ProblemSection | null;
+  /** Pre-fills the fields while this page has no section of its own. */
+  inherited?: ProblemSection | null;
   /** Tick box name; set it to make this an optional per-page override. */
   overrideName?: string;
   help: ReactNode;
 }) {
+  const initial = own ?? inherited;
   return (
     <div className="border-t border-white/10 pt-4 space-y-4">
       <SectionHeader
@@ -65,7 +73,7 @@ export function ProblemSectionFields({
         help={help}
         overrideName={overrideName}
         overrideLabel="Give this page its own problem section"
-        overriding={Boolean(initial)}
+        overriding={Boolean(own)}
       />
       <div>
         <label className={label}>Heading</label>
@@ -108,14 +116,18 @@ export function ProblemSectionFields({
 }
 
 export function PricingSectionFields({
-  initial,
+  initial: own,
+  inherited,
   overrideName,
   help,
 }: {
   initial?: ServicePricing | null;
+  /** Pre-fills the fields while this page has no section of its own. */
+  inherited?: ServicePricing | null;
   overrideName?: string;
   help: ReactNode;
 }) {
+  const initial = own ?? inherited;
   return (
     <div className="border-t border-white/10 pt-4 space-y-4">
       <SectionHeader
@@ -123,7 +135,7 @@ export function PricingSectionFields({
         help={help}
         overrideName={overrideName}
         overrideLabel="Give this page its own “What it costs” section"
-        overriding={Boolean(initial)}
+        overriding={Boolean(own)}
       />
       <div>
         <label className={label}>Heading</label>

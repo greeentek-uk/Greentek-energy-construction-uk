@@ -1,6 +1,7 @@
 "use client";
 
-import type { LocationServiceContent } from "@/data/site";
+import type { LocationServiceContent, ProblemSection, ServicePricing } from "@/data/site";
+import type { PageSectionOverrides } from "@/data/pageSections";
 import { saveLocationServiceContentAction } from "../_actions/locationServiceContent";
 import ContentBlocksEditor from "./ContentBlocksEditor";
 import FaqEditor from "./FaqEditor";
@@ -22,9 +23,22 @@ export default function LocationServiceContentForm({
   service,
   projects,
   initial,
+  inherited,
 }: {
   location: { slug: string; name: string };
-  service: { slug: string; title: string; shortName: string; description: string };
+  service: {
+    slug: string;
+    title: string;
+    shortName: string;
+    description: string;
+    highlights: string[];
+  };
+  /** The service's sections, which this page shows until it has its own. */
+  inherited: {
+    problem?: ProblemSection | null;
+    pricing?: ServicePricing | null;
+    sections: PageSectionOverrides;
+  };
   /** Every project, for the case study picker. */
   projects: { slug: string; title: string; service: string }[];
   initial?: LocationServiceContent;
@@ -70,16 +84,18 @@ export default function LocationServiceContentForm({
         <h3 className="font-bold text-white text-sm">Hero</h3>
         <div className="grid sm:grid-cols-2 gap-4">
           <div>
-            <label className={label}>Heading (the page&apos;s H1)</label>
+            <label className={label}>Heading (the page&apos;s whole H1)</label>
             <input
               name="heroHeading"
               defaultValue={initial?.heroHeading}
-              placeholder={`${service.shortName} in`}
+              placeholder={`${service.shortName} in ${location.name}`}
               className={input}
             />
           </div>
           <div>
-            <label className={label}>Highlighted end of the heading</label>
+            <label className={label}>
+              Words to show in green (copy them from the heading; blank = all white)
+            </label>
             <input
               name="heroHighlight"
               defaultValue={initial?.heroHighlight}
@@ -119,11 +135,12 @@ export default function LocationServiceContentForm({
 
       <ProblemSectionFields
         initial={initial?.problem}
+        inherited={inherited.problem}
         overrideName="overrideProblem"
         help={
           <>
-            Leave unticked to show the {service.shortName} service&apos;s problem section. Tick it
-            and fill in the heading and at least one card to use this page&apos;s own.
+            Unticked, this page shows the {service.shortName} service&apos;s problem section
+            (filled in below). Tick it and edit the copy to give this page its own.
           </>
         }
       />
@@ -137,6 +154,7 @@ export default function LocationServiceContentForm({
           <textarea
             name="highlights"
             defaultValue={initial?.highlights?.join("\n")}
+            placeholder={service.highlights.join("\n")}
             rows={4}
             className={input}
           />
@@ -177,11 +195,13 @@ export default function LocationServiceContentForm({
 
       <PricingSectionFields
         initial={initial?.pricing}
+        inherited={inherited.pricing}
         overrideName="overridePricing"
         help={
           <>
-            Leave unticked to show the {service.shortName} service&apos;s section. No figures —
-            everything is quoted after a survey.
+            Unticked, this page shows the {service.shortName} service&apos;s section (filled in
+            below). Tick it and edit to give this page its own. No figures — everything is quoted
+            after a survey.
           </>
         }
       />
@@ -252,6 +272,7 @@ export default function LocationServiceContentForm({
 
       <PageSectionsEditor
         initial={initial?.sections}
+        inherited={inherited.sections}
         kind="locationService"
         placeholders={{
           ctaHeading: `Get a Free ${service.shortName} Quote in ${location.name}`,

@@ -177,8 +177,10 @@ export default async function LocationServicePage({ params }: Props) {
             (!override?.heroImage && (service.heroImageAlt || service.imageAlt)) ||
             `${service.title} in ${location.name}`
           }
-          heading={override?.heroHeading || `${service.shortName} in`}
-          headingHighlight={override?.heroHighlight || location.name}
+          heading={override?.heroHeading || `${service.shortName} in ${location.name}`}
+          headingHighlight={
+            override?.heroHighlight || (override?.heroHeading ? undefined : location.name)
+          }
           body={introText}
           secondaryBody={localNoteText}
           source={`${service.title} in ${location.name}`}

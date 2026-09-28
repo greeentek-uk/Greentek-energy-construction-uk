@@ -15,12 +15,12 @@ const LABEL_FIELDS: Record<
   { label: string; placeholder: string; multiline?: boolean }
 > = {
   heroHeading: {
-    label: "Hero — heading (the page's H1)",
+    label: "Hero — heading (the page's whole H1)",
     placeholder: "The page's title",
   },
   heroHighlight: {
-    label: "Hero — highlighted end of the heading",
-    placeholder: "Shown in brand green after the heading",
+    label: "Hero — words to show in green (copy them from the heading; blank = all white)",
+    placeholder: "Nothing highlighted",
   },
   heroBody: {
     label: "Hero — text",
@@ -34,6 +34,15 @@ const LABEL_FIELDS: Record<
   servicesIntro: {
     label: "Services list — text",
     placeholder: "Every service below is delivered by our in-house team…",
+    multiline: true,
+  },
+  areasHeading: {
+    label: "Areas covered — heading",
+    placeholder: "Areas we cover around …",
+  },
+  areasIntro: {
+    label: "Areas covered — text",
+    placeholder: "The same in-house team works across …",
     multiline: true,
   },
   problemEyebrow: {
@@ -114,16 +123,26 @@ const LABEL_FIELDS: Record<
  */
 export default function PageSectionsEditor({
   initial,
+  inherited,
   kind,
   placeholders,
 }: {
   initial?: PageSectionOverrides | null;
+  /**
+   * What this page shows today where it has no override of its own — the
+   * service's, or the shared block. Labels show it as the placeholder; the
+   * process and stats fields start from it, so ticking "its own" means editing
+   * the real copy instead of an empty form. Only saved once ticked.
+   */
+  inherited?: PageSectionOverrides | null;
   /** Which page this is for — decides which fields are offered. */
   kind: SectionPageKind;
   /** This page's actual fallback wording, where the form knows it. */
   placeholders?: Partial<Record<SectionLabelKey, string>>;
 }) {
   const blocks = BLOCKS_BY_KIND[kind];
+  const process = initial?.process?.steps?.length ? initial.process : inherited?.process;
+  const stats = initial?.stats?.items?.length ? initial.stats : inherited?.stats;
 
   return (
     <details className="border-t border-white/10 pt-4">
@@ -146,7 +165,7 @@ export default function PageSectionsEditor({
             const props = {
               name: `label_${key}`,
               defaultValue: initial?.labels?.[key] ?? "",
-              placeholder: placeholders?.[key] ?? field.placeholder,
+              placeholder: inherited?.labels?.[key] || placeholders?.[key] || field.placeholder,
               className: input,
             };
             return (
@@ -176,7 +195,7 @@ export default function PageSectionsEditor({
                 <label className={label}>Small label</label>
                 <input
                   name="processEyebrow"
-                  defaultValue={initial?.process?.eyebrow}
+                  defaultValue={process?.eyebrow}
                   className={input}
                 />
               </div>
@@ -184,7 +203,7 @@ export default function PageSectionsEditor({
                 <label className={label}>Subheading</label>
                 <input
                   name="processSubheading"
-                  defaultValue={initial?.process?.subheading}
+                  defaultValue={process?.subheading}
                   className={input}
                 />
               </div>
@@ -192,7 +211,7 @@ export default function PageSectionsEditor({
                 <label className={label}>Heading — first line</label>
                 <input
                   name="processHeadingLine1"
-                  defaultValue={initial?.process?.headingLine1}
+                  defaultValue={process?.headingLine1}
                   className={input}
                 />
               </div>
@@ -200,7 +219,7 @@ export default function PageSectionsEditor({
                 <label className={label}>Heading — second line</label>
                 <input
                   name="processHeadingLine2"
-                  defaultValue={initial?.process?.headingLine2}
+                  defaultValue={process?.headingLine2}
                   className={input}
                 />
               </div>
@@ -213,7 +232,7 @@ export default function PageSectionsEditor({
                       <label className={label}>No.</label>
                       <input
                         name={`processStepNumber_${i}`}
-                        defaultValue={initial?.process?.steps?.[i]?.number}
+                        defaultValue={process?.steps?.[i]?.number}
                         placeholder={String(i + 1).padStart(2, "0")}
                         className={input}
                       />
@@ -222,7 +241,7 @@ export default function PageSectionsEditor({
                       <label className={label}>Step {i + 1} title</label>
                       <input
                         name={`processStepTitle_${i}`}
-                        defaultValue={initial?.process?.steps?.[i]?.title}
+                        defaultValue={process?.steps?.[i]?.title}
                         className={input}
                       />
                     </div>
@@ -230,7 +249,7 @@ export default function PageSectionsEditor({
                   <label className={label}>Step {i + 1} text</label>
                   <textarea
                     name={`processStepBody_${i}`}
-                    defaultValue={initial?.process?.steps?.[i]?.body}
+                    defaultValue={process?.steps?.[i]?.body}
                     rows={2}
                     className={input}
                   />
@@ -259,21 +278,21 @@ export default function PageSectionsEditor({
                   <label className={label}>Figure {i + 1}</label>
                   <input
                     name={`statValue_${i}`}
-                    defaultValue={initial?.stats?.items?.[i]?.value}
+                    defaultValue={stats?.items?.[i]?.value}
                     placeholder="500+"
                     className={input}
                   />
                   <label className={label}>Label</label>
                   <input
                     name={`statLabel_${i}`}
-                    defaultValue={initial?.stats?.items?.[i]?.label}
+                    defaultValue={stats?.items?.[i]?.label}
                     placeholder="Projects Completed"
                     className={input}
                   />
                   <label className={label}>Description</label>
                   <textarea
                     name={`statDescription_${i}`}
-                    defaultValue={initial?.stats?.items?.[i]?.description}
+                    defaultValue={stats?.items?.[i]?.description}
                     rows={2}
                     className={input}
                   />

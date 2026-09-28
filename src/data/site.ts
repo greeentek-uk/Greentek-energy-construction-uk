@@ -125,6 +125,12 @@ export interface Location {
   content?: ContentBlock[];
   /** Page-specific FAQs, rendered on the page and marked up as FAQPage schema. */
   faqs?: FaqItem[];
+  /**
+   * Project shown as this area's case study. Projects aren't tied to a place,
+   * so there is no automatic pick: blank shows none rather than a job that may
+   * have been done somewhere else.
+   */
+  caseStudyProject?: string;
   /** Per-page section overrides — see data/pageSections.ts. */
   sections?: PageSectionOverrides | null;
 }
@@ -141,9 +147,12 @@ export interface LocationServiceContent {
    * wants its own hero heading shouldn't have to write an intro to get it.
    */
   intro?: string;
-  /** Hero H1, first part. Blank = "<service short name> in". */
+  /** The whole hero H1. Blank = "<service short name> in <location>". */
   heroHeading?: string;
-  /** Hero H1, highlighted part. Blank = the location name. */
+  /**
+   * Words inside heroHeading to show in green. Blank = plain white, except on
+   * an unedited heading, where the location name stays green.
+   */
   heroHighlight?: string;
   /** Hero background for this page only. Blank = the service's hero image. */
   heroImage?: string;

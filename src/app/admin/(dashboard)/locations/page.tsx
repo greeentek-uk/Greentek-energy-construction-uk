@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { getCurrentSiteConfig } from "@/lib/cms";
+import { getCurrentSiteConfig, getPageContent } from "@/lib/cms";
 import { deleteLocationAction } from "../../_actions/content";
 import SaveBanner from "../../_components/SaveBanner";
 import LocationForm from "../../_components/LocationForm";
@@ -12,7 +12,12 @@ interface Props {
 
 export default async function LocationsAdminPage({ searchParams }: Props) {
   const params = await searchParams;
-  const { locations } = await getCurrentSiteConfig();
+  const [{ locations, projects }, sharedProcess, sharedStats] = await Promise.all([
+    getCurrentSiteConfig(),
+    getPageContent("process"),
+    getPageContent("stats"),
+  ]);
+  const projectOptions = projects.map(({ slug, title }) => ({ slug, title }));
 
   return (
     <div>
@@ -71,7 +76,11 @@ export default async function LocationsAdminPage({ searchParams }: Props) {
                   currentPath={`/locations/${location.slug}`}
                 />
                 <div className="mt-4">
-                  <LocationForm initial={location} />
+                  <LocationForm
+                    initial={location}
+                    projects={projectOptions}
+                    inherited={{ process: sharedProcess, stats: sharedStats }}
+                  />
                 </div>
               </div>
             </details>

@@ -12,6 +12,7 @@
     "seed:service-location-content": "tsx scripts/seed-service-location-content.ts",
     "seed:service-seo-content": "tsx scripts/seed-service-seo-content.ts",
     "seed:combo-body": "tsx scripts/seed-combo-body.ts",
+    "seed:location-faqs": "tsx scripts/seed-location-faqs.ts",
     "flatten:home-hero": "tsx scripts/flatten-home-hero.ts",
     "db:indexes": "tsx scripts/ensure-indexes.ts",
     "preflight": "tsx scripts/preflight.ts",

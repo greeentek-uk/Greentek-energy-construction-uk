@@ -58,6 +58,8 @@ async function revalidateProjectRoutes(slug: string) {
   await revalidate("/projects");
   await revalidate(`/projects/${slug}`);
   await revalidate("/services/[slug]", "page");
+  // Location pages show a picked project as their case study too.
+  await revalidate("/locations/[locationSlug]", "page");
   await revalidate("/locations/[locationSlug]/[serviceSlug]", "page");
   await revalidate("/");
   await revalidate("/sitemap.xml");
@@ -259,6 +261,7 @@ function readLocationFields(formData: FormData) {
     blurb: String(formData.get("blurb") || "").trim(),
     nearbyAreas: splitCommas(String(formData.get("nearbyAreas") || "")),
     isHomeBase: formData.get("isHomeBase") === "on",
+    caseStudyProject: String(formData.get("caseStudyProject") || "").trim(),
     sections: readPageSections(formData),
     metaTitle: String(formData.get("metaTitle") || "").trim(),
     metaDescription: String(formData.get("metaDescription") || "").trim(),

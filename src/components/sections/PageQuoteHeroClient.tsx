@@ -6,12 +6,14 @@ import { useFadeIn } from "@/hooks/useFadeIn";
 import HeroQuoteForm, { type FixedService } from "./HeroQuoteForm";
 import TrustRatingBadge from "@/components/site/TrustRatingBadge";
 import { whatsappUrl } from "@/lib/whatsapp";
+import { splitHeading } from "@/lib/heroHeading";
 
 export interface PageQuoteHeroContent {
   image: string;
   imageAlt: string;
+  /** The whole H1. */
   heading: string;
-  /** Appended to the heading in the brand colour, e.g. the location name. */
+  /** Words within the heading to show in the brand colour. Blank = all white. */
   headingHighlight?: string;
   body: string;
   /** A second paragraph, used by the location + service pages for their local note. */
@@ -51,6 +53,7 @@ export default function PageQuoteHeroClient({
 }: PageQuoteHeroContent) {
   const [heroFadeRef, heroFadeVisible] = useFadeIn(100);
   const telHref = `tel:${phone.replace(/\s/g, "")}`;
+  const parts = splitHeading(heading, headingHighlight);
 
   return (
     <section className="relative overflow-hidden">
@@ -90,12 +93,14 @@ export default function PageQuoteHeroClient({
                 these headings are built from a service or location name and
                 have no predictable length to break at. */}
             <h1 className="text-white font-bold leading-[1.1] text-[1.5rem] md:text-[2rem] lg:text-[3.5rem]">
-              {heading}
-              {headingHighlight && (
+              {parts ? (
                 <>
-                  {" "}
-                  <span className="text-[#c5eb02]">{headingHighlight}</span>
+                  {parts.before}
+                  <span className="text-[#c5eb02]">{parts.highlight}</span>
+                  {parts.after}
                 </>
+              ) : (
+                heading
               )}
             </h1>
 

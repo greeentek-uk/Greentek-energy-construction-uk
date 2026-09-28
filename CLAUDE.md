@@ -22,6 +22,7 @@ pnpm seed:service-seo-content  # problem sections + service/combo FAQs + homepag
                                # DRY RUN unless --write; only fills empty fields
 pnpm seed:combo-body           # long-form body for the 66 location + service pages
                                # DRY RUN unless --write; only fills empty bodies
+pnpm seed:location-faqs        # 7 local FAQs per location page; DRY RUN unless --write
 pnpm migrate              # one-off src/data/*.json → Mongo
 ```
 
@@ -144,6 +145,22 @@ and hero line goes through `SECTION_LABEL_KEYS` (`data/pageSections.ts`); `LABEL
 which fields each page's `PageSectionsEditor` offers, so it never shows a field the page doesn't
 render. Adding a label means adding the key there, its field in `PageSectionsEditor`, and reading
 it on the page — the unit test fails if a key is offered nowhere.
+
+**Hero H1 = one field + an optional highlight** (`heroHeading` / `heroHighlight`, on services,
+locations and combos). The heading is the *whole* H1; the highlight is a phrase *inside* it shown
+in green (`lib/heroHeading.ts` `splitHeading`, case-insensitive, first match). Blank or not found
+= plain white — never appended. Only an unedited heading keeps the location name green, so the
+default look didn't change. (It used to be heading + an appended highlight that fell back to the
+location name, so a rewritten H1 got "Cardiff" tacked on the end.)
+
+**Override editors start from the inherited copy.** `ProblemSectionFields`, `PricingSectionFields`
+and `PageSectionsEditor` take `inherited` (the service's section, or the shared process/stats
+block): fields are pre-filled with it, labels show it as placeholder, but it's only saved once
+the "its own" box is ticked — so a combo can be edited from its real text without freezing it.
+
+**Location pages** (`/locations/[slug]`): hero → finance → service cards → areas covered →
+body → stats → case study (`location.caseStudyProject`, picked in the panel; projects have no
+location, so **no automatic pick**) → testimonials → process → FAQs → CTA → accreditations.
 
 **Location + service pages** (`/locations/[loc]/[svc]`, edited at Admin → Locations → Service
 content) can override, per page: meta, hero H1 (both halves), intro, local note, hero image,
