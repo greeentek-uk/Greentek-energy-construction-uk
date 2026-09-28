@@ -1,23 +1,24 @@
 import Link from "next/link";
-import { getCurrentSiteConfig, getPageContent } from "@/lib/cms";
-import { deleteLocationAction } from "../../_actions/content";
+import { getCurrentSiteConfig } from "@/lib/cms";
+import { getAllLocationServiceContent } from "@/lib/db/locationServiceContent";
 import SaveBanner from "../../_components/SaveBanner";
-import LocationForm from "../../_components/LocationForm";
-import ConfirmSubmitButton from "../../_components/ConfirmSubmitButton";
-import InternalLinkSuggestions from "../../_components/InternalLinkSuggestions";
 
 interface Props {
-  searchParams: Promise<{ saved?: string; deleted?: string; error?: string }>;
+  searchParams: Promise<{ deleted?: string; error?: string }>;
 }
 
+/**
+ * Every area, with its own page and its service pages one click away. The
+ * location + service pages used to sit two screens down, inside a list of
+ * eleven collapsed forms; here each is a direct link.
+ */
 export default async function LocationsAdminPage({ searchParams }: Props) {
   const params = await searchParams;
-  const [{ locations, projects }, sharedProcess, sharedStats] = await Promise.all([
+  const [{ locations, services }, combos] = await Promise.all([
     getCurrentSiteConfig(),
-    getPageContent("process"),
-    getPageContent("stats"),
+    getAllLocationServiceContent(),
   ]);
-  const projectOptions = projects.map(({ slug, title }) => ({ slug, title }));
+  const customised = new Set(combos.map((c) => `${c.locationSlug}/${c.serviceSlug}`));
 
   return (
     <div>
@@ -31,64 +32,69 @@ export default async function LocationsAdminPage({ searchParams }: Props) {
         </Link>
       </div>
       <p className="text-white/50 mb-6 text-sm">
-        Edit the areas Greentek covers and the copy shown on each location
-        page.
+        Each area has its own page, plus one page per service in that area. The{" "}
+        <Link href="/admin/content/locations" className="underline hover:text-white">
+          /locations listing page
+        </Link>{" "}
+        itself is edited under Pages.
       </p>
 
-      <SaveBanner
-        saved={params.saved === "1" || params.deleted === "1"}
-        error={params.error}
-      />
+      <SaveBanner saved={params.deleted === "1"} error={params.error} />
 
-      <div className="space-y-3">
+      <div className="space-y-4">
         {locations.map((location) => (
-          <div
+          <section
             key={location.slug}
             className="bg-[#101314] border border-white/10 rounded-xl overflow-hidden"
           >
-            <div className="flex items-center justify-between px-5 py-4">
-              <span className="font-semibold text-white">{location.name}</span>
-              <div className="flex items-center gap-4">
-                <Link
-                  href={`/admin/locations/${location.slug}/service-content`}
-                  className="text-xs font-semibold text-white/70 hover:underline"
+            <div className="flex items-center justify-between gap-4 px-5 py-4 border-b border-white/10">
+              <Link href={`/admin/locations/${location.slug}`} className="min-w-0 group">
+                <p className="font-semibold text-white group-hover:text-[#c5eb02]">{location.name}</p>
+                <p className="text-xs text-white/40">/locations/{location.slug}</p>
+              </Link>
+              <div className="flex shrink-0 items-center gap-4 text-xs font-semibold">
+                <a
+                  href={`/locations/${location.slug}`}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="text-white/50 hover:text-white"
                 >
-                  Service content
+                  View ↗
+                </a>
+                <Link
+                  href={`/admin/locations/${location.slug}`}
+                  className="rounded-lg border border-white/15 px-3 py-1.5 text-white hover:border-[#c5eb02]"
+                >
+                  Edit {location.name} page
                 </Link>
-                <form action={deleteLocationAction}>
-                  <input type="hidden" name="slug" value={location.slug} />
-                  <ConfirmSubmitButton
-                    message={`Delete "${location.name}"? This cannot be undone.`}
-                    className="text-xs font-semibold text-red-400 hover:text-red-300"
-                  >
-                    Delete
-                  </ConfirmSubmitButton>
-                </form>
               </div>
             </div>
-            <details>
-              <summary className="cursor-pointer px-5 py-2 text-sm text-white/50 hover:bg-white/5 border-t border-white/10">
-                Edit details
-              </summary>
-              <div className="px-5 pb-5 pt-2">
-                <InternalLinkSuggestions
-                  content={location.content}
-                  currentPath={`/locations/${location.slug}`}
-                />
-                <div className="mt-4">
-                  <LocationForm
-                    initial={location}
-                    projects={projectOptions}
-                    inherited={{ process: sharedProcess, stats: sharedStats }}
-                  />
-                </div>
+            <div className="px-5 py-3">
+              <p className="text-[10px] font-bold uppercase tracking-wide text-white/40 mb-2">
+                Service pages in {location.name}
+              </p>
+              <div className="flex flex-wrap gap-1.5">
+                {services.map((service) => {
+                  const own = customised.has(`${location.slug}/${service.slug}`);
+                  return (
+                    <Link
+                      key={service.slug}
+                      href={`/admin/locations/${location.slug}/services/${service.slug}`}
+                      title={own ? "Has its own copy" : "All defaults"}
+                      className="flex items-center gap-1.5 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs text-white/75 hover:border-[#c5eb02] hover:text-white"
+                    >
+                      <span
+                        className={`h-1.5 w-1.5 rounded-full ${own ? "bg-green-400" : "bg-white/25"}`}
+                      />
+                      {service.shortName}
+                    </Link>
+                  );
+                })}
               </div>
-            </details>
-          </div>
+            </div>
+          </section>
         ))}
-        {locations.length === 0 && (
-          <p className="text-sm text-white/40">No locations yet.</p>
-        )}
+        {locations.length === 0 && <p className="text-sm text-white/40">No locations yet.</p>}
       </div>
     </div>
   );

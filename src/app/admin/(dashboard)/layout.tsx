@@ -3,31 +3,8 @@ import { logoutAction } from "../_actions/auth";
 import { publishAllAction } from "../_actions/pageContent";
 import { listBlocksWithDirty } from "@/lib/db/pageContent";
 import ConfirmSubmitButton from "../_components/ConfirmSubmitButton";
+import AdminNav from "../_components/AdminNav";
 import { getPanelLocation } from "@/lib/revalidate";
-
-const navItems = [
-  { href: "/admin", label: "Dashboard" },
-  { href: "/admin/seo", label: "Page SEO" },
-  { href: "/admin/seo-settings", label: "SEO Settings" },
-  { href: "/admin/schema", label: "Schema (JSON-LD)" },
-  { href: "/admin/sitemap", label: "Sitemap" },
-  { href: "/admin/redirects", label: "Redirects & 404s" },
-  { href: "/admin/local-seo", label: "Local SEO" },
-  { href: "/admin/page-content", label: "Page Content" },
-  { href: "/admin/pages", label: "Pages" },
-  { href: "/admin/menus", label: "Menus" },
-  { href: "/admin/footer-cta", label: "Footer CTA" },
-  { href: "/admin/blog", label: "Blog Posts" },
-  { href: "/admin/services", label: "Services" },
-  { href: "/admin/projects", label: "Projects" },
-  { href: "/admin/locations", label: "Locations" },
-  { href: "/admin/scripts", label: "Scripts & Tracking" },
-  { href: "/admin/site-files", label: "robots.txt & llms.txt" },
-  { href: "/admin/media", label: "Media" },
-  { href: "/admin/images", label: "Image Delivery" },
-  { href: "/admin/revisions", label: "Version History" },
-  { href: "/admin/settings", label: "Company Settings" },
-];
 
 export default async function AdminDashboardLayout({
   children,
@@ -39,27 +16,12 @@ export default async function AdminDashboardLayout({
 
   return (
     <div className="min-h-screen bg-black text-white flex">
-      <aside className="w-64 shrink-0 bg-black border-r border-white/10 flex flex-col">
+      <aside className="sticky top-0 h-screen w-64 shrink-0 bg-black border-r border-white/10 flex flex-col">
         <div className="px-5 py-5 border-b border-white/10">
           <p className="font-bold text-lg">Greentek Admin</p>
           <p className="text-xs text-white/50">Content management</p>
         </div>
-        <nav className="flex-1 px-3 py-4 space-y-1">
-          {navItems.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className="flex items-center justify-between px-3 py-2 rounded-lg text-sm font-medium text-white/70 hover:bg-white/10 hover:text-white transition-colors"
-            >
-              {item.label}
-              {item.href === "/admin/page-content" && dirtyCount > 0 && (
-                <span className="text-[10px] font-bold text-amber-300 bg-amber-500/10 px-1.5 py-0.5 rounded-full">
-                  {dirtyCount}
-                </span>
-              )}
-            </Link>
-          ))}
-        </nav>
+        <AdminNav dirtyCount={dirtyCount} />
         <div className="px-3 py-4 border-t border-white/10 space-y-1">
           {dirtyCount > 0 && (
             <form action={publishAllAction}>

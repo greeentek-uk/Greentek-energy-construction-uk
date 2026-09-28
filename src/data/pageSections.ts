@@ -109,6 +109,49 @@ export const LABELS_BY_KIND: Record<SectionPageKind, SectionLabelKey[]> = {
   ],
 };
 
+/**
+ * The same labels, grouped by the section of the page they sit in, so each
+ * editor can put a section's headings next to that section's copy instead of
+ * in one box of every label at the bottom.
+ *
+ * Every label a kind offers must appear in exactly one group — a label the form
+ * doesn't render would be posted blank and wiped on save. The unit test checks.
+ */
+export const LABEL_GROUPS = {
+  service: {
+    hero: ["heroHeading", "heroHighlight", "heroBody"],
+    problem: ["problemEyebrow"],
+    included: ["includedHeading"],
+    caseStudy: CASE_STUDY,
+    testimonials: ["testimonialsEyebrow", "testimonialsHeading", "testimonialsSubheading"],
+    accreditations: ["accreditationsHeading"],
+    pricing: ["pricingEyebrow", "pricingIncludedHeading"],
+    faq: ["faqHeading"],
+    cta: CTA,
+  },
+  location: {
+    hero: ["heroHeading", "heroHighlight", "heroBody"],
+    services: ["servicesHeading", "servicesIntro"],
+    areas: ["areasHeading", "areasIntro"],
+    caseStudy: CASE_STUDY,
+    testimonials: ["testimonialsEyebrow", "testimonialsHeading", "testimonialsSubheading"],
+    faq: ["faqHeading"],
+    cta: CTA,
+    accreditations: ["accreditationsHeading"],
+  },
+  // The hero H1 is a top-level field on this form, not a label.
+  locationService: {
+    problem: ["problemEyebrow"],
+    included: ["includedHeading"],
+    caseStudy: CASE_STUDY,
+    testimonials: ["testimonialsEyebrow", "testimonialsHeading", "testimonialsSubheading"],
+    accreditations: ["accreditationsHeading"],
+    pricing: ["pricingEyebrow", "pricingIncludedHeading"],
+    faq: ["faqHeading"],
+    cta: CTA,
+  },
+} satisfies Record<Exclude<SectionPageKind, "project">, Record<string, SectionLabelKey[]>>;
+
 /** Which of the Process / Stats overrides a kind of page renders. */
 export const BLOCKS_BY_KIND: Record<SectionPageKind, { process: boolean; stats: boolean }> = {
   service: { process: true, stats: true },

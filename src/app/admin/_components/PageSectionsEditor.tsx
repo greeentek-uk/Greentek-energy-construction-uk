@@ -114,19 +114,7 @@ const LABEL_FIELDS: Record<
   },
 };
 
-/**
- * Per-page overrides for the sections that otherwise come from a shared block
- * or a fixed label, so each page can carry its own wording.
- *
- * Collapsed by default and blank by default: an untouched page keeps the
- * shared copy, and only what someone deliberately writes here is stored.
- */
-export default function PageSectionsEditor({
-  initial,
-  inherited,
-  kind,
-  placeholders,
-}: {
+interface OverrideProps {
   initial?: PageSectionOverrides | null;
   /**
    * What this page shows today where it has no override of its own — the
@@ -135,15 +123,180 @@ export default function PageSectionsEditor({
    * the real copy instead of an empty form. Only saved once ticked.
    */
   inherited?: PageSectionOverrides | null;
-  /** Which page this is for — decides which fields are offered. */
-  kind: SectionPageKind;
+}
+
+/**
+ * The inputs for some of a page's labels. The page editors render one of
+ * these inside each section, with that section's keys from LABEL_GROUPS, so a
+ * heading is edited next to the copy under it.
+ */
+export function LabelFields({
+  keys,
+  initial,
+  inherited,
+  placeholders,
+}: OverrideProps & {
+  keys: readonly SectionLabelKey[];
   /** This page's actual fallback wording, where the form knows it. */
   placeholders?: Partial<Record<SectionLabelKey, string>>;
 }) {
-  const blocks = BLOCKS_BY_KIND[kind];
-  const process = initial?.process?.steps?.length ? initial.process : inherited?.process;
-  const stats = initial?.stats?.items?.length ? initial.stats : inherited?.stats;
+  return (
+    <div className="grid sm:grid-cols-2 gap-4">
+      {keys.map((key) => {
+        const field = LABEL_FIELDS[key];
+        const props = {
+          name: `label_${key}`,
+          defaultValue: initial?.labels?.[key] ?? "",
+          placeholder: inherited?.labels?.[key] || placeholders?.[key] || field.placeholder,
+          className: input,
+        };
+        return (
+          <div key={key} className={field.multiline ? "sm:col-span-2" : undefined}>
+            <label className={label}>{field.label}</label>
+            {field.multiline ? <textarea {...props} rows={2} /> : <input {...props} />}
+          </div>
+        );
+      })}
+    </div>
+  );
+}
 
+/** "How we work" steps for this page only; unticked keeps the inherited ones. */
+export function ProcessFields({ initial, inherited }: OverrideProps) {
+  const process = initial?.process?.steps?.length ? initial.process : inherited?.process;
+  return (
+    <div className="space-y-4">
+      <label className="flex items-center gap-2 text-sm font-bold text-white">
+        <input
+          type="checkbox"
+          name="overrideProcess"
+          defaultChecked={Boolean(initial?.process?.steps?.length)}
+          className="accent-[#c5eb02]"
+        />
+        Give this page its own process steps
+      </label>
+      <p className="text-xs text-white/50 -mt-2">
+        Unticked, this page shows the steps below from the shared block. Tick it and edit them to
+        make this page&apos;s own.
+      </p>
+      <div className="grid sm:grid-cols-2 gap-4">
+        <div>
+          <label className={label}>Small label</label>
+          <input name="processEyebrow" defaultValue={process?.eyebrow} className={input} />
+        </div>
+        <div>
+          <label className={label}>Subheading</label>
+          <input name="processSubheading" defaultValue={process?.subheading} className={input} />
+        </div>
+        <div>
+          <label className={label}>Heading — first line</label>
+          <input name="processHeadingLine1" defaultValue={process?.headingLine1} className={input} />
+        </div>
+        <div>
+          <label className={label}>Heading — second line</label>
+          <input name="processHeadingLine2" defaultValue={process?.headingLine2} className={input} />
+        </div>
+      </div>
+      <div className="grid sm:grid-cols-2 gap-4">
+        {[0, 1, 2, 3, 4, 5].map((i) => (
+          <div key={i} className="rounded-lg border border-white/10 p-3 space-y-2">
+            <div className="grid grid-cols-[4rem_1fr] gap-2">
+              <div>
+                <label className={label}>No.</label>
+                <input
+                  name={`processStepNumber_${i}`}
+                  defaultValue={process?.steps?.[i]?.number}
+                  placeholder={String(i + 1).padStart(2, "0")}
+                  className={input}
+                />
+              </div>
+              <div>
+                <label className={label}>Step {i + 1} title</label>
+                <input
+                  name={`processStepTitle_${i}`}
+                  defaultValue={process?.steps?.[i]?.title}
+                  className={input}
+                />
+              </div>
+            </div>
+            <label className={label}>Step {i + 1} text</label>
+            <textarea
+              name={`processStepBody_${i}`}
+              defaultValue={process?.steps?.[i]?.body}
+              rows={2}
+              className={input}
+            />
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+/** The three headline figures for this page only; unticked keeps the inherited ones. */
+export function StatsFields({ initial, inherited }: OverrideProps) {
+  const stats = initial?.stats?.items?.length ? initial.stats : inherited?.stats;
+  return (
+    <div className="space-y-4">
+      <label className="flex items-center gap-2 text-sm font-bold text-white">
+        <input
+          type="checkbox"
+          name="overrideStats"
+          defaultChecked={Boolean(initial?.stats?.items?.length)}
+          className="accent-[#c5eb02]"
+        />
+        Give this page its own figures
+      </label>
+      <p className="text-xs text-white/50 -mt-2">
+        Unticked, this page shows the figures below from the shared block.
+      </p>
+      <div className="grid sm:grid-cols-3 gap-4">
+        {[0, 1, 2].map((i) => (
+          <div key={i} className="rounded-lg border border-white/10 p-3 space-y-2">
+            <label className={label}>Figure {i + 1}</label>
+            <input
+              name={`statValue_${i}`}
+              defaultValue={stats?.items?.[i]?.value}
+              placeholder="500+"
+              className={input}
+            />
+            <label className={label}>Label</label>
+            <input
+              name={`statLabel_${i}`}
+              defaultValue={stats?.items?.[i]?.label}
+              placeholder="Projects Completed"
+              className={input}
+            />
+            <label className={label}>Description</label>
+            <textarea
+              name={`statDescription_${i}`}
+              defaultValue={stats?.items?.[i]?.description}
+              rows={2}
+              className={input}
+            />
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+/**
+ * Every label and block override for a page in one collapsed box — still used
+ * by the project form. The service, location and location + service editors
+ * place the pieces above inside each section instead.
+ */
+export default function PageSectionsEditor({
+  initial,
+  inherited,
+  kind,
+  placeholders,
+}: OverrideProps & {
+  /** Which page this is for — decides which fields are offered. */
+  kind: SectionPageKind;
+  placeholders?: Partial<Record<SectionLabelKey, string>>;
+}) {
+  const blocks = BLOCKS_BY_KIND[kind];
   return (
     <details className="border-t border-white/10 pt-4">
       <summary className="cursor-pointer font-bold text-white text-sm">
@@ -151,156 +304,25 @@ export default function PageSectionsEditor({
       </summary>
       <p className="text-xs text-white/50 mt-2">
         Everything here is optional. Leave a field blank and this page uses the shared wording; fill
-        it in and only this page changes. Use it to keep pages from reading like the same template
-        repeated.
+        it in and only this page changes.
       </p>
-
-      <div className="mt-5 space-y-4">
-        <h4 className="text-xs font-bold uppercase tracking-wide text-[#c5eb02]">
-          Section headings
-        </h4>
-        <div className="grid sm:grid-cols-2 gap-4">
-          {LABELS_BY_KIND[kind].map((key) => {
-            const field = LABEL_FIELDS[key];
-            const props = {
-              name: `label_${key}`,
-              defaultValue: initial?.labels?.[key] ?? "",
-              placeholder: inherited?.labels?.[key] || placeholders?.[key] || field.placeholder,
-              className: input,
-            };
-            return (
-              <div key={key} className={field.multiline ? "sm:col-span-2" : undefined}>
-                <label className={label}>{field.label}</label>
-                {field.multiline ? <textarea {...props} rows={2} /> : <input {...props} />}
-              </div>
-            );
-          })}
-        </div>
+      <div className="mt-5">
+        <LabelFields
+          keys={LABELS_BY_KIND[kind]}
+          initial={initial}
+          inherited={inherited}
+          placeholders={placeholders}
+        />
       </div>
-
       {blocks.process && (
-        <>
-          <div className="mt-6 space-y-4">
-            <label className="flex items-center gap-2 text-xs font-bold uppercase tracking-wide text-[#c5eb02]">
-              <input
-                type="checkbox"
-                name="overrideProcess"
-                defaultChecked={Boolean(initial?.process?.steps?.length)}
-                className="accent-[#c5eb02]"
-              />
-              Give this page its own process steps
-            </label>
-            <div className="grid sm:grid-cols-2 gap-4">
-              <div>
-                <label className={label}>Small label</label>
-                <input
-                  name="processEyebrow"
-                  defaultValue={process?.eyebrow}
-                  className={input}
-                />
-              </div>
-              <div>
-                <label className={label}>Subheading</label>
-                <input
-                  name="processSubheading"
-                  defaultValue={process?.subheading}
-                  className={input}
-                />
-              </div>
-              <div>
-                <label className={label}>Heading — first line</label>
-                <input
-                  name="processHeadingLine1"
-                  defaultValue={process?.headingLine1}
-                  className={input}
-                />
-              </div>
-              <div>
-                <label className={label}>Heading — second line</label>
-                <input
-                  name="processHeadingLine2"
-                  defaultValue={process?.headingLine2}
-                  className={input}
-                />
-              </div>
-            </div>
-            <div className="grid sm:grid-cols-2 gap-4">
-              {[0, 1, 2, 3, 4, 5].map((i) => (
-                <div key={i} className="rounded-lg border border-white/10 p-3 space-y-2">
-                  <div className="grid grid-cols-[4rem_1fr] gap-2">
-                    <div>
-                      <label className={label}>No.</label>
-                      <input
-                        name={`processStepNumber_${i}`}
-                        defaultValue={process?.steps?.[i]?.number}
-                        placeholder={String(i + 1).padStart(2, "0")}
-                        className={input}
-                      />
-                    </div>
-                    <div>
-                      <label className={label}>Step {i + 1} title</label>
-                      <input
-                        name={`processStepTitle_${i}`}
-                        defaultValue={process?.steps?.[i]?.title}
-                        className={input}
-                      />
-                    </div>
-                  </div>
-                  <label className={label}>Step {i + 1} text</label>
-                  <textarea
-                    name={`processStepBody_${i}`}
-                    defaultValue={process?.steps?.[i]?.body}
-                    rows={2}
-                    className={input}
-                  />
-                </div>
-              ))}
-            </div>
-          </div>
-        </>
+        <div className="mt-6">
+          <ProcessFields initial={initial} inherited={inherited} />
+        </div>
       )}
-
       {blocks.stats && (
-        <>
-          <div className="mt-6 space-y-4">
-            <label className="flex items-center gap-2 text-xs font-bold uppercase tracking-wide text-[#c5eb02]">
-              <input
-                type="checkbox"
-                name="overrideStats"
-                defaultChecked={Boolean(initial?.stats?.items?.length)}
-                className="accent-[#c5eb02]"
-              />
-              Give this page its own stats
-            </label>
-            <div className="grid sm:grid-cols-3 gap-4">
-              {[0, 1, 2].map((i) => (
-                <div key={i} className="rounded-lg border border-white/10 p-3 space-y-2">
-                  <label className={label}>Figure {i + 1}</label>
-                  <input
-                    name={`statValue_${i}`}
-                    defaultValue={stats?.items?.[i]?.value}
-                    placeholder="500+"
-                    className={input}
-                  />
-                  <label className={label}>Label</label>
-                  <input
-                    name={`statLabel_${i}`}
-                    defaultValue={stats?.items?.[i]?.label}
-                    placeholder="Projects Completed"
-                    className={input}
-                  />
-                  <label className={label}>Description</label>
-                  <textarea
-                    name={`statDescription_${i}`}
-                    defaultValue={stats?.items?.[i]?.description}
-                    rows={2}
-                    className={input}
-                  />
-                </div>
-              ))}
-            </div>
-          </div>
-        </>
+        <div className="mt-6">
+          <StatsFields initial={initial} inherited={inherited} />
+        </div>
       )}
     </details>
   );

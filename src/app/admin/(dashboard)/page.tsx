@@ -27,11 +27,11 @@ export default async function AdminHomePage({ searchParams }: Props) {
   const cards = [
     { href: "/admin/seo", label: "Page SEO", count: "Meta titles & descriptions" },
     {
-      href: "/admin/page-content",
-      label: "Page Content",
-      count: dirtyCount > 0 ? `${dirtyCount} unpublished change${dirtyCount === 1 ? "" : "s"}` : "Shared sections & page headers",
+      href: "/admin/content",
+      label: "Pages",
+      count: dirtyCount > 0 ? `${dirtyCount} unpublished change${dirtyCount === 1 ? "" : "s"}` : "Every page and its sections",
     },
-    { href: "/admin/pages", label: "Pages", count: `${pageCount} pages` },
+    { href: "/admin/pages", label: "Other pages", count: `${pageCount} pages` },
     { href: "/admin/menus", label: "Menus", count: "Header & footer links" },
     { href: "/admin/footer-cta", label: "Footer CTA", count: "Footer heading & buttons, per page" },
     { href: "/admin/blog", label: "Blog Posts", count: `${posts.length} posts` },

@@ -19,9 +19,7 @@ export default async function NewServicePage({ searchParams }: Props) {
 
       <SaveBanner error={params.error} />
 
-      <div className="bg-[#101314] border border-white/10 rounded-xl p-6">
-        <ServiceForm projects={projects} />
-      </div>
+      <ServiceForm projects={projects} />
     </div>
   );
 }

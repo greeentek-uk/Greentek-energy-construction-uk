@@ -7,6 +7,7 @@ import {
   type PageContentKey,
   type PageContentMap,
 } from "@/data/pageContent";
+import { pagesShowingBlock } from "@/data/adminPages";
 import { publishBlockAction } from "../../../_actions/pageContent";
 import SaveBanner from "../../../_components/SaveBanner";
 import ConfirmSubmitButton from "../../../_components/ConfirmSubmitButton";
@@ -52,13 +53,26 @@ export default async function EditPageContentPage({ params, searchParams }: Prop
   }
 
   const blocks = await listBlocksWithDirty();
+  const showingPages = pagesShowingBlock(key);
   const dirty = blocks.find((b) => b.key === key)?.dirty ?? false;
 
   return (
     <div>
-      <Link href="/admin/page-content" className="text-sm text-white/50 hover:text-white">
-        ← All Page Content
-      </Link>
+      {/* Blocks are reached page by page, so lead back to the page(s) this
+          one is on — and name them all, since an edit here reaches each. */}
+      <nav aria-label="Breadcrumb" className="text-sm text-white/50 flex flex-wrap gap-1.5">
+        <Link href="/admin/content" className="hover:text-white">
+          Pages
+        </Link>
+        {showingPages[0] && (
+          <>
+            <span className="text-white/25">/</span>
+            <Link href={`/admin/content/${showingPages[0].id}`} className="hover:text-white">
+              {showingPages[0].label}
+            </Link>
+          </>
+        )}
+      </nav>
       <div className="flex items-center justify-between gap-4 mt-2 mb-6">
         <h1 className="text-2xl font-bold">{PAGE_CONTENT_META[key].label}</h1>
         <div className="flex items-center gap-3">
@@ -84,6 +98,25 @@ export default async function EditPageContentPage({ params, searchParams }: Prop
           )}
         </div>
       </div>
+
+      <p className="-mt-3 mb-6 text-sm text-white/50">
+        {showingPages.length ? (
+          <>
+            Appears on:{" "}
+            {showingPages.map((page, i) => (
+              <span key={page.id}>
+                {i > 0 && ", "}
+                <Link href={`/admin/content/${page.id}`} className="text-white/80 underline hover:text-white">
+                  {page.label}
+                </Link>
+              </span>
+            ))}
+            {showingPages.length > 1 && " — an edit here changes all of them."}
+          </>
+        ) : (
+          "Not shown on any page at the moment."
+        )}
+      </p>
 
       {sp.published !== undefined && (
         <p className="-mt-4 mb-6 text-sm text-white/50">

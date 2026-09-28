@@ -31,7 +31,7 @@ export async function saveLocationServiceContentAction(formData: FormData): Prom
   const text = (name: string) => String(formData.get(name) || "").trim();
   const locationSlug = text("locationSlug");
   const serviceSlug = text("serviceSlug");
-  const back = `/admin/locations/${locationSlug}/service-content`;
+  const back = `/admin/locations/${locationSlug}/services/${serviceSlug}`;
 
   if (!locationSlug || !serviceSlug) {
     redirect(`${back}?error=${encodeURIComponent("Missing location or service")}`);

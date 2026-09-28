@@ -19,14 +19,13 @@ const input =
   "w-full rounded-lg border border-white/15 bg-white/5 px-3 py-2 text-sm text-white placeholder:text-white/30 outline-none focus:border-[#c5eb02] focus:ring-2 focus:ring-[#c5eb02]/20 transition-all";
 const label = "block text-xs font-semibold text-white/70 mb-1";
 
+/** No title of its own: the editor section around it names it. */
 function SectionHeader({
-  title,
   help,
   overrideName,
   overrideLabel,
   overriding,
 }: {
-  title: string;
   help: ReactNode;
   overrideName?: string;
   overrideLabel?: string;
@@ -42,12 +41,10 @@ function SectionHeader({
             defaultChecked={overriding}
             className="accent-[#c5eb02]"
           />
-          {overrideLabel ?? title}
+          {overrideLabel}
         </label>
-      ) : (
-        <h3 className="font-bold text-white text-sm">{title}</h3>
-      )}
-      <p className="text-xs text-white/50 mt-1">{help}</p>
+      ) : null}
+      {help && <p className="text-xs text-white/50 mt-1">{help}</p>}
     </div>
   );
 }
@@ -67,9 +64,8 @@ export function ProblemSectionFields({
 }) {
   const initial = own ?? inherited;
   return (
-    <div className="border-t border-white/10 pt-4 space-y-4">
+    <div className="space-y-4">
       <SectionHeader
-        title="Problem Section"
         help={help}
         overrideName={overrideName}
         overrideLabel="Give this page its own problem section"
@@ -129,9 +125,8 @@ export function PricingSectionFields({
 }) {
   const initial = own ?? inherited;
   return (
-    <div className="border-t border-white/10 pt-4 space-y-4">
+    <div className="space-y-4">
       <SectionHeader
-        title="What It Costs Section"
         help={help}
         overrideName={overrideName}
         overrideLabel="Give this page its own “What it costs” section"

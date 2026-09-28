@@ -103,11 +103,12 @@ export async function saveServiceAction(formData: FormData): Promise<void> {
     await updateService(slug, fields);
   } catch (err) {
     const message = err instanceof Error ? err.message : "Unknown error";
-    redirect(`/admin/services?error=${encodeURIComponent(message)}`);
+    redirect(`/admin/services/${slug}?error=${encodeURIComponent(message)}`);
   }
 
   await revalidateServiceRoutes(slug);
-  redirect("/admin/services?saved=1");
+  // Back to the page being edited, not the list: the editor is its own screen now.
+  redirect(`/admin/services/${slug}?saved=1`);
 }
 
 export async function createServiceAction(formData: FormData): Promise<void> {
@@ -136,7 +137,7 @@ export async function createServiceAction(formData: FormData): Promise<void> {
   }
 
   await revalidateServiceRoutes(slug);
-  redirect("/admin/services?saved=1");
+  redirect(`/admin/services/${slug}?saved=1`);
 }
 
 export async function deleteServiceAction(formData: FormData): Promise<void> {
@@ -278,11 +279,11 @@ export async function saveLocationAction(formData: FormData): Promise<void> {
     await updateLocation(slug, fields);
   } catch (err) {
     const message = err instanceof Error ? err.message : "Unknown error";
-    redirect(`/admin/locations?error=${encodeURIComponent(message)}`);
+    redirect(`/admin/locations/${slug}?error=${encodeURIComponent(message)}`);
   }
 
   await revalidateLocationRoutes(slug);
-  redirect("/admin/locations?saved=1");
+  redirect(`/admin/locations/${slug}?saved=1`);
 }
 
 export async function createLocationAction(formData: FormData): Promise<void> {
@@ -311,7 +312,7 @@ export async function createLocationAction(formData: FormData): Promise<void> {
   }
 
   await revalidateLocationRoutes(slug);
-  redirect("/admin/locations?saved=1");
+  redirect(`/admin/locations/${slug}?saved=1`);
 }
 
 export async function deleteLocationAction(formData: FormData): Promise<void> {

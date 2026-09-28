@@ -18,9 +18,7 @@ export default async function NewLocationPage({ searchParams }: Props) {
 
       <SaveBanner error={params.error} />
 
-      <div className="bg-[#101314] border border-white/10 rounded-xl p-6">
-        <LocationForm />
-      </div>
+      <LocationForm />
     </div>
   );
 }

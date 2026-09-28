@@ -84,11 +84,30 @@ on the dashboard is the manual escape hatch.
 
 ## Feature areas
 
-**Admin panel** (`/admin`, 20 sections — see `navItems` in `src/app/admin/(dashboard)/layout.tsx`).
-Single account, HMAC-signed 12h cookie (`lib/auth.ts`, `timingSafeEqual` throughout). Every write
-is a server action in `src/app/admin/_actions/*`. Sections: Page SEO, SEO Settings, Schema,
-Sitemap, Redirects & 404s, Local SEO, Page Content, Pages, Menus, Blog, Services, Projects,
-Locations, Scripts & Tracking, robots/llms, Media, Image Delivery, Version History, Settings.
+**Admin panel** (`/admin`). Single account, HMAC-signed 12h cookie (`lib/auth.ts`,
+`timingSafeEqual` throughout). Every write is a server action in `src/app/admin/_actions/*`.
+
+**Organised by page, by the owner's decision** — the editor picks a page, then a section on it.
+Sidebar (`_components/AdminNav.tsx`, active item highlighted) groups: **Pages** (All pages, Home,
+About, Services, Locations, Projects, Blog, Other pages, Shared sections) · **Site-wide** (Menus,
+Footer CTA, Company settings) · **SEO** · **Media & tracking**.
+- Fixed pages: `/admin/content` (hub) → `/admin/content/[pageId]` lists that page's
+  `pageContent` blocks **in render order** → block editor `/admin/page-content/[key]`, which says
+  every page the block appears on. The map is `data/adminPages.ts` `CONTENT_PAGES`; keep its order
+  in step with the page's JSX. A unit test fails if a block is on no page (or `UNUSED_BLOCKS`).
+  `/admin/page-content` (the old flat list) redirects to the hub.
+- Pages in sets each have their own editor URL: `/admin/services/[slug]`,
+  `/admin/locations/[slug]`, `/admin/locations/[loc]/services/[svc]` (the old
+  `…/service-content` list redirects). Saves return to that editor. Service ↔ its six area
+  versions ↔ the area's eleven services are cross-linked (`PageLinkGrid`, "Own copy"/"Defaults").
+- Those three editors use `_components/editor/EditorLayout.tsx`: numbered sections **in the live
+  page's order**, a sticky section menu and a sticky Save bar. Each section holds its copy *and*
+  its headings — `LABEL_GROUPS` (`data/pageSections.ts`) says which labels go in which section; a
+  unit test checks each kind's groups cover `LABELS_BY_KIND` exactly once, because a label the
+  form doesn't render posts blank and is wiped on save. `PageSectionsEditor` (all labels in one
+  box) survives only for projects.
+- Verified 2026-09-28 by saving the Cardiff heat-pump combo, the heat-pump service and Cardiff
+  unchanged and diffing Mongo: nothing lost.
 
 **SEO.** Three-layer resolution, always in this order: per-route override → site-wide template for
 that page kind → the page's own computed default (`lib/seo.ts` `withSeoOverride`). Templates use
@@ -221,7 +240,7 @@ OpenWidget chat. WhatsApp/phone floating actions.
 
 ## Current state (2026-09-18)
 
-- Unit tests: **132 passing** across 13 files (2026-09-28).
+- Unit tests: **143 passing** across 13 files (2026-09-28).
 - E2E: 4 known failures recorded in `test-results/` —
   1. `/images/brands/swip.png` 404s on `/about` and in the media library. The file isn't in
      `public/images/brands/`; the reference lives in the **`brands` pageContent block in Mongo**,
@@ -245,6 +264,9 @@ OpenWidget chat. WhatsApp/phone floating actions.
 - 2026-09-19: 301 added in the redirects table, `/services/complete-heating-system-upgrades` →
   `/services/heating-system-upgrades` (the old URL was derived from the service *title*, which
   differs from its slug). Verified live.
+- Headless Chromium against `pnpm dev` gets stuck in a hot-reload loop (every page, "[Fast
+  Refresh] rebuilding" → reload, ~1/s). To drive the admin by script, use
+  `javaScriptEnabled: false` — the server-action forms post natively — or a prod build.
 - Playwright's bundled browser isn't installed on the dev machine; run e2e with
   `PW_CHROMIUM_PATH=/usr/bin/chromium-browser pnpm test:e2e`. On 2026-09-19 `site.spec` +
   `pages.spec` gave 227 passed / 2 failed (both the hero heading above). `links`, `admin`,

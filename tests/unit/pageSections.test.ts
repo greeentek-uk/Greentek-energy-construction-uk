@@ -1,5 +1,13 @@
 import { describe, expect, it } from "vitest";
-import { caseStudyLabels, label, LABELS_BY_KIND, SECTION_LABEL_KEYS } from "@/data/pageSections";
+import {
+  caseStudyLabels,
+  label,
+  LABEL_GROUPS,
+  LABELS_BY_KIND,
+  SECTION_LABEL_KEYS,
+} from "@/data/pageSections";
+import { CONTENT_PAGES, UNUSED_BLOCKS } from "@/data/adminPages";
+import { PAGE_CONTENT_KEYS } from "@/data/pageContent";
 import { readPageSections } from "@/app/admin/_actions/pageSections";
 
 function form(values: Record<string, string>): FormData {
@@ -111,5 +119,33 @@ describe("label coverage", () => {
         button: undefined,
         link: undefined,
       });
+  });
+});
+
+describe("LABEL_GROUPS", () => {
+  // A label offered but not rendered in any section would post blank and be
+  // wiped on save, so the groups must cover each kind's labels exactly once.
+  it.each(Object.entries(LABEL_GROUPS))("covers every %s label exactly once", (kind, groups) => {
+    const grouped = Object.values(groups).flat();
+    expect(new Set(grouped).size).toBe(grouped.length);
+    expect([...grouped].sort()).toEqual(
+      [...LABELS_BY_KIND[kind as keyof typeof LABEL_GROUPS]].sort(),
+    );
+  });
+});
+
+describe("CONTENT_PAGES", () => {
+  // A block on no page would be unreachable from the page-based panel.
+  it("places every page content block on a page, or lists it as unused", () => {
+    const placed = new Set([
+      ...CONTENT_PAGES.flatMap((p) => p.sections.map((s) => s.key)),
+      ...UNUSED_BLOCKS,
+    ]);
+    expect(PAGE_CONTENT_KEYS.filter((key) => !placed.has(key))).toEqual([]);
+  });
+
+  it("has unique page ids", () => {
+    const ids = CONTENT_PAGES.map((p) => p.id);
+    expect(new Set(ids).size).toBe(ids.length);
   });
 });
