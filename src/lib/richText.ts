@@ -1,6 +1,23 @@
 import sanitizeHtml from "sanitize-html";
 
 /**
+ * A pasted link to our own site, on either host, saved as a path
+ * ("https://www.greentekenergy.co.uk/finance" → "/finance").
+ *
+ * Absolute own-site links pinned the body copy to whichever host was pasted:
+ * service copy linked to www while the site was served from the bare domain,
+ * so every internal link bounced through a redirect — and, looking external,
+ * opened in a new tab. A path works on any host, including previews.
+ */
+const OWN_SITE = /^https?:\/\/(?:www\.)?greentekenergy\.co\.uk(?=[/?#]|$)/i;
+
+export function toRelativeIfOwnSite(href: string): string {
+  const trimmed = href.trim();
+  if (!OWN_SITE.test(trimmed)) return href;
+  return trimmed.replace(OWN_SITE, "") || "/";
+}
+
+/**
  * Sanitizes admin-authored rich text.
  *
  * The panel is behind a login, but this still runs on every save: the output is
@@ -21,12 +38,16 @@ const OPTIONS: sanitizeHtml.IOptions = {
     div: "span",
     p: "span",
     a: (tagName, attribs) => {
-      const href = attribs.href ?? "";
+      const href = toRelativeIfOwnSite(attribs.href ?? "");
       const external = /^https?:\/\//i.test(href);
+      // An internal link stays in the tab. Own-site links saved before they were
+      // made relative carry the new-tab pair, so it's dropped, not just not added.
+      const { target: _target, rel: _rel, ...rest } = attribs;
       return {
         tagName: "a",
         attribs: {
-          ...attribs,
+          ...(external ? attribs : rest),
+          href,
           // An external link opening in a new tab needs noopener, or the
           // destination gets a handle on this window via window.opener.
           ...(external ? { target: "_blank", rel: "noopener noreferrer" } : {}),

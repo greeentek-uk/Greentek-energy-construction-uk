@@ -22,6 +22,9 @@ export async function getAllRoutes(): Promise<RouteEntry[]> {
       group: "Static Pages",
     },
     { path: "/contact", label: "Contact", group: "Static Pages" },
+    // Was missing, so /finance was left out of the sitemap and couldn't be
+    // edited in Page SEO.
+    { path: "/finance", label: "Finance", group: "Static Pages" },
     { path: "/privacy", label: "Privacy Policy", group: "Static Pages" },
     { path: "/terms", label: "Terms of Service", group: "Static Pages" },
   ];

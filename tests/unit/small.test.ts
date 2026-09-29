@@ -5,6 +5,7 @@ import { BROWSER_FORWARDABLE_EVENTS, isStandardEvent } from "@/lib/metaEvents";
 import { enquiryPhotoFolder } from "@/lib/db/enquiries";
 import { resolveLiveSiteUrl } from "@/lib/revalidate";
 import { splitHeading } from "@/lib/heroHeading";
+import { sanitizeRichText, toRelativeIfOwnSite } from "@/lib/richText";
 import { PRODUCTION_SITE_URL } from "@/lib/structuredData";
 
 describe("whatsappUrl", () => {
@@ -90,5 +91,37 @@ describe("splitHeading", () => {
   // Blank or mistyped means plain white — never text appended to the H1.
   it.each([undefined, "", "   ", "Swansea"])("no highlight for %j", (highlight) => {
     expect(splitHeading("Solar PV in Cardiff", highlight)).toBeNull();
+  });
+});
+
+describe("own-site links in rich text", () => {
+  it.each([
+    ["https://www.greentekenergy.co.uk/finance", "/finance"],
+    ["https://greentekenergy.co.uk/locations/cardiff?x=1#faq", "/locations/cardiff?x=1#faq"],
+    ["https://www.greentekenergy.co.uk", "/"],
+    ["http://greentekenergy.co.uk/", "/"],
+  ])("%s → %s", (from, to) => expect(toRelativeIfOwnSite(from)).toBe(to));
+
+  it("leaves other sites alone, including look-alike hosts", () => {
+    expect(toRelativeIfOwnSite("https://greentekenergy.co.uk.evil.com/x")).toBe(
+      "https://greentekenergy.co.uk.evil.com/x",
+    );
+    expect(toRelativeIfOwnSite("https://ideal4finance.com/")).toBe("https://ideal4finance.com/");
+  });
+
+  it("saves them as same-tab internal links", () => {
+    expect(
+      sanitizeRichText('<a href="https://www.greentekenergy.co.uk/finance" target="_blank" rel="noopener noreferrer">x</a>'),
+    ).toBe(
+      '<a href="/finance">x</a>',
+    );
+  });
+});
+
+describe("external links", () => {
+  it("still open in a new tab with noopener", () => {
+    expect(sanitizeRichText('<a href="https://ideal4finance.com/">x</a>')).toBe(
+      '<a href="https://ideal4finance.com/" target="_blank" rel="noopener noreferrer">x</a>',
+    );
   });
 });

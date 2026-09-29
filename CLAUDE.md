@@ -82,6 +82,17 @@ live site, so every save updated Mongo while production kept its old HTML. The c
 reports a failed push instead of "Saved". "Refresh live site"
 on the dashboard is the manual escape hatch.
 
+### The host is `https://www.greentekenergy.co.uk` (decided 2026-09-29)
+
+The Search Console property is `www`, and `NEXT_PUBLIC_SITE_URL` (canonicals, sitemap, robots,
+schema) is `www`. Until 2026-09-29 Vercel served the **bare domain** and 307'd `www` to it, so
+every URL Google was given redirected away from itself and **nothing was indexed**. The Vercel
+domain setting must stay: `www` primary, apex → `www` with a permanent redirect. Don't set a
+per-page canonical to the bare domain, and don't add host redirects to the admin redirects
+table — it matches paths, not hosts (the one that was added had 0 hits). Own-site links in rich
+text are saved as relative paths (`toRelativeIfOwnSite` in `lib/richText.ts`), so body copy
+can't pin a host; the 45 existing absolute ones were rewritten on 2026-09-29.
+
 ## Feature areas
 
 **Admin panel** (`/admin`). Single account, HMAC-signed 12h cookie (`lib/auth.ts`,
