@@ -1,4 +1,4 @@
-import Link from "next/link";
+import Link from "@/components/ui/Link";
 import { ArrowRight, Check, ReceiptText } from "lucide-react";
 import type { ServicePricing } from "@/data/site";
 

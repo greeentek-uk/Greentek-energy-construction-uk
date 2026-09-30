@@ -1,4 +1,4 @@
-import Link from "next/link";
+import Link from "@/components/ui/Link";
 import { ArrowRight } from "lucide-react";
 import BeforeAfterSlider from "@/components/ui/BeforeAfterSlider";
 import type { Project } from "@/data/site";

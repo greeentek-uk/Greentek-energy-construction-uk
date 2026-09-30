@@ -103,9 +103,16 @@ export default async function ServiceDetailPage({ params }: Props) {
           body={label(sections, "heroBody", service.description)}
           source={`Service page — ${service.title}`}
           fixedService={{ value: service.formCategory, label: service.title }}
+          formHeading={sections?.labels?.formHeading}
+          formSubheading={sections?.labels?.formSubheading}
+          callLabel={sections?.labels?.heroCallLabel}
+          whatsappLabel={sections?.labels?.heroWhatsappLabel}
         />
 
-        <FinanceBanner />
+        <FinanceBanner
+          heading={sections?.labels?.financeHeading}
+          linkLabel={sections?.labels?.financeLinkLabel}
+        />
 
         {/* 2 — The reader's problem and who this is for, named before the
             page describes the fix. Service-level content, so a location +
@@ -166,6 +173,7 @@ export default async function ServiceDetailPage({ params }: Props) {
           eyebrow={sections?.labels?.testimonialsEyebrow}
           heading={sections?.labels?.testimonialsHeading}
           subheading={sections?.labels?.testimonialsSubheading}
+          reviews={sections?.reviews}
         />
 
         {/* 5 — How we work */}

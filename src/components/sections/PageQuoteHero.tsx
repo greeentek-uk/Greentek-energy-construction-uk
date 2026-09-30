@@ -13,6 +13,11 @@ interface PageQuoteHeroProps {
   source: string;
   /** Set on a page about one service, so the form doesn't ask which service. */
   fixedService?: FixedService;
+  /** Per-page wording for the form box and buttons; blank = the home hero's. */
+  formHeading?: string;
+  formSubheading?: string;
+  callLabel?: string;
+  whatsappLabel?: string;
 }
 
 /**
@@ -33,6 +38,10 @@ export default async function PageQuoteHero({
   secondaryBody,
   source,
   fixedService,
+  formHeading,
+  formSubheading,
+  callLabel,
+  whatsappLabel,
 }: PageQuoteHeroProps) {
   const [siteConfig, home] = await Promise.all([
     getCurrentSiteConfig(),
@@ -48,15 +57,16 @@ export default async function PageQuoteHero({
       body={body}
       secondaryBody={secondaryBody}
       phone={siteConfig.phone}
-      callLabel={home.ctaLabel}
+      callLabel={callLabel?.trim() || home.ctaLabel}
+      whatsappLabel={whatsappLabel?.trim() || undefined}
       rating={{
         label: home.ratingLabel,
         score: home.ratingScore,
         url: home.ratingUrl,
       }}
       form={{
-        heading: home.formHeading,
-        subheading: home.formSubheading,
+        heading: formHeading?.trim() || home.formHeading,
+        subheading: formSubheading?.trim() || home.formSubheading,
         source,
         fixedService,
       }}

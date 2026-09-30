@@ -59,7 +59,11 @@ admin-added tag. Don't add one back.
 | `SiteConfig` | `siteSettings` | company details, overlaid with `menus` for nav |
 
 `ContentBlock` (`src/data/content.ts`) is the shared long-form body shape for services, locations,
-pages and posts. `FaqItem` arrays attach to any of them and are rendered *and* marked up as
+pages and posts. Block types: heading, paragraph, list, image, quote, cta and **table** (added
+2026-09-30: `rows` of sanitized cells + `headerRow` + `caption`, rendered as a real `<table>` so
+search engines can lift it; cells are plain-text inputs in `TableBlockEditor` — one rich-text
+toolbar per cell was too heavy — with paste-from-spreadsheet; `parseTableRows` caps 40×8 and
+trims empty rows/columns). `FaqItem` arrays attach to any of them and are rendered *and* marked up as
 FAQPage schema from the same source.
 
 `RESERVED_SLUGS` in `src/data/pages.ts` blocks admin pages that a static route would shadow.
@@ -190,10 +194,27 @@ in green (`lib/heroHeading.ts` `splitHeading`, case-insensitive, first match). B
 default look didn't change. (It used to be heading + an appended highlight that fell back to the
 location name, so a rewritten H1 got "Cardiff" tacked on the end.)
 
-**Override editors start from the inherited copy.** `ProblemSectionFields`, `PricingSectionFields`
-and `PageSectionsEditor` take `inherited` (the service's section, or the shared process/stats
-block): fields are pre-filled with it, labels show it as placeholder, but it's only saved once
-the "its own" box is ticked — so a combo can be edited from its real text without freezing it.
+**Inherited sections: editing them is enough — there is no tick box.** Problem, pricing
+(combos, from their service) and process/stats (every page, from the service or the shared
+block) are pre-filled with the inherited copy. On save, `_actions/inheritance.ts`
+`ownOrInherited` keeps what *differs* from the inherited copy as the page's own and drops what
+matches, so an untouched section keeps following. Comparison goes through `canon*`, which
+undoes what a form round trip changes (CRLF, trimming, default button labels, slot counts) —
+otherwise every save would freeze a copy. A "Go back to …'s version" box (`resetProblem`,
+`resetPricing`, `resetProcess`, `resetStats`) appears once a page has its own. **Why:** there
+used to be an "its own" tick box, and edits made without ticking it were silently discarded —
+five Cardiff combos lost their problem/pricing edits that way before 2026-09-30.
+
+**Also per page (2026-09-30 audit of what was still shared):** the hero's quote-form heading /
+subheading and both hero buttons, and the finance strip's text + link (label keys `formHeading`,
+`formSubheading`, `heroCallLabel`, `heroWhatsappLabel`, `financeHeading`, `financeLinkLabel`);
+**which reviews** the testimonials section shows (`sections.reviews`, keys from `reviewKey` =
+name + start of quote, picked from the shared list in `ReviewPicker` — never per-page review
+text; combos inherit the service's pick); and on combos **which services** the "Other services"
+cards show + their link text (`otherServices`, `otherServicesLinkLabel`, default = first four
+others via `lib/otherServices.ts`). Selections are stored only when they differ from what's
+inherited. Still shared by design: accreditation logos and the rating badge. A unit test now
+also checks each editor renders every one of its label groups.
 
 **Location pages** (`/locations/[slug]`): hero → finance → service cards → areas covered →
 body → stats → case study (`location.caseStudyProject`, picked in the panel; projects have no
@@ -212,6 +233,32 @@ The admin save *replaces* the doc (`replaceLocationServiceContent`, snapshotted 
 and deletes it when nothing is overridden; seed scripts keep the `$set` upsert so they can't wipe
 hand-written fields.
 
+**Blog** (`/blog`, `/blog/category/[category]`, both via `BlogListing.tsx`): search across the top
+(client-side, within the page's posts), categories card on the left (chips on phones), post
+cards on the right, then the quote `CtaSection` — the old "Follow on Instagram" block was
+removed 2026-09-30 by the owner's request. Categories are **real pages**, not an in-page filter,
+so each is crawlable: the slug is derived from the post's free-text `category`
+(`lib/blogCategories.ts`), so there's no category list to maintain; they're in `routes.ts`
+(Page SEO) and the sitemap, and a post save revalidates all of them. Unknown category → 404.
+**Single post** (`/blog/[slug]`): hero = category (links to its page) + date + H1 title only —
+the excerpt is for cards and the meta description, never shown on the post. Then the cover
+image with the **table of contents** on the right (sticky beside the article on desktop,
+collapsible under the image on phones), then the body. No green borders on this page. The
+contents come from `lib/toc.ts`: `headingAnchors` gives every heading its id and is used by
+both `ContentBlocks` and `buildToc`, so a contents link can't miss its heading. Per post
+(`post.toc`: on/off, title, depth H2…H6, default H2–H3) and per heading (`tocLabel`,
+`tocHidden`, stored on the heading block) — edited in the blog form's Table of contents panel
+(`TocPanel`, only when `ContentBlocksEditor` gets a `toc` prop). Headings are H1–H6 everywhere;
+H1 is offered because the owner asked, with a warning (the title is already the H1).
+`updateBlogPost` `$unset`s `toc`/`instagramUrl` when the form omits them, or resetting them
+would leave the old value live.
+Blog cards use `coverImage` (portrait 4:5); the post page uses `heroImage` (landscape 16:9,
+falls back to `coverImage`), both `object-cover` centred. The post's in-body "cta" blocks are
+not rendered (`ContentBlocks omit`) and not offered in the blog editor — Next Steps has Contact
+Us — and the Instagram field/sections are gone.
+Locally `next start` 404s every `/_next/image` URL (logo, covers) — that's the custom loader
+without Vercel's optimizer, not a bug; live it's 200.
+
 **Footer CTA** (heading, text, two buttons) is editable at Admin → Footer CTA: a default plus
 per-path overrides, where a path ending `/*` covers a section and the most specific match wins
 (`lib/footerCta.ts`). It is resolved **in the browser** via `usePathname` (`FooterCta.tsx`)
@@ -222,6 +269,14 @@ phone.
 **Other.** Version history (5 snapshots per doc, count-capped, restore is itself snapshotted so it
 can be undone). 404 logger feeding the redirects screen. Finance page + calculator (Ideal4Finance).
 OpenWidget chat. WhatsApp/phone floating actions.
+
+**Bandwidth (measured 2026-09-30):** one homepage visit was ~20 MB / 196 Vercel requests —
+14 MB of it the homepage slider's `<img>`s pointing at original 2–6 MB project PNGs, and 129
+viewport link prefetches. Fixed: the slider takes a resized `srcSet` from the image loader;
+`images.minimumCacheTTL` 30 days and a week's `Cache-Control` on `/images` + `/animations`
+(`next.config.ts`); public-site links use `@/components/ui/Link`, which prefetches on
+hover/focus/touch instead of on scroll. Keep new public links on that import. Admin keeps
+`next/link`.
 
 ## Conventions
 
@@ -237,7 +292,8 @@ OpenWidget chat. WhatsApp/phone floating actions.
   `max-w-* mx-auto` inside the container.
   **Exempt, by the owner's explicit decision — do not "fix" these:** every hero (homepage,
   `PageQuoteHero`, and the about/contact/blog/finance/article title heroes keep their original
-  `px-5 sm:px-15` / `max-w-*` widths) and the testimonials marquee (full-bleed).
+  `px-5 sm:px-15` / `max-w-*` widths) — except the **single blog post** hero, which the owner asked (2026-09-30) to
+  centre in `site-container` so it lines up with the image + contents row below it and the testimonials marquee (full-bleed).
 - **Never `overflow-x: hidden` on an ancestor of page content** — use `overflow-x: clip`.
   `hidden` makes the element a scroll container, which silently disables every `position: sticky`
   inside it. That is what had broken both the sticky header and the Process section's pinned
@@ -258,7 +314,7 @@ OpenWidget chat. WhatsApp/phone floating actions.
 
 ## Current state (2026-09-18)
 
-- Unit tests: **143 passing** across 13 files (2026-09-28).
+- Unit tests: **184 passing** across 17 files (2026-09-30).
 - E2E: 4 known failures recorded in `test-results/` —
   1. `/images/brands/swip.png` 404s on `/about` and in the media library. The file isn't in
      `public/images/brands/`; the reference lives in the **`brands` pageContent block in Mongo**,

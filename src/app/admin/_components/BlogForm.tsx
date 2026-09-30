@@ -80,31 +80,43 @@ export default function BlogForm({ post }: { post?: BlogPost }) {
           />
         </div>
         <Field
-          label="Excerpt"
+          label="Excerpt (shown on blog cards, not on the post itself)"
           name="excerpt"
           textarea
           defaultValue={post?.excerpt}
           required
         />
+        {/* Two images, because one crop can't serve both: the cards are
+            portrait and the post's own image is landscape. Both are shown
+            cover-cropped from the centre, so keep the subject in the middle. */}
         <div className="grid sm:grid-cols-2 gap-4">
-          <ImageUploadField
-            name="coverImage"
-            label="Cover Image"
-            defaultValue={post?.coverImage}
-            required
-          />
-          <Field
-            label="Cover Image Alt Text"
-            name="coverImageAlt"
-            defaultValue={post?.coverImageAlt}
-            required
-          />
+          <div className="space-y-3">
+            <ImageUploadField
+              name="coverImage"
+              label="Card image — portrait 4:5 (e.g. 1080 × 1350), used on the blog cards"
+              defaultValue={post?.coverImage}
+              required
+            />
+            <Field
+              label="Card image alt text"
+              name="coverImageAlt"
+              defaultValue={post?.coverImageAlt}
+              required
+            />
+          </div>
+          <div className="space-y-3">
+            <ImageUploadField
+              name="heroImage"
+              label="Post image — landscape 16:9 (e.g. 1600 × 900), top of the post (optional — uses the card image if blank)"
+              defaultValue={post?.heroImage}
+            />
+            <Field
+              label="Post image alt text"
+              name="heroImageAlt"
+              defaultValue={post?.heroImageAlt}
+            />
+          </div>
         </div>
-        <Field
-          label="Instagram URL (optional)"
-          name="instagramUrl"
-          defaultValue={post?.instagramUrl}
-        />
       </div>
 
       <div className="bg-[#101314] border border-white/10 rounded-xl p-6 space-y-4">
@@ -130,7 +142,12 @@ export default function BlogForm({ post }: { post?: BlogPost }) {
       </div>
 
       <div className="bg-[#101314] border border-white/10 rounded-xl p-6">
-        <ContentBlocksEditor initial={post?.content} />
+        <ContentBlocksEditor
+          initial={post?.content}
+          toc={post?.toc ?? null}
+          // Posts end with Next Steps (incl. Contact Us), so no in-body CTA box.
+          exclude={["cta"]}
+        />
       </div>
 
       <FaqEditor initial={post?.faqs} />

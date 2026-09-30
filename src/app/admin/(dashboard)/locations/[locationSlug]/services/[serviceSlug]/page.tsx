@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getCurrentSiteConfig, getPageContent } from "@/lib/cms";
+import { reviewPool } from "@/data/pageSections";
 import { getAllLocationServiceContent } from "@/lib/db/locationServiceContent";
 import SaveBanner from "../../../../../_components/SaveBanner";
 import LocationServiceContentForm from "../../../../../_components/LocationServiceContentForm";
@@ -21,11 +22,12 @@ interface Props {
  */
 export default async function EditLocationServicePage({ params, searchParams }: Props) {
   const [{ locationSlug, serviceSlug }, search] = await Promise.all([params, searchParams]);
-  const [{ locations, services, projects }, combos, sharedProcess, sharedStats] = await Promise.all([
+  const [{ locations, services, projects }, combos, sharedProcess, sharedStats, testimonials] = await Promise.all([
     getCurrentSiteConfig(),
     getAllLocationServiceContent(),
     getPageContent("process"),
     getPageContent("stats"),
+    getPageContent("testimonials"),
   ]);
 
   const location = locations.find((l) => l.slug === locationSlug);
@@ -113,8 +115,11 @@ export default async function EditLocationServicePage({ params, searchParams }: 
             labels: service.sections?.labels,
             process: service.sections?.process ?? sharedProcess,
             stats: service.sections?.stats ?? sharedStats,
+            reviews: service.sections?.reviews,
           },
         }}
+        reviewPool={reviewPool(testimonials.items)}
+        allServices={services.map(({ slug, shortName }) => ({ slug, shortName }))}
       />
     </div>
   );

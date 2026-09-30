@@ -1,4 +1,4 @@
-import Link from "next/link";
+import Link from "@/components/ui/Link";
 import { ArrowRight, CircleAlert } from "lucide-react";
 import type { ProblemSection as ProblemSectionContent } from "@/data/site";
 

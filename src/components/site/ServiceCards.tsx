@@ -1,7 +1,7 @@
 "use client";
 
 import { useFadeIn } from "@/hooks/useFadeIn";
-import Link from "next/link";
+import Link from "@/components/ui/Link";
 import { createElement } from "react";
 import type { LucideIcon } from "lucide-react";
 import {

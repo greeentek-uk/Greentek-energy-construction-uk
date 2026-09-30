@@ -9,6 +9,11 @@ const nextConfig: NextConfig = {
     // fall through to Next's own optimizer inside that loader.
     loader: "custom",
     loaderFile: "./src/lib/imageLoader.ts",
+    // How long Vercel keeps each resized copy of a /public image (and tells
+    // browsers they can). It was the default, so optimised images went out
+    // with max-age=0 and were re-transformed often — spending the plan's
+    // image-optimisation allowance and bandwidth on the same few files.
+    minimumCacheTTL: 2592000, // 30 days
     remotePatterns: [
       {
         protocol: "https",
@@ -18,6 +23,20 @@ const nextConfig: NextConfig = {
   },
   async headers() {
     return [
+      {
+        // Photos, backgrounds and icons in /public were sent with max-age=0,
+        // so every visit re-checked or re-downloaded them. A week in the
+        // browser (a day of serving stale while it refreshes) is safe for
+        // files that only change with a deploy — one replaced under the same
+        // name shows up for returning visitors within the week.
+        source: "/:dir(images|animations)/:path*",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "public, max-age=604800, stale-while-revalidate=86400",
+          },
+        ],
+      },
       {
         source: "/(.*)",
         headers: [

@@ -1,6 +1,7 @@
 import Image from "next/image";
-import Link from "next/link";
+import Link from "@/components/ui/Link";
 import type { ContentBlock } from "@/data/content";
+import { headingAnchors, headingLevel } from "@/lib/toc";
 
 /**
  * Renders a block array shared by blog posts, services, locations and pages.
@@ -16,8 +17,27 @@ function Rich({ html, className }: { html: string; className?: string }) {
 const richLinks =
   "[&_a]:text-[#c5eb02] [&_a]:underline [&_a]:underline-offset-2 hover:[&_a]:text-[#c5eb02]/80 [&_b]:font-bold [&_strong]:font-bold [&_i]:italic [&_em]:italic";
 
-export default function ContentBlocks({ blocks }: { blocks?: ContentBlock[] }) {
+/** A clear step down in size per level, so the hierarchy reads on the page. */
+const HEADING_CLASSES: Record<number, string> = {
+  1: "text-[2rem] md:text-[3rem] font-bold leading-[1.15] text-white mt-12 mb-6",
+  2: "text-[1.625rem] md:text-[2.5rem] font-bold leading-[1.2] text-white mt-12 mb-6",
+  3: "text-xl md:text-2xl font-bold leading-snug text-white mt-8 mb-4",
+  4: "text-lg md:text-xl font-bold leading-snug text-white mt-7 mb-3",
+  5: "text-base md:text-lg font-bold leading-snug text-white mt-6 mb-2",
+  6: "text-sm md:text-base font-bold uppercase tracking-wide text-white/80 mt-6 mb-2",
+};
+
+export default function ContentBlocks({
+  blocks: all,
+  omit,
+}: {
+  blocks?: ContentBlock[];
+  /** Block types this page doesn't show — blog posts leave out "cta". */
+  omit?: ContentBlock["type"][];
+}) {
+  const blocks = omit?.length ? all?.filter((b) => !omit.includes(b.type)) : all;
   if (!blocks || blocks.length === 0) return null;
+  const anchors = headingAnchors(blocks);
 
   return (
     // site-prose: callers now place this in the full-width site container, so
@@ -25,15 +45,15 @@ export default function ContentBlocks({ blocks }: { blocks?: ContentBlock[] }) {
     <article className="prose prose-invert site-prose">
       {blocks.map((block, idx) => {
         if (block.type === "heading") {
-          const Tag = block.level === 3 ? "h3" : "h2";
+          const level = headingLevel(block);
+          const Tag = `h${level}` as "h1" | "h2" | "h3" | "h4" | "h5" | "h6";
           return (
             <Tag
               key={idx}
-              className={
-                block.level === 3
-                  ? `text-xl md:text-2xl font-bold leading-snug text-white mt-8 mb-4 ${richLinks}`
-                  : `text-[1.625rem] md:text-[2.5rem] font-bold leading-[1.2] text-white mt-12 mb-6 ${richLinks}`
-              }
+              // The id is what the table of contents links to; scroll-mt keeps
+              // the heading clear of the sticky header when jumped to.
+              id={anchors[idx]}
+              className={`scroll-mt-28 ${HEADING_CLASSES[level]} ${richLinks}`}
               dangerouslySetInnerHTML={{ __html: block.text ?? "" }}
             />
           );
@@ -96,6 +116,57 @@ export default function ContentBlocks({ blocks }: { blocks?: ContentBlock[] }) {
                   {block.caption}
                 </figcaption>
               )}
+            </figure>
+          );
+        }
+
+        if (block.type === "table" && block.rows?.length) {
+          const header = block.headerRow !== false && block.rows.length > 1;
+          const head = header ? block.rows[0] : null;
+          const body = header ? block.rows.slice(1) : block.rows;
+          return (
+            // A real <table>, not a grid of divs: it's what search engines lift
+            // into comparison snippets. Wide tables scroll inside this box on a
+            // phone — overflow-x here is fine, nothing sticky lives inside it.
+            <figure key={idx} className="not-prose my-10">
+              <div className="overflow-x-auto rounded-xl border border-white/10">
+                <table className="w-full min-w-lg border-collapse text-left text-base">
+                  {block.caption && (
+                    <caption className="caption-bottom px-4 py-3 text-sm text-white/50 text-left">
+                      {block.caption}
+                    </caption>
+                  )}
+                  {head && (
+                    <thead className="bg-white/5">
+                      <tr>
+                        {head.map((cell, c) => (
+                          <th
+                            key={c}
+                            scope="col"
+                            className={`border-b border-white/15 px-4 py-3 font-bold text-white ${richLinks}`}
+                          >
+                            <Rich html={cell} />
+                          </th>
+                        ))}
+                      </tr>
+                    </thead>
+                  )}
+                  <tbody>
+                    {body.map((row, r) => (
+                      <tr key={r} className="border-b border-white/10 last:border-b-0 even:bg-white/2">
+                        {row.map((cell, c) => (
+                          <td
+                            key={c}
+                            className={`px-4 py-3 align-top text-white/80 leading-relaxed ${richLinks}`}
+                          >
+                            <Rich html={cell} />
+                          </td>
+                        ))}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </figure>
           );
         }

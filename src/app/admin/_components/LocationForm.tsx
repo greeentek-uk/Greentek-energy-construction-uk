@@ -9,6 +9,7 @@ import ContentBlocksEditor from "./ContentBlocksEditor";
 import FaqEditor from "./FaqEditor";
 import { LabelFields, ProcessFields, StatsFields } from "./PageSectionsEditor";
 import { EditorSections, SaveBar } from "./editor/EditorLayout";
+import ReviewPicker, { type PoolReview } from "./ReviewPicker";
 
 const input =
   "w-full rounded-lg border border-white/15 bg-white/5 px-3 py-2 text-sm text-white placeholder:text-white/30 outline-none focus:border-[#c5eb02] focus:ring-2 focus:ring-[#c5eb02]/20 transition-all";
@@ -26,7 +27,10 @@ export default function LocationForm({
   inherited,
   bodyExtras,
   servicePages,
+  reviewPool = [],
 }: {
+  /** The shared reviews, for choosing which this page shows. */
+  reviewPool?: PoolReview[];
   initial?: Location;
   /** Every project, for the case study picker. */
   projects?: { slug: string; title: string }[];
@@ -129,6 +133,12 @@ export default function LocationForm({
             ),
           },
           {
+            id: "finance",
+            title: "Finance strip",
+            description: "The strip under the hero. Provider logo and link come from Shared sections → Finance Banner.",
+            content: labels(groups.finance),
+          },
+          {
             id: "services",
             title: `Services in ${name}`,
             description:
@@ -196,7 +206,12 @@ export default function LocationForm({
             id: "testimonials",
             title: "Testimonials",
             description: "The reviews themselves come from Shared sections → Testimonials.",
-            content: labels(groups.testimonials),
+            content: (
+              <>
+                {labels(groups.testimonials)}
+                <ReviewPicker pool={reviewPool} own={own?.reviews} />
+              </>
+            ),
           },
           {
             id: "process",

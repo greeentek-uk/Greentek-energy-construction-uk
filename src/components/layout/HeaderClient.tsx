@@ -1,6 +1,6 @@
 "use client";
 import { hankenGrotesk } from "@/lib/fonts";
-import Link from "next/link";
+import Link from "@/components/ui/Link";
 import Image from "next/image";
 import type { SiteConfig } from "@/data/site";
 import { useState, useEffect } from "react";

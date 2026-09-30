@@ -4,6 +4,7 @@ import { getSitemapConfig } from "@/lib/db/sitemapSettings";
 import { getPublishedPages } from "@/lib/db/pages";
 import { isExcluded } from "@/lib/sitemapConfig";
 import { SITE_URL } from "@/lib/structuredData";
+import { getBlogCategories, postsInCategory } from "@/lib/blogCategories";
 
 type Entry = MetadataRoute.Sitemap[number];
 
@@ -125,6 +126,17 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     for (const post of blogPosts) {
       add(`/blog/${post.slug}`, {
         lastModified: new Date(post.date),
+        changeFrequency: blog.changeFrequency as Entry["changeFrequency"],
+        priority: blog.priority,
+      });
+    }
+    // Category pages change whenever a post in them does: dated by their newest post.
+    for (const category of getBlogCategories(blogPosts)) {
+      const newest = postsInCategory(blogPosts, category.slug)
+        .map((p) => new Date(p.date).getTime())
+        .filter((t) => !Number.isNaN(t));
+      add(`/blog/category/${category.slug}`, {
+        ...(newest.length ? { lastModified: new Date(Math.max(...newest)) } : {}),
         changeFrequency: blog.changeFrequency as Entry["changeFrequency"],
         priority: blog.priority,
       });

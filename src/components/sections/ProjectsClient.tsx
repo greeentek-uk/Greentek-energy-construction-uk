@@ -2,9 +2,10 @@
 
 import { useFadeIn } from "@/hooks/useFadeIn";
 import { ArrowRight, MoveHorizontal } from "lucide-react";
-import Link from "next/link";
+import Link from "@/components/ui/Link";
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { Project } from "@/data/site";
+import imageLoader from "@/lib/imageLoader";
 import type { ProjectsPreviewContent } from "@/data/pageContent";
 
 
@@ -84,7 +85,7 @@ function GalleryCard({
         {/* After image (base layer) */}
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
-          src={project.after}
+          {...sliderImage(project.after)}
           alt={project.afterAlt || `${project.title} — after`}
           draggable={false}
           className="absolute inset-0 h-full w-full bg-center object-cover pointer-events-none"
@@ -97,7 +98,7 @@ function GalleryCard({
         >
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src={project.before}
+            {...sliderImage(project.before)}
             alt={project.beforeAlt || `${project.title} — before`}
             draggable={false}
             className="h-full max-w-none object-cover"
@@ -153,6 +154,27 @@ function GalleryCard({
       </div>
     </div>
   );
+}
+
+
+/**
+ * Resized, compressed sources for the slider's plain <img>s.
+ *
+ * They bypass next/image (see the note in the slider), and used to point
+ * straight at the original files — 2–6 MB PNGs, ~14 MB per homepage visit and
+ * most of the site's bandwidth. The same loader next/image uses gives them a
+ * srcSet at Next's allowed widths instead: Cloudinary resizes Cloudinary
+ * images, Vercel's optimizer resizes the rest.
+ */
+const SLIDER_WIDTHS = [640, 828, 1200, 1920];
+function sliderImage(src: string) {
+  return {
+    src: imageLoader({ src, width: 1200 }),
+    srcSet: SLIDER_WIDTHS.map((w) => `${imageLoader({ src, width: w })} ${w}w`).join(", "),
+    sizes: "(min-width: 1024px) 50vw, 100vw",
+    loading: "lazy" as const,
+    decoding: "async" as const,
+  };
 }
 
 export default function ProjectsClient({

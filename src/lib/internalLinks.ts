@@ -38,7 +38,7 @@ export function suggestInternalLinks(
   if (!blocks?.length) return [];
 
   const html = blocks
-    .flatMap((block) => [block.text ?? "", ...(block.items ?? [])])
+    .flatMap((block) => [block.text ?? "", ...(block.items ?? []), ...(block.rows?.flat() ?? [])])
     .filter(Boolean)
     .join("\n");
 

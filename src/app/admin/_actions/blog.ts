@@ -10,12 +10,15 @@ import {
   getBlogPosts,
 } from "@/lib/db/blogPosts";
 import type { BlogPost } from "@/data/blogs";
-import { parseContentBlocks } from "./contentBlocks";
+import { parseContentBlocks, parseTocSettings } from "./contentBlocks";
 import { parseFaqs } from "./faqs";
 
 async function revalidateBlogRoutes(slug: string, previousSlug?: string) {
   await revalidate("/blog");
   await revalidate(`/blog/${slug}`);
+  // Every category page lists posts and every category's count, and a post
+  // can move category — so they all refresh, not just the post's own.
+  await revalidate("/blog/category/[category]", "page");
   if (previousSlug && previousSlug !== slug) {
     await revalidate(`/blog/${previousSlug}`);
   }
@@ -34,9 +37,13 @@ export async function saveBlogPostAction(formData: FormData): Promise<void> {
   const category = String(formData.get("category") || "").trim();
   const coverImage = String(formData.get("coverImage") || "").trim();
   const coverImageAlt = String(formData.get("coverImageAlt") || "").trim();
+  const heroImage = String(formData.get("heroImage") || "").trim();
+  // Alt without its image would describe the card image instead.
+  const heroImageAlt = heroImage ? String(formData.get("heroImageAlt") || "").trim() : "";
   const instagramUrl = String(formData.get("instagramUrl") || "").trim();
   const metaTitle = String(formData.get("metaTitle") || "").trim();
   const metaDescription = String(formData.get("metaDescription") || "").trim();
+  const toc = parseTocSettings(formData);
   const keywords = String(formData.get("keywords") || "")
     .split(",")
     .map((k) => k.trim())
@@ -74,12 +81,15 @@ export async function saveBlogPostAction(formData: FormData): Promise<void> {
     category,
     coverImage,
     coverImageAlt,
+    ...(heroImage ? { heroImage } : {}),
+    ...(heroImageAlt ? { heroImageAlt } : {}),
     ...(instagramUrl ? { instagramUrl } : {}),
     metaTitle,
     metaDescription,
     keywords,
     content: parseContentBlocks(formData),
     faqs: parseFaqs(formData),
+    ...(toc ? { toc } : {}),
   };
 
   try {

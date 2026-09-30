@@ -117,9 +117,16 @@ export default async function LocationDetailPage({ params }: Props) {
           }
           body={label(sections, "heroBody", location.blurb)}
           source={`Location page — ${location.name}`}
+          formHeading={sections?.labels?.formHeading}
+          formSubheading={sections?.labels?.formSubheading}
+          callLabel={sections?.labels?.heroCallLabel}
+          whatsappLabel={sections?.labels?.heroWhatsappLabel}
         />
 
-        <FinanceBanner />
+        <FinanceBanner
+          heading={sections?.labels?.financeHeading}
+          linkLabel={sections?.labels?.financeLinkLabel}
+        />
 
         {/* Services in this location */}
         <section className="py-10 lg:py-16">
@@ -185,6 +192,7 @@ export default async function LocationDetailPage({ params }: Props) {
           eyebrow={sections?.labels?.testimonialsEyebrow}
           heading={sections?.labels?.testimonialsHeading}
           subheading={sections?.labels?.testimonialsSubheading}
+          reviews={sections?.reviews}
         />
 
         {/* How we work */}

@@ -6,45 +6,56 @@ import type { ProblemSection, ServicePricing } from "@/data/site";
  * location + service form so the two can't drift apart. Field names match the
  * readers in _actions/serviceSections.ts.
  *
- * With `overrideName` the section gets a tick box and is an *override*: left
- * unticked (or ticked but blank) the page keeps the service's own section, so
- * 66 location + service pages don't all need filling in to keep working.
- *
- * `inherited` is what the page shows today when it isn't overridden. The
- * fields start from it, so ticking the box means editing the real copy rather
- * than rewriting a section from an empty form. It is only saved once ticked.
+ * With `inheritedFrom` (the location + service form) the section follows the
+ * service's until this page is given its own. `inherited` pre-fills the
+ * fields, and editing them is all it takes: the save keeps whatever differs
+ * from the inherited copy as the page's own (_actions/inheritance.ts). There
+ * used to be an "its own" tick box instead, and edits made without ticking it
+ * were silently discarded. Once a page has its own, `resetName` offers the way
+ * back.
  */
 
 const input =
   "w-full rounded-lg border border-white/15 bg-white/5 px-3 py-2 text-sm text-white placeholder:text-white/30 outline-none focus:border-[#c5eb02] focus:ring-2 focus:ring-[#c5eb02]/20 transition-all";
 const label = "block text-xs font-semibold text-white/70 mb-1";
 
-/** No title of its own: the editor section around it names it. */
-function SectionHeader({
+/**
+ * Says whether this page has its own section or follows another, and offers
+ * the way back. No title of its own: the editor section around it names it.
+ * Shared with the process/stats fields so every inheritable section reads alike.
+ */
+export function InheritanceNote({
+  own,
+  inheritedFrom,
+  resetName,
   help,
-  overrideName,
-  overrideLabel,
-  overriding,
 }: {
-  help: ReactNode;
-  overrideName?: string;
-  overrideLabel?: string;
-  overriding?: boolean;
+  own: boolean;
+  /** "the Loft Insulation service" — where the copy comes from otherwise. */
+  inheritedFrom?: string;
+  resetName?: string;
+  help?: ReactNode;
 }) {
   return (
-    <div>
-      {overrideName ? (
-        <label className="flex items-center gap-2 font-bold text-white text-sm">
-          <input
-            type="checkbox"
-            name={overrideName}
-            defaultChecked={overriding}
-            className="accent-[#c5eb02]"
-          />
-          {overrideLabel}
+    <div className="space-y-2">
+      {inheritedFrom && (
+        <p
+          className={`rounded-lg px-3 py-2 text-xs font-semibold ${
+            own ? "bg-green-500/10 text-green-400" : "bg-white/5 text-white/60"
+          }`}
+        >
+          {own
+            ? "This page has its own version of this section."
+            : `Showing ${inheritedFrom}'s version. Edit anything below and Save — this page then keeps its own.`}
+        </p>
+      )}
+      {own && inheritedFrom && resetName && (
+        <label className="flex items-center gap-2 text-xs text-white/70">
+          <input type="checkbox" name={resetName} className="accent-[#c5eb02]" />
+          Go back to {inheritedFrom}&apos;s version (discards this page&apos;s own on Save)
         </label>
-      ) : null}
-      {help && <p className="text-xs text-white/50 mt-1">{help}</p>}
+      )}
+      {help && <p className="text-xs text-white/50">{help}</p>}
     </div>
   );
 }
@@ -52,24 +63,24 @@ function SectionHeader({
 export function ProblemSectionFields({
   initial: own,
   inherited,
-  overrideName,
+  inheritedFrom,
   help,
 }: {
   initial?: ProblemSection | null;
   /** Pre-fills the fields while this page has no section of its own. */
   inherited?: ProblemSection | null;
-  /** Tick box name; set it to make this an optional per-page override. */
-  overrideName?: string;
-  help: ReactNode;
+  /** Set when the section can follow another page's — see InheritanceNote. */
+  inheritedFrom?: string;
+  help?: ReactNode;
 }) {
   const initial = own ?? inherited;
   return (
     <div className="space-y-4">
-      <SectionHeader
+      <InheritanceNote
+        own={Boolean(own)}
+        inheritedFrom={inheritedFrom}
+        resetName="resetProblem"
         help={help}
-        overrideName={overrideName}
-        overrideLabel="Give this page its own problem section"
-        overriding={Boolean(own)}
       />
       <div>
         <label className={label}>Heading</label>
@@ -114,23 +125,24 @@ export function ProblemSectionFields({
 export function PricingSectionFields({
   initial: own,
   inherited,
-  overrideName,
+  inheritedFrom,
   help,
 }: {
   initial?: ServicePricing | null;
   /** Pre-fills the fields while this page has no section of its own. */
   inherited?: ServicePricing | null;
-  overrideName?: string;
-  help: ReactNode;
+  /** Set when the section can follow another page's — see InheritanceNote. */
+  inheritedFrom?: string;
+  help?: ReactNode;
 }) {
   const initial = own ?? inherited;
   return (
     <div className="space-y-4">
-      <SectionHeader
+      <InheritanceNote
+        own={Boolean(own)}
+        inheritedFrom={inheritedFrom}
+        resetName="resetPricing"
         help={help}
-        overrideName={overrideName}
-        overrideLabel="Give this page its own “What it costs” section"
-        overriding={Boolean(own)}
       />
       <div>
         <label className={label}>Heading</label>

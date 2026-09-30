@@ -1,5 +1,5 @@
 import Image from "next/image";
-import Link from "next/link";
+import Link from "@/components/ui/Link";
 import { ArrowRight } from "lucide-react";
 import { getPageContent } from "@/lib/cms";
 
@@ -11,8 +11,17 @@ import { getPageContent } from "@/lib/cms";
  * uploaded the provider's name stands in as text, so the banner never renders
  * a gap where a logo should be.
  */
-export default async function FinanceBanner() {
-  const content = await getPageContent("finance-banner");
+/** `heading` / `linkLabel` reword the strip on one page; blank keeps the shared block's. */
+export default async function FinanceBanner({
+  heading,
+  linkLabel,
+}: { heading?: string; linkLabel?: string } = {}) {
+  const shared = await getPageContent("finance-banner");
+  const content = {
+    ...shared,
+    heading: heading?.trim() || shared.heading,
+    linkLabel: linkLabel?.trim() || shared.linkLabel,
+  };
   if (!content.heading && !content.linkLabel) return null;
 
   return (

@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import Link from "next/link";
+import Link from "@/components/ui/Link";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import { getCurrentSiteConfig } from "@/lib/cms";
@@ -20,6 +20,7 @@ import { caseStudyLabels, label, type PageSectionOverrides } from "@/data/pageSe
 import { withSeoOverride } from "@/lib/seo";
 import { buildLocalizedServiceJsonLd, SITE_URL } from "@/lib/structuredData";
 import { getLocationServiceContentByKeys } from "@/lib/db/locationServiceContent";
+import { otherServicesFor } from "@/lib/otherServices";
 import PageSchema from "@/components/site/PageSchema";
 import Breadcrumbs from "@/components/site/Breadcrumbs";
 import FaqSection from "@/components/site/FaqSection";
@@ -103,9 +104,14 @@ export default async function LocationServicePage({ params }: Props) {
   const caseStudy =
     siteConfig.projects.find((p) => p.slug === override?.caseStudyProject) ?? serviceCaseStudy;
 
-  const otherServicesHere = siteConfig.services
-    .filter((s) => s.slug !== service.slug)
-    .slice(0, 4);
+  // This page's pick of cards, else the first four other services.
+  const otherServicesHere = otherServicesFor(
+    siteConfig.services.map((s) => s.slug),
+    service.slug,
+    override?.otherServices,
+  )
+    .map((slug) => siteConfig.services.find((s) => s.slug === slug))
+    .filter((s): s is NonNullable<typeof s> => Boolean(s));
 
   const localIntro = location.isHomeBase
     ? `As our home base, ${location.name} gets same-week surveys and the fastest turnaround on ${service.shortName.toLowerCase()} work.`
@@ -127,6 +133,8 @@ export default async function LocationServicePage({ params }: Props) {
     labels: { ...service.sections?.labels, ...override?.sections?.labels },
     process: override?.sections?.process ?? service.sections?.process,
     stats: override?.sections?.stats ?? service.sections?.stats,
+    // This page's pick of reviews, else the service's, else all of them.
+    reviews: override?.sections?.reviews ?? service.sections?.reviews,
   };
 
   // The service's case study wording only carries over when this page shows
@@ -185,9 +193,16 @@ export default async function LocationServicePage({ params }: Props) {
           secondaryBody={localNoteText}
           source={`${service.title} in ${location.name}`}
           fixedService={{ value: service.formCategory, label: service.title }}
+          formHeading={sections.labels?.formHeading}
+          formSubheading={sections.labels?.formSubheading}
+          callLabel={sections.labels?.heroCallLabel}
+          whatsappLabel={sections.labels?.heroWhatsappLabel}
         />
 
-        <FinanceBanner />
+        <FinanceBanner
+          heading={sections.labels?.financeHeading}
+          linkLabel={sections.labels?.financeLinkLabel}
+        />
 
         {/* 2 — The reader's problem and who this is for, named before the page
             describes the fix. This page's own block if it has one, else its
@@ -266,6 +281,7 @@ export default async function LocationServicePage({ params }: Props) {
           eyebrow={sections.labels?.testimonialsEyebrow}
           heading={sections.labels?.testimonialsHeading}
           subheading={sections.labels?.testimonialsSubheading}
+          reviews={sections.reviews}
         />
 
         {/* 5 — How we work */}
@@ -304,7 +320,7 @@ export default async function LocationServicePage({ params }: Props) {
                     {other.shortName}
                   </h4>
                   <span className="text-[#c5eb02] font-bold text-sm">
-                    Learn More →
+                    {override?.otherServicesLinkLabel || "Learn More →"}
                   </span>
                 </Link>
               ))}

@@ -170,9 +170,9 @@ export function buildBlogPostingJsonLd(post: BlogPost, siteUrl: string) {
     "@type": "BlogPosting",
     headline: post.title,
     description: post.excerpt,
-    image: post.coverImage.startsWith("http")
-      ? post.coverImage
-      : `${siteUrl}${post.coverImage}`,
+    image: (post.heroImage || post.coverImage).startsWith("http")
+      ? post.heroImage || post.coverImage
+      : `${siteUrl}${post.heroImage || post.coverImage}`,
     datePublished: post.date,
     author: {
       "@type": "Organization",

@@ -2,7 +2,7 @@
 
 import { useFadeIn } from "@/hooks/useFadeIn";
 import BeforeAfterSlider from "@/components/ui/BeforeAfterSlider";
-import Link from "next/link";
+import Link from "@/components/ui/Link";
 import type { Project } from "@/data/site";
 import type { PageHeaderContent } from "@/data/pageContent";
 

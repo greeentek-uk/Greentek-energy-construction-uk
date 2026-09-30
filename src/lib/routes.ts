@@ -1,4 +1,5 @@
-import { getCurrentSiteConfig } from "@/lib/cms";
+import { getCurrentBlogPosts, getCurrentSiteConfig } from "@/lib/cms";
+import { getBlogCategories } from "@/lib/blogCategories";
 
 export interface RouteEntry {
   path: string;
@@ -42,6 +43,16 @@ export async function getAllRoutes(): Promise<RouteEntry[]> {
       path: `/projects/${p.slug}`,
       label: p.title,
       group: "Projects",
+    });
+  }
+
+  // One page per blog category; derived from the posts, so a new category
+  // appears here (and in Page SEO) as soon as a post uses it.
+  for (const c of getBlogCategories(await getCurrentBlogPosts())) {
+    routes.push({
+      path: `/blog/category/${c.slug}`,
+      label: `Blog category: ${c.name}`,
+      group: "Blog Categories",
     });
   }
 

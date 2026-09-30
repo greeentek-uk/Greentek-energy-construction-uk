@@ -175,6 +175,10 @@ export interface LocationServiceContent {
   nearbyAreasText?: string;
   /** Replaces "Other Services in <location>". */
   otherServicesHeading?: string;
+  /** Which services the "Other services" cards show, in order. Unset = the first four others. */
+  otherServices?: string[];
+  /** Replaces "Learn More →" on those cards. */
+  otherServicesLinkLabel?: string;
   /** Replaces "← All services in <location>" at the foot of the page. */
   locationLinkLabel?: string;
   /** Replaces "More about <service title> →" at the foot of the page. */

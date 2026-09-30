@@ -10,6 +10,7 @@ import FaqEditor from "./FaqEditor";
 import { LabelFields, ProcessFields, StatsFields } from "./PageSectionsEditor";
 import { ProblemSectionFields, PricingSectionFields } from "./ServiceSectionFields";
 import { EditorSections, SaveBar } from "./editor/EditorLayout";
+import ReviewPicker, { type PoolReview } from "./ReviewPicker";
 
 const FORM_CATEGORIES = [
   "solar_storage",
@@ -34,7 +35,10 @@ export default function ServiceForm({
   projects = [],
   inherited,
   bodyExtras,
+  reviewPool = [],
 }: {
+  /** The shared reviews, for choosing which this page shows. */
+  reviewPool?: PoolReview[];
   initial?: Service;
   /** Every project, for the case study picker. */
   projects?: { slug: string; title: string; service: string }[];
@@ -125,6 +129,12 @@ export default function ServiceForm({
             ),
           },
           {
+            id: "finance",
+            title: "Finance strip",
+            description: "The strip under the hero. Provider logo and link come from Shared sections → Finance Banner.",
+            content: labels(groups.finance),
+          },
+          {
             id: "problem",
             title: "Problem section",
             description:
@@ -198,6 +208,7 @@ export default function ServiceForm({
               <>
                 <StatsFields initial={own} inherited={inherited} />
                 {labels(groups.testimonials)}
+                <ReviewPicker pool={reviewPool} own={own?.reviews} />
               </>
             ),
           },

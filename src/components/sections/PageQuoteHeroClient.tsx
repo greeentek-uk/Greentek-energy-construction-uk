@@ -20,6 +20,8 @@ export interface PageQuoteHeroContent {
   secondaryBody?: string;
   phone: string;
   callLabel: string;
+  /** Defaults to "Contact on WhatsApp". */
+  whatsappLabel?: string;
   rating: { label: string; score: string; url: string };
   form: {
     heading: string;
@@ -48,6 +50,7 @@ export default function PageQuoteHeroClient({
   secondaryBody,
   phone,
   callLabel,
+  whatsappLabel = "Contact on WhatsApp",
   rating,
   form,
 }: PageQuoteHeroContent) {
@@ -128,7 +131,7 @@ export default function PageQuoteHeroClient({
                 className="w-full sm:w-fit text-center rounded px-4 py-3 text-sm md:text-[18px] font-semibold text-black backdrop-blur-sm transition active:scale-95 bg-white"
               >
                 <MessageSquareMore className="inline mr-2 rounded px-1 py-1 text-black" />
-                Contact on WhatsApp
+                {whatsappLabel}
               </a>
             </div>
           </div>

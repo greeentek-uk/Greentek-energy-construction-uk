@@ -11,6 +11,10 @@ import { parseContentBlocks } from "./contentBlocks";
 import { parseFaqs } from "./faqs";
 import { readPageSections } from "./pageSections";
 import { readPricingSection, readProblemSection } from "./serviceSections";
+import { canonPricing, canonProblem, ownOrInherited } from "./inheritance";
+import { getServiceBySlug, getServices } from "@/lib/db/services";
+import { defaultOtherServices } from "@/lib/otherServices";
+import { getPageContent } from "@/lib/cms";
 
 function splitLines(value: string): string[] {
   return value
@@ -40,10 +44,39 @@ export async function saveLocationServiceContentAction(formData: FormData): Prom
   const highlights = splitLines(String(formData.get("highlights") || ""));
   const faqs = parseFaqs(formData);
   const content = parseContentBlocks(formData);
-  // Only when ticked: an unticked section means "use the service's".
-  const problem = formData.get("overrideProblem") === "on" ? readProblemSection(formData) : null;
-  const pricing = formData.get("overridePricing") === "on" ? readPricingSection(formData) : null;
-  const sections = readPageSections(formData);
+  // What the page shows when it has no section of its own: the editor
+  // pre-fills these, so a section still equal to them wasn't edited and the
+  // page keeps following the service (inheritance.ts).
+  const [service, sharedProcess, sharedStats] = await Promise.all([
+    getServiceBySlug(serviceSlug),
+    getPageContent("process"),
+    getPageContent("stats"),
+  ]);
+  const problem = ownOrInherited(
+    readProblemSection(formData),
+    service?.problem,
+    canonProblem,
+    formData.get("resetProblem") === "on",
+  );
+  const pricing = ownOrInherited(
+    readPricingSection(formData),
+    service?.pricing,
+    canonPricing,
+    formData.get("resetPricing") === "on",
+  );
+  // The cards' services: stored only when the ticks differ from the default
+  // four, so an untouched page keeps following the default if services change.
+  const pickedOthers = formData.getAll("otherService").map(String).filter(Boolean);
+  const defaultOthers = defaultOtherServices(
+    (await getServices()).map((s) => s.slug),
+    serviceSlug,
+  );
+  const otherServices =
+    pickedOthers.length && pickedOthers.join() !== defaultOthers.join() ? pickedOthers : null;
+  const sections = readPageSections(formData, {
+    process: service?.sections?.process ?? sharedProcess,
+    stats: service?.sections?.stats ?? sharedStats,
+  });
 
   const optional = {
     metaTitle: text("metaTitle"),
@@ -58,6 +91,7 @@ export async function saveLocationServiceContentAction(formData: FormData): Prom
     caseStudyProject: text("caseStudyProject"),
     nearbyAreasText: text("nearbyAreasText"),
     otherServicesHeading: text("otherServicesHeading"),
+    otherServicesLinkLabel: text("otherServicesLinkLabel"),
     locationLinkLabel: text("locationLinkLabel"),
     serviceLinkLabel: text("serviceLinkLabel"),
     cardTitle: text("cardTitle"),
@@ -74,6 +108,7 @@ export async function saveLocationServiceContentAction(formData: FormData): Prom
     ...(problem ? { problem } : {}),
     ...(pricing ? { pricing } : {}),
     ...(sections ? { sections } : {}),
+    ...(otherServices ? { otherServices } : {}),
   };
 
   try {

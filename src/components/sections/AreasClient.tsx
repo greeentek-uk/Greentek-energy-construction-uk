@@ -1,6 +1,6 @@
 "use client";
 import Image from "next/image";
-import Link from "next/link";
+import Link from "@/components/ui/Link";
 import { ArrowRight } from "lucide-react";
 import type { AreasContent } from "@/data/pageContent";
 

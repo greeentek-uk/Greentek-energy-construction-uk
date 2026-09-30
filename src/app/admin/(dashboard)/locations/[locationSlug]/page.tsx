@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import { getCurrentSiteConfig, getPageContent } from "@/lib/cms";
+import { reviewPool } from "@/data/pageSections";
 import { getLocationServiceContentForLocation } from "@/lib/db/locationServiceContent";
 import { deleteLocationAction } from "../../../_actions/content";
 import SaveBanner from "../../../_components/SaveBanner";
@@ -17,11 +18,12 @@ interface Props {
 
 export default async function EditLocationPage({ params, searchParams }: Props) {
   const [{ locationSlug }, search] = await Promise.all([params, searchParams]);
-  const [{ locations, services, projects }, combos, sharedProcess, sharedStats] = await Promise.all([
+  const [{ locations, services, projects }, combos, sharedProcess, sharedStats, testimonials] = await Promise.all([
     getCurrentSiteConfig(),
     getLocationServiceContentForLocation(locationSlug),
     getPageContent("process"),
     getPageContent("stats"),
+    getPageContent("testimonials"),
   ]);
 
   const location = locations.find((l) => l.slug === locationSlug);
@@ -60,6 +62,7 @@ export default async function EditLocationPage({ params, searchParams }: Props) 
         initial={location}
         projects={projects.map(({ slug, title }) => ({ slug, title }))}
         inherited={{ process: sharedProcess, stats: sharedStats }}
+        reviewPool={reviewPool(testimonials.items)}
         bodyExtras={
           <InternalLinkSuggestions content={location.content} currentPath={`/locations/${location.slug}`} />
         }

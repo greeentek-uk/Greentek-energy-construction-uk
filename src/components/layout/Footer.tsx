@@ -1,4 +1,4 @@
-import Link from "next/link";
+import Link from "@/components/ui/Link";
 import CookieSettingsButton from "@/components/site/CookieSettingsButton";
 import Image from "next/image";
 import { getCurrentSiteConfig } from "@/lib/cms";

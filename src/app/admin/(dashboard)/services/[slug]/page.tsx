@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import { getCurrentSiteConfig, getPageContent } from "@/lib/cms";
+import { reviewPool } from "@/data/pageSections";
 import { getAllLocationServiceContent } from "@/lib/db/locationServiceContent";
 import { deleteServiceAction } from "../../../_actions/content";
 import SaveBanner from "../../../_components/SaveBanner";
@@ -17,11 +18,12 @@ interface Props {
 
 export default async function EditServicePage({ params, searchParams }: Props) {
   const [{ slug }, search] = await Promise.all([params, searchParams]);
-  const [{ services, locations, projects }, combos, sharedProcess, sharedStats] = await Promise.all([
+  const [{ services, locations, projects }, combos, sharedProcess, sharedStats, testimonials] = await Promise.all([
     getCurrentSiteConfig(),
     getAllLocationServiceContent(),
     getPageContent("process"),
     getPageContent("stats"),
+    getPageContent("testimonials"),
   ]);
 
   const service = services.find((s) => s.slug === slug);
@@ -77,6 +79,7 @@ export default async function EditServicePage({ params, searchParams }: Props) {
         initial={service}
         projects={projects}
         inherited={{ process: sharedProcess, stats: sharedStats }}
+        reviewPool={reviewPool(testimonials.items)}
         bodyExtras={
           <InternalLinkSuggestions content={service.content} currentPath={`/services/${service.slug}`} />
         }

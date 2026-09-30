@@ -1,4 +1,4 @@
-import type { ProcessContent, StatsContent } from "./pageContent";
+import type { ProcessContent, StatsContent, TestimonialsContent } from "./pageContent";
 
 /**
  * Per-page overrides for sections that otherwise come from a shared block or a
@@ -20,6 +20,12 @@ export const SECTION_LABEL_KEYS = [
   "heroHeading",
   "heroHighlight",
   "heroBody",
+  "formHeading",
+  "formSubheading",
+  "heroCallLabel",
+  "heroWhatsappLabel",
+  "financeHeading",
+  "financeLinkLabel",
   "servicesHeading",
   "servicesIntro",
   "areasHeading",
@@ -75,13 +81,22 @@ const SERVICE_BODY: SectionLabelKey[] = [
   "faqHeading",
 ];
 const CTA: SectionLabelKey[] = ["ctaEyebrow", "ctaHeading", "ctaDescription"];
+/**
+ * The hero's quote-form box and buttons, and the finance strip under it —
+ * shared blocks that used to read identically on every service and location
+ * page (the form heading was the same H2 on 83 URLs).
+ */
+const HERO_BOX: SectionLabelKey[] = ["formHeading", "formSubheading", "heroCallLabel", "heroWhatsappLabel"];
+const FINANCE: SectionLabelKey[] = ["financeHeading", "financeLinkLabel"];
 
 export const LABELS_BY_KIND: Record<SectionPageKind, SectionLabelKey[]> = {
-  service: ["heroHeading", "heroHighlight", "heroBody", ...SERVICE_BODY, ...CTA],
+  service: ["heroHeading", "heroHighlight", "heroBody", ...HERO_BOX, ...FINANCE, ...SERVICE_BODY, ...CTA],
   location: [
     "heroHeading",
     "heroHighlight",
     "heroBody",
+    ...HERO_BOX,
+    ...FINANCE,
     "servicesHeading",
     "servicesIntro",
     "areasHeading",
@@ -94,8 +109,8 @@ export const LABELS_BY_KIND: Record<SectionPageKind, SectionLabelKey[]> = {
     ...CTA,
     "accreditationsHeading",
   ],
-  // The hero has its own fields on the location + service form.
-  locationService: [...SERVICE_BODY, ...CTA],
+  // The H1 and hero text have their own fields on the location + service form.
+  locationService: [...HERO_BOX, ...FINANCE, ...SERVICE_BODY, ...CTA],
   project: [
     "problemEyebrow",
     "testimonialsEyebrow",
@@ -119,7 +134,8 @@ export const LABELS_BY_KIND: Record<SectionPageKind, SectionLabelKey[]> = {
  */
 export const LABEL_GROUPS = {
   service: {
-    hero: ["heroHeading", "heroHighlight", "heroBody"],
+    hero: ["heroHeading", "heroHighlight", "heroBody", ...HERO_BOX],
+    finance: FINANCE,
     problem: ["problemEyebrow"],
     included: ["includedHeading"],
     caseStudy: CASE_STUDY,
@@ -130,7 +146,8 @@ export const LABEL_GROUPS = {
     cta: CTA,
   },
   location: {
-    hero: ["heroHeading", "heroHighlight", "heroBody"],
+    hero: ["heroHeading", "heroHighlight", "heroBody", ...HERO_BOX],
+    finance: FINANCE,
     services: ["servicesHeading", "servicesIntro"],
     areas: ["areasHeading", "areasIntro"],
     caseStudy: CASE_STUDY,
@@ -141,6 +158,8 @@ export const LABEL_GROUPS = {
   },
   // The hero H1 is a top-level field on this form, not a label.
   locationService: {
+    hero: HERO_BOX,
+    finance: FINANCE,
     problem: ["problemEyebrow"],
     included: ["includedHeading"],
     caseStudy: CASE_STUDY,
@@ -166,6 +185,43 @@ export interface PageSectionOverrides {
   process?: ProcessContent | null;
   /** Replaces the shared Stats block on this page only. Null = use the shared one. */
   stats?: StatsContent | null;
+  /**
+   * Which of the shared reviews this page shows, in order, by `reviewKey`.
+   * Unset = inherit (the service's choice on a combo, else every review).
+   * Reviews are picked, never written per page: they're real customers' words.
+   */
+  reviews?: string[];
+}
+
+type Review = TestimonialsContent["items"][number];
+
+/**
+ * A review's identity for page selections: its name and the start of its
+ * words, not its position, so reordering or adding reviews in the shared list
+ * doesn't silently swap which ones a page shows.
+ */
+export function reviewKey(review: Pick<Review, "name" | "quote">): string {
+  return `${review.name.trim()}::${review.quote.trim().slice(0, 40)}`;
+}
+
+/** The shared reviews as the editors' picker lists them. */
+export function reviewPool(items: Review[]) {
+  return items.map((r) => ({ key: reviewKey(r), name: r.name, role: r.role, quote: r.quote }));
+}
+
+/**
+ * The reviews a page shows: its chosen ones in its order, or all of them.
+ * A selection whose reviews have all since been deleted falls back to all,
+ * rather than leaving an empty testimonials section.
+ */
+export function selectReviews<T extends Pick<Review, "name" | "quote">>(
+  items: T[],
+  keys: string[] | undefined,
+): T[] {
+  if (!keys?.length) return items;
+  const byKey = new Map(items.map((r) => [reviewKey(r), r]));
+  const picked = keys.map((k) => byKey.get(k)).filter((r): r is T => Boolean(r));
+  return picked.length ? picked : items;
 }
 
 /** The case study wording a page asked for, in ProjectCaseStudy's shape. */

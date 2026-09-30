@@ -31,6 +31,20 @@ import { parseContentBlocks } from "./contentBlocks";
 import { parseFaqs } from "./faqs";
 import { readPageSections } from "./pageSections";
 import { readProblemSection, readPricingSection } from "./serviceSections";
+import { getPageContent } from "@/lib/cms";
+import type { ProcessContent, StatsContent } from "@/data/pageContent";
+
+type SharedBlocks = { process: ProcessContent; stats: StatsContent };
+
+/**
+ * The shared process/stats blocks — what a service, location or project page
+ * shows unless it has its own, and what its editor pre-fills. readPageSections
+ * compares against them, so an untouched section isn't saved as the page's own.
+ */
+async function sharedBlocks(): Promise<SharedBlocks> {
+  const [process, stats] = await Promise.all([getPageContent("process"), getPageContent("stats")]);
+  return { process, stats };
+}
 
 function splitLines(value: string): string[] {
   return value
@@ -73,7 +87,7 @@ async function revalidateLocationRoutes(slug: string) {
   await revalidate("/sitemap.xml");
 }
 
-function readServiceFields(formData: FormData) {
+function readServiceFields(formData: FormData, shared: SharedBlocks) {
   return {
     title: String(formData.get("title") || "").trim(),
     shortName: String(formData.get("shortName") || "").trim(),
@@ -90,14 +104,14 @@ function readServiceFields(formData: FormData) {
     faqs: parseFaqs(formData),
     problem: readProblemSection(formData),
     pricing: readPricingSection(formData),
-    sections: readPageSections(formData),
+    sections: readPageSections(formData, shared),
     caseStudyProject: String(formData.get("caseStudyProject") || "").trim(),
   };
 }
 
 export async function saveServiceAction(formData: FormData): Promise<void> {
   const slug = String(formData.get("slug") || "");
-  const fields = readServiceFields(formData);
+  const fields = readServiceFields(formData, await sharedBlocks());
 
   try {
     await updateService(slug, fields);
@@ -113,7 +127,7 @@ export async function saveServiceAction(formData: FormData): Promise<void> {
 
 export async function createServiceAction(formData: FormData): Promise<void> {
   const slug = String(formData.get("slug") || "").trim();
-  const fields = readServiceFields(formData);
+  const fields = readServiceFields(formData, await sharedBlocks());
 
   if (!slug || !fields.title) {
     redirect(
@@ -154,7 +168,7 @@ export async function deleteServiceAction(formData: FormData): Promise<void> {
   redirect("/admin/services?deleted=1");
 }
 
-function readProjectFields(formData: FormData) {
+function readProjectFields(formData: FormData, shared: SharedBlocks) {
   // MultiImageUploadField posts one `gallery` and one `galleryAlt` value per
   // image, in the same order, so the two arrays line up by index.
   const gallery = formData.getAll("gallery").map((v) => String(v).trim()).filter(Boolean);
@@ -177,7 +191,7 @@ function readProjectFields(formData: FormData) {
     review,
     content: parseContentBlocks(formData),
     faqs: parseFaqs(formData),
-    sections: readPageSections(formData),
+    sections: readPageSections(formData, shared),
     category: String(formData.get("category") || "").trim(),
     service: String(formData.get("service") || "").trim(),
     title: String(formData.get("title") || "").trim(),
@@ -194,7 +208,7 @@ function readProjectFields(formData: FormData) {
 
 export async function saveProjectAction(formData: FormData): Promise<void> {
   const slug = String(formData.get("slug") || "");
-  const fields = readProjectFields(formData);
+  const fields = readProjectFields(formData, await sharedBlocks());
 
   try {
     await updateProject(slug, fields);
@@ -209,7 +223,7 @@ export async function saveProjectAction(formData: FormData): Promise<void> {
 
 export async function createProjectAction(formData: FormData): Promise<void> {
   const slug = String(formData.get("slug") || "").trim();
-  const fields = readProjectFields(formData);
+  const fields = readProjectFields(formData, await sharedBlocks());
 
   if (!slug || !fields.title) {
     redirect(
@@ -250,7 +264,7 @@ export async function deleteProjectAction(formData: FormData): Promise<void> {
   redirect("/admin/projects?deleted=1");
 }
 
-function readLocationFields(formData: FormData) {
+function readLocationFields(formData: FormData, shared: SharedBlocks) {
   return {
     name: String(formData.get("name") || "").trim(),
     region: String(formData.get("region") || "").trim(),
@@ -263,7 +277,7 @@ function readLocationFields(formData: FormData) {
     nearbyAreas: splitCommas(String(formData.get("nearbyAreas") || "")),
     isHomeBase: formData.get("isHomeBase") === "on",
     caseStudyProject: String(formData.get("caseStudyProject") || "").trim(),
-    sections: readPageSections(formData),
+    sections: readPageSections(formData, shared),
     metaTitle: String(formData.get("metaTitle") || "").trim(),
     metaDescription: String(formData.get("metaDescription") || "").trim(),
     content: parseContentBlocks(formData),
@@ -273,7 +287,7 @@ function readLocationFields(formData: FormData) {
 
 export async function saveLocationAction(formData: FormData): Promise<void> {
   const slug = String(formData.get("slug") || "");
-  const fields = readLocationFields(formData);
+  const fields = readLocationFields(formData, await sharedBlocks());
 
   try {
     await updateLocation(slug, fields);
@@ -288,7 +302,7 @@ export async function saveLocationAction(formData: FormData): Promise<void> {
 
 export async function createLocationAction(formData: FormData): Promise<void> {
   const slug = String(formData.get("slug") || "").trim();
-  const fields = readLocationFields(formData);
+  const fields = readLocationFields(formData, await sharedBlocks());
 
   if (!slug || !fields.name) {
     redirect(

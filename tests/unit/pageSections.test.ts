@@ -1,3 +1,4 @@
+import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import {
   caseStudyLabels,
@@ -8,6 +9,7 @@ import {
 } from "@/data/pageSections";
 import { CONTENT_PAGES, UNUSED_BLOCKS } from "@/data/adminPages";
 import { PAGE_CONTENT_KEYS } from "@/data/pageContent";
+import { canonPricing, canonProblem, ownOrInherited } from "@/app/admin/_actions/inheritance";
 import { readPageSections } from "@/app/admin/_actions/pageSections";
 
 function form(values: Record<string, string>): FormData {
@@ -42,18 +44,62 @@ describe("readPageSections", () => {
     expect(out).toEqual({ labels: { includedHeading: "What a Cardiff install includes" } });
   });
 
-  it("stores process steps only when the tick box is on", () => {
-    const fields = {
+  const shared = {
+    process: {
+      eyebrow: "Our Process",
+      headingLine1: "Four Steps.",
+      headingLine2: "Zero Surprises.",
+      subheading: "From the first call to handover.",
+      steps: [
+        { number: "01", title: "Free Survey", body: "We visit.\nWe measure." },
+        { number: "02", title: "Custom Quote", body: "A fixed price." },
+      ],
+    },
+    stats: { items: [{ value: "500+", label: "Projects Completed", description: "Delivered." }] },
+  };
+  // What the editor posts when the pre-filled shared steps are left alone —
+  // as a browser sends it, with CRLF line breaks and the blank slots.
+  const untouchedProcess = {
+    processEyebrow: "Our Process",
+    processHeadingLine1: "Four Steps.",
+    processHeadingLine2: "Zero Surprises.",
+    processSubheading: "From the first call to handover.",
+    processStepNumber_0: "01",
+    processStepTitle_0: "Free Survey",
+    processStepBody_0: "We visit.\r\nWe measure.",
+    processStepNumber_1: "02",
+    processStepTitle_1: "Custom Quote",
+    processStepBody_1: "A fixed price. ",
+  };
+
+  it("keeps edited process steps as the page's own — no tick box needed", () => {
+    const out = readPageSections(
+      form({ ...untouchedProcess, processStepTitle_1: "A quote for Cardiff" }),
+      shared,
+    );
+    expect(out?.process?.steps[1]).toEqual({ number: "02", title: "A quote for Cardiff", body: "A fixed price." });
+  });
+
+  it("leaves untouched pre-filled steps alone, so the page keeps following", () => {
+    expect(readPageSections(form(untouchedProcess), shared)).toBeNull();
+  });
+
+  it("goes back to the shared steps when reset, even if they were edited", () => {
+    const out = readPageSections(
+      form({ ...untouchedProcess, processStepTitle_1: "Changed", resetProcess: "on" }),
+      shared,
+    );
+    expect(out).toBeNull();
+  });
+
+  it("stores steps filled into an empty form, numbering blank slots", () => {
+    const out = readPageSections(form({
       processHeadingLine1: "How a solar install runs",
       processStepTitle_0: "Survey",
       processStepBody_0: "We measure the roof.",
       processStepTitle_1: "Design",
       processStepBody_1: "We size the system.",
-    };
-    // Off: the fields are ignored entirely.
-    expect(readPageSections(form(fields))).toBeNull();
-
-    const out = readPageSections(form({ ...fields, overrideProcess: "on" }));
+    }));
     expect(out?.process?.headingLine1).toBe("How a solar install runs");
     expect(out?.process?.steps).toEqual([
       { number: "01", title: "Survey", body: "We measure the roof." },
@@ -61,23 +107,26 @@ describe("readPageSections", () => {
     ]);
   });
 
-  it("ignores an override with a heading but no steps, which would render empty", () => {
-    expect(readPageSections(form({ overrideProcess: "on", processHeadingLine1: "How it runs" })))
-      .toBeNull();
+  it("ignores a heading with no steps, which would render empty", () => {
+    expect(readPageSections(form({ processHeadingLine1: "How it runs" }))).toBeNull();
   });
 
   it("keeps a typed step number over the generated one", () => {
     const out = readPageSections(form({
-      overrideProcess: "on",
       processStepNumber_0: "Step A",
       processStepTitle_0: "Survey",
     }));
     expect(out?.process?.steps[0].number).toBe("Step A");
   });
 
-  it("stores stats only when ticked, and only complete ones", () => {
+  it("treats stats the same way: untouched follows, edited is kept", () => {
+    const untouched = { statValue_0: "500+", statLabel_0: "Projects Completed", statDescription_0: "Delivered." };
+    expect(readPageSections(form(untouched), shared)).toBeNull();
+    expect(readPageSections(form({ ...untouched, statValue_0: "120+" }), shared)?.stats?.items[0].value).toBe("120+");
+  });
+
+  it("stores only complete stats", () => {
     const out = readPageSections(form({
-      overrideStats: "on",
       statValue_0: "120+",
       statLabel_0: "Solar installs",
       statDescription_0: "Across the West Midlands.",
@@ -147,5 +196,69 @@ describe("CONTENT_PAGES", () => {
   it("has unique page ids", () => {
     const ids = CONTENT_PAGES.map((p) => p.id);
     expect(new Set(ids).size).toBe(ids.length);
+  });
+});
+
+describe("problem / pricing: own or inherited", () => {
+  const service = {
+    heading: "Heating the house, and losing the heat through the roof?",
+    intro: "Heat rises.\n\nIt's cheap to fix.",
+    cards: [
+      { title: "Cold upstairs rooms", body: "Bedrooms cool quickly." },
+      { title: "Thin old insulation", body: "A few centimetres." },
+    ],
+    ctaLabel: "Check my loft",
+  };
+  // The same copy as the form posts it back: CRLF, stray spaces, blank slots.
+  const posted = {
+    ...service,
+    intro: "Heat rises.\r\n\r\nIt's cheap to fix. ",
+    cards: [...service.cards, { title: "", body: "" }, { title: "", body: "" }],
+  };
+
+  it("follows the service when the pre-filled copy wasn't changed", () => {
+    expect(ownOrInherited(posted, service, canonProblem, false)).toBeNull();
+  });
+
+  it("keeps an edit as the page's own — the lost-edit bug", () => {
+    const own = ownOrInherited({ ...posted, heading: "Cardiff lofts losing heat?" }, service, canonProblem, false);
+    expect(own?.heading).toBe("Cardiff lofts losing heat?");
+    expect(own?.cards).toHaveLength(2);
+    expect(own?.intro).toBe("Heat rises.\n\nIt's cheap to fix.");
+  });
+
+  it("goes back to the service's when reset", () => {
+    expect(ownOrInherited({ ...posted, heading: "Changed" }, service, canonProblem, true)).toBeNull();
+  });
+
+  it("treats a default button label as unchanged", () => {
+    const noCta = { ...service, ctaLabel: "" };
+    expect(ownOrInherited({ ...noCta, ctaLabel: "Get a free survey" }, noCta, canonProblem, false)).toBeNull();
+  });
+
+  it("does the same for pricing", () => {
+    const pricing = {
+      heading: "What loft insulation costs",
+      intro: "Four things change the price.",
+      factors: [{ title: "Loft size", body: "Measured at survey." }],
+      included: ["A free site survey", "A fixed price"],
+      note: "No quotes by postcode.",
+      ctaLabel: "Get a fixed-price quote",
+    };
+    expect(ownOrInherited({ ...pricing, included: [" A free site survey", "A fixed price", ""] }, pricing, canonPricing, false)).toBeNull();
+    expect(ownOrInherited({ ...pricing, note: "Cardiff surveys this week." }, pricing, canonPricing, false)?.note).toBe(
+      "Cardiff surveys this week.",
+    );
+  });
+});
+
+describe("every label group is rendered by its editor", () => {
+  // A group missing from the form posts its labels blank, and a save wipes
+  // them. Cheap source check, since the forms are client components.
+  const forms = { service: "ServiceForm", location: "LocationForm", locationService: "LocationServiceContentForm" } as const;
+  it.each(Object.entries(forms))("%s → %s", (kind, file) => {
+    const src = readFileSync(`src/app/admin/_components/${file}.tsx`, "utf8");
+    const groups = Object.keys(LABEL_GROUPS[kind as keyof typeof forms]);
+    expect(groups.filter((g) => !src.includes(`groups.${g}`))).toEqual([]);
   });
 });

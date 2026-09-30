@@ -51,7 +51,16 @@ export async function updateBlogPost(originalSlug: string, post: BlogPost): Prom
     await collection.insertOne(toDoc(post));
   } else {
     const { slug, ...updates } = post;
-    await collection.updateOne({ _id: originalSlug }, { $set: updates });
+    // Optional fields the form leaves out when cleared (or back to default)
+    // must be removed, or $set would keep the old value live.
+    const cleared = (["toc", "instagramUrl", "heroImage", "heroImageAlt"] as const).filter((key) => !(key in updates));
+    await collection.updateOne(
+      { _id: originalSlug },
+      {
+        $set: updates,
+        ...(cleared.length ? { $unset: Object.fromEntries(cleared.map((k) => [k, ""])) } : {}),
+      },
+    );
   }
 }
 

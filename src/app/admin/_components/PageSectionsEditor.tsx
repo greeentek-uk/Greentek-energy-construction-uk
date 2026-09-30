@@ -5,6 +5,7 @@ import {
   type SectionLabelKey,
   type SectionPageKind,
 } from "@/data/pageSections";
+import { InheritanceNote } from "./ServiceSectionFields";
 
 const input =
   "w-full rounded-lg border border-white/15 bg-white/5 px-3 py-2 text-sm text-white placeholder:text-white/30 outline-none focus:border-[#c5eb02] focus:ring-2 focus:ring-[#c5eb02]/20 transition-all";
@@ -26,6 +27,30 @@ const LABEL_FIELDS: Record<
     label: "Hero — text",
     placeholder: "The description",
     multiline: true,
+  },
+  formHeading: {
+    label: "Quote form box — heading",
+    placeholder: "Get a free quote",
+  },
+  formSubheading: {
+    label: "Quote form box — text under the heading",
+    placeholder: "Four quick steps. We reply within one business day.",
+  },
+  heroCallLabel: {
+    label: "Hero — call button",
+    placeholder: "Consult an Expert",
+  },
+  heroWhatsappLabel: {
+    label: "Hero — WhatsApp button",
+    placeholder: "Contact on WhatsApp",
+  },
+  financeHeading: {
+    label: "Finance strip — text",
+    placeholder: "Finance options available using",
+  },
+  financeLinkLabel: {
+    label: "Finance strip — link",
+    placeholder: "Explore financing options",
   },
   servicesHeading: {
     label: "Services list — heading",
@@ -119,8 +144,8 @@ interface OverrideProps {
   /**
    * What this page shows today where it has no override of its own — the
    * service's, or the shared block. Labels show it as the placeholder; the
-   * process and stats fields start from it, so ticking "its own" means editing
-   * the real copy instead of an empty form. Only saved once ticked.
+   * process and stats fields start from it, and whatever is changed from it is
+   * saved as the page's own (see _actions/inheritance.ts).
    */
   inherited?: PageSectionOverrides | null;
 }
@@ -161,24 +186,25 @@ export function LabelFields({
   );
 }
 
-/** "How we work" steps for this page only; unticked keeps the inherited ones. */
-export function ProcessFields({ initial, inherited }: OverrideProps) {
-  const process = initial?.process?.steps?.length ? initial.process : inherited?.process;
+/**
+ * "How we work" steps. Pre-filled with the inherited ones; edited steps are
+ * saved as this page's own, untouched ones keep following (inheritance.ts).
+ */
+export function ProcessFields({
+  initial,
+  inherited,
+  inheritedFrom = "the shared block",
+}: OverrideProps & { inheritedFrom?: string }) {
+  const own = Boolean(initial?.process?.steps?.length);
+  const process = own ? initial?.process : inherited?.process;
   return (
     <div className="space-y-4">
-      <label className="flex items-center gap-2 text-sm font-bold text-white">
-        <input
-          type="checkbox"
-          name="overrideProcess"
-          defaultChecked={Boolean(initial?.process?.steps?.length)}
-          className="accent-[#c5eb02]"
-        />
-        Give this page its own process steps
-      </label>
-      <p className="text-xs text-white/50 -mt-2">
-        Unticked, this page shows the steps below from the shared block. Tick it and edit them to
-        make this page&apos;s own.
-      </p>
+      <InheritanceNote
+        own={own}
+        // Nothing to follow (the project form passes no inherited copy): no note.
+        inheritedFrom={inherited?.process ? inheritedFrom : undefined}
+        resetName="resetProcess"
+      />
       <div className="grid sm:grid-cols-2 gap-4">
         <div>
           <label className={label}>Small label</label>
@@ -233,23 +259,21 @@ export function ProcessFields({ initial, inherited }: OverrideProps) {
   );
 }
 
-/** The three headline figures for this page only; unticked keeps the inherited ones. */
-export function StatsFields({ initial, inherited }: OverrideProps) {
-  const stats = initial?.stats?.items?.length ? initial.stats : inherited?.stats;
+/** The three headline figures, following the same rule as ProcessFields. */
+export function StatsFields({
+  initial,
+  inherited,
+  inheritedFrom = "the shared block",
+}: OverrideProps & { inheritedFrom?: string }) {
+  const own = Boolean(initial?.stats?.items?.length);
+  const stats = own ? initial?.stats : inherited?.stats;
   return (
     <div className="space-y-4">
-      <label className="flex items-center gap-2 text-sm font-bold text-white">
-        <input
-          type="checkbox"
-          name="overrideStats"
-          defaultChecked={Boolean(initial?.stats?.items?.length)}
-          className="accent-[#c5eb02]"
-        />
-        Give this page its own figures
-      </label>
-      <p className="text-xs text-white/50 -mt-2">
-        Unticked, this page shows the figures below from the shared block.
-      </p>
+      <InheritanceNote
+        own={own}
+        inheritedFrom={inherited?.stats ? inheritedFrom : undefined}
+        resetName="resetStats"
+      />
       <div className="grid sm:grid-cols-3 gap-4">
         {[0, 1, 2].map((i) => (
           <div key={i} className="rounded-lg border border-white/10 p-3 space-y-2">

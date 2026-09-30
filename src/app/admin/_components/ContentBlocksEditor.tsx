@@ -5,6 +5,21 @@ import { ChevronDown, ChevronUp, Trash2 } from "lucide-react";
 import type { ContentBlock } from "@/data/content";
 import RichTextInput from "./RichTextInput";
 import ImageUploadField from "./ImageUploadField";
+import TableBlockEditor from "./TableBlockEditor";
+import TocPanel from "./TocPanel";
+import type { TocSettings } from "@/lib/toc";
+
+const HEADING_LEVELS = [
+  { value: 1, label: "H1 — page title level" },
+  { value: 2, label: "H2 — section" },
+  { value: 3, label: "H3 — sub-section" },
+  { value: 4, label: "H4" },
+  { value: 5, label: "H5" },
+  { value: 6, label: "H6" },
+];
+
+/** A fresh table: a heading row and two rows under it, three columns wide. */
+const EMPTY_TABLE = () => Array.from({ length: 3 }, () => ["", "", ""]);
 
 type BlockType = ContentBlock["type"];
 
@@ -17,6 +32,7 @@ const BLOCK_LABELS: { value: BlockType; label: string }[] = [
   { value: "heading", label: "Heading" },
   { value: "list", label: "List" },
   { value: "image", label: "Image" },
+  { value: "table", label: "Table" },
   { value: "quote", label: "Quote" },
   { value: "cta", label: "Call to action" },
 ];
@@ -37,7 +53,22 @@ const inputClass =
  * (src/app/admin/_actions/contentBlocks.ts). One per `<form>` — field names
  * aren't namespaced.
  */
-export default function ContentBlocksEditor({ initial }: { initial?: ContentBlock[] }) {
+export default function ContentBlocksEditor({
+  initial,
+  toc,
+  exclude = [],
+}: {
+  initial?: ContentBlock[];
+  /** Block types this page doesn't render (blog posts: "cta"), so they aren't offered. */
+  exclude?: BlockType[];
+  /**
+   * Set (even to null) to edit a table of contents alongside the headings —
+   * blog posts. Other pages don't render one, so they don't offer it.
+   */
+  toc?: TocSettings | null;
+}) {
+  const withToc = toc !== undefined;
+  const offered = BLOCK_LABELS.filter((o) => !exclude.includes(o.value));
   const [blocks, setBlocks] = useState<BlockState[]>(
     () =>
       initial?.map((b) => ({ ...b, id: newId() })) || [
@@ -52,7 +83,13 @@ export default function ContentBlocksEditor({ initial }: { initial?: ContentBloc
   function addBlock(type: BlockType) {
     setBlocks((prev) => [
       ...prev,
-      { id: newId(), type, text: "", ...(type === "list" ? { items: [""] } : {}) },
+      {
+        id: newId(),
+        type,
+        text: "",
+        ...(type === "list" ? { items: [""] } : {}),
+        ...(type === "table" ? { rows: EMPTY_TABLE(), headerRow: true } : {}),
+      },
     ]);
   }
 
@@ -88,15 +125,28 @@ export default function ContentBlocksEditor({ initial }: { initial?: ContentBloc
           <input type="hidden" name="block_src" value={block.src ?? ""} />
           <input type="hidden" name="block_alt" value={block.alt ?? ""} />
           <input type="hidden" name="block_caption" value={block.caption ?? ""} />
+          <input type="hidden" name="block_table" value={JSON.stringify(block.rows ?? [])} />
+          <input type="hidden" name="block_tableHeader" value={block.headerRow === false ? "" : "1"} />
+          <input type="hidden" name="block_tocLabel" value={block.tocLabel ?? ""} />
+          <input type="hidden" name="block_tocHidden" value={block.tocHidden ? "1" : ""} />
 
           <div className="flex items-center justify-between gap-2">
             <div className="flex items-center gap-2">
               <select
                 value={block.type}
-                onChange={(e) => update(block.id, { type: e.target.value as BlockType })}
+                onChange={(e) => {
+                  const type = e.target.value as BlockType;
+                  // Switching an existing block to a table needs a grid to edit.
+                  update(block.id, {
+                    type,
+                    ...(type === "table" && !block.rows?.length
+                      ? { rows: EMPTY_TABLE(), headerRow: true }
+                      : {}),
+                  });
+                }}
                 className="rounded-lg border border-white/15 bg-white/5 px-2 py-1.5 text-sm text-white outline-none focus:border-[#c5eb02]"
               >
-                {BLOCK_LABELS.map((option) => (
+                {BLOCK_LABELS.filter((o) => !exclude.includes(o.value) || o.value === block.type).map((option) => (
                   <option key={option.value} value={option.value}>
                     {option.label}
                   </option>
@@ -107,12 +157,15 @@ export default function ContentBlocksEditor({ initial }: { initial?: ContentBloc
                 <select
                   value={block.level ?? 2}
                   onChange={(e) =>
-                    update(block.id, { level: Number(e.target.value) as 2 | 3 })
+                    update(block.id, { level: Number(e.target.value) as ContentBlock["level"] })
                   }
                   className="rounded-lg border border-white/15 bg-white/5 px-2 py-1.5 text-sm text-white outline-none focus:border-[#c5eb02]"
                 >
-                  <option value={2}>H2 — section</option>
-                  <option value={3}>H3 — sub-section</option>
+                  {HEADING_LEVELS.map((h) => (
+                    <option key={h.value} value={h.value} className="text-black">
+                      {h.label}
+                    </option>
+                  ))}
                 </select>
               )}
 
@@ -156,12 +209,21 @@ export default function ContentBlocksEditor({ initial }: { initial?: ContentBloc
           )}
 
           {block.type === "heading" && (
-            <RichTextInput
-              value={block.text ?? ""}
-              onChange={(text) => update(block.id, { text })}
-              placeholder="Heading text…"
-              multiline={false}
-            />
+            <>
+              <RichTextInput
+                value={block.text ?? ""}
+                onChange={(text) => update(block.id, { text })}
+                placeholder="Heading text…"
+                multiline={false}
+              />
+              {block.level === 1 && (
+                <p className="rounded-lg bg-amber-500/10 px-3 py-2 text-xs text-amber-300">
+                  The page title is already this page&apos;s H1. A second H1 usually confuses
+                  search engines about what the page is about — H2 is normally the right choice
+                  for a section.
+                </p>
+              )}
+            </>
           )}
 
           {block.type === "list" && (
@@ -221,6 +283,22 @@ export default function ContentBlocksEditor({ initial }: { initial?: ContentBloc
             </div>
           )}
 
+          {block.type === "table" && (
+            <TableBlockEditor
+              rows={block.rows ?? EMPTY_TABLE()}
+              headerRow={block.headerRow !== false}
+              caption={block.caption ?? ""}
+              onChange={(patch) => update(block.id, patch)}
+            />
+          )}
+
+          {exclude.includes(block.type) && (
+            <p className="rounded-lg bg-amber-500/10 px-3 py-2 text-xs text-amber-300">
+              Not shown on this page — kept in case it&apos;s used again. Delete it, or change the
+              block type, if it isn&apos;t needed.
+            </p>
+          )}
+
           {block.type === "cta" && (
             <div className="space-y-3">
               <RichTextInput
@@ -248,7 +326,7 @@ export default function ContentBlocksEditor({ initial }: { initial?: ContentBloc
       ))}
 
       <div className="flex flex-wrap gap-2">
-        {BLOCK_LABELS.map((option) => (
+        {offered.map((option) => (
           <button
             key={option.value}
             type="button"
@@ -259,6 +337,10 @@ export default function ContentBlocksEditor({ initial }: { initial?: ContentBloc
           </button>
         ))}
       </div>
+
+      {withToc && (
+        <TocPanel blocks={blocks} initial={toc} onUpdateBlock={(id, patch) => update(id, patch)} />
+      )}
     </div>
   );
 }

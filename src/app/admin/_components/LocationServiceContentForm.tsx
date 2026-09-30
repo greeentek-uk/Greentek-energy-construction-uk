@@ -9,6 +9,8 @@ import ImageUploadField from "./ImageUploadField";
 import { LabelFields, ProcessFields, StatsFields } from "./PageSectionsEditor";
 import { PricingSectionFields, ProblemSectionFields } from "./ServiceSectionFields";
 import { EditorSections, SaveBar } from "./editor/EditorLayout";
+import ReviewPicker, { type PoolReview } from "./ReviewPicker";
+import { otherServicesFor } from "@/lib/otherServices";
 
 const input =
   "w-full rounded-lg border border-white/15 bg-white/5 px-3 py-2 text-sm text-white placeholder:text-white/30 outline-none focus:border-[#c5eb02] focus:ring-2 focus:ring-[#c5eb02]/20 transition-all";
@@ -28,7 +30,13 @@ export default function LocationServiceContentForm({
   projects,
   initial,
   inherited,
+  reviewPool = [],
+  allServices = [],
 }: {
+  /** Every service, in site order, for choosing the "Other services" cards. */
+  allServices?: { slug: string; shortName: string }[];
+  /** The shared reviews, for choosing which this page shows. */
+  reviewPool?: PoolReview[];
   location: { slug: string; name: string };
   service: {
     slug: string;
@@ -48,6 +56,14 @@ export default function LocationServiceContentForm({
   initial?: LocationServiceContent;
 }) {
   const shortLower = service.shortName.toLowerCase();
+  // Which cards the page shows today, for the pre-ticks.
+  const shownOthers = otherServicesFor(
+    allServices.map((s) => s.slug),
+    service.slug,
+    initial?.otherServices,
+  );
+  // Where an un-customised section's copy comes from, in the inheritance notes.
+  const fromService = `the ${service.shortName} service page`;
   const own = initial?.sections;
   const labels = (keys: (typeof groups)[keyof typeof groups], placeholders?: Record<string, string>) => (
     <LabelFields keys={keys} initial={own} inherited={inherited.sections} placeholders={placeholders} />
@@ -112,8 +128,15 @@ export default function LocationServiceContentForm({
                   altDefaultValue={initial?.heroImageAlt}
                   altFallback={`${service.title} in ${location.name}`}
                 />
+                {labels(groups.hero)}
               </>
             ),
+          },
+          {
+            id: "finance",
+            title: "Finance strip",
+            description: "The strip under the hero. Provider logo and link come from Shared sections → Finance Banner.",
+            content: labels(groups.finance),
           },
           {
             id: "problem",
@@ -124,10 +147,7 @@ export default function LocationServiceContentForm({
                 <ProblemSectionFields
                   initial={initial?.problem}
                   inherited={inherited.problem}
-                  overrideName="overrideProblem"
-                  // A template string: in JSX the space between {shortName} and
-                  // "service&apos;s" was being dropped ("Heat Pumpsservice's").
-                  help={`Unticked, this page shows the ${service.shortName} service's problem section (filled in below). Tick it and edit the copy to give this page its own.`}
+                  inheritedFrom={fromService}
                 />
               </>
             ),
@@ -201,15 +221,25 @@ export default function LocationServiceContentForm({
             title: "Stats & testimonials",
             content: (
               <>
-                <StatsFields initial={own} inherited={inherited.sections} />
+                <StatsFields initial={own} inherited={inherited.sections} inheritedFrom={fromService} />
                 {labels(groups.testimonials)}
+                <ReviewPicker
+                  pool={reviewPool}
+                  own={own?.reviews}
+                  inherited={inherited.sections.reviews}
+                  inheritedFrom={
+                    inherited.sections.reviews?.length ? `${fromService}'s choice` : "every review"
+                  }
+                />
               </>
             ),
           },
           {
             id: "process",
             title: "Process",
-            content: <ProcessFields initial={own} inherited={inherited.sections} />,
+            content: (
+              <ProcessFields initial={own} inherited={inherited.sections} inheritedFrom={fromService} />
+            ),
           },
           {
             id: "accreditations",
@@ -225,8 +255,8 @@ export default function LocationServiceContentForm({
                 <PricingSectionFields
                   initial={initial?.pricing}
                   inherited={inherited.pricing}
-                  overrideName="overridePricing"
-                  help={`Unticked, this page shows the ${service.shortName} service's section (filled in below). Tick it and edit to give this page its own. No figures — everything is quoted after a survey.`}
+                  inheritedFrom={fromService}
+                  help="No figures — everything is quoted after a survey."
                 />
               </>
             ),
@@ -253,6 +283,36 @@ export default function LocationServiceContentForm({
                     name="otherServicesHeading"
                     defaultValue={initial?.otherServicesHeading}
                     placeholder={`Other Services in ${location.name}`}
+                    className={input}
+                  />
+                </div>
+                <div>
+                  <p className={label}>
+                    Services shown as cards (untick all to go back to the first four)
+                  </p>
+                  <div className="grid gap-2 sm:grid-cols-2">
+                    {allServices
+                      .filter((s) => s.slug !== service.slug)
+                      .map((s) => (
+                        <label key={s.slug} className="flex items-center gap-2 rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-white/80">
+                          <input
+                            type="checkbox"
+                            name="otherService"
+                            value={s.slug}
+                            defaultChecked={shownOthers.includes(s.slug)}
+                            className="accent-[#c5eb02]"
+                          />
+                          {s.shortName}
+                        </label>
+                      ))}
+                  </div>
+                </div>
+                <div>
+                  <label className={label}>Card link text</label>
+                  <input
+                    name="otherServicesLinkLabel"
+                    defaultValue={initial?.otherServicesLinkLabel}
+                    placeholder="Learn More →"
                     className={input}
                   />
                 </div>

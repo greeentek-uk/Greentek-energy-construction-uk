@@ -1,7 +1,10 @@
 import type { Metadata } from "next";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
-import { BlogFilterClient } from "./BlogFilter";
+import BlogListing from "./BlogListing";
+import BlogHero from "./BlogHero";
+import CtaSection from "@/components/sections/CtaSection";
+import { getBlogCategories } from "@/lib/blogCategories";
 import { withSeoOverride } from "@/lib/seo";
 import { getCurrentBlogPosts } from "@/lib/cms";
 import PageSchema from "@/components/site/PageSchema";
@@ -38,24 +41,27 @@ export default async function BlogPage() {
       <Header />
 
       <main className="flex-1 ">
-        {/* Hero Section - Compact */}
-        <section className="relative  bg-[url('/images/footer/footer-bg.webp')] bg-cover overflow-hidden">
-          <div className="bg-black/60 pt-30 py-20">
-            <div className="absolute top-0 right-0 w-80 h-80 bg-green-500/10 rounded-full blur-3xl" />
-            <div className="mx-auto max-w-5xl px-6 text-center relative z-10">
-              <h1 className="text-[2rem] md:text-[3.5rem] font-bold leading-[1.15] text-white mb-4">
-                Energy Saving &amp;{" "}
-                <span className="text-[#c5eb02]">Home Improvement</span> Tips
-              </h1>
-              <p className="text-[15px] md:text-base text-white/80 max-w-2xl mx-auto leading-relaxed font-normal">
-                Expert insights on solar PV, heat pumps, insulation, and
-                energy-efficient living for your home.
-              </p>
-            </div>
-          </div>
-        </section>
+        <BlogHero
+          title={
+            <>
+              Energy Saving &amp; <span className="text-[#c5eb02]">Home Improvement</span> Tips
+            </>
+          }
+          intro="Expert insights on solar PV, heat pumps, insulation, and energy-efficient living for your home."
+        />
 
-        <BlogFilterClient posts={posts} />
+        <BlogListing
+          posts={posts}
+          categories={getBlogCategories(posts)}
+          totalPosts={posts.length}
+          title="Latest articles"
+        />
+
+        {/* Replaces the old "Follow on Instagram" block: a reader who has
+            just read up on an upgrade is best offered a quote, not a feed. */}
+        <div id="quote">
+          <CtaSection eyebrow="Free Quote" heading="Ready to Start Your Project?" />
+        </div>
       </main>
 
       <Footer />
