@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import type { BlogPost } from "@/data/blogs";
 import { saveBlogPostAction } from "../_actions/blog";
 import ImageUploadField from "./ImageUploadField";
@@ -53,7 +54,14 @@ function Field({
   );
 }
 
-export default function BlogForm({ post }: { post?: BlogPost }) {
+export default function BlogForm({
+  post,
+  authors = [],
+}: {
+  post?: BlogPost;
+  /** Everyone from Admin → Blog authors, for the Author picker. */
+  authors?: { slug: string; name: string; role: string }[];
+}) {
   return (
     <form action={saveBlogPostAction} className="space-y-6">
       <input type="hidden" name="originalSlug" value={post?.slug || ""} />
@@ -86,6 +94,27 @@ export default function BlogForm({ post }: { post?: BlogPost }) {
           defaultValue={post?.excerpt}
           required
         />
+        <div>
+          <label className="block text-xs font-semibold text-white/70 mb-1">
+            Author (shows the &quot;About the author&quot; box at the end of the post)
+          </label>
+          <select
+            name="authorSlug"
+            defaultValue={post?.authorSlug ?? ""}
+            className="w-full rounded-lg border border-white/15 bg-white/5 px-3 py-2 text-sm text-white outline-none focus:border-[#c5eb02]"
+          >
+            <option value="" className="text-black">No author box</option>
+            {authors.map((a) => (
+              <option key={a.slug} value={a.slug} className="text-black">
+                {a.name}{a.role ? ` — ${a.role}` : ""}
+              </option>
+            ))}
+          </select>
+          <p className="mt-1 text-xs text-white/40">
+            Add or edit authors in <Link href="/admin/authors" className="underline hover:text-white">Blog authors</Link>.
+          </p>
+        </div>
+
         {/* Two images, because one crop can't serve both: the cards are
             portrait and the post's own image is landscape. Both are shown
             cover-cropped from the centre, so keep the subject in the middle. */}

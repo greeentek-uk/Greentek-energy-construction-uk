@@ -1,13 +1,14 @@
 import Link from "next/link";
 import BlogForm from "../../../_components/BlogForm";
 import SaveBanner from "../../../_components/SaveBanner";
+import { getAuthors } from "@/lib/db/authors";
 
 interface Props {
   searchParams: Promise<{ error?: string }>;
 }
 
 export default async function NewBlogPostPage({ searchParams }: Props) {
-  const params = await searchParams;
+  const [params, authors] = await Promise.all([searchParams, getAuthors()]);
 
   return (
     <div>
@@ -18,7 +19,7 @@ export default async function NewBlogPostPage({ searchParams }: Props) {
 
       <SaveBanner error={params.error} />
 
-      <BlogForm />
+      <BlogForm authors={authors} />
     </div>
   );
 }

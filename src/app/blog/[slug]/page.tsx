@@ -14,6 +14,8 @@ import FaqSection from "@/components/site/FaqSection";
 import { buildToc, DEFAULT_TOC_TITLE } from "@/lib/toc";
 import { categoryPath } from "@/lib/blogCategories";
 import { BlogTocAside, BlogTocInline } from "./BlogToc";
+import AuthorBox from "./AuthorBox";
+import { getAuthorBySlug } from "@/lib/db/authors";
 
 interface Props {
   params: {
@@ -70,7 +72,8 @@ export default async function BlogDetailPage({ params }: Props) {
     notFound();
   }
 
-  const jsonLd = buildBlogPostingJsonLd(post, SITE_URL);
+  const author = await getAuthorBySlug(post.authorSlug);
+  const jsonLd = buildBlogPostingJsonLd(post, SITE_URL, author);
   const toc = buildToc(post.content, post.toc);
   const tocTitle = post.toc?.title?.trim() || DEFAULT_TOC_TITLE;
 
@@ -134,6 +137,8 @@ export default async function BlogDetailPage({ params }: Props) {
             <div className="mt-10">
               <ContentBlocks blocks={post.content} omit={["cta"]} />
             </div>
+
+            {author && <AuthorBox author={author} />}
 
             {/* Related Links */}
             <div className="mt-16 pt-12 border-t border-white/10">

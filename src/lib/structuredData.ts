@@ -1,5 +1,6 @@
 import type { SiteConfig, Service, Location } from "@/data/site";
 import type { BlogPost } from "@/data/blogs";
+import type { Author } from "@/data/authors";
 
 /** The public origin, whatever NEXT_PUBLIC_SITE_URL says on this machine. */
 export const PRODUCTION_SITE_URL = "https://www.greentekenergy.co.uk";
@@ -164,7 +165,7 @@ export function buildLocalizedServiceJsonLd(
   };
 }
 
-export function buildBlogPostingJsonLd(post: BlogPost, siteUrl: string) {
+export function buildBlogPostingJsonLd(post: BlogPost, siteUrl: string, author?: Author | null) {
   return {
     "@context": "https://schema.org",
     "@type": "BlogPosting",
@@ -174,10 +175,20 @@ export function buildBlogPostingJsonLd(post: BlogPost, siteUrl: string) {
       ? post.heroImage || post.coverImage
       : `${siteUrl}${post.heroImage || post.coverImage}`,
     datePublished: post.date,
-    author: {
-      "@type": "Organization",
-      name: "Greentek",
-    },
+    // A named person when the post has one (Admin → Blog authors), else the
+    // company. Named, credentialed authorship is an expertise signal.
+    author: author
+      ? {
+          "@type": "Person",
+          name: author.name,
+          ...(author.role ? { jobTitle: author.role } : {}),
+          ...(author.profileUrl ? { url: author.profileUrl } : {}),
+          ...(author.photo
+            ? { image: author.photo.startsWith("http") ? author.photo : `${siteUrl}${author.photo}` }
+            : {}),
+          worksFor: { "@type": "Organization", name: "Greentek Energy" },
+        }
+      : { "@type": "Organization", name: "Greentek" },
     url: `${siteUrl}/blog/${post.slug}`,
   };
 }

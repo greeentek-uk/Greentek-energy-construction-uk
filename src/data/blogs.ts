@@ -22,6 +22,8 @@ export interface BlogPost {
   content: ContentBlock[];
   /** Post-specific FAQs, rendered and marked up as FAQPage schema. */
   faqs?: FaqItem[];
+  /** Author shown in the post's "About the author" box (Admin → Blog authors). Unset = none. */
+  authorSlug?: string;
   /** Table-of-contents settings; absent = on, "In this article", H2–H3. */
   toc?: TocSettings;
 }

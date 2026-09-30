@@ -31,6 +31,7 @@ const GROUPS: { title?: string; items: NavItem[] }[] = [
       { href: "/admin/locations", label: "Locations", also: ["/admin/content/locations"] },
       { href: "/admin/projects", label: "Projects", also: ["/admin/content/projects"] },
       { href: "/admin/blog", label: "Blog posts" },
+      { href: "/admin/authors", label: "Blog authors" },
       { href: "/admin/pages", label: "Other pages" },
       { href: "/admin/content/shared", label: "Shared sections" },
     ],

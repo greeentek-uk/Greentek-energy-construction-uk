@@ -53,7 +53,7 @@ export async function updateBlogPost(originalSlug: string, post: BlogPost): Prom
     const { slug, ...updates } = post;
     // Optional fields the form leaves out when cleared (or back to default)
     // must be removed, or $set would keep the old value live.
-    const cleared = (["toc", "instagramUrl", "heroImage", "heroImageAlt"] as const).filter((key) => !(key in updates));
+    const cleared = (["toc", "instagramUrl", "heroImage", "heroImageAlt", "authorSlug"] as const).filter((key) => !(key in updates));
     await collection.updateOne(
       { _id: originalSlug },
       {

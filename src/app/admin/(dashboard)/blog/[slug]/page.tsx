@@ -6,6 +6,7 @@ import SaveBanner from "../../../_components/SaveBanner";
 import InternalLinkSuggestions from "../../../_components/InternalLinkSuggestions";
 import RevisionList from "../../../_components/RevisionList";
 import { getRevisions } from "@/lib/db/revisions";
+import { getAuthors } from "@/lib/db/authors";
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -22,7 +23,7 @@ export default async function EditBlogPostPage({ params, searchParams }: Props) 
     notFound();
   }
 
-  const revisions = await getRevisions("blogPosts", slug);
+  const [revisions, authors] = await Promise.all([getRevisions("blogPosts", slug), getAuthors()]);
 
   return (
     <div>
@@ -43,7 +44,7 @@ export default async function EditBlogPostPage({ params, searchParams }: Props) 
         </div>
       </div>
 
-      <BlogForm post={post} />
+      <BlogForm post={post} authors={authors} />
     </div>
   );
 }

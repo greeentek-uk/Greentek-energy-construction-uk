@@ -6,6 +6,8 @@ import { enquiryPhotoFolder } from "@/lib/db/enquiries";
 import { resolveLiveSiteUrl } from "@/lib/revalidate";
 import { splitHeading } from "@/lib/heroHeading";
 import { sanitizeRichText, toRelativeIfOwnSite } from "@/lib/richText";
+import { buildBlogPostingJsonLd } from "@/lib/structuredData";
+import type { BlogPost } from "@/data/blogs";
 import { PRODUCTION_SITE_URL } from "@/lib/structuredData";
 
 describe("whatsappUrl", () => {
@@ -123,5 +125,20 @@ describe("external links", () => {
     expect(sanitizeRichText('<a href="https://ideal4finance.com/">x</a>')).toBe(
       '<a href="https://ideal4finance.com/" target="_blank" rel="noopener noreferrer">x</a>',
     );
+  });
+});
+
+describe("blog post author schema", () => {
+  const post = { title: "T", slug: "t", excerpt: "E", date: "2026-05-23", coverImage: "/c.jpg" } as BlogPost;
+  it("names a Person when the post has an author", () => {
+    const jsonLd = buildBlogPostingJsonLd(post, "https://www.example.co.uk", {
+      slug: "andy", name: "Andy Smith", role: "Surveyor", bio: "", photo: "/a.jpg", profileUrl: "https://linkedin.com/in/andy",
+    });
+    expect(jsonLd.author).toMatchObject({
+      "@type": "Person", name: "Andy Smith", jobTitle: "Surveyor", url: "https://linkedin.com/in/andy", image: "https://www.example.co.uk/a.jpg",
+    });
+  });
+  it("falls back to the company", () => {
+    expect(buildBlogPostingJsonLd(post, "https://www.example.co.uk").author).toEqual({ "@type": "Organization", name: "Greentek" });
   });
 });

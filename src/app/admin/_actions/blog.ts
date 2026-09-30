@@ -44,6 +44,7 @@ export async function saveBlogPostAction(formData: FormData): Promise<void> {
   const metaTitle = String(formData.get("metaTitle") || "").trim();
   const metaDescription = String(formData.get("metaDescription") || "").trim();
   const toc = parseTocSettings(formData);
+  const authorSlug = String(formData.get("authorSlug") || "").trim();
   const keywords = String(formData.get("keywords") || "")
     .split(",")
     .map((k) => k.trim())
@@ -90,6 +91,7 @@ export async function saveBlogPostAction(formData: FormData): Promise<void> {
     content: parseContentBlocks(formData),
     faqs: parseFaqs(formData),
     ...(toc ? { toc } : {}),
+    ...(authorSlug ? { authorSlug } : {}),
   };
 
   try {

@@ -256,6 +256,12 @@ Blog cards use `coverImage` (portrait 4:5); the post page uses `heroImage` (land
 falls back to `coverImage`), both `object-cover` centred. The post's in-body "cta" blocks are
 not rendered (`ContentBlocks omit`) and not offered in the blog editor — Next Steps has Contact
 Us — and the Instagram field/sections are gone.
+**Authors** (added 2026-09-30): own `authors` collection (`lib/db/authors.ts`, type
+`data/authors.ts`), managed at Admin → Blog authors (`/admin/authors`); a post picks one via
+`authorSlug`, which renders `AuthorBox` after the body and makes the BlogPosting schema author a
+`Person` (else the company). The id comes from the name at creation and never changes, so a
+rename keeps their posts; deleting an author unlinks their posts first. Saving an author
+revalidates every post. No version history for authors (no restore support for that scope).
 Locally `next start` 404s every `/_next/image` URL (logo, covers) — that's the custom loader
 without Vercel's optimizer, not a bug; live it's 200.
 
@@ -314,7 +320,7 @@ hover/focus/touch instead of on scroll. Keep new public links on that import. Ad
 
 ## Current state (2026-09-18)
 
-- Unit tests: **184 passing** across 17 files (2026-09-30).
+- Unit tests: **186 passing** across 17 files (2026-09-30).
 - E2E: 4 known failures recorded in `test-results/` —
   1. `/images/brands/swip.png` 404s on `/about` and in the media library. The file isn't in
      `public/images/brands/`; the reference lives in the **`brands` pageContent block in Mongo**,
