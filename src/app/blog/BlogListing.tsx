@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "@/components/ui/Link";
-import Image from "next/image";
+import FittedImage from "@/components/ui/FittedImage";
 import { useMemo, useState } from "react";
 import type { BlogPost } from "@/data/blogs";
 import { categoryPath, type BlogCategory } from "@/lib/blogCategories";
@@ -124,13 +124,11 @@ export default function BlogListing({
                     key={post.id}
                     className="group rounded-xl overflow-hidden border border-white/10 bg-[#101314] transition-all duration-300 hover:border-[#c5eb02] hover:-translate-y-1 h-full flex flex-col"
                   >
-                    <Link href={`/blog/${post.slug}`} className="relative block aspect-[4/5] overflow-hidden" tabIndex={-1} aria-hidden="true">
-                      <Image
+                    <Link href={`/blog/${post.slug}`} className="relative block aspect-[4/5] shrink-0 overflow-hidden bg-black" tabIndex={-1} aria-hidden="true">
+                      <FittedImage
                         src={post.coverImage}
                         sizes="(min-width: 1280px) 25vw, (min-width: 768px) 40vw, 100vw"
                         alt={post.coverImageAlt}
-                        fill
-                        className="object-cover object-center"
                       />
                     </Link>
                     <div className="p-5 md:p-6 flex flex-col flex-grow">

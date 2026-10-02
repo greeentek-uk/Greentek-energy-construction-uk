@@ -6,7 +6,7 @@ import BlogHero from "./BlogHero";
 import CtaSection from "@/components/sections/CtaSection";
 import { getBlogCategories } from "@/lib/blogCategories";
 import { withSeoOverride } from "@/lib/seo";
-import { getCurrentBlogPosts } from "@/lib/cms";
+import { getPublicBlogPosts } from "@/lib/cms";
 import PageSchema from "@/components/site/PageSchema";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -33,7 +33,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function BlogPage() {
-  const posts = await getCurrentBlogPosts();
+  const posts = await getPublicBlogPosts();
 
   return (
     <div className="flex flex-col min-h-screen">

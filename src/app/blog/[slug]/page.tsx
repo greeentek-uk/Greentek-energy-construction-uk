@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "@/components/ui/Link";
-import Image from "next/image";
+import FittedImage from "@/components/ui/FittedImage";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
-import { getCurrentBlogPosts } from "@/lib/cms";
+import { getPublicBlogPosts } from "@/lib/cms";
 import { buildBlogPostingJsonLd, SITE_URL } from "@/lib/structuredData";
 import ContentBlocks from "@/components/ui/ContentBlocks";
 import PageSchema from "@/components/site/PageSchema";
@@ -25,7 +25,7 @@ interface Props {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const blogPosts = await getCurrentBlogPosts();
+  const blogPosts = await getPublicBlogPosts();
   const post = blogPosts.find((p) => p.slug === slug);
 
   if (!post) {
@@ -57,7 +57,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export async function generateStaticParams() {
-  const blogPosts = await getCurrentBlogPosts();
+  const blogPosts = await getPublicBlogPosts();
   return blogPosts.map((post) => ({
     slug: post.slug,
   }));
@@ -65,7 +65,7 @@ export async function generateStaticParams() {
 
 export default async function BlogDetailPage({ params }: Props) {
   const { slug } = await params;
-  const blogPosts = await getCurrentBlogPosts();
+  const blogPosts = await getPublicBlogPosts();
   const post = blogPosts.find((p) => p.slug === slug);
 
   if (!post) {
@@ -123,12 +123,10 @@ export default async function BlogDetailPage({ params }: Props) {
           >
             <div className="min-w-0">
             <div className="relative aspect-video w-full overflow-hidden rounded-xl border border-white/10 bg-black">
-              <Image
+              <FittedImage
                 src={post.heroImage || post.coverImage}
                 sizes="(min-width: 1024px) 60vw, 100vw"
                 alt={(post.heroImage && post.heroImageAlt) || post.coverImageAlt}
-                fill
-                className="object-cover object-center"
                 priority
               />
             </div>

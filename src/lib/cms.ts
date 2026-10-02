@@ -4,6 +4,7 @@ import { getProjects } from "./db/projects";
 import { getLocations } from "./db/locations";
 import { getSettings } from "./db/settings";
 import { getBlogPosts } from "./db/blogPosts";
+import { arrangeBlogImages } from "./blogImages";
 import { getSeoOverrides } from "./db/seoOverrides";
 import { getMenus } from "./db/menus";
 import { getBlockPublished } from "./db/pageContent";
@@ -39,6 +40,15 @@ export const getCurrentSiteConfig = cache(async (): Promise<SiteConfig> => {
 });
 
 export const getCurrentBlogPosts = cache((): Promise<BlogPost[]> => getBlogPosts());
+
+/**
+ * Public blog pages read this one: the same posts, with each image in the slot
+ * its shape suits (card 4:5, post 16:9 — see lib/blogImages.ts). The admin
+ * keeps reading getCurrentBlogPosts so it shows what was actually entered.
+ */
+export const getPublicBlogPosts = cache(
+  async (): Promise<BlogPost[]> => arrangeBlogImages(await getCurrentBlogPosts()),
+);
 
 export const getCurrentSeoOverrides = cache((): Promise<SeoOverrides> => getSeoOverrides());
 

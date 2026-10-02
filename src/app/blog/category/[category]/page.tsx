@@ -5,7 +5,7 @@ import Footer from "@/components/layout/Footer";
 import CtaSection from "@/components/sections/CtaSection";
 import Breadcrumbs from "@/components/site/Breadcrumbs";
 import PageSchema from "@/components/site/PageSchema";
-import { getCurrentBlogPosts } from "@/lib/cms";
+import { getPublicBlogPosts } from "@/lib/cms";
 import { withSeoOverride } from "@/lib/seo";
 import { getBlogCategories, postsInCategory } from "@/lib/blogCategories";
 import BlogListing from "../../BlogListing";
@@ -16,14 +16,14 @@ interface Props {
 }
 
 async function load(slug: string) {
-  const posts = await getCurrentBlogPosts();
+  const posts = await getPublicBlogPosts();
   const categories = getBlogCategories(posts);
   const category = categories.find((c) => c.slug === slug);
   return { posts, categories, category };
 }
 
 export async function generateStaticParams() {
-  const posts = await getCurrentBlogPosts();
+  const posts = await getPublicBlogPosts();
   return getBlogCategories(posts).map((c) => ({ category: c.slug }));
 }
 
