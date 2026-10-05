@@ -4,13 +4,35 @@ import { ArrowRight } from "lucide-react";
 import { getPageContent } from "@/lib/cms";
 
 /**
- * Finance availability strip: the provider's logo, a short line, and a link
- * through to the finance page.
+ * Finance availability strip: a short line, the providers' logos (Ideal
+ * Finance and Phoenix — up to two), and a link through to the finance page.
  *
  * Everything is editable in the panel, including the logo — until one is
  * uploaded the provider's name stands in as text, so the banner never renders
  * a gap where a logo should be.
  */
+/**
+ * One provider: its logo, or its name as text until a logo is uploaded — so
+ * the strip never shows a gap. Shared by both provider slots so they match.
+ */
+function ProviderMark({ logo, alt, name }: { logo?: string; alt?: string; name?: string }) {
+  if (logo) {
+    return (
+      <Image
+        src={logo}
+        alt={alt || name || "Finance provider"}
+        width={320}
+        height={110}
+        sizes="200px"
+        className="h-6 w-auto shrink-0 object-contain sm:h-10 md:h-14"
+      />
+    );
+  }
+  return name ? (
+    <p className="whitespace-nowrap text-sm font-bold text-white sm:text-lg md:text-xl">{name}</p>
+  ) : null;
+}
+
 /** `heading` / `linkLabel` reword the strip on one page; blank keeps the shared block's. */
 export default async function FinanceBanner({
   heading,
@@ -43,21 +65,12 @@ export default async function FinanceBanner({
             {content.heading}
           </p>
         )}
-        {content.logo ? (
-          <Image
-            src={content.logo}
-            alt={content.logoAlt || content.providerName}
-            width={320}
-            height={90}
-            sizes="200px"
-            className="h-6 w-auto shrink-0 object-contain sm:h-10 md:h-14"
-          />
-        ) : (
-          content.providerName && (
-            <p className="whitespace-nowrap text-sm font-bold text-white sm:text-lg md:text-xl">
-              {content.providerName}
-            </p>
-          )
+        <ProviderMark logo={content.logo} alt={content.logoAlt} name={content.providerName} />
+        {(content.logo2 || content.provider2Name) && (
+          <>
+            <span aria-hidden className="text-sm font-semibold text-white/60 sm:text-lg">&amp;</span>
+            <ProviderMark logo={content.logo2} alt={content.logo2Alt} name={content.provider2Name} />
+          </>
         )}
         <span className="inline-flex shrink-0 items-center gap-1.5 whitespace-nowrap text-[11px] font-semibold text-[#c5eb02] transition-colors group-hover:text-[#c5eb02]/80 sm:text-sm md:text-base">
           <span className="hidden sm:inline">{content.linkLabel}</span>

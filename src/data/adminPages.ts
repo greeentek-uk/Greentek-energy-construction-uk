@@ -104,6 +104,18 @@ export const CONTENT_PAGES: ContentPage[] = [
     children: { label: "Edit each project page", href: "/admin/projects" },
   },
   {
+    id: "finance",
+    label: "Finance pages",
+    path: "/finance",
+    // The overview shows both providers' cards and disclosures; each provider
+    // block also drives its own page. Same form for both, so they stay equal.
+    sections: [
+      { key: "finance-ideal4finance", note: "Its card on /finance and the /finance/ideal4finance page" },
+      { key: "finance-phoenix", note: "Its card on /finance and the /finance/phoenix page" },
+      { key: "finance-banner", note: "The strip under the hero on service and location pages" },
+    ],
+  },
+  {
     id: "shared",
     label: "Shared on service & location pages",
     path: "/services",

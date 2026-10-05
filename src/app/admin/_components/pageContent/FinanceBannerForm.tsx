@@ -36,6 +36,27 @@ export default function FinanceBannerForm({ content }: { content: FinanceBannerC
         SVG works best against the dark background.
       </p>
 
+      <div className="space-y-4 border-t border-white/10 pt-5">
+        <p className="text-sm font-bold text-white">Second finance provider (optional)</p>
+        <Field
+          label="Second provider name"
+          name="provider2Name"
+          defaultValue={content.provider2Name}
+          placeholder="Phoenix"
+        />
+        <ImageUploadField
+          name="logo2"
+          label="Second provider logo"
+          defaultValue={content.logo2}
+          altName="logo2Alt"
+          altDefaultValue={content.logo2Alt}
+          altFallback={content.provider2Name}
+        />
+        <p className="text-xs text-white/40 -mt-2">
+          Shown beside the first provider. Leave both blank to show one provider only.
+        </p>
+      </div>
+
       <div className="grid sm:grid-cols-2 gap-4">
         <Field
           label="Link text"

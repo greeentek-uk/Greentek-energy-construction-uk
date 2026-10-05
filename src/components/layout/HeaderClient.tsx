@@ -1,4 +1,5 @@
 "use client";
+import { FINANCE_PROVIDERS } from "@/lib/financeProviders";
 import { hankenGrotesk } from "@/lib/fonts";
 import Link from "@/components/ui/Link";
 import Image from "next/image";
@@ -87,7 +88,8 @@ export default function HeaderClient({ siteConfig }: { siteConfig: SiteConfig })
               const hasDropdown =
                 link.label === "Services" ||
                 link.label === "Projects" ||
-                link.label === "Locations";
+                link.label === "Locations" ||
+                link.label === "Finance";
 
               return (
                 <div
@@ -146,6 +148,27 @@ export default function HeaderClient({ siteConfig }: { siteConfig: SiteConfig })
                                 </span>
                               </Link>
                             ))}
+                          </div>
+                        ) : link.label === "Finance" ? (
+                          <div className="flex flex-col gap-1">
+                            {FINANCE_PROVIDERS.map((provider) => (
+                              <Link
+                                key={provider.slug}
+                                href={`/finance/${provider.slug}`}
+                                className="px-4 py-3 rounded-xl hover:bg-[#c5eb02] transition-colors group/item"
+                              >
+                                <span className="block text-xs font-bold text-white group-hover/item:text-black transition-colors">
+                                  {provider.name}
+                                </span>
+                              </Link>
+                            ))}
+                            <div className="h-px bg-zinc-100 my-1 mx-2" />
+                            <Link
+                              href="/finance"
+                              className="px-4 py-2 text-center text-[10px] font-black uppercase text-[#c5eb02] hover:text-[#c5eb02]/80"
+                            >
+                              All Finance Options
+                            </Link>
                           </div>
                         ) : link.label === "Projects" ? (
                           <div className="flex flex-col gap-1">
@@ -300,7 +323,8 @@ export default function HeaderClient({ siteConfig }: { siteConfig: SiteConfig })
               const hasDropdown =
                 link.label === "Services" ||
                 link.label === "Projects" ||
-                link.label === "Locations";
+                link.label === "Locations" ||
+                link.label === "Finance";
               const isDropdownOpen = openDropdown === link.label;
               const isActive = pathname === link.href;
 
@@ -366,7 +390,21 @@ export default function HeaderClient({ siteConfig }: { siteConfig: SiteConfig })
                                 {service.title}
                               </Link>
                             ))
-                          : link.label === "Projects"
+                          : link.label === "Finance"
+                            ? [
+                                ...FINANCE_PROVIDERS.map((p) => ({ href: `/finance/${p.slug}`, name: p.name })),
+                                { href: "/finance", name: "All finance options" },
+                              ].map((item) => (
+                                <Link
+                                  key={item.href}
+                                  href={item.href}
+                                  onClick={() => setIsMenuOpen(false)}
+                                  className="text-base text-white/60 hover:text-white transition-colors"
+                                >
+                                  {item.name}
+                                </Link>
+                              ))
+                            : link.label === "Projects"
                             ? siteConfig.projects.slice(0, 5).map((project) => (
                                 <Link
                                   key={project.slug}

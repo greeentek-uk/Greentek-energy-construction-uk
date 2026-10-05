@@ -10,6 +10,7 @@ import { getDb } from "../src/lib/db/mongodb";
 import { seedBlockIfMissing } from "../src/lib/db/pageContent";
 import type { PageContentMap } from "../src/data/pageContent";
 import { FEATURED_SERVICES, ACCREDITATION_LOGOS } from "./featured-content";
+import { FINANCE_PROVIDER_DEFAULTS } from "../src/data/financeDefaults";
 
 config({ path: ".env.local" });
 
@@ -332,6 +333,7 @@ const seedData: PageContentMap = {
       "Our approach is built on two core pillars: Energy & Decarbonization and Commercial & Domestic Construction. By bridging the gap between traditional building practices and modern energy efficiency, we provide a unique, holistic service to our clients.",
     ],
   },
+  ...FINANCE_PROVIDER_DEFAULTS,
 };
 
 async function run() {

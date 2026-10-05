@@ -19,17 +19,31 @@ function connect(): Promise<MongoClient> {
 
 let clientPromise: Promise<MongoClient> | undefined;
 
-/** Cached MongoClient connection — one per module load in production, and cached on `global` in dev so it survives HMR reloads instead of opening a new connection on every edit. */
+/**
+ * Cached MongoClient connection — one per module load in production, and cached on `global` in dev so it survives HMR reloads instead of opening a new connection on every edit.
+ *
+ * A *failed* connection is not kept. It used to be: one DNS blip at connect
+ * time (`getaddrinfo EAI_AGAIN`) cached a rejected promise, and every request
+ * after it failed with the same error until the process restarted — the dev
+ * server until someone restarted it, a Vercel instance until it was recycled.
+ * Now the failed attempt is dropped and the next request connects afresh.
+ */
 export async function getDb(): Promise<Db> {
-  if (process.env.NODE_ENV === "development") {
-    if (!global._mongoClientPromise) {
-      global._mongoClientPromise = connect();
-    }
-    clientPromise = global._mongoClientPromise;
-  } else if (!clientPromise) {
-    clientPromise = connect();
+  const dev = process.env.NODE_ENV === "development";
+  let pending = dev ? global._mongoClientPromise : clientPromise;
+  if (!pending) {
+    pending = connect();
+    if (dev) global._mongoClientPromise = pending;
+    else clientPromise = pending;
   }
 
-  const client = await clientPromise;
-  return client.db(dbName);
+  try {
+    const client = await pending;
+    return client.db(dbName);
+  } catch (err) {
+    // Only clear it if no other request has already replaced it.
+    if (dev && global._mongoClientPromise === pending) global._mongoClientPromise = undefined;
+    if (!dev && clientPromise === pending) clientPromise = undefined;
+    throw err;
+  }
 }

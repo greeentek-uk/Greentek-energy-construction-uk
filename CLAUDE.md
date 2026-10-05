@@ -265,6 +265,22 @@ revalidates every post. No version history for authors (no restore support for t
 Locally `next start` 404s every `/_next/image` URL (logo, covers) — that's the custom loader
 without Vercel's optimizer, not a bug; live it's 200.
 
+**Finance** (2026-10-06): two credit brokers, presented equally — Ideal4Finance and Phoenix
+Financial Consultants. `/finance` is an overview with one identical card per provider (each
+with its own risk warning and **mandatory disclosure**); `/finance/[provider]`
+(`ideal4finance`, `phoenix`) is one route/layout for both, and only Ideal4Finance adds its
+published rates/example/calculator (`IdealRates.tsx`) — Phoenix publishes none, so none are
+shown rather than invented. Each provider's wording is a `pageContent` block
+(`finance-ideal4finance`, `finance-phoenix`, same `FinanceProviderForm`), edited under Pages →
+Finance pages; risk warning and disclosure are **plain text, shown verbatim** (regulatory
+wording — don't make them rich text or reword them in code). Provider list:
+`lib/financeProviders.ts` (pages, header Finance dropdown, `routes.ts`, sitemap). The finance
+strip under every hero shows both logos (`logo2`/`provider2Name` on `finance-banner`); Phoenix's
+logo is `public/images/finance/phoenix-logo.png`. Phoenix's disclosure text is pinned by a unit
+test. The sitemap keeps its own `STATIC_ROUTES` list (not `routes.ts`) — add fixed pages there too.
+`getDb()` no longer caches a *failed* connection (a DNS blip used to break every request until
+restart).
+
 **Footer CTA** (heading, text, two buttons) is editable at Admin → Footer CTA: a default plus
 per-path overrides, where a path ending `/*` covers a section and the most specific match wins
 (`lib/footerCta.ts`). It is resolved **in the browser** via `usePathname` (`FooterCta.tsx`)
@@ -320,7 +336,7 @@ hover/focus/touch instead of on scroll. Keep new public links on that import. Ad
 
 ## Current state (2026-09-18)
 
-- Unit tests: **186 passing** across 17 files (2026-09-30).
+- Unit tests: **195 passing** across 19 files (2026-10-06).
 - E2E: 4 known failures recorded in `test-results/` —
   1. `/images/brands/swip.png` 404s on `/about` and in the media library. The file isn't in
      `public/images/brands/`; the reference lives in the **`brands` pageContent block in Mongo**,

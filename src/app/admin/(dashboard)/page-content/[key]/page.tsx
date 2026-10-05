@@ -29,6 +29,7 @@ import FinanceBannerForm from "../../../_components/pageContent/FinanceBannerFor
 import FeaturedServicesForm from "../../../_components/pageContent/FeaturedServicesForm";
 import PageHeaderForm from "../../../_components/pageContent/PageHeaderForm";
 import AboutPageForm from "../../../_components/pageContent/AboutPageForm";
+import FinanceProviderForm from "../../../_components/pageContent/FinanceProviderForm";
 
 interface Props {
   params: Promise<{ key: string }>;
@@ -166,6 +167,9 @@ export default async function EditPageContentPage({ params, searchParams }: Prop
             case "locations-page-header":
             case "projects-page-header":
               return <PageHeaderForm blockKey={key} content={content as PageContentMap["services-page-header"]} />;
+            case "finance-ideal4finance":
+            case "finance-phoenix":
+              return <FinanceProviderForm blockKey={key} content={content as PageContentMap["finance-phoenix"]} />;
             case "about-page":
               return <AboutPageForm content={content as PageContentMap["about-page"]} />;
           }

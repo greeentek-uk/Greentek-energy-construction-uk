@@ -207,8 +207,45 @@ export interface FinanceBannerContent {
   logo: string;
   logoAlt: string;
   providerName: string;
+  /**
+   * A second finance provider, shown beside the first ("… using [Ideal] & [Phoenix]").
+   * Optional: blank name and logo = one provider, as before.
+   */
+  provider2Name?: string;
+  logo2?: string;
+  logo2Alt?: string;
   linkLabel: string;
   linkHref: string;
+}
+
+/**
+ * One finance provider's page (/finance/<provider>) and its card on /finance.
+ * Both providers use the same shape and the same layout, so neither is
+ * presented more prominently than the other. Text fields are plain text:
+ * the disclosure is regulatory wording and must show exactly as entered.
+ */
+export interface FinanceProviderContent {
+  name: string;
+  logo: string;
+  logoAlt: string;
+  /** The provider page's H1. */
+  heading: string;
+  intro: string;
+  /** Short points, one per line in the panel. */
+  features: string[];
+  howItWorks: string;
+  applyLabel: string;
+  applyUrl: string;
+  /** Optional second button, e.g. a calculator. */
+  secondaryLabel: string;
+  secondaryUrl: string;
+  /** e.g. "Need help with your application? Ideal4Finance can help." */
+  supportText: string;
+  phone: string;
+  /** Paragraphs split on blank lines. */
+  riskWarning: string;
+  /** The mandatory regulatory statement. Paragraphs split on blank lines. */
+  disclosure: string;
 }
 
 export interface PageHeaderContent {
@@ -247,6 +284,8 @@ export interface PageContentMap {
   "locations-page-header": PageHeaderContent;
   "projects-page-header": PageHeaderContent;
   "about-page": AboutPageContent;
+  "finance-ideal4finance": FinanceProviderContent;
+  "finance-phoenix": FinanceProviderContent;
 }
 
 export type PageContentKey = keyof PageContentMap;
@@ -272,6 +311,8 @@ export const PAGE_CONTENT_KEYS = [
   "locations-page-header",
   "projects-page-header",
   "about-page",
+  "finance-ideal4finance",
+  "finance-phoenix",
 ] as const satisfies readonly PageContentKey[];
 
 export interface PageContentMeta {
@@ -371,5 +412,15 @@ export const PAGE_CONTENT_META: Record<PageContentKey, PageContentMeta> = {
     label: "About Page (Hero + Journey)",
     group: "Page Headers",
     routes: ["/about"],
+  },
+  "finance-ideal4finance": {
+    label: "Finance — Ideal4Finance",
+    group: "Page Headers",
+    routes: ["/finance", "/finance/ideal4finance"],
+  },
+  "finance-phoenix": {
+    label: "Finance — Phoenix",
+    group: "Page Headers",
+    routes: ["/finance", "/finance/phoenix"],
   },
 };

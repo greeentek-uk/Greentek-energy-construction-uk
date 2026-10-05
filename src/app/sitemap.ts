@@ -5,6 +5,7 @@ import { getPublishedPages } from "@/lib/db/pages";
 import { isExcluded } from "@/lib/sitemapConfig";
 import { SITE_URL } from "@/lib/structuredData";
 import { getBlogCategories, postsInCategory } from "@/lib/blogCategories";
+import { FINANCE_PROVIDERS } from "@/lib/financeProviders";
 
 type Entry = MetadataRoute.Sitemap[number];
 
@@ -18,6 +19,9 @@ const STATIC_ROUTES = [
   "/locations",
   "/blog",
   "/contact",
+  // Was missing until 2026-10-06 — this list is separate from lib/routes.ts.
+  "/finance",
+  ...FINANCE_PROVIDERS.map((p) => `/finance/${p.slug}`),
   "/privacy",
   "/terms",
 ];

@@ -176,6 +176,9 @@ function parseBlockFields(key: PageContentKey, formData: FormData): PageContentM
         logo: str(formData, "logo"),
         logoAlt: str(formData, "logoAlt"),
         providerName: str(formData, "providerName"),
+        provider2Name: str(formData, "provider2Name"),
+        logo2: str(formData, "logo2"),
+        logo2Alt: str(formData, "logo2Alt"),
         linkLabel: str(formData, "linkLabel"),
         linkHref: str(formData, "linkHref"),
       };
@@ -186,6 +189,26 @@ function parseBlockFields(key: PageContentKey, formData: FormData): PageContentM
         headingPrefix: str(formData, "headingPrefix"),
         headingHighlight: str(formData, "headingHighlight"),
         subheading: str(formData, "subheading"),
+      };
+    case "finance-ideal4finance":
+    case "finance-phoenix":
+      return {
+        name: str(formData, "name"),
+        logo: str(formData, "logo"),
+        logoAlt: str(formData, "logoAlt"),
+        heading: str(formData, "heading"),
+        intro: str(formData, "intro"),
+        features: lines(formData, "features"),
+        howItWorks: str(formData, "howItWorks"),
+        applyLabel: str(formData, "applyLabel"),
+        applyUrl: str(formData, "applyUrl"),
+        secondaryLabel: str(formData, "secondaryLabel"),
+        secondaryUrl: str(formData, "secondaryUrl"),
+        supportText: str(formData, "supportText"),
+        phone: str(formData, "phone"),
+        // Kept verbatim (only line endings normalised): regulatory wording.
+        riskWarning: str(formData, "riskWarning").replace(/\r\n?/g, "\n"),
+        disclosure: str(formData, "disclosure").replace(/\r\n?/g, "\n"),
       };
     case "about-page":
       return {
