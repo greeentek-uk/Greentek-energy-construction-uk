@@ -111,7 +111,6 @@ export default async function ServiceDetailPage({ params }: Props) {
 
         <FinanceBanner
           heading={sections?.labels?.financeHeading}
-          linkLabel={sections?.labels?.financeLinkLabel}
         />
 
         {/* 2 — The reader's problem and who this is for, named before the

@@ -179,8 +179,8 @@ function parseBlockFields(key: PageContentKey, formData: FormData): PageContentM
         provider2Name: str(formData, "provider2Name"),
         logo2: str(formData, "logo2"),
         logo2Alt: str(formData, "logo2Alt"),
-        linkLabel: str(formData, "linkLabel"),
-        linkHref: str(formData, "linkHref"),
+        logoHref: str(formData, "logoHref"),
+        logo2Href: str(formData, "logo2Href"),
       };
     case "services-page-header":
     case "locations-page-header":

@@ -125,7 +125,6 @@ export default async function LocationDetailPage({ params }: Props) {
 
         <FinanceBanner
           heading={sections?.labels?.financeHeading}
-          linkLabel={sections?.labels?.financeLinkLabel}
         />
 
         {/* Services in this location */}

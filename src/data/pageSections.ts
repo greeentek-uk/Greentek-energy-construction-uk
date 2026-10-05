@@ -25,7 +25,6 @@ export const SECTION_LABEL_KEYS = [
   "heroCallLabel",
   "heroWhatsappLabel",
   "financeHeading",
-  "financeLinkLabel",
   "servicesHeading",
   "servicesIntro",
   "areasHeading",
@@ -87,7 +86,7 @@ const CTA: SectionLabelKey[] = ["ctaEyebrow", "ctaHeading", "ctaDescription"];
  * page (the form heading was the same H2 on 83 URLs).
  */
 const HERO_BOX: SectionLabelKey[] = ["formHeading", "formSubheading", "heroCallLabel", "heroWhatsappLabel"];
-const FINANCE: SectionLabelKey[] = ["financeHeading", "financeLinkLabel"];
+const FINANCE: SectionLabelKey[] = ["financeHeading"];
 
 export const LABELS_BY_KIND: Record<SectionPageKind, SectionLabelKey[]> = {
   service: ["heroHeading", "heroHighlight", "heroBody", ...HERO_BOX, ...FINANCE, ...SERVICE_BODY, ...CTA],

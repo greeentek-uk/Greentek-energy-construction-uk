@@ -305,8 +305,9 @@ const seedData: PageContentMap = {
     logo: "",
     logoAlt: "",
     providerName: "Ideal Finance",
-    linkLabel: "Explore financing options",
-    linkHref: "/finance",
+    provider2Name: "Phoenix",
+    logo2: "/images/finance/phoenix-logo.png",
+    logo2Alt: "Phoenix finance",
   },
   "services-page-header": {
     headingPrefix: "Our",

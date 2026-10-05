@@ -59,18 +59,21 @@ export default function FinanceBannerForm({ content }: { content: FinanceBannerC
 
       <div className="grid sm:grid-cols-2 gap-4">
         <Field
-          label="Link text"
-          name="linkLabel"
-          defaultValue={content.linkLabel}
-          placeholder="Explore financing options"
+          label="First logo links to"
+          name="logoHref"
+          defaultValue={content.logoHref}
+          placeholder="/finance/ideal4finance"
         />
         <Field
-          label="Link goes to"
-          name="linkHref"
-          defaultValue={content.linkHref}
-          placeholder="/finance"
+          label="Second logo links to"
+          name="logo2Href"
+          defaultValue={content.logo2Href}
+          placeholder="/finance/phoenix"
         />
       </div>
+      <p className="text-xs text-white/40 -mt-2">
+        Leave blank and each logo opens its provider&apos;s own finance page.
+      </p>
 
       <button type="submit" className="rounded-lg bg-[#c5eb02] text-black text-sm font-semibold px-6 py-3 hover:bg-[#c5eb02]/80">
         Save Draft

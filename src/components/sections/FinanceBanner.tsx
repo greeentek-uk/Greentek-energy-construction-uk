@@ -1,11 +1,12 @@
 import Image from "next/image";
 import Link from "@/components/ui/Link";
-import { ArrowRight } from "lucide-react";
+import { Fragment } from "react";
 import { getPageContent } from "@/lib/cms";
+import { FINANCE_PROVIDERS } from "@/lib/financeProviders";
 
 /**
- * Finance availability strip: a short line, the providers' logos (Ideal
- * Finance and Phoenix — up to two), and a link through to the finance page.
+ * Finance availability strip: a short line and the providers' logos (Ideal
+ * Finance and Phoenix — up to two), each logo linking to its provider's page.
  *
  * Everything is editable in the panel, including the logo — until one is
  * uploaded the provider's name stands in as text, so the banner never renders
@@ -33,50 +34,60 @@ function ProviderMark({ logo, alt, name }: { logo?: string; alt?: string; name?:
   ) : null;
 }
 
-/** `heading` / `linkLabel` reword the strip on one page; blank keeps the shared block's. */
-export default async function FinanceBanner({
-  heading,
-  linkLabel,
-}: { heading?: string; linkLabel?: string } = {}) {
+/** `heading` rewords the strip on one page; blank keeps the shared block's. */
+export default async function FinanceBanner({ heading }: { heading?: string } = {}) {
   const shared = await getPageContent("finance-banner");
-  const content = {
-    ...shared,
-    heading: heading?.trim() || shared.heading,
-    linkLabel: linkLabel?.trim() || shared.linkLabel,
-  };
-  if (!content.heading && !content.linkLabel) return null;
+  const content = { ...shared, heading: heading?.trim() || shared.heading };
+  const providers = [
+    {
+      logo: content.logo,
+      alt: content.logoAlt,
+      name: content.providerName,
+      href: content.logoHref || `/finance/${FINANCE_PROVIDERS[0].slug}`,
+    },
+    {
+      logo: content.logo2,
+      alt: content.logo2Alt,
+      name: content.provider2Name,
+      href: content.logo2Href || `/finance/${FINANCE_PROVIDERS[1].slug}`,
+    },
+  ].filter((p) => p.logo || p.name);
+  if (!content.heading && !providers.length) return null;
 
   return (
     <section className="py-2 md:py-4 bg-[#101314]">
       {/*
-        One horizontal line at every width, phone included.
+        One horizontal line at every width, phone included — the type and
+        logos step down instead of wrapping.
 
-        Each column used to wrap independently, so on a phone the strip became
-        three narrow stacks of three or four words. Nothing wraps now: the type
-        and logo step down instead, and below `sm` the link gives way to its
-        arrow — the whole strip is the link, so it stays one clear tap target.
+        Each logo links to that provider's own finance page. The strip used to
+        be one link to /finance with an "Explore financing options" label; the
+        owner asked (2026-10-06) for the label to go and the logos to take the
+        reader straight to the provider they picked.
       */}
-      <Link
-        href={content.linkHref || "/finance"}
-        className="site-container group flex items-center justify-center gap-2 sm:gap-4"
-      >
+      <div className="site-container flex items-center justify-center gap-2 sm:gap-4">
         {content.heading && (
           <p className="whitespace-nowrap text-[11px] font-semibold leading-tight text-white sm:text-base md:text-xl">
             {content.heading}
           </p>
         )}
-        <ProviderMark logo={content.logo} alt={content.logoAlt} name={content.providerName} />
-        {(content.logo2 || content.provider2Name) && (
-          <>
-            <span aria-hidden className="text-sm font-semibold text-white/60 sm:text-lg">&amp;</span>
-            <ProviderMark logo={content.logo2} alt={content.logo2Alt} name={content.provider2Name} />
-          </>
-        )}
-        <span className="inline-flex shrink-0 items-center gap-1.5 whitespace-nowrap text-[11px] font-semibold text-[#c5eb02] transition-colors group-hover:text-[#c5eb02]/80 sm:text-sm md:text-base">
-          <span className="hidden sm:inline">{content.linkLabel}</span>
-          <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
-        </span>
-      </Link>
+        {providers.map((p, i) => (
+          <Fragment key={p.href}>
+            {i > 0 && (
+              <span aria-hidden className="text-sm font-semibold text-white/60 sm:text-lg">
+                &amp;
+              </span>
+            )}
+            <Link
+              href={p.href}
+              aria-label={`Finance with ${p.name || p.alt || "this provider"}`}
+              className="shrink-0 rounded-md transition-opacity hover:opacity-80 focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#c5eb02]"
+            >
+              <ProviderMark logo={p.logo} alt={p.alt} name={p.name} />
+            </Link>
+          </Fragment>
+        ))}
+      </div>
     </section>
   );
 }

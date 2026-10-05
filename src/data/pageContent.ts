@@ -214,8 +214,15 @@ export interface FinanceBannerContent {
   provider2Name?: string;
   logo2?: string;
   logo2Alt?: string;
-  linkLabel: string;
-  linkHref: string;
+  /**
+   * Where each logo links. Blank = that provider's own page
+   * (/finance/ideal4finance, /finance/phoenix).
+   */
+  logoHref?: string;
+  logo2Href?: string;
+  /** No longer shown — the strip's "Explore financing options" link was removed (2026-10-06). */
+  linkLabel?: string;
+  linkHref?: string;
 }
 
 /**

@@ -48,10 +48,6 @@ const LABEL_FIELDS: Record<
     label: "Finance strip — text",
     placeholder: "Finance options available using",
   },
-  financeLinkLabel: {
-    label: "Finance strip — link",
-    placeholder: "Explore financing options",
-  },
   servicesHeading: {
     label: "Services list — heading",
     placeholder: "Services in …",

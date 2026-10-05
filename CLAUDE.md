@@ -206,8 +206,8 @@ used to be an "its own" tick box, and edits made without ticking it were silentl
 five Cardiff combos lost their problem/pricing edits that way before 2026-09-30.
 
 **Also per page (2026-09-30 audit of what was still shared):** the hero's quote-form heading /
-subheading and both hero buttons, and the finance strip's text + link (label keys `formHeading`,
-`formSubheading`, `heroCallLabel`, `heroWhatsappLabel`, `financeHeading`, `financeLinkLabel`);
+subheading and both hero buttons, and the finance strip's text (label keys `formHeading`,
+`formSubheading`, `heroCallLabel`, `heroWhatsappLabel`, `financeHeading`);
 **which reviews** the testimonials section shows (`sections.reviews`, keys from `reviewKey` =
 name + start of quote, picked from the shared list in `ReviewPicker` — never per-page review
 text; combos inherit the service's pick); and on combos **which services** the "Other services"
@@ -275,7 +275,9 @@ shown rather than invented. Each provider's wording is a `pageContent` block
 Finance pages; risk warning and disclosure are **plain text, shown verbatim** (regulatory
 wording — don't make them rich text or reword them in code). Provider list:
 `lib/financeProviders.ts` (pages, header Finance dropdown, `routes.ts`, sitemap). The finance
-strip under every hero shows both logos (`logo2`/`provider2Name` on `finance-banner`); Phoenix's
+strip under every hero shows both logos (`logo2`/`provider2Name` on `finance-banner`), **each
+linking to its provider's page** (`logoHref`/`logo2Href`, blank = `/finance/<provider>`) — the
+strip's "Explore financing options" link was removed 2026-10-06 by the owner's request; Phoenix's
 logo is `public/images/finance/phoenix-logo.png`. Phoenix's disclosure text is pinned by a unit
 test. The sitemap keeps its own `STATIC_ROUTES` list (not `routes.ts`) — add fixed pages there too.
 `getDb()` no longer caches a *failed* connection (a DNS blip used to break every request until

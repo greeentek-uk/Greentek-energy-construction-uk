@@ -201,7 +201,6 @@ export default async function LocationServicePage({ params }: Props) {
 
         <FinanceBanner
           heading={sections.labels?.financeHeading}
-          linkLabel={sections.labels?.financeLinkLabel}
         />
 
         {/* 2 — The reader's problem and who this is for, named before the page
