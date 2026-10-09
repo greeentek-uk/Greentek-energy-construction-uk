@@ -1,14 +1,16 @@
 import Link from "@/components/ui/Link";
 import CookieSettingsButton from "@/components/site/CookieSettingsButton";
 import Image from "next/image";
-import { getCurrentSiteConfig } from "@/lib/cms";
+import { getCurrentSiteConfig, getPageContent } from "@/lib/cms";
+import { FINANCE_PROVIDERS, paragraphs } from "@/lib/financeProviders";
 import { getFooterCtaSettings } from "@/lib/db/footerCta";
 import FooterCta from "./FooterCta";
 
 export default async function Footer() {
-  const [siteConfig, footerCta] = await Promise.all([
+  const [siteConfig, footerCta, financeProviders] = await Promise.all([
     getCurrentSiteConfig(),
     getFooterCtaSettings(),
+    Promise.all(FINANCE_PROVIDERS.map((p) => getPageContent(p.block))),
   ]);
   const currentYear = new Date().getFullYear();
 
@@ -190,6 +192,30 @@ export default async function Footer() {
                 )}
                 <CookieSettingsButton className="text-xs text-[#c5eb02] transition-colors" />
               </span>
+            </div>
+
+            {/* Both credit brokers' mandatory disclosures, on every page because
+                the finance strip under every hero promotes them. Read from the
+                same panel blocks as /finance (Pages → Finance pages) and shown
+                verbatim — regulatory wording, never reworded here. One card per
+                provider in the footer card's style, identical so neither is
+                presented above the other. The provider name is a styled <p>, not
+                an <h4> like the columns above, so the cards don't add to the
+                page's outline. */}
+            <div className="mt-3 grid w-full grid-cols-1 gap-4 md:grid-cols-2">
+              {financeProviders.map((provider, i) => (
+                <div
+                  key={FINANCE_PROVIDERS[i].slug}
+                  className="space-y-2 rounded-xl border border-white/50 bg-black/50 px-6 py-5 text-center backdrop-blur-sm"
+                >
+                  <p className="text-sm font-bold text-white">{provider.name}</p>
+                  {paragraphs(provider.disclosure).map((p) => (
+                    <p key={p} className="text-xs leading-relaxed text-white/80">
+                      {p}
+                    </p>
+                  ))}
+                </div>
+              ))}
             </div>
           </div>
         </div>
