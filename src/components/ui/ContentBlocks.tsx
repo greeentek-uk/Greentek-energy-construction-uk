@@ -84,12 +84,15 @@ export default function ContentBlocks({
           return (
             <Tag
               key={idx}
-              className={`space-y-4 mb-8 ${block.ordered ? "list-decimal" : "list-disc"} list-inside`}
+              // list-outside + left padding gives a hanging indent: a wrapped
+              // line lines up under the item's first word, not under "3." or
+              // the bullet (list-inside put the marker in the text flow).
+              className={`space-y-4 mb-8 list-outside ${block.ordered ? "list-decimal pl-7" : "list-disc pl-6"} marker:text-white/80`}
             >
               {block.items?.map((item, itemIdx) => (
                 <li
                   key={itemIdx}
-                  className={`text-lg text-white/80 leading-relaxed font-medium ${richLinks}`}
+                  className={`pl-1 text-lg text-white/80 leading-relaxed font-medium ${richLinks}`}
                 >
                   <Rich html={item} />
                 </li>

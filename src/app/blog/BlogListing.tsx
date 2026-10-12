@@ -1,10 +1,10 @@
 "use client";
 
 import Link from "@/components/ui/Link";
-import FittedImage from "@/components/ui/FittedImage";
 import { useMemo, useState } from "react";
 import type { BlogPost } from "@/data/blogs";
 import { categoryPath, type BlogCategory } from "@/lib/blogCategories";
+import BlogCard from "./BlogCard";
 
 /**
  * The blog listing, shared by /blog and each /blog/category/[slug] page:
@@ -120,42 +120,11 @@ export default function BlogListing({
             {shown.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
                 {shown.map((post) => (
-                  <article
+                  <BlogCard
                     key={post.id}
-                    className="group rounded-xl overflow-hidden border border-white/10 bg-[#101314] transition-all duration-300 hover:border-[#c5eb02] hover:-translate-y-1 h-full flex flex-col"
-                  >
-                    <Link href={`/blog/${post.slug}`} className="relative block aspect-[4/5] shrink-0 overflow-hidden bg-black" tabIndex={-1} aria-hidden="true">
-                      <FittedImage
-                        src={post.coverImage}
-                        sizes="(min-width: 1280px) 25vw, (min-width: 768px) 40vw, 100vw"
-                        alt={post.coverImageAlt}
-                      />
-                    </Link>
-                    <div className="p-5 md:p-6 flex flex-col flex-grow">
-                      <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mb-3 text-xs font-semibold uppercase">
-                        {post.category && (
-                          <Link href={categoryPath(post.category)} className="text-[#c5eb02] hover:underline">
-                            {post.category}
-                          </Link>
-                        )}
-                        <time dateTime={post.date} className="text-white/50">
-                          {new Date(post.date).toLocaleDateString("en-GB", { year: "numeric", month: "short", day: "numeric" })}
-                        </time>
-                      </div>
-                      <h3 className="text-lg md:text-xl font-bold text-white leading-snug line-clamp-3 mb-3">
-                        <Link href={`/blog/${post.slug}`} className="group-hover:text-[#c5eb02] transition-colors">
-                          {post.title}
-                        </Link>
-                      </h3>
-                      <p className="text-sm md:text-base leading-relaxed line-clamp-3 text-white/70 mb-5">{post.excerpt}</p>
-                      <Link
-                        href={`/blog/${post.slug}`}
-                        className="mt-auto text-sm font-bold text-[#c5eb02] hover:text-[#c5eb02]/80"
-                      >
-                        Read article →
-                      </Link>
-                    </div>
-                  </article>
+                    post={post}
+                    sizes="(min-width: 1280px) 25vw, (min-width: 768px) 40vw, 100vw"
+                  />
                 ))}
               </div>
             ) : (

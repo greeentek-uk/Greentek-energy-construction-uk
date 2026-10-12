@@ -131,8 +131,12 @@ Footer CTA, Company settings) · **SEO** · **Media & tracking**.
   editors; the Page SEO list shows each page's keyword. Its save doesn't revalidate — no public
   page changes.
 
-**SEO.** Three-layer resolution, always in this order: per-route override → site-wide template for
-that page kind → the page's own computed default (`lib/seo.ts` `withSeoOverride`). Templates use
+**SEO.** Resolution, always in this order: per-route override (Page SEO) → the meta typed on the
+page's own record (`metaTitle`/`metaDescription` on posts, services, locations, combos, pages —
+used exactly as written) → site-wide template for that page kind → the page's own computed
+default (`lib/seo.ts` `withSeoOverride`). Until 2026-10-12 the own meta went *through* the
+template, so blog titles got a second "| Greentek Construction" and the location/combo templates
+discarded it (Cardiff's live title was "in Cardiff | Greentek Construction"). Templates use
 `%token%` placeholders and `applyTemplate` tidies orphaned separators/connecting words when a token
 is empty. Also: JSON-LD (`lib/structuredData.ts` + admin `SchemaBuilder` per route, with
 `replaceDefault`), breadcrumbs emitted with matching BreadcrumbList markup, sitemap that drops
@@ -256,6 +260,11 @@ Blog cards use `coverImage` (portrait 4:5); the post page uses `heroImage` (land
 falls back to `coverImage`), both `object-cover` centred. The post's in-body "cta" blocks are
 not rendered (`ContentBlocks omit`) and not offered in the blog editor — Next Steps has Contact
 Us — and the Instagram field/sections are gone.
+**Related articles** (2026-10-12): three `BlogCard`s (shared with the listing) in a full-width
+row after the article. Slots picked per post in the blog form (`relatedPosts`, slugs; blank =
+Automatic) come first, the rest are the newest in the same category, then newest anywhere
+(`lib/relatedPosts.ts`). A post save revalidates every post; a slug rename rewrites references.
+Lists in `ContentBlocks` are `list-outside` (hanging indent); bold in a post body is pure white.
 **Authors** (added 2026-09-30): own `authors` collection (`lib/db/authors.ts`, type
 `data/authors.ts`), managed at Admin → Blog authors (`/admin/authors`); a post picks one via
 `authorSlug`, which renders `AuthorBox` after the body and makes the BlogPosting schema author a
@@ -338,7 +347,7 @@ hover/focus/touch instead of on scroll. Keep new public links on that import. Ad
 
 ## Current state (2026-09-18)
 
-- Unit tests: **195 passing** across 19 files (2026-10-06).
+- Unit tests: **198 passing** across 21 files (2026-10-12).
 - E2E: 4 known failures recorded in `test-results/` —
   1. `/images/brands/swip.png` 404s on `/about` and in the media library. The file isn't in
      `public/images/brands/`; the reference lives in the **`brands` pageContent block in Mongo**,

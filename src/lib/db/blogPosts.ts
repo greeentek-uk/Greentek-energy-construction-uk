@@ -53,7 +53,7 @@ export async function updateBlogPost(originalSlug: string, post: BlogPost): Prom
     const { slug, ...updates } = post;
     // Optional fields the form leaves out when cleared (or back to default)
     // must be removed, or $set would keep the old value live.
-    const cleared = (["toc", "instagramUrl", "heroImage", "heroImageAlt", "authorSlug"] as const).filter((key) => !(key in updates));
+    const cleared = (["toc", "instagramUrl", "heroImage", "heroImageAlt", "authorSlug", "relatedPosts"] as const).filter((key) => !(key in updates));
     await collection.updateOne(
       { _id: originalSlug },
       {
@@ -62,6 +62,14 @@ export async function updateBlogPost(originalSlug: string, post: BlogPost): Prom
       },
     );
   }
+}
+
+/** Keeps other posts' hand-picked "Related articles" pointing at a renamed post. */
+export async function renameRelatedPostReferences(from: string, to: string): Promise<void> {
+  const db = await getDb();
+  await db
+    .collection<BlogPostDoc>(COLLECTION)
+    .updateMany({ relatedPosts: from }, { $set: { "relatedPosts.$[ref]": to } }, { arrayFilters: [{ ref: from }] });
 }
 
 export async function deleteBlogPost(slug: string): Promise<void> {

@@ -2,13 +2,18 @@ import Link from "next/link";
 import BlogForm from "../../../_components/BlogForm";
 import SaveBanner from "../../../_components/SaveBanner";
 import { getAuthors } from "@/lib/db/authors";
+import { getCurrentBlogPosts } from "@/lib/cms";
 
 interface Props {
   searchParams: Promise<{ error?: string }>;
 }
 
 export default async function NewBlogPostPage({ searchParams }: Props) {
-  const [params, authors] = await Promise.all([searchParams, getAuthors()]);
+  const [params, authors, posts] = await Promise.all([
+    searchParams,
+    getAuthors(),
+    getCurrentBlogPosts(),
+  ]);
 
   return (
     <div>
@@ -19,7 +24,10 @@ export default async function NewBlogPostPage({ searchParams }: Props) {
 
       <SaveBanner error={params.error} />
 
-      <BlogForm authors={authors} />
+      <BlogForm
+        authors={authors}
+        allPosts={posts.map((p) => ({ slug: p.slug, title: p.title, category: p.category }))}
+      />
     </div>
   );
 }

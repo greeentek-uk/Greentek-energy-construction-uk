@@ -16,6 +16,8 @@ import { categoryPath } from "@/lib/blogCategories";
 import { BlogTocAside, BlogTocInline } from "./BlogToc";
 import AuthorBox from "./AuthorBox";
 import { getAuthorBySlug } from "@/lib/db/authors";
+import { pickRelatedPosts } from "@/lib/relatedPosts";
+import BlogCard from "../BlogCard";
 
 interface Props {
   params: {
@@ -36,8 +38,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   const metadata = await withSeoOverride(`/blog/${post.slug}`, {
     kind: "blog",
-    title: post.metaTitle || post.title,
-    description: post.metaDescription || post.excerpt,
+    title: post.title,
+    description: post.excerpt,
+    metaTitle: post.metaTitle,
+    metaDescription: post.metaDescription,
     // Landscape suits link previews; the portrait card image is the fallback.
     image: post.heroImage || post.coverImage,
     ogType: "article",
@@ -76,6 +80,7 @@ export default async function BlogDetailPage({ params }: Props) {
   const jsonLd = buildBlogPostingJsonLd(post, SITE_URL, author);
   const toc = buildToc(post.content, post.toc);
   const tocTitle = post.toc?.title?.trim() || DEFAULT_TOC_TITLE;
+  const related = pickRelatedPosts(post, blogPosts);
 
   return (
     <div className="flex flex-col min-h-screen bg-black">
@@ -132,7 +137,9 @@ export default async function BlogDetailPage({ params }: Props) {
             </div>
             {toc.length > 0 && <BlogTocInline entries={toc} title={tocTitle} />}
 
-            <div className="mt-10">
+            {/* Bold copy in pure white, a step brighter than the white/80
+                body text, so highlighted phrases stand out on posts. */}
+            <div className="mt-10 [&_b]:text-white [&_strong]:text-white">
               <ContentBlocks blocks={post.content} omit={["cta"]} />
             </div>
 
@@ -184,6 +191,29 @@ export default async function BlogDetailPage({ params }: Props) {
             {toc.length > 0 && <BlogTocAside entries={toc} title={tocTitle} />}
           </div>
         </section>
+
+        {/* Related articles — picked per post in the panel, the rest filled
+            from the same category (lib/relatedPosts.ts). Full width below the
+            article rather than in its column, where three cards were cramped
+            beside the contents. */}
+        {related.length > 0 && (
+          <section className="pb-12 lg:pb-24">
+            <div className="site-container">
+              <h2 className="text-[1.5rem] md:text-[2rem] font-bold leading-tight text-white mb-8">
+                Related articles
+              </h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {related.map((p) => (
+                  <BlogCard
+                    key={p.slug}
+                    post={p}
+                    sizes="(min-width: 1024px) 30vw, (min-width: 768px) 45vw, 100vw"
+                  />
+                ))}
+              </div>
+            </div>
+          </section>
+        )}
 
         {/* Back to Blog */}
         <section className="py-12 border-t border-white/10">

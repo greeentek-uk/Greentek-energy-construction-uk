@@ -44,7 +44,11 @@ export default async function EditBlogPostPage({ params, searchParams }: Props) 
         </div>
       </div>
 
-      <BlogForm post={post} authors={authors} />
+      <BlogForm
+        post={post}
+        authors={authors}
+        allPosts={posts.map((p) => ({ slug: p.slug, title: p.title, category: p.category }))}
+      />
     </div>
   );
 }

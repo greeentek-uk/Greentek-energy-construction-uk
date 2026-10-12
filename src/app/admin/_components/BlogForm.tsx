@@ -6,6 +6,7 @@ import { saveBlogPostAction } from "../_actions/blog";
 import ImageUploadField from "./ImageUploadField";
 import ContentBlocksEditor from "./ContentBlocksEditor";
 import FaqEditor from "./FaqEditor";
+import { RELATED_POST_COUNT } from "@/lib/relatedPosts";
 
 function Field({
   label,
@@ -57,11 +58,15 @@ function Field({
 export default function BlogForm({
   post,
   authors = [],
+  allPosts = [],
 }: {
   post?: BlogPost;
   /** Everyone from Admin → Blog authors, for the Author picker. */
   authors?: { slug: string; name: string; role: string }[];
+  /** Every post, for the "Related articles" pickers. */
+  allPosts?: { slug: string; title: string; category: string }[];
 }) {
+  const otherPosts = allPosts.filter((p) => p.slug !== post?.slug);
   return (
     <form action={saveBlogPostAction} className="space-y-6">
       <input type="hidden" name="originalSlug" value={post?.slug || ""} />
@@ -151,7 +156,7 @@ export default function BlogForm({
       <div className="bg-[#101314] border border-white/10 rounded-xl p-6 space-y-4">
         <h2 className="font-bold text-white">SEO</h2>
         <Field
-          label="Meta Title"
+          label="Meta Title (used exactly as written — the site name isn't added, so include it if you want it)"
           name="metaTitle"
           defaultValue={post?.metaTitle}
           required
@@ -180,6 +185,35 @@ export default function BlogForm({
       </div>
 
       <FaqEditor initial={post?.faqs} />
+
+      <div className="bg-[#101314] border border-white/10 rounded-xl p-6 space-y-4">
+        <div>
+          <h2 className="font-bold text-white">Related articles</h2>
+          <p className="mt-1 text-xs text-white/50">
+            The {RELATED_POST_COUNT} cards at the end of this post. Leave a slot on Automatic to use
+            the newest posts in the same category (then the newest from any category).
+          </p>
+        </div>
+        <div className="grid sm:grid-cols-3 gap-4">
+          {Array.from({ length: RELATED_POST_COUNT }, (_, i) => (
+            <div key={i}>
+              <label className="block text-xs font-semibold text-white/70 mb-1">Card {i + 1}</label>
+              <select
+                name={`relatedPost${i}`}
+                defaultValue={post?.relatedPosts?.[i] ?? ""}
+                className="w-full rounded-lg border border-white/15 bg-white/5 px-3 py-2 text-sm text-white outline-none focus:border-[#c5eb02]"
+              >
+                <option value="" className="text-black">Automatic</option>
+                {otherPosts.map((p) => (
+                  <option key={p.slug} value={p.slug} className="text-black">
+                    {p.title}{p.category ? ` (${p.category})` : ""}
+                  </option>
+                ))}
+              </select>
+            </div>
+          ))}
+        </div>
+      </div>
 
       <button
         type="submit"

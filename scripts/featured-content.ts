@@ -59,7 +59,6 @@ export const ACCREDITATION_LOGOS: AccreditationsContent["logos"] = [
   { name: "Gas Safe Register", image: "/images/accreditations/gas-safe.png", imageAlt: "Gas Safe Register", url: "https://www.gassaferegister.co.uk" },
   { name: "HIES", image: "/images/accreditations/hies.png", imageAlt: "HIES accredited", url: "https://hies.org.uk" },
   { name: "Amtivo", image: "/images/accreditations/amtivo-logo-new.png", imageAlt: "Amtivo certified", url: "https://amtivo.com" },
-  { name: "CHAS", image: "/images/accreditations/chas.png", imageAlt: "CHAS accredited contractor", url: "https://www.chas.co.uk" },
   { name: "SWIGA", image: "/images/accreditations/swiga.png", imageAlt: "SWIGA member", url: "https://www.swiga.co.uk" },
   { name: "Qualitymark Protection", image: "/images/accreditations/qualitymark.png", imageAlt: "Qualitymark Protection accredited", url: "https://qualitymark.co.uk" },
   { name: "British Assessment Bureau", image: "/images/accreditations/post-fallback-bab-img.png", imageAlt: "British Assessment Bureau certified", url: "https://amtivo.com/uk/" },

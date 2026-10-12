@@ -38,12 +38,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   return withSeoOverride(`/locations/${location.slug}`, {
     kind: "location",
-    title:
-      location.metaTitle ||
-      `Construction & Renewable Energy Services in ${location.name}`,
-    description:
-      location.metaDescription ||
-      `Greentek installs solar PV, air source heat pumps, insulation and full property renovations in ${location.name}, ${location.region}. Free local survey and fixed-price quote.`,
+    title: `Construction & Renewable Energy Services in ${location.name}`,
+    metaTitle: location.metaTitle,
+    metaDescription: location.metaDescription,
+    description: `Greentek installs solar PV, air source heat pumps, insulation and full property renovations in ${location.name}, ${location.region}. Free local survey and fixed-price quote.`,
     image: location.image,
     vars: { location: location.name, region: location.region },
   });

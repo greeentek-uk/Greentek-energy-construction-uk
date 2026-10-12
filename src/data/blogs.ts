@@ -24,6 +24,12 @@ export interface BlogPost {
   faqs?: FaqItem[];
   /** Author shown in the post's "About the author" box (Admin → Blog authors). Unset = none. */
   authorSlug?: string;
+  /**
+   * Hand-picked "Related articles" (slugs, up to 3, in order). Unset or short
+   * = the rest are filled automatically from the same category — see
+   * `lib/relatedPosts.ts`.
+   */
+  relatedPosts?: string[];
   /** Table-of-contents settings; absent = on, "In this article", H2–H3. */
   toc?: TocSettings;
 }

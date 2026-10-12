@@ -41,8 +41,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   return withSeoOverride(`/services/${service.slug}`, {
     kind: "service",
-    title: service.metaTitle || service.title,
-    description: service.metaDescription || service.description,
+    title: service.title,
+    description: service.description,
+    metaTitle: service.metaTitle,
+    metaDescription: service.metaDescription,
     image: service.image,
     vars: { service: service.title },
   });

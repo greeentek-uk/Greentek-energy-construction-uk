@@ -8,7 +8,9 @@ import {
   deleteBlogPost,
   getBlogPostBySlug,
   getBlogPosts,
+  renameRelatedPostReferences,
 } from "@/lib/db/blogPosts";
+import { RELATED_POST_COUNT } from "@/lib/relatedPosts";
 import type { BlogPost } from "@/data/blogs";
 import { parseContentBlocks, parseTocSettings } from "./contentBlocks";
 import { parseFaqs } from "./faqs";
@@ -19,6 +21,9 @@ async function revalidateBlogRoutes(slug: string, previousSlug?: string) {
   // Every category page lists posts and every category's count, and a post
   // can move category — so they all refresh, not just the post's own.
   await revalidate("/blog/category/[category]", "page");
+  // Every post ends with "Related articles" cards, and the automatic ones
+  // can be any post — so a new title, image or category shows on the others.
+  await revalidate("/blog/[slug]", "page");
   if (previousSlug && previousSlug !== slug) {
     await revalidate(`/blog/${previousSlug}`);
   }
@@ -45,6 +50,15 @@ export async function saveBlogPostAction(formData: FormData): Promise<void> {
   const metaDescription = String(formData.get("metaDescription") || "").trim();
   const toc = parseTocSettings(formData);
   const authorSlug = String(formData.get("authorSlug") || "").trim();
+  // One select per slot; blank = "Automatic". Only real picks are stored, so
+  // an untouched post keeps following its category.
+  const relatedPosts = [
+    ...new Set(
+      Array.from({ length: RELATED_POST_COUNT }, (_, i) =>
+        String(formData.get(`relatedPost${i}`) || "").trim(),
+      ).filter((s) => s && s !== originalSlug),
+    ),
+  ];
   const keywords = String(formData.get("keywords") || "")
     .split(",")
     .map((k) => k.trim())
@@ -92,6 +106,7 @@ export async function saveBlogPostAction(formData: FormData): Promise<void> {
     faqs: parseFaqs(formData),
     ...(toc ? { toc } : {}),
     ...(authorSlug ? { authorSlug } : {}),
+    ...(relatedPosts.length ? { relatedPosts } : {}),
   };
 
   try {
@@ -99,6 +114,7 @@ export async function saveBlogPostAction(formData: FormData): Promise<void> {
       await createBlogPost(post);
     } else {
       await updateBlogPost(originalSlug, post);
+      if (slug !== originalSlug) await renameRelatedPostReferences(originalSlug, slug);
     }
   } catch (err) {
     const message = err instanceof Error ? err.message : "Unknown error";

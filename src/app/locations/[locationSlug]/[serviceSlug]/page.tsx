@@ -61,10 +61,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   return withSeoOverride(`/locations/${location.slug}/${service.slug}`, {
     kind: "locationService",
-    title: override?.metaTitle || `${service.shortName} in ${location.name}`,
-    description:
-      override?.metaDescription ||
-      `Professional ${service.shortName.toLowerCase()} in ${location.name}, ${location.region}. Free local survey, fixed-price quote and in-house installation team. Also covering ${location.nearbyAreas.join(", ")}.`,
+    title: `${service.shortName} in ${location.name}`,
+    metaTitle: override?.metaTitle,
+    metaDescription: override?.metaDescription,
+    description: `Professional ${service.shortName.toLowerCase()} in ${location.name}, ${location.region}. Free local survey, fixed-price quote and in-house installation team. Also covering ${location.nearbyAreas.join(", ")}.`,
     image: override?.heroImage || service.image,
     vars: {
       service: service.shortName,

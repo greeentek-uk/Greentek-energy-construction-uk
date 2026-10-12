@@ -34,8 +34,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   if (!page) return { title: "Page not found" };
 
   return withSeoOverride(`/${page.slug}`, {
-    title: page.metaTitle || page.title,
-    description: page.metaDescription || page.subheading || "",
+    title: page.title,
+    description: page.subheading || "",
+    metaTitle: page.metaTitle,
+    metaDescription: page.metaDescription,
     image: page.heroImage,
   });
 }
