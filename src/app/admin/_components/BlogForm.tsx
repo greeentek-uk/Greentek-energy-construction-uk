@@ -155,6 +155,10 @@ export default function BlogForm({
 
       <div className="bg-[#101314] border border-white/10 rounded-xl p-6 space-y-4">
         <h2 className="font-bold text-white">SEO</h2>
+        <p className="text-xs text-white/50">
+          The meta title and description are the same two fields this post shows in Page SEO,
+          so editing either place changes both.
+        </p>
         <Field
           label="Meta Title (used exactly as written — the site name isn't added, so include it if you want it)"
           name="metaTitle"

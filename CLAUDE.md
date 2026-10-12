@@ -131,10 +131,16 @@ Footer CTA, Company settings) · **SEO** · **Media & tracking**.
   editors; the Page SEO list shows each page's keyword. Its save doesn't revalidate — no public
   page changes.
 
-**SEO.** Resolution, always in this order: per-route override (Page SEO) → the meta typed on the
-page's own record (`metaTitle`/`metaDescription` on posts, services, locations, combos, pages —
-used exactly as written) → site-wide template for that page kind → the page's own computed
-default (`lib/seo.ts` `withSeoOverride`). Until 2026-10-12 the own meta went *through* the
+**SEO.** Meta title/description is **one field per page** (2026-10-12, owner's decision): pages
+with a record (services, locations, combos, blog posts, admin pages) keep it as
+`metaTitle`/`metaDescription` on that record, and Page SEO reads/writes those same fields
+(`lib/db/pageMeta.ts`) — it no longer stores a title/description for them. Fixed pages (home,
+about, listings, projects) have no record field, so Page SEO's own `title`/`description` stay
+theirs. The 22 Page SEO copies were moved onto the records by `scripts/migrate-page-seo-meta.ts`
+(all 25 overridden pages verified identical live before/after). Resolution: own meta → Page SEO
+override → site-wide template → computed default (`lib/seo.ts` `withSeoOverride`); every other
+field is override → template → page. Blog posts and admin pages are now listed in Page SEO
+(`routes.ts`). Until 2026-10-12 the own meta went *through* the
 template, so blog titles got a second "| Greentek Construction" and the location/combo templates
 discarded it (Cardiff's live title was "in Cardiff | Greentek Construction"). Templates use
 `%token%` placeholders and `applyTemplate` tidies orphaned separators/connecting words when a token

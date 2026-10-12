@@ -78,7 +78,8 @@ export default function PageForm({ page }: { page?: SitePage }) {
           defaultValue={page?.metaDescription}
         />
         <p className="text-xs text-white/40">
-          Canonical URL, social cards, noindex and schema for this page are in{" "}
+          The meta title and description are the same two fields Page SEO shows, so editing
+          either place changes both. Canonical URL, social cards, noindex and schema for this page are in{" "}
           <span className="text-white/70">Page SEO</span> and{" "}
           <span className="text-white/70">Schema</span> once it&apos;s saved.
         </p>

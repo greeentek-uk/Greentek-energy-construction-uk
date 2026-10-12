@@ -31,11 +31,14 @@ export default function SeoOverrideForm({
   path,
   override,
   preview,
+  sharedEditor,
 }: {
   path: string;
   override: SeoOverride | undefined;
   /** What the page would show with no override — the placeholder text. */
   preview: { title: string; description: string; url: string };
+  /** Set when title + description are the page's own fields, shared with its editor. */
+  sharedEditor?: { label: string; href: string };
 }) {
   const [tab, setTab] = useState<Tab>("General");
   const [title, setTitle] = useState(override?.title ?? "");
@@ -92,6 +95,15 @@ export default function SeoOverrideForm({
             className={inputClass}
           />
           <p className="text-xs text-white/40 mt-1">
+            {sharedEditor ? (
+              <>
+                The same title and description as{" "}
+                <a href={sharedEditor.href} className="underline hover:text-white">
+                  {sharedEditor.label}
+                </a>{" "}
+                — changing them in either place changes both.{" "}
+              </>
+            ) : null}
             Blank uses the site-wide template for this page type.
           </p>
         </div>

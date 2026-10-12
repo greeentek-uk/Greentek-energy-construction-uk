@@ -5,6 +5,7 @@ import { SITE_URL } from "@/lib/structuredData";
 import SaveBanner from "../../../_components/SaveBanner";
 import SeoOverrideForm from "../../../_components/SeoOverrideForm";
 import FocusKeywordBox from "../../../_components/FocusKeywordBox";
+import { getOwnMeta, getOwnMetaEditor } from "@/lib/db/pageMeta";
 
 interface Props {
   searchParams: Promise<{ path?: string; saved?: string; error?: string; keywordSaved?: string }>;
@@ -14,7 +15,12 @@ export default async function EditSeoPage({ searchParams }: Props) {
   const params = await searchParams;
   const path = params.path || "/";
 
-  const [override, routes] = await Promise.all([getSeoOverride(path), getAllRoutes()]);
+  const [override, routes, ownMeta, sharedEditor] = await Promise.all([
+    getSeoOverride(path),
+    getAllRoutes(),
+    getOwnMeta(path),
+    getOwnMetaEditor(path),
+  ]);
   const route = routes.find((r) => r.path === path);
 
   return (
@@ -38,7 +44,10 @@ export default async function EditSeoPage({ searchParams }: Props) {
       <div className="bg-[#101314] border border-white/10 rounded-xl p-6">
         <SeoOverrideForm
           path={path}
-          override={override}
+          // On a page with its own record, title + description are that
+          // record's fields — the same ones its editor shows.
+          override={ownMeta ? { ...override, ...ownMeta } : override}
+          sharedEditor={sharedEditor ?? undefined}
           preview={{
             title: route?.label || path,
             description:

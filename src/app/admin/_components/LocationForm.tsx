@@ -242,7 +242,7 @@ export default function LocationForm({
           {
             id: "seo",
             title: "SEO",
-            description: "Search result title and description. Page SEO can override these.",
+            description: "Search result title and description — the same two fields Page SEO shows, so editing either place changes both.",
             content: (
               <>
                 <div>

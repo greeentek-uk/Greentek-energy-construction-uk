@@ -3,6 +3,7 @@
 import { redirect } from "next/navigation";
 import { revalidate } from "@/lib/revalidate";
 import { upsertSeoOverride, deleteSeoOverride } from "@/lib/db/seoOverrides";
+import { setOwnMeta } from "@/lib/db/pageMeta";
 import { saveSeoTemplates } from "@/lib/db/seoSettings";
 import { saveBreadcrumbSettings } from "@/lib/db/breadcrumbs";
 import type { SeoOverride } from "@/lib/seoTypes";
@@ -62,6 +63,18 @@ export async function saveSeoOverrideAction(formData: FormData): Promise<void> {
   });
 
   try {
+    // A page with its own record keeps title + description there — the same
+    // two fields its editor shows (lib/db/pageMeta.ts) — so they're never
+    // stored twice. Fixed pages have no record and keep them here.
+    const ownRecord = await setOwnMeta(path, {
+      title: str(formData, "title"),
+      description: str(formData, "description"),
+    });
+    if (ownRecord) {
+      delete override.title;
+      delete override.description;
+    }
+
     if (Object.keys(override).length === 0) {
       await deleteSeoOverride(path);
     } else {

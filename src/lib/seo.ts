@@ -30,9 +30,9 @@ export interface SeoDefaults {
   title: string;
   description: string;
   /**
-   * The meta title / description typed on the page's own record (the blog,
-   * service, location, combo or page form). Used exactly as written: it beats
-   * the site-wide template and loses only to a Page SEO override. Keep
+   * The meta title / description on the page's own record — one field, edited
+   * from its own form or from Page SEO (lib/db/pageMeta.ts). Used exactly as
+   * written, ahead of any override and the site-wide template. Keep
    * `title`/`description` as the plain computed values — they are what
    * `%title%`/`%excerpt%` mean in a template.
    */
@@ -77,9 +77,10 @@ function templateFor(templates: SeoTemplates, kind: PageKind | undefined) {
  * Builds a page's full metadata: title, description, canonical, robots
  * directives, Open Graph and Twitter cards.
  *
- * Resolution order for every value is the same — the admin's per-page override
- * wins, then the meta typed on the page's own record, then the site-wide
- * template for that page type, then the value the page computed for itself.
+ * Resolution order for title and description: the page's own meta (shared by
+ * its editor and Page SEO), then a Page SEO override (fixed pages only), then
+ * the site-wide template for that page type, then the value the page computed
+ * for itself. Everything else: override, then template, then the page.
  * That ordering is what lets someone restyle every location page at once
  * without losing a title they hand-wrote for one of them.
  *
@@ -115,14 +116,17 @@ export async function withSeoOverride(
   const templatedTitle = applyTemplate(template.title, vars);
   const templatedDescription = applyTemplate(template.description, vars);
 
+  // The page's own meta comes first: since 2026-10-12 it is the one field
+  // both its editor and Page SEO write (lib/db/pageMeta.ts), and Page SEO no
+  // longer stores a title for such pages. An old override can't hide it.
   const title =
-    override?.title?.trim() ||
     defaults.metaTitle?.trim() ||
+    override?.title?.trim() ||
     templatedTitle ||
     defaults.title;
   const description =
-    override?.description?.trim() ||
     defaults.metaDescription?.trim() ||
+    override?.description?.trim() ||
     templatedDescription ||
     defaults.description;
 

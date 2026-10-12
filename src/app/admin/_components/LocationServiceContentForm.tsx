@@ -377,7 +377,7 @@ export default function LocationServiceContentForm({
           {
             id: "seo",
             title: "SEO",
-            description: "Search result title and description. Page SEO can override these.",
+            description: "Search result title and description — the same two fields Page SEO shows, so editing either place changes both.",
             content: (
               <div className="grid sm:grid-cols-2 gap-4">
                 <div>

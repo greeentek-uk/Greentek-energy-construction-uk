@@ -1,4 +1,5 @@
 import { getCurrentBlogPosts, getCurrentSiteConfig } from "@/lib/cms";
+import { getPages } from "@/lib/db/pages";
 import { getBlogCategories } from "@/lib/blogCategories";
 import { FINANCE_PROVIDERS } from "@/lib/financeProviders";
 
@@ -20,7 +21,7 @@ export async function getAllRoutes(): Promise<RouteEntry[]> {
     { path: "/locations", label: "Locations (index)", group: "Static Pages" },
     {
       path: "/blog",
-      label: "Blog (index) — post SEO is edited on each post",
+      label: "Blog (index)",
       group: "Static Pages",
     },
     { path: "/contact", label: "Contact", group: "Static Pages" },
@@ -52,9 +53,21 @@ export async function getAllRoutes(): Promise<RouteEntry[]> {
     });
   }
 
+  // Each post too, so its meta can be checked and edited here as well as in
+  // the post's own editor — it is one shared field (lib/db/pageMeta.ts).
+  const posts = await getCurrentBlogPosts();
+  for (const post of posts) {
+    routes.push({ path: `/blog/${post.slug}`, label: post.title, group: "Blog Posts" });
+  }
+
+  // Pages created in the panel (/[slug]).
+  for (const page of await getPages()) {
+    routes.push({ path: `/${page.slug}`, label: page.title, group: "Other Pages" });
+  }
+
   // One page per blog category; derived from the posts, so a new category
   // appears here (and in Page SEO) as soon as a post uses it.
-  for (const c of getBlogCategories(await getCurrentBlogPosts())) {
+  for (const c of getBlogCategories(posts)) {
     routes.push({
       path: `/blog/category/${c.slug}`,
       label: `Blog category: ${c.name}`,
