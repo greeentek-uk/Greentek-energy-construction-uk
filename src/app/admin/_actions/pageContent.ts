@@ -2,6 +2,7 @@
 
 import { redirect } from "next/navigation";
 import { revalidate } from "@/lib/revalidate";
+import { parseFaqs } from "./faqs";
 import { saveBlockDraft, publishBlock, publishAllDirtyBlocks } from "@/lib/db/pageContent";
 import {
   PAGE_CONTENT_KEYS,
@@ -25,6 +26,32 @@ function lines(formData: FormData, key: string): string[] {
     .split("\n")
     .map((s) => s.trim())
     .filter(Boolean);
+}
+
+/**
+ * Repeating items from RepeatingFieldList, kept to the named string fields
+ * (and string[] for `listKeys`). Rows with every field blank are dropped, so an
+ * empty slot left in the editor doesn't render as an empty card.
+ */
+function cleanItems<K extends string>(
+  formData: FormData,
+  name: string,
+  keys: readonly K[],
+  listKeys: readonly K[] = [],
+): Record<K, string & string[]>[] {
+  return items<Record<string, unknown>>(formData, name)
+    .map((raw) =>
+      Object.fromEntries(
+        keys.map((k) => {
+          const v = raw[k];
+          if (listKeys.includes(k)) {
+            return [k, Array.isArray(v) ? v.map((x) => String(x).trim()).filter(Boolean) : []];
+          }
+          return [k, typeof v === "string" ? v.trim() : ""];
+        }),
+      ) as Record<K, string & string[]>,
+    )
+    .filter((item) => keys.some((k) => (Array.isArray(item[k]) ? item[k].length : item[k])));
 }
 
 function parseBlockFields(key: PageContentKey, formData: FormData): PageContentMap[PageContentKey] {
@@ -209,6 +236,53 @@ function parseBlockFields(key: PageContentKey, formData: FormData): PageContentM
         // Kept verbatim (only line endings normalised): regulatory wording.
         riskWarning: str(formData, "riskWarning").replace(/\r\n?/g, "\n"),
         disclosure: str(formData, "disclosure").replace(/\r\n?/g, "\n"),
+      };
+    case "lp-kitchen-renovation":
+    case "lp-bathroom-renovation":
+      return {
+        metaTitle: str(formData, "metaTitle"),
+        metaDescription: str(formData, "metaDescription"),
+        heroEyebrow: str(formData, "heroEyebrow"),
+        heroHeading: str(formData, "heroHeading"),
+        heroHighlight: str(formData, "heroHighlight"),
+        heroBody: str(formData, "heroBody"),
+        heroBullets: lines(formData, "heroBullets"),
+        heroImage: str(formData, "heroImage"),
+        heroImageAlt: str(formData, "heroImageAlt"),
+        formHeading: str(formData, "formHeading"),
+        formSubheading: str(formData, "formSubheading"),
+        trustPoints: lines(formData, "trustPoints"),
+        problemHeading: str(formData, "problemHeading"),
+        problemIntro: str(formData, "problemIntro").replace(/\r\n?/g, "\n"),
+        problemCards: cleanItems(formData, "problemCards", ["title", "body"]),
+        includedHeading: str(formData, "includedHeading"),
+        includedIntro: str(formData, "includedIntro"),
+        includedItems: lines(formData, "includedItems"),
+        galleryHeading: str(formData, "galleryHeading"),
+        galleryIntro: str(formData, "galleryIntro"),
+        gallery: cleanItems(formData, "gallery", ["image", "alt", "caption"]).filter((g) => g.image),
+        reviewsHeading: str(formData, "reviewsHeading"),
+        pricingHeading: str(formData, "pricingHeading"),
+        pricingIntro: str(formData, "pricingIntro"),
+        pricingTiers: cleanItems(
+          formData,
+          "pricingTiers",
+          ["name", "price", "description", "features"],
+          ["features"],
+        ),
+        pricingNote: str(formData, "pricingNote"),
+        stepsHeading: str(formData, "stepsHeading"),
+        steps: cleanItems(formData, "steps", ["title", "body"]),
+        guaranteeHeading: str(formData, "guaranteeHeading"),
+        guaranteeItems: cleanItems(formData, "guaranteeItems", ["title", "body"]),
+        faqHeading: str(formData, "faqHeading"),
+        // Rich text, sanitised on write like every other FAQ.
+        faqs: parseFaqs(formData),
+        ctaHeading: str(formData, "ctaHeading"),
+        ctaBody: str(formData, "ctaBody"),
+        quoteButtonLabel: str(formData, "quoteButtonLabel"),
+        stickyCallLabel: str(formData, "stickyCallLabel"),
+        stickyQuoteLabel: str(formData, "stickyQuoteLabel"),
       };
     case "about-page":
       return {

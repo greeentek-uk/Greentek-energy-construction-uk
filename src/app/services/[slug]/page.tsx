@@ -17,6 +17,7 @@ import ContentBlocks from "@/components/ui/ContentBlocks";
 import { caseStudyLabels, label } from "@/data/pageSections";
 import { withSeoOverride } from "@/lib/seo";
 import { buildServiceJsonLd, SITE_URL } from "@/lib/structuredData";
+import { serviceOptionValue } from "@/lib/quoteForm";
 import PageSchema from "@/components/site/PageSchema";
 import Breadcrumbs from "@/components/site/Breadcrumbs";
 import FaqSection from "@/components/site/FaqSection";
@@ -104,7 +105,7 @@ export default async function ServiceDetailPage({ params }: Props) {
           headingHighlight={sections?.labels?.heroHighlight?.trim() || undefined}
           body={label(sections, "heroBody", service.description)}
           source={`Service page — ${service.title}`}
-          fixedService={{ value: service.formCategory, label: service.title }}
+          fixedService={{ value: serviceOptionValue(service), label: service.title }}
           formHeading={sections?.labels?.formHeading}
           formSubheading={sections?.labels?.formSubheading}
           callLabel={sections?.labels?.heroCallLabel}
@@ -206,7 +207,7 @@ export default async function ServiceDetailPage({ params }: Props) {
               "ctaDescription",
               `Tell us about your ${service.shortName.toLowerCase()} project and we'll come back within one business day with a straight answer, a plan and a real quote.`,
             )}
-            defaultService={service.formCategory}
+            defaultService={serviceOptionValue(service)}
           />
         </div>
       </main>

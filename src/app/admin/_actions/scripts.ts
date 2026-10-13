@@ -6,6 +6,8 @@ import { getHeadScripts, saveHeadScripts } from "@/lib/db/headScripts";
 import { saveMetaPixelSettings } from "@/lib/db/metaPixel";
 import { saveClaritySettings } from "@/lib/db/clarity";
 import { saveGoogleAnalyticsSettings } from "@/lib/db/googleAnalytics";
+import { saveGoogleAdsSettings } from "@/lib/db/googleAds";
+import { ADS_ID_PATTERN, ADS_LABEL_PATTERN } from "@/lib/googleAds";
 import {
   normalizeDomains,
   parseSnippet,
@@ -143,6 +145,36 @@ export async function saveGoogleAnalyticsAction(formData: FormData): Promise<voi
   }
 
   await saveGoogleAnalyticsSettings({ measurementId });
+  await revalidate("/", "layout");
+  redirect("/admin/scripts?saved=1");
+}
+
+export async function saveGoogleAdsAction(formData: FormData): Promise<void> {
+  const conversionId = String(formData.get("conversionId") || "").trim().toUpperCase();
+  // A label is often pasted as the whole send_to ("AW-123/AbC"); keep the part after the slash.
+  const label = (key: string) => String(formData.get(key) || "").trim().split("/").pop()!.trim();
+  const settings = {
+    conversionId,
+    leadLabel: label("leadLabel"),
+    callLabel: label("callLabel"),
+    whatsappLabel: label("whatsappLabel"),
+  };
+
+  if (conversionId && !ADS_ID_PATTERN.test(conversionId)) {
+    fail("A Google Ads tag ID looks like AW-123456789 — copy it from Google Ads → Goals → Conversions → a conversion → Tag setup.");
+  }
+  for (const [key, name] of [
+    ["leadLabel", "enquiry"],
+    ["callLabel", "phone call"],
+    ["whatsappLabel", "WhatsApp"],
+  ] as const) {
+    if (settings[key] && !ADS_LABEL_PATTERN.test(settings[key])) {
+      fail(`The ${name} conversion label doesn't look right — it's the part after the slash in send_to: 'AW-…/label'.`);
+    }
+  }
+
+  await saveGoogleAdsSettings(settings);
+  // The tag id and labels are rendered into every page.
   await revalidate("/", "layout");
   redirect("/admin/scripts?saved=1");
 }

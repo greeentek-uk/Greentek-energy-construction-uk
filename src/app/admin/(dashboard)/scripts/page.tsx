@@ -2,6 +2,7 @@ import { getHeadScripts } from "@/lib/db/headScripts";
 import { getMetaPixelSettings } from "@/lib/db/metaPixel";
 import { getClaritySettings } from "@/lib/db/clarity";
 import { getGoogleAnalyticsSettings } from "@/lib/db/googleAnalytics";
+import { getGoogleAdsSettings } from "@/lib/db/googleAds";
 import { extractOrigins, scriptConsentOf } from "@/lib/headScripts";
 import {
   deleteScriptAction,
@@ -10,6 +11,7 @@ import {
   saveMetaPixelAction,
   saveClarityAction,
   saveGoogleAnalyticsAction,
+  saveGoogleAdsAction,
 } from "../../_actions/scripts";
 import SaveBanner from "../../_components/SaveBanner";
 import ConfirmSubmitButton from "../../_components/ConfirmSubmitButton";
@@ -38,12 +40,16 @@ const PLACEMENT_LABEL: Record<string, string> = {
 
 export default async function ScriptsAdminPage({ searchParams }: Props) {
   const params = await searchParams;
-  const [{ entries, allowedDomains }, metaPixel, clarity, googleAnalytics] = await Promise.all([
+  const [{ entries, allowedDomains }, metaPixel, clarity, googleAnalytics, googleAds] = await Promise.all([
     getHeadScripts(),
     getMetaPixelSettings(),
     getClaritySettings(),
     getGoogleAnalyticsSettings(),
+    getGoogleAdsSettings(),
   ]);
+  const duplicateAdsSnippet = entries.some(
+    (e) => e.enabled && /googletagmanager\.com\/gtag\/js\?id=AW-|send_to['"]?\s*:\s*['"]AW-/i.test(e.raw),
+  );
   const duplicateGaSnippet = entries.some(
     (e) => e.enabled && /googletagmanager\.com\/gtag\/js\?id=G-/i.test(e.raw),
   );
@@ -229,6 +235,60 @@ export default async function ScriptsAdminPage({ searchParams }: Props) {
           >
             Save Google Analytics
           </button>
+        </form>
+      </div>
+
+      <div className="bg-[#101314] border border-white/10 rounded-xl p-6 mb-8">
+        <div className="flex flex-wrap items-start justify-between gap-3 mb-1">
+          <h2 className="font-bold text-white">Google Ads conversions</h2>
+          <span
+            className={`text-[10px] font-bold uppercase px-2 py-1 rounded-full ${
+              googleAds.conversionId ? "text-green-400 bg-green-500/10" : "text-white/40 bg-white/5"
+            }`}
+          >
+            {googleAds.conversionId ? "On" : "Off"}
+          </span>
+        </div>
+        <p className="text-white/50 text-sm mb-4">
+          Reports enquiries, phone taps and WhatsApp taps to Google Ads so it can bid for the clicks
+          that become customers. Loads only once a visitor accepts marketing cookies. Enquiries also
+          send the visitor&apos;s email and phone for enhanced conversions, hashed in their browser
+          before Google receives them — switch on &quot;Enhanced conversions for web&quot; (Google tag)
+          in Google Ads for those to be used.
+        </p>
+        {duplicateAdsSnippet && (
+          <p className="mb-4 text-sm text-amber-300 bg-amber-500/10 border border-amber-500/20 rounded-lg px-4 py-3">
+            A Google Ads snippet is still switched on in the scripts below. Pause it once this card is
+            filled in, or every conversion will be counted twice.
+          </p>
+        )}
+        <form action={saveGoogleAdsAction} className="grid gap-4 sm:grid-cols-2">
+          {(
+            [
+              ["conversionId", "Tag ID", "AW-123456789", googleAds.conversionId],
+              ["leadLabel", "Enquiry conversion label (primary)", "AbCdEfGhIjK", googleAds.leadLabel],
+              ["callLabel", "Phone tap conversion label", "optional", googleAds.callLabel],
+              ["whatsappLabel", "WhatsApp tap conversion label", "optional", googleAds.whatsappLabel],
+            ] as const
+          ).map(([name, label, placeholder, value]) => (
+            <div key={name}>
+              <label className="block text-xs font-semibold text-white/70 mb-1">{label}</label>
+              <input
+                name={name}
+                defaultValue={value}
+                placeholder={placeholder}
+                className="w-full rounded-lg border border-white/15 bg-white/5 px-3 py-2 text-sm text-white placeholder:text-white/30 outline-none focus:border-[#c5eb02] focus:ring-2 focus:ring-[#c5eb02]/20 transition-all font-mono"
+              />
+            </div>
+          ))}
+          <div className="sm:col-span-2">
+            <button
+              type="submit"
+              className="rounded-lg bg-[#c5eb02] text-black text-sm font-semibold px-5 py-2.5 hover:bg-[#c5eb02]/80"
+            >
+              Save Google Ads
+            </button>
+          </div>
         </form>
       </div>
 

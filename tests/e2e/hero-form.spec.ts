@@ -32,14 +32,15 @@ test("step 1 — construction is selected by default and the service list follow
 
   const options = () => page.locator("#hero_service option:not([disabled])").allTextContents();
   expect(await options()).toEqual([
-    "Full property", "Kitchen", "Bathroom", "Extension", "Loft conversion", "Living space", "Multiple areas", "Not sure yet",
+    "Full home renovation", "Kitchen renovation", "Bathroom renovation", "Single storey extension", "Loft conversion",
+    "Living room improvements", "Commercial planned maintenance", "Multiple areas", "Not sure yet",
   ]);
 
   await page.locator("#hero_service").selectOption("construction_kitchen");
   await energy.click();
   await expect(energy).toHaveAttribute("aria-checked", "true");
   expect(await options()).toContain("Air source heat pump");
-  expect(await options()).not.toContain("Kitchen");
+  expect(await options()).not.toContain("Kitchen renovation");
   await expect(page.locator("#hero_service"), "a construction service is cleared when switching to energy").toHaveValue("");
 
   await construction.click();
@@ -94,7 +95,7 @@ test("step 2 — required dropdowns, choices and going back keeps answers", asyn
   await buying.click();
   await expect(buying).toHaveAttribute("aria-pressed", "true");
 
-  await page.getByRole("button", { name: "Back" }).click();
+  await page.getByRole("button", { name: "Back", exact: true }).click();
   await expect(page.getByText("Step 1 of 4")).toBeVisible();
   await expect(page.locator("#hero_service")).toHaveValue("construction_kitchen");
   await continueButton(page).click();

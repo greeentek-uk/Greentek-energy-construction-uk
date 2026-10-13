@@ -298,6 +298,28 @@ test. The sitemap keeps its own `STATIC_ROUTES` list (not `routes.ts`) — add f
 `getDb()` no longer caches a *failed* connection (a DNS blip used to break every request until
 restart).
 
+**Ad landing pages** (2026-10-13): `/lp/kitchen-renovation`, `/lp/bathroom-renovation`
+(`lib/landingPages.ts`). For paid traffic only: **noindex, not in the sitemap**, no menu or
+breadcrumbs (`LandingHeader` = logo + phone), footer without its CTA banner, a mobile call /
+quote bar (`StickyQuoteBar`). All wording is one `pageContent` block each
+(`lp-kitchen-renovation`, `lp-bathroom-renovation`, `LandingPageForm`, draft → publish);
+defaults in `data/landingDefaults.ts` — **run `pnpm seed:page-content` after deploying, or the
+pages (and the build) throw.** The drafted price ranges are generic UK figures awaiting the
+owner's real ones. Enquiries arrive with source "Ad landing page — …" and, from the page URL's
+tags (`lib/attribution.ts`), the paid click / UTM rows in the email.
+
+**Quote form options are one list** (2026-10-13): `heroServiceOptions` in `lib/quoteForm.ts`
+is the service list for *both* forms (the full form shows it as optgroups), one option per
+service page plus multiple / not sure; `serviceOptionValue(service)` maps a service page to its
+option by slug. Both forms ask the same owner / timeline / budget answers. Retired values stay
+in `retiredServiceOptions` so old enquiries are still named in emails.
+
+**Google Ads** (Admin → Scripts → Google Ads conversions, `lib/googleAds.ts`): tag `AW-…` plus a
+label per action — enquiry (Lead on the thank-you page, `transaction_id` = event id), phone tap,
+WhatsApp tap. Loaded with **marketing** consent only, on the same gtag.js as GA4. Enhanced
+conversions: forms `set user_data` (email/phone, hashed by gtag) before moving to /thank-you.
+WhatsApp taps are now a Meta/GA `Contact` too.
+
 **Footer CTA** (heading, text, two buttons) is editable at Admin → Footer CTA: a default plus
 per-path overrides, where a path ending `/*` covers a section and the most specific match wins
 (`lib/footerCta.ts`). It is resolved **in the browser** via `usePathname` (`FooterCta.tsx`)
@@ -353,7 +375,7 @@ hover/focus/touch instead of on scroll. Keep new public links on that import. Ad
 
 ## Current state (2026-09-18)
 
-- Unit tests: **198 passing** across 21 files (2026-10-12).
+- Unit tests: **215 passing** across 24 files (2026-10-13).
 - E2E: 4 known failures recorded in `test-results/` —
   1. `/images/brands/swip.png` 404s on `/about` and in the media library. The file isn't in
      `public/images/brands/`; the reference lives in the **`brands` pageContent block in Mongo**,

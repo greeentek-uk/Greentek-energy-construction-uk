@@ -30,6 +30,7 @@ import FeaturedServicesForm from "../../../_components/pageContent/FeaturedServi
 import PageHeaderForm from "../../../_components/pageContent/PageHeaderForm";
 import AboutPageForm from "../../../_components/pageContent/AboutPageForm";
 import FinanceProviderForm from "../../../_components/pageContent/FinanceProviderForm";
+import LandingPageForm from "../../../_components/pageContent/LandingPageForm";
 
 interface Props {
   params: Promise<{ key: string }>;
@@ -170,6 +171,9 @@ export default async function EditPageContentPage({ params, searchParams }: Prop
             case "finance-ideal4finance":
             case "finance-phoenix":
               return <FinanceProviderForm blockKey={key} content={content as PageContentMap["finance-phoenix"]} />;
+            case "lp-kitchen-renovation":
+            case "lp-bathroom-renovation":
+              return <LandingPageForm blockKey={key} content={content as PageContentMap["lp-kitchen-renovation"]} />;
             case "about-page":
               return <AboutPageForm content={content as PageContentMap["about-page"]} />;
           }

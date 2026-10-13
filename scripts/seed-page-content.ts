@@ -11,6 +11,7 @@ import { seedBlockIfMissing } from "../src/lib/db/pageContent";
 import type { PageContentMap } from "../src/data/pageContent";
 import { FEATURED_SERVICES, ACCREDITATION_LOGOS } from "./featured-content";
 import { FINANCE_PROVIDER_DEFAULTS } from "../src/data/financeDefaults";
+import { LANDING_PAGE_DEFAULTS } from "../src/data/landingDefaults";
 
 config({ path: ".env.local" });
 
@@ -335,6 +336,7 @@ const seedData: PageContentMap = {
     ],
   },
   ...FINANCE_PROVIDER_DEFAULTS,
+  ...LANDING_PAGE_DEFAULTS,
 };
 
 async function run() {

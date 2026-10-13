@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { MessageSquareMore, Phone } from "lucide-react";
+import { Check, MessageSquareMore, Phone } from "lucide-react";
 import { useFadeIn } from "@/hooks/useFadeIn";
 import HeroQuoteForm, { type FixedService } from "./HeroQuoteForm";
 import TrustRatingBadge from "@/components/site/TrustRatingBadge";
@@ -23,6 +23,10 @@ export interface PageQuoteHeroContent {
   /** Defaults to "Contact on WhatsApp". */
   whatsappLabel?: string;
   rating: { label: string; score: string; url: string };
+  /** A short line above the H1 (ad landing pages). */
+  eyebrow?: string;
+  /** Benefit ticks under the copy (ad landing pages). */
+  bullets?: string[];
   form: {
     heading: string;
     subheading: string;
@@ -52,6 +56,8 @@ export default function PageQuoteHeroClient({
   callLabel,
   whatsappLabel = "Contact on WhatsApp",
   rating,
+  eyebrow,
+  bullets,
   form,
 }: PageQuoteHeroContent) {
   const [heroFadeRef, heroFadeVisible] = useFadeIn(100);
@@ -95,6 +101,11 @@ export default function PageQuoteHeroClient({
             {/* Left to wrap naturally: unlike the homepage's two fixed lines,
                 these headings are built from a service or location name and
                 have no predictable length to break at. */}
+            {eyebrow && (
+              <p className="mb-4 text-xs md:text-sm font-semibold uppercase tracking-wide text-[#c5eb02]">
+                {eyebrow}
+              </p>
+            )}
             <h1 className="text-white font-bold leading-[1.1] text-[1.5rem] md:text-[2rem] lg:text-[3.5rem]">
               {parts ? (
                 <>
@@ -114,6 +125,19 @@ export default function PageQuoteHeroClient({
               <p className="mt-3 mx-auto sm:mx-0 text-base md:text-md leading-relaxed text-white/80 max-w-2xl font-normal">
                 {secondaryBody}
               </p>
+            )}
+
+            {bullets && bullets.length > 0 && (
+              <ul className="mt-6 mx-auto sm:mx-0 w-fit space-y-2 text-left">
+                {bullets.map((bullet) => (
+                  <li key={bullet} className="flex items-start gap-2.5 text-base font-semibold text-white">
+                    <span className="mt-0.5 grid h-5 w-5 shrink-0 place-items-center rounded-full bg-[#c5eb02]">
+                      <Check className="h-3.5 w-3.5 text-black" strokeWidth={3} aria-hidden />
+                    </span>
+                    {bullet}
+                  </li>
+                ))}
+              </ul>
             )}
 
             <div className="mt-8 flex flex-col sm:flex-row sm:flex-wrap justify-center sm:justify-start gap-3">
@@ -136,7 +160,9 @@ export default function PageQuoteHeroClient({
             </div>
           </div>
 
-          <div className="w-full max-w-md mx-auto lg:mx-0 lg:justify-self-end">
+          {/* #start: the in-page "get a quote" buttons on ad landing pages
+              come back here, to the form the visitor may already have begun. */}
+          <div id="start" className="w-full max-w-md mx-auto lg:mx-0 lg:justify-self-end scroll-mt-24">
             <HeroQuoteForm
               heading={form.heading}
               subheading={form.subheading}

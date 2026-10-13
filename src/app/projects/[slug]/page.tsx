@@ -20,6 +20,7 @@ import CtaSection from "@/components/sections/CtaSection";
 import FaqSection from "@/components/site/FaqSection";
 import { label, type PageSectionOverrides } from "@/data/pageSections";
 import { withSeoOverride } from "@/lib/seo";
+import { serviceOptionValue } from "@/lib/quoteForm";
 import PageSchema from "@/components/site/PageSchema";
 import Breadcrumbs from "@/components/site/Breadcrumbs";
 
@@ -104,7 +105,7 @@ export default async function ProjectDetailPage({ params }: Props) {
           {...(relatedService
             ? {
                 fixedService: {
-                  value: relatedService.formCategory,
+                  value: serviceOptionValue(relatedService),
                   label: relatedService.title,
                 },
               }
@@ -356,7 +357,7 @@ export default async function ProjectDetailPage({ params }: Props) {
               "ctaDescription",
               "Tell us about your property and we'll come back within one business day with a straight answer, a plan and a real quote.",
             )}
-            {...(relatedService ? { defaultService: relatedService.formCategory } : {})}
+            {...(relatedService ? { defaultService: serviceOptionValue(relatedService) } : {})}
           />
         </div>
       </main>

@@ -2,12 +2,69 @@
  * Shared definitions for the quote request form.
  *
  * The hero form and the full form further down the page post to the same
- * endpoint, so their service values have to match exactly — keeping the lists
- * here stops the two drifting apart and silently sending values the inbox
- * doesn't recognise.
+ * endpoint and ask the same questions with the same answers — only the layout
+ * differs. Keeping the lists here stops the two drifting apart: they once did,
+ * and the hero offered specific rooms and systems while the full form offered
+ * five broad categories, so the same visitor got two
+ * different sets of choices depending on which form they scrolled to.
  */
-export const serviceOptions = [
-  { value: "", label: "Select a service" },
+
+/** The first choice in the hero form; the full form shows the same split as option groups. */
+export type ProjectType = "construction" | "energy";
+
+export const projectTypeOptions: { value: ProjectType; label: string }[] = [
+  { value: "construction", label: "Construction" },
+  { value: "energy", label: "Energy upgrades" },
+];
+
+export interface ServiceOption {
+  value: string;
+  label: string;
+  /** The `/services/[slug]` page this option is, so a service page can preselect it. */
+  slug?: string;
+}
+
+/**
+ * The services an enquiry can be about — one option per service page, plus
+ * "multiple" and "not sure". Add a service here when one is
+ * added in the panel, or its page falls back to the service's broad category.
+ *
+ * Values are what lands in the inbox and in Meta's Lead, so they're never
+ * renamed: a label can change, a value can't.
+ */
+export const heroServiceOptions: Record<ProjectType, ServiceOption[]> = {
+  construction: [
+    { value: "construction_full_property", label: "Full home renovation", slug: "full-home-renovation" },
+    { value: "construction_kitchen", label: "Kitchen renovation", slug: "kitchen-renovations" },
+    { value: "construction_bathroom", label: "Bathroom renovation", slug: "bathroom-renovations" },
+    { value: "construction_extension", label: "Single storey extension", slug: "single-storey-extension" },
+    { value: "construction_loft_conversion", label: "Loft conversion", slug: "loft-conversions" },
+    { value: "construction_living_space", label: "Living room improvements", slug: "living-room-improvements" },
+    {
+      value: "construction_commercial_maintenance",
+      label: "Commercial planned maintenance",
+      slug: "commercial-planned-maintenance",
+    },
+    { value: "construction_multiple_areas", label: "Multiple areas" },
+    { value: "construction_not_sure", label: "Not sure yet" },
+  ],
+  energy: [
+    { value: "energy_solar_pv", label: "Solar panels & battery storage", slug: "solar-pv-installations" },
+    { value: "energy_heat_pump", label: "Air source heat pump", slug: "air-source-heat-pump-installations" },
+    { value: "energy_heating_boiler", label: "Heating system upgrade", slug: "heating-system-upgrades" },
+    { value: "energy_loft_insulation", label: "Loft insulation", slug: "loft-insulation" },
+    { value: "energy_wall_insulation", label: "External wall insulation", slug: "external-wall-insulation-rendering" },
+    { value: "energy_multiple", label: "Multiple upgrades" },
+    { value: "energy_not_sure", label: "Not sure yet" },
+  ],
+};
+
+/**
+ * Values no form offers any more, still named in the email: a visitor with the
+ * old page open can send one, and older enquiries quote them.
+ */
+const retiredServiceOptions = [
+  { value: "energy_battery", label: "Energy — Battery storage" },
   { value: "solar_storage", label: "Solar PV & Battery Storage" },
   { value: "heating_boiler", label: "Heating & Boiler Upgrades" },
   { value: "insulation", label: "Insulation" },
@@ -16,40 +73,23 @@ export const serviceOptions = [
   { value: "not_sure", label: "Not Sure — Need Advice" },
 ];
 
-/** The hero form's first choice, which decides the service list shown under it. */
-export type ProjectType = "construction" | "energy";
-
-export const projectTypeOptions: { value: ProjectType; label: string }[] = [
-  { value: "construction", label: "Construction" },
-  { value: "energy", label: "Energy upgrades" },
-];
-
 /**
- * The hero form's services — more specific than the full form's list, so the
- * team knows which room or system the enquiry is about before calling back.
+ * The option for a service page, so the form there is about that service.
+ * Falls back to the service's broad category for a service added in the panel
+ * that isn't listed above yet — still a value the email can name.
  */
-export const heroServiceOptions: Record<ProjectType, { value: string; label: string }[]> = {
-  construction: [
-    { value: "construction_full_property", label: "Full property" },
-    { value: "construction_kitchen", label: "Kitchen" },
-    { value: "construction_bathroom", label: "Bathroom" },
-    { value: "construction_extension", label: "Extension" },
-    { value: "construction_loft_conversion", label: "Loft conversion" },
-    { value: "construction_living_space", label: "Living space" },
-    { value: "construction_multiple_areas", label: "Multiple areas" },
-    { value: "construction_not_sure", label: "Not sure yet" },
-  ],
-  energy: [
-    { value: "energy_solar_pv", label: "Solar panels" },
-    { value: "energy_battery", label: "Battery storage" },
-    { value: "energy_heat_pump", label: "Air source heat pump" },
-    { value: "energy_heating_boiler", label: "Heating & boiler" },
-    { value: "energy_loft_insulation", label: "Loft insulation" },
-    { value: "energy_wall_insulation", label: "External wall insulation" },
-    { value: "energy_multiple", label: "Multiple upgrades" },
-    { value: "energy_not_sure", label: "Not sure yet" },
-  ],
-};
+export function serviceOptionValue(service: { slug: string; formCategory: string }): string {
+  for (const options of Object.values(heroServiceOptions)) {
+    const match = options.find((o) => o.slug === service.slug);
+    if (match) return match.value;
+  }
+  return service.formCategory;
+}
+
+/** Whether a value is one the forms offer (rather than a retired or unknown one). */
+export function isOfferedService(value: string): boolean {
+  return Object.values(heroServiceOptions).some((options) => options.some((o) => o.value === value));
+}
 
 /** A service value from either form, as the team would say it. */
 export function serviceLabel(value: string): string {
@@ -57,7 +97,7 @@ export function serviceLabel(value: string): string {
     const label = optionLabel(options, value);
     if (label) return `${type === "energy" ? "Energy" : "Construction"} — ${label}`;
   }
-  return optionLabel(serviceOptions, value);
+  return optionLabel(retiredServiceOptions, value);
 }
 
 export const timelineOptions = [

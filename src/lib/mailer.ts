@@ -24,6 +24,10 @@ export interface QuoteRequestPayload {
   photos?: string[];
   /** Which form the enquiry came from, so they can be told apart in the inbox. */
   source?: string;
+  /** Path of the page it was sent from. */
+  page?: string;
+  /** Ad campaign rows from the page URL's tags (lib/attribution.ts). */
+  campaign?: [string, string][];
 }
 
 function humanize(value: string): string {
@@ -78,6 +82,8 @@ export async function sendQuoteRequestEmail(data: QuoteRequestPayload): Promise<
     ["Budget", optionLabel(budgetOptions, data.budget ?? "") || humanize(data.budget ?? "")],
     ["Photos", data.photos?.length ? String(data.photos.length) : "None"],
     ["Came from", data.source || "Contact form"],
+    ...(data.page ? ([["Page", data.page]] as [string, string][]) : []),
+    ...(data.campaign ?? []),
   ];
 
   const text = [

@@ -10,6 +10,7 @@ import { getImageDelivery } from "@/lib/db/imageDelivery";
 import { getMetaPixelSettings } from "@/lib/db/metaPixel";
 import { getClaritySettings } from "@/lib/db/clarity";
 import { getGoogleAnalyticsSettings } from "@/lib/db/googleAnalytics";
+import { getGoogleAdsSettings } from "@/lib/db/googleAds";
 import { CONSENT_MODE_DEFAULTS_SCRIPT } from "@/lib/consent";
 import { scriptConsentOf } from "@/lib/headScripts";
 import ConsentProvider from "@/components/site/ConsentProvider";
@@ -97,7 +98,7 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const [siteConfig, headScripts, imageDelivery, metaPixel, clarity, googleAnalytics] =
+  const [siteConfig, headScripts, imageDelivery, metaPixel, clarity, googleAnalytics, googleAds] =
     await Promise.all([
       getCurrentSiteConfig(),
       getHeadScripts(),
@@ -105,12 +106,14 @@ export default async function RootLayout({
       getMetaPixelSettings(),
       getClaritySettings(),
       getGoogleAnalyticsSettings(),
+      getGoogleAdsSettings(),
     ]);
 
   const metaNecessary = Boolean(metaPixel.pixelId) && metaPixel.consent === "necessary";
   // The banner only offers a Marketing choice when something actually waits for it.
   const showMarketing =
     (Boolean(metaPixel.pixelId) && metaPixel.consent === "marketing") ||
+    Boolean(googleAds.conversionId) ||
     headScripts.entries.some((e) => e.enabled && scriptConsentOf(e) === "marketing");
 
   const jsonLd = buildLocalBusinessJsonLd(siteConfig, SITE_URL);
@@ -133,11 +136,13 @@ export default async function RootLayout({
           <ConsentProvider showMarketing={showMarketing} metaNecessary={metaNecessary}>
             <TrackingScripts
               gaMeasurementId={googleAnalytics.measurementId}
+              googleAdsId={googleAds.conversionId}
               clarityProjectId={clarity.projectId}
             />
             <AnalyticsProvider
               pixelId={metaPixel.pixelId}
               pixelNeedsConsent={metaPixel.consent === "marketing"}
+              googleAds={googleAds}
             >
               {/* overflow-x-clip, not -hidden: see the html/body rule in
                   globals.css — `hidden` here breaks every sticky element. */}

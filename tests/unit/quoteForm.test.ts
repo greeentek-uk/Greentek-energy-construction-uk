@@ -6,8 +6,9 @@ import {
   isLikelyPostcode,
   optionLabel,
   ownerOptions,
+  isOfferedService,
   serviceLabel,
-  serviceOptions,
+  serviceOptionValue,
   timelineOptions,
 } from "@/lib/quoteForm";
 
@@ -38,14 +39,15 @@ describe("isAllowedPhoto", () => {
 });
 
 describe("options", () => {
-  it("construction list is exactly what was asked for, in order", () => {
+  it("construction list matches the service pages, in order", () => {
     expect(heroServiceOptions.construction.map((o) => o.label)).toEqual([
-      "Full property", "Kitchen", "Bathroom", "Extension", "Loft conversion", "Living space", "Multiple areas", "Not sure yet",
+      "Full home renovation", "Kitchen renovation", "Bathroom renovation", "Single storey extension", "Loft conversion",
+      "Living room improvements", "Commercial planned maintenance", "Multiple areas", "Not sure yet",
     ]);
   });
 
   it("every option value is unique across both lists", () => {
-    const values = [...heroServiceOptions.construction, ...heroServiceOptions.energy, ...serviceOptions].map((o) => o.value).filter(Boolean);
+    const values = [...heroServiceOptions.construction, ...heroServiceOptions.energy].map((o) => o.value).filter(Boolean);
     expect(new Set(values).size).toBe(values.length);
   });
 
@@ -58,11 +60,25 @@ describe("options", () => {
   });
 
   it("labels values for the email", () => {
-    expect(serviceLabel("construction_kitchen")).toBe("Construction — Kitchen");
+    expect(serviceLabel("construction_kitchen")).toBe("Construction — Kitchen renovation");
     expect(serviceLabel("energy_heat_pump")).toBe("Energy — Air source heat pump");
     expect(serviceLabel("solar_storage")).toBe("Solar PV & Battery Storage");
+    expect(serviceLabel("energy_battery"), "retired values still read in the email").toBe("Energy — Battery storage");
     expect(serviceLabel("unknown")).toBe("");
     expect(optionLabel(budgetOptions, "guidance")).toBe("I need guidance");
     expect(optionLabel(budgetOptions, "")).toBe("");
+  });
+});
+
+describe("serviceOptionValue", () => {
+  it("picks the specific option for a service page", () => {
+    expect(serviceOptionValue({ slug: "kitchen-renovations", formCategory: "refurb_extension" })).toBe("construction_kitchen");
+    expect(serviceOptionValue({ slug: "solar-pv-installations", formCategory: "solar_storage" })).toBe("energy_solar_pv");
+  });
+
+  it("falls back to the category for a service the forms don't list yet", () => {
+    expect(serviceOptionValue({ slug: "new-thing", formCategory: "insulation" })).toBe("insulation");
+    expect(isOfferedService("insulation")).toBe(false);
+    expect(serviceLabel("insulation")).toBe("Insulation");
   });
 });

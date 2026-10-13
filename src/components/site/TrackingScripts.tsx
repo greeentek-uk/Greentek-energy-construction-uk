@@ -7,7 +7,8 @@ import { useConsent } from "@/components/site/ConsentProvider";
 import { activateConsentedScripts } from "@/lib/consentScripts";
 import { isAdminPath } from "@/lib/analytics";
 
-let gaLoadedFor = "";
+let tagScriptLoaded = false;
+const configured = new Set<string>();
 
 function gtag(...args: unknown[]) {
   window.dataLayer = window.dataLayer || [];
@@ -23,33 +24,42 @@ function gtag(...args: unknown[]) {
 }
 
 /**
- * Google Analytics 4. Its enhanced measurement counts page views on
- * client-side navigation by itself, so no manual page_view is sent — doing
- * both would count every page twice.
+ * One Google tag (gtag.js) serves GA4 and Google Ads alike: the script is
+ * loaded once, by whichever id is allowed first, and each id is then
+ * `config`ured on it. Loading it twice would double-count.
+ *
+ * GA4's enhanced measurement counts page views on client-side navigation by
+ * itself, so no manual page_view is sent — doing both would count every page
+ * twice.
  */
-function loadGoogleAnalytics(measurementId: string) {
-  if (gaLoadedFor === measurementId) return;
-  gaLoadedFor = measurementId;
+function loadGoogleTag(id: string, config: Record<string, unknown> = {}) {
+  if (configured.has(id)) return;
+  configured.add(id);
 
-  gtag("js", new Date());
-  gtag("config", measurementId);
-
-  const script = document.createElement("script");
-  script.async = true;
-  script.src = `https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(measurementId)}`;
-  document.head.appendChild(script);
+  if (!tagScriptLoaded) {
+    tagScriptLoaded = true;
+    gtag("js", new Date());
+    const script = document.createElement("script");
+    script.async = true;
+    script.src = `https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(id)}`;
+    document.head.appendChild(script);
+  }
+  gtag("config", id, config);
 }
 
 /**
  * Starts the optional trackers once the visitor has agreed to them: Google
- * Analytics and Clarity (analytics), plus any panel snippets waiting on a
- * category. Nothing here runs for a visitor who hasn't chosen yet.
+ * Analytics and Clarity (analytics), Google Ads (marketing), plus any panel
+ * snippets waiting on a category. Nothing here runs for a visitor who hasn't chosen yet.
  */
 export default function TrackingScripts({
   gaMeasurementId,
+  googleAdsId,
   clarityProjectId,
 }: {
   gaMeasurementId: string;
+  /** AW-…; loaded only with marketing consent. */
+  googleAdsId: string;
   clarityProjectId: string;
 }) {
   const { consent } = useConsent();
@@ -72,7 +82,10 @@ export default function TrackingScripts({
       ad_personalization: ads,
     });
 
-    if (analytics && gaMeasurementId) loadGoogleAnalytics(gaMeasurementId);
+    if (analytics && gaMeasurementId) loadGoogleTag(gaMeasurementId);
+    // Advertising, so marketing consent. Enhanced conversions lets the quote
+    // forms' hashed email/phone match a lead to its click (lib/analytics.ts).
+    if (marketing && googleAdsId) loadGoogleTag(googleAdsId, { allow_enhanced_conversions: true });
 
     if (analytics && clarityProjectId) {
       Clarity.init(clarityProjectId);
@@ -80,7 +93,7 @@ export default function TrackingScripts({
     }
 
     void activateConsentedScripts({ analytics, marketing });
-  }, [admin, consent, analytics, marketing, gaMeasurementId, clarityProjectId]);
+  }, [admin, consent, analytics, marketing, gaMeasurementId, googleAdsId, clarityProjectId]);
 
   return null;
 }

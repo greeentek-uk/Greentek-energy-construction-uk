@@ -3,8 +3,15 @@
 import { useFadeIn } from "@/hooks/useFadeIn";
 import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { newEventId, track } from "@/lib/analytics";
-import { serviceOptions, timelineOptions } from "@/lib/quoteForm";
+import { newEventId, setAdsUserData, track } from "@/lib/analytics";
+import {
+  budgetOptions,
+  heroServiceOptions,
+  isOfferedService,
+  ownerOptions,
+  projectTypeOptions,
+  timelineOptions,
+} from "@/lib/quoteForm";
 
 
 const contactDetails = [
@@ -80,8 +87,9 @@ type FormState = {
   postcode: string;
   service: string;
   property_type: "residential" | "commercial" | "";
-  is_homeowner: "yes" | "no" | "";
+  is_homeowner: string;
   timeline: string;
+  budget: string;
   message: string;
   consent: boolean;
 };
@@ -96,6 +104,9 @@ interface CtaSectionProps {
   heading?: string;
   description?: string;
   defaultService?: string;
+  /** Names this form in the enquiry email's "Came from" line. */
+  source?: string;
+  messagePlaceholder?: string;
 }
 
 export default function CtaSection({
@@ -103,6 +114,8 @@ export default function CtaSection({
   heading = "Get a free quote",
   description = "Solar, heating, insulation, or a full refurb, tell us what you're looking at and we'll come back within one business day with a straight answer, a plan and a real quote.",
   defaultService = "",
+  source = "Contact form",
+  messagePlaceholder = "Tell us about your solar, heating, insulation, or renovation project... (optional)",
 }: CtaSectionProps) {
   const [contentFadeRef, contentFadeVisible] = useFadeIn(0);
   const [formFadeRef, formFadeVisible] = useFadeIn(150);
@@ -112,10 +125,13 @@ export default function CtaSection({
     email: "",
     phone: "",
     postcode: "",
-    service: defaultService,
+    // A value the dropdown doesn't list would show as blank but still be
+    // sent, so only a service the form offers is preselected.
+    service: isOfferedService(defaultService) ? defaultService : "",
     property_type: "",
     is_homeowner: "",
     timeline: "",
+    budget: "",
     message: "",
     consent: false,
   };
@@ -153,7 +169,7 @@ export default function CtaSection({
   function markStarted() {
     if (started.current) return;
     started.current = true;
-    track("StartQuote", { content_name: "Enquiry form" });
+    track("StartQuote", { content_name: source === "Contact form" ? "Enquiry form" : source });
   }
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -172,12 +188,13 @@ export default function CtaSection({
       const res = await fetch("/api/quote-request", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...form, event_id: eventId, page_url: window.location.href }),
+        body: JSON.stringify({ ...form, source, event_id: eventId, page_url: window.location.href }),
       });
 
       if (!res.ok) throw new Error("Request failed");
 
       setStatus("success");
+      setAdsUserData({ email: form.email, phone: form.phone });
       setForm(initialState);
       router.push(`/thank-you?eid=${encodeURIComponent(eventId)}`);
     } catch (err) {
@@ -350,16 +367,20 @@ export default function CtaSection({
                   required
                   value={form.service}
                   onChange={handleChange}
-                  className={`${inputClasses} appearance-none cursor-pointer [&>option]:text-black`}
+                  className={`${inputClasses} appearance-none cursor-pointer [&_option]:text-black [&_optgroup]:text-black`}
                 >
-                  {serviceOptions.map((opt) => (
-                    <option
-                      key={opt.value}
-                      value={opt.value}
-                      disabled={opt.value === ""}
-                    >
-                      {opt.label}
-                    </option>
+                  <option value="" disabled>
+                    Select a service
+                  </option>
+                  {/* The same split as the hero form's Construction / Energy switch. */}
+                  {projectTypeOptions.map((type) => (
+                    <optgroup key={type.value} label={type.label}>
+                      {heroServiceOptions[type.value].map((opt) => (
+                        <option key={opt.value} value={opt.value}>
+                          {opt.label}
+                        </option>
+                      ))}
+                    </optgroup>
                   ))}
                 </select>
               </div>
@@ -387,44 +408,65 @@ export default function CtaSection({
                 </div>
 
                 <div className="space-y-1.5">
-                  <span className={labelClasses}>Are you the homeowner?</span>
+                  <span className={labelClasses}>Are you the property owner?</span>
                   <div className="flex gap-2">
-                    {(["yes", "no"] as const).map((val) => (
+                    {ownerOptions.map((opt) => (
                       <button
                         type="button"
-                        key={val}
-                        onClick={() => handleHomeowner(val)}
-                        className={`flex-1 py-3 rounded-xl text-xs font-bold uppercase transition-all border ${
-                          form.is_homeowner === val
+                        key={opt.value}
+                        onClick={() => handleHomeowner(opt.value)}
+                        className={`flex-1 py-3 px-1 rounded-xl text-xs font-bold uppercase transition-all border ${
+                          form.is_homeowner === opt.value
                             ? "bg-[#c5eb02] text-black border-[#c5eb02]"
                             : "bg-white/10 text-white border-white/20 hover:bg-white/20"
                         }`}
                       >
-                        {val === "yes" ? "Yes" : "No"}
+                        {opt.value === "buying" ? "Buying" : opt.label}
                       </button>
                     ))}
                   </div>
                 </div>
               </div>
 
-              {/* Timeline */}
-              <div className="space-y-1.5">
-                <label htmlFor="timeline" className={labelClasses}>
-                  When are you looking to start?
-                </label>
-                <select
-                  id="timeline"
-                  name="timeline"
-                  value={form.timeline}
-                  onChange={handleChange}
-                  className={`${inputClasses} appearance-none cursor-pointer [&>option]:text-black`}
-                >
-                  {timelineOptions.map((opt) => (
-                    <option key={opt.value} value={opt.value}>
-                      {opt.label}
-                    </option>
-                  ))}
-                </select>
+              {/* Timeline + Budget */}
+              <div className="grid sm:grid-cols-2 gap-5">
+                <div className="space-y-1.5">
+                  <label htmlFor="timeline" className={labelClasses}>
+                    When are you looking to start?
+                  </label>
+                  <select
+                    id="timeline"
+                    name="timeline"
+                    value={form.timeline}
+                    onChange={handleChange}
+                    className={`${inputClasses} appearance-none cursor-pointer [&_option]:text-black [&_optgroup]:text-black`}
+                  >
+                    {timelineOptions.map((opt) => (
+                      <option key={opt.value} value={opt.value}>
+                        {opt.label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="space-y-1.5">
+                  <label htmlFor="budget" className={labelClasses}>
+                    Approximate project investment
+                  </label>
+                  <select
+                    id="budget"
+                    name="budget"
+                    value={form.budget}
+                    onChange={handleChange}
+                    className={`${inputClasses} appearance-none cursor-pointer [&_option]:text-black [&_optgroup]:text-black`}
+                  >
+                    {budgetOptions.map((opt) => (
+                      <option key={opt.value} value={opt.value}>
+                        {opt.label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
               </div>
 
               {/* Message */}
@@ -439,7 +481,7 @@ export default function CtaSection({
                   value={form.message}
                   onChange={handleChange}
                   className={inputClasses.replace("py-3.5", "py-4")}
-                  placeholder="Tell us about your solar, heating, insulation, or renovation project... (optional)"
+                  placeholder={messagePlaceholder}
                 />
               </div>
 

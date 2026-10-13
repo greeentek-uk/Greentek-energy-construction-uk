@@ -6,7 +6,12 @@ import { FINANCE_PROVIDERS, paragraphs } from "@/lib/financeProviders";
 import { getFooterCtaSettings } from "@/lib/db/footerCta";
 import FooterCta from "./FooterCta";
 
-export default async function Footer() {
+/**
+ * `hideCta` drops the Footer CTA banner — on the ad landing pages, whose own
+ * closing form sits right above it, a second, site-wide pitch ("switch to
+ * solar") straight after it read as a different company's ad.
+ */
+export default async function Footer({ hideCta = false }: { hideCta?: boolean } = {}) {
   const [siteConfig, footerCta, financeProviders] = await Promise.all([
     getCurrentSiteConfig(),
     getFooterCtaSettings(),
@@ -18,7 +23,7 @@ export default async function Footer() {
     <footer className="bg-[url('/images/footer/footer-bg.webp')] bg-cover bg-center border-t border-zinc-900">
       <div className="bg-black/60 pt-18">
         {/* Editable site-wide and per page in Admin → Footer CTA. */}
-        <FooterCta settings={footerCta} phone={siteConfig.phone} />
+        {!hideCta && <FooterCta settings={footerCta} phone={siteConfig.phone} />}
         <div className="site-container">
           {/* FOOTER CARD — one responsive layout for mobile & desktop */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 sm:gap-10 px-6 py-10 md:py-12 bg-black/50 backdrop-blur-sm border border-white/50 rounded-xl text-white ">

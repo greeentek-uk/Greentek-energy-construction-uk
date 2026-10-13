@@ -3,6 +3,7 @@ import { contextFromRequest, sendCapiEvent } from "@/lib/metaCapi";
 import { metaAllowedForRequest } from "@/lib/metaConsent";
 import { sendQuoteRequestEmail, type QuoteRequestPayload } from "@/lib/mailer";
 import { MAX_ENQUIRY_PHOTOS } from "@/lib/quoteForm";
+import { campaignRows, pagePath } from "@/lib/attribution";
 import { createSubmittedEnquiry, enquiryPhotoFolder, submitEnquiry } from "@/lib/db/enquiries";
 
 /**
@@ -75,6 +76,8 @@ export async function POST(request: Request) {
     message: String(body.message || ""),
     photos,
     source: String(body.source || "Contact form"),
+    page: pagePath(body.page_url),
+    campaign: campaignRows(body.page_url),
   };
 
   try {

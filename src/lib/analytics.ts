@@ -1,6 +1,7 @@
 import Clarity from "@microsoft/clarity";
 import { readConsent } from "@/lib/consent";
 import { isStandardEvent, type MetaEventName } from "@/lib/metaEvents";
+import { adsSendTo, e164, EMPTY_GOOGLE_ADS, type GoogleAdsSettings } from "@/lib/googleAds";
 
 type Fbq = ((...args: unknown[]) => void) & {
   callMethod?: (...args: unknown[]) => void;
@@ -23,6 +24,7 @@ declare global {
 let pixelId = "";
 let pixelNeedsConsent = false;
 let initialisedFor = "";
+let googleAds: GoogleAdsSettings = EMPTY_GOOGLE_ADS;
 
 /**
  * The admin panel is not the public site, and nothing may track it.
@@ -40,9 +42,43 @@ export function isAdminPath(pathname?: string | null): boolean {
 }
 
 /** Set by AnalyticsProvider during render, before any child tracks an event. */
-export function configureAnalytics(options: { pixelId: string; pixelNeedsConsent: boolean }): void {
+export function configureAnalytics(options: {
+  pixelId: string;
+  pixelNeedsConsent: boolean;
+  googleAds?: GoogleAdsSettings;
+}): void {
   pixelId = options.pixelId;
   pixelNeedsConsent = options.pixelNeedsConsent;
+  googleAds = options.googleAds ?? EMPTY_GOOGLE_ADS;
+}
+
+/**
+ * Google Ads may only run with marketing consent — it's advertising, whatever
+ * the Meta pixel's own setting is. TrackingScripts loads the tag on the same
+ * condition, so `window.gtag` existing isn't enough on its own (GA4 creates it
+ * on analytics consent alone).
+ */
+function adsAllowed(): boolean {
+  return Boolean(googleAds.conversionId) && Boolean(readConsent()?.marketing) && Boolean(window.gtag);
+}
+
+/**
+ * Enhanced conversions: hands Google the email and phone the visitor has just
+ * typed into a quote form, so a lead can be matched to the ad click even when
+ * the click's cookie is gone. gtag hashes them (SHA-256) before anything leaves
+ * the browser. Called on submit; the thank-you page's Lead conversion then
+ * carries them, because the form moves there by client-side navigation and
+ * the `set` survives it.
+ */
+export function setAdsUserData(user: { email: string; phone: string }): void {
+  if (typeof window === "undefined" || isAdminPath() || !adsAllowed()) return;
+  const email = user.email.trim().toLowerCase();
+  const phone = e164(user.phone);
+  if (!email && !phone) return;
+  window.gtag!("set", "user_data", {
+    ...(email ? { email } : {}),
+    ...(phone ? { phone_number: phone } : {}),
+  });
 }
 
 /**
@@ -131,6 +167,18 @@ export function track(
       ...(name !== "Contact" && content_name ? { item_name: content_name } : {}),
       ...(content_category ? { item_category: content_category } : {}),
       ...(method ? { method } : {}),
+    });
+  }
+
+  // Google Ads conversions: enquiries, calls and WhatsApp taps only. The
+  // Lead's event id doubles as the transaction id, so a second firing for the
+  // same enquiry (a refresh that slips past the thank-you page's guard) is
+  // dropped by Google rather than counted twice.
+  const sendTo = adsSendTo(googleAds, name, params);
+  if (sendTo && adsAllowed()) {
+    window.gtag!("event", "conversion", {
+      send_to: sendTo,
+      ...(name === "Lead" ? { transaction_id: eventId } : {}),
     });
   }
 

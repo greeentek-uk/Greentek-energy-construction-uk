@@ -1,3 +1,5 @@
+import type { FaqItem } from "./pages";
+
 /**
  * The homepage hero — a single, static panel.
  *
@@ -255,6 +257,61 @@ export interface FinanceProviderContent {
   disclosure: string;
 }
 
+/**
+ * An ad landing page (`/lp/<slug>`): one service, one goal — the enquiry.
+ * Every visible word is here so the copy can be tested without a deploy; the
+ * order of the sections is fixed in code (see the page for why it runs as it
+ * does). A blank heading or an empty list hides that section.
+ */
+export interface LandingPageContent {
+  /** Shown in the browser tab and on shares. The page is noindex, so it's not for Google. */
+  metaTitle: string;
+  metaDescription: string;
+  heroEyebrow: string;
+  /** The whole H1. */
+  heroHeading: string;
+  /** A phrase inside the H1 shown in the brand colour; blank = all white. */
+  heroHighlight: string;
+  heroBody: string;
+  /** Short benefit ticks under the hero copy. Three or four. */
+  heroBullets: string[];
+  heroImage: string;
+  heroImageAlt: string;
+  formHeading: string;
+  formSubheading: string;
+  /** The strip directly under the hero — the reasons to trust us, in a few words each. */
+  trustPoints: string[];
+  problemHeading: string;
+  /** Paragraphs separated by a blank line. */
+  problemIntro: string;
+  problemCards: { title: string; body: string }[];
+  includedHeading: string;
+  includedIntro: string;
+  includedItems: string[];
+  galleryHeading: string;
+  galleryIntro: string;
+  gallery: { image: string; alt: string; caption: string }[];
+  reviewsHeading: string;
+  pricingHeading: string;
+  pricingIntro: string;
+  pricingTiers: { name: string; price: string; description: string; features: string[] }[];
+  /** Under the tiers — what a quote depends on, finance, no-obligation survey. */
+  pricingNote: string;
+  stepsHeading: string;
+  steps: { title: string; body: string }[];
+  guaranteeHeading: string;
+  guaranteeItems: { title: string; body: string }[];
+  faqHeading: string;
+  faqs: FaqItem[];
+  ctaHeading: string;
+  ctaBody: string;
+  /** Every in-page button that takes the reader to the quote form. */
+  quoteButtonLabel: string;
+  /** The bar pinned to the bottom of the screen on phones. */
+  stickyCallLabel: string;
+  stickyQuoteLabel: string;
+}
+
 export interface PageHeaderContent {
   headingPrefix: string;
   headingHighlight: string;
@@ -293,6 +350,8 @@ export interface PageContentMap {
   "about-page": AboutPageContent;
   "finance-ideal4finance": FinanceProviderContent;
   "finance-phoenix": FinanceProviderContent;
+  "lp-kitchen-renovation": LandingPageContent;
+  "lp-bathroom-renovation": LandingPageContent;
 }
 
 export type PageContentKey = keyof PageContentMap;
@@ -320,11 +379,13 @@ export const PAGE_CONTENT_KEYS = [
   "about-page",
   "finance-ideal4finance",
   "finance-phoenix",
+  "lp-kitchen-renovation",
+  "lp-bathroom-renovation",
 ] as const satisfies readonly PageContentKey[];
 
 export interface PageContentMeta {
   label: string;
-  group: "Shared Sections" | "Page Headers";
+  group: "Shared Sections" | "Page Headers" | "Ad Landing Pages";
   routes: string[];
 }
 
@@ -429,5 +490,15 @@ export const PAGE_CONTENT_META: Record<PageContentKey, PageContentMeta> = {
     label: "Finance — Phoenix",
     group: "Page Headers",
     routes: ["/finance", "/finance/phoenix"],
+  },
+  "lp-kitchen-renovation": {
+    label: "Ad landing page — Kitchen renovation",
+    group: "Ad Landing Pages",
+    routes: ["/lp/kitchen-renovation"],
+  },
+  "lp-bathroom-renovation": {
+    label: "Ad landing page — Bathroom renovation",
+    group: "Ad Landing Pages",
+    routes: ["/lp/bathroom-renovation"],
   },
 };

@@ -21,6 +21,7 @@ import { withSeoOverride } from "@/lib/seo";
 import { buildLocalizedServiceJsonLd, SITE_URL } from "@/lib/structuredData";
 import { getLocationServiceContentByKeys } from "@/lib/db/locationServiceContent";
 import { otherServicesFor } from "@/lib/otherServices";
+import { serviceOptionValue } from "@/lib/quoteForm";
 import PageSchema from "@/components/site/PageSchema";
 import Breadcrumbs from "@/components/site/Breadcrumbs";
 import FaqSection from "@/components/site/FaqSection";
@@ -192,7 +193,7 @@ export default async function LocationServicePage({ params }: Props) {
           body={introText}
           secondaryBody={localNoteText}
           source={`${service.title} in ${location.name}`}
-          fixedService={{ value: service.formCategory, label: service.title }}
+          fixedService={{ value: serviceOptionValue(service), label: service.title }}
           formHeading={sections.labels?.formHeading}
           formSubheading={sections.labels?.formSubheading}
           callLabel={sections.labels?.heroCallLabel}
@@ -355,7 +356,7 @@ export default async function LocationServicePage({ params }: Props) {
               "ctaDescription",
               `Tell us about your ${service.shortName.toLowerCase()} project in ${location.name} and we'll come back within one business day with a straight answer, a plan and a real quote.`,
             )}
-            defaultService={service.formCategory}
+            defaultService={serviceOptionValue(service)}
           />
         </div>
       </main>

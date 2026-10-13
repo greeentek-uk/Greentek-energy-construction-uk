@@ -2,7 +2,7 @@
 
 import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { newEventId, track } from "@/lib/analytics";
+import { newEventId, setAdsUserData, track } from "@/lib/analytics";
 import { ArrowLeft, ArrowRight, ChevronDown } from "lucide-react";
 import {
   budgetOptions,
@@ -232,6 +232,7 @@ export default function HeroQuoteForm({
         event_id: eventId,
         page_url: window.location.href,
       });
+      setAdsUserData({ email: form.email, phone: form.phone });
       router.push(`/thank-you?eid=${encodeURIComponent(eventId)}`);
     } catch (err) {
       setStatus("error");

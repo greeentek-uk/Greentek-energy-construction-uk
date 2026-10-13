@@ -4,11 +4,13 @@ import { useEffect } from "react";
 import { usePathname } from "next/navigation";
 import { configureAnalytics, isAdminPath, metaAllowed, track } from "@/lib/analytics";
 import { useConsent } from "@/components/site/ConsentProvider";
+import type { GoogleAdsSettings } from "@/lib/googleAds";
 
 let lastPageView = "";
 
 /**
- * Site-wide tracking: page views on every route, plus phone and email clicks.
+ * Site-wide tracking: page views on every route, plus phone, email and
+ * WhatsApp clicks.
  *
  * The pasted pixel snippet only ran on a full page load. Next navigates
  * between pages without reloading, so every page after the first went
@@ -18,13 +20,15 @@ let lastPageView = "";
 export default function AnalyticsProvider({
   pixelId,
   pixelNeedsConsent,
+  googleAds,
   children,
 }: {
   pixelId: string;
   pixelNeedsConsent: boolean;
+  googleAds: GoogleAdsSettings;
   children: React.ReactNode;
 }) {
-  configureAnalytics({ pixelId, pixelNeedsConsent });
+  configureAnalytics({ pixelId, pixelNeedsConsent, googleAds });
   const pathname = usePathname();
   // Re-runs the page view below when the visitor accepts on this page, so the
   // page they accepted on is counted rather than only the next one.
@@ -52,6 +56,9 @@ export default function AnalyticsProvider({
       const href = link?.getAttribute("href") ?? "";
       if (href.startsWith("tel:")) track("Contact", { content_name: "phone" });
       else if (href.startsWith("mailto:")) track("Contact", { content_name: "email" });
+      // WhatsApp is as much a contact as a call — every hero has the button —
+      // but until 2026-10-13 its taps weren't counted anywhere.
+      else if (/^https:\/\/(wa\.me|api\.whatsapp\.com)\//.test(href)) track("Contact", { content_name: "whatsapp" });
     }
 
     document.addEventListener("click", onClick, true);

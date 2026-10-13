@@ -33,6 +33,8 @@ const GROUPS: { title?: string; items: NavItem[] }[] = [
       { href: "/admin/blog", label: "Blog posts" },
       { href: "/admin/authors", label: "Blog authors" },
       { href: "/admin/pages", label: "Other pages" },
+      { href: "/admin/content/lp-kitchen-renovation", label: "Ad page — Kitchen" },
+      { href: "/admin/content/lp-bathroom-renovation", label: "Ad page — Bathroom" },
       { href: "/admin/content/shared", label: "Shared sections" },
     ],
   },
