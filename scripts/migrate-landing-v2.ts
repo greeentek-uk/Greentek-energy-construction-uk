@@ -10,9 +10,9 @@ const write = process.argv.includes("--write");
 
 const UNEDITED_EARLIER_COPY: Record<string, string[]> = {
   // 7c5ec4… = the kitchen v2 copy before its price bands were added (2026-10-13).
-  "lp-kitchen-renovation": ["d630d774afc2b92b", "7c5ec4d030fbc17a"],
+  "lp-kitchen-renovation": ["d630d774afc2b92b", "7c5ec4d030fbc17a", "fbd07ca2d16d2c9b"],
   // 90ae0b… = the bathroom v2 copy before its second before/after was added (2026-10-13).
-  "lp-bathroom-renovation": ["698097e9aa55a124", "90ae0b485f05a32c"],
+  "lp-bathroom-renovation": ["698097e9aa55a124", "90ae0b485f05a32c", "2ec81c768197a71b"],
 };
 
 const fingerprint = (value: unknown) => createHash("sha256").update(JSON.stringify(value)).digest("hex").slice(0, 16);

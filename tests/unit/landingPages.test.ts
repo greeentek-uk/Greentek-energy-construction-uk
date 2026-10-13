@@ -26,15 +26,20 @@ describe("ad landing pages", () => {
     }
   });
 
-  // Bands, not prices: the owner set them on 2026-10-13 (bathroom from £2,999, so under
-  // £3k / £3–6k / £6k+; kitchen under £8k / £8–15k / £15k+). Any other figure is invented.
-  it("shows only the price bands the owner gave", () => {
+  it("shows only the price brackets the owner gave", () => {
     const bands = (block: keyof typeof LANDING_PAGE_DEFAULTS) =>
       LANDING_PAGE_DEFAULTS[block].pricingTiers.map((t) => t.price);
-    expect(bands("lp-bathroom-renovation")).toEqual(["Under £3,000", "£3,000–£6,000", "£6,000+"]);
-    expect(bands("lp-kitchen-renovation")).toEqual(["Under £8,000", "£8,000–£15,000", "£15,000+"]);
+    expect(bands("lp-bathroom-renovation")).toEqual(["£2,999–£5,999", "£6,000–£9,999", "£10,000+"]);
+    expect(bands("lp-kitchen-renovation")).toEqual(["£4,999–£9,999", "£10,000–£19,999", "£20,000+"]);
     const prices = JSON.stringify(LANDING_PAGE_DEFAULTS).match(/£\d{1,3}(?:,\d{3})*/g) ?? [];
-    expect(new Set(prices)).toEqual(new Set(["£2,999", "£3,000", "£6,000", "£8,000", "£15,000"]));
+    expect(new Set(prices)).toEqual(
+      new Set(["£2,999", "£5,999", "£6,000", "£9,999", "£10,000", "£4,999", "£19,999", "£20,000"]),
+    );
+  });
+
+  it("uses finished photos, never a mid-build one", () => {
+    const photos = JSON.stringify(LANDING_PAGE_DEFAULTS).match(/\/images\/[^"]+/g) ?? [];
+    expect(photos.filter((p) => /mid/i.test(p))).toEqual([]);
   });
 
   it("lookup and reserved slug", () => {

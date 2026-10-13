@@ -266,30 +266,31 @@ export default async function LandingPage({ params }: Props) {
               >
                 {content.results.map((r) => (
                   <li key={r.title + r.after} className="overflow-hidden rounded-2xl border border-black/10 bg-white shadow-[0_20px_50px_-30px_rgba(0,0,0,0.35)]">
-                    <div className="grid grid-cols-2 gap-1 bg-black/5">
-                      {(
-                        [
-                          ["Before", r.before, r.beforeAlt],
-                          ["After", r.after, r.afterAlt],
-                        ] as const
-                      ).map(([tag, src, alt]) => (
-                        <div key={tag} className="relative aspect-[4/5]">
+                    <div className="relative aspect-[4/5] sm:aspect-[5/4]">
+                      <Image
+                        src={r.after}
+                        alt={r.afterAlt || `${meta.name}, after`}
+                        fill
+                        sizes="(min-width: 768px) 50vw, 100vw"
+                        className="object-cover"
+                      />
+                      <span className="absolute left-4 top-4 rounded-full bg-[#c5eb02] px-3.5 py-1.5 text-xs font-extrabold uppercase tracking-wide text-black">
+                        After
+                      </span>
+                      <div className="absolute bottom-4 right-4 w-[34%] max-w-[180px] overflow-hidden rounded-xl border-4 border-white shadow-xl">
+                        <div className="relative aspect-[3/4]">
                           <Image
-                            src={src}
-                            alt={alt || `${meta.name} — ${tag.toLowerCase()}`}
+                            src={r.before}
+                            alt={r.beforeAlt || `${meta.name}, before`}
                             fill
-                            sizes="(min-width: 768px) 25vw, 50vw"
+                            sizes="180px"
                             className="object-cover"
                           />
-                          <span
-                            className={`absolute bottom-3 left-3 rounded-full px-3 py-1 text-xs font-bold uppercase tracking-wide ${
-                              tag === "After" ? "bg-[#c5eb02] text-black" : "bg-white text-black"
-                            }`}
-                          >
-                            {tag}
-                          </span>
                         </div>
-                      ))}
+                        <span className="absolute inset-x-0 bottom-0 bg-black/70 py-1 text-center text-[11px] font-bold uppercase tracking-wide text-white">
+                          Before
+                        </span>
+                      </div>
                     </div>
                     <div className="p-6">
                       <h3 className="font-heading text-xl font-extrabold leading-snug">{r.title}</h3>
@@ -350,8 +351,8 @@ export default async function LandingPage({ params }: Props) {
           <section className="bg-white py-16 md:py-24">
             <div className="site-container">
               <h2 className={`${h2} mx-auto max-w-3xl text-center`}>{content.reviewsHeading}</h2>
-              <ul className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-                {reviews.map((r) => {
+              <ul className="mt-12 grid gap-5 md:grid-cols-3">
+                {reviews.slice(0, 3).map((r) => {
                   const { lead, rest } = firstSentence(r.quote);
                   return (
                     <li key={r.name} className="flex flex-col rounded-2xl border border-black/10 bg-white p-6">

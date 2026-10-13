@@ -120,19 +120,33 @@ export const budgetOptions = [
 export const serviceBudgetOptions: Record<string, typeof budgetOptions> = {
   construction_bathroom: [
     { value: "", label: "Select a budget" },
-    { value: "bathroom_under_3k", label: "Under £3,000" },
-    { value: "bathroom_3k_6k", label: "£3,000–£6,000" },
-    { value: "bathroom_over_6k", label: "More than £6,000" },
+    { value: "bathroom_2999_6k", label: "£2,999–£5,999" },
+    { value: "bathroom_6k_10k", label: "£6,000–£9,999" },
+    { value: "bathroom_over_10k", label: "£10,000 or more" },
     { value: "guidance", label: "I need guidance" },
   ],
   construction_kitchen: [
     { value: "", label: "Select a budget" },
-    { value: "kitchen_under_8k", label: "Under £8,000" },
-    { value: "kitchen_8k_15k", label: "£8,000–£15,000" },
-    { value: "kitchen_over_15k", label: "More than £15,000" },
+    { value: "kitchen_4999_10k", label: "£4,999–£9,999" },
+    { value: "kitchen_10k_20k", label: "£10,000–£19,999" },
+    { value: "kitchen_over_20k", label: "£20,000 or more" },
     { value: "guidance", label: "I need guidance" },
   ],
 };
+
+/**
+ * Bands the forms no longer offer, kept so an enquiry sent with one (an old
+ * page still open, or an email being re-read) is still named. Values are never
+ * reused for a different band.
+ */
+const retiredBudgetOptions = [
+  { value: "bathroom_under_3k", label: "Under £3,000" },
+  { value: "bathroom_3k_6k", label: "£3,000–£6,000" },
+  { value: "bathroom_over_6k", label: "More than £6,000" },
+  { value: "kitchen_under_8k", label: "Under £8,000" },
+  { value: "kitchen_8k_15k", label: "£8,000–£15,000" },
+  { value: "kitchen_over_15k", label: "More than £15,000" },
+];
 
 /** The budget answers that fit the chosen service. */
 export function budgetOptionsFor(service: string) {
@@ -140,7 +154,7 @@ export function budgetOptionsFor(service: string) {
 }
 
 /** Every budget answer any form can send, for naming it in the enquiry email. */
-export const allBudgetOptions = [budgetOptions, ...Object.values(serviceBudgetOptions)].flat();
+export const allBudgetOptions = [budgetOptions, ...Object.values(serviceBudgetOptions), retiredBudgetOptions].flat();
 
 /** Label for a stored option value, for the enquiry email. */
 export function optionLabel(options: { value: string; label: string }[], value: string): string {

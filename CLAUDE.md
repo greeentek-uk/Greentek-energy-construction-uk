@@ -314,10 +314,13 @@ mid-build one — owner, 2026-10-13). The page and the panel read
 the block through `withLandingDefaults`, so a field a stored doc lacks renders its default.
 **v1 was seeded to production** (commit b43f2d7, unedited — checked); after deploying v2 run
 `pnpm migrate:landing-v2 --write` (dry run without the flag; only touches v1-shaped docs, snapshots
-to Version History first). Prices are **bands, never a job's price** (that comes after the survey), set by the owner
-2026-10-13: bathroom "from £2,999", then under £3k / £3–6k / £6k+; kitchen under £8k / £8–15k /
-£15k+. The same bands are the budget question in both quote forms whenever the service is a
-bathroom or kitchen (`serviceBudgetOptions` in `lib/quoteForm.ts`); a unit test pins the figures.
+to Version History first). Prices are **brackets, never a job's price** (that comes after the survey), set by the owner
+2026-10-13: bathrooms start from £2,999 (£2,999–£5,999 / £6,000–£9,999 / £10,000+), kitchens from
+£4,999 (£4,999–£9,999 / £10,000–£19,999 / £20,000+). The same brackets are the budget question in
+both quote forms whenever the service is a bathroom or kitchen (`serviceBudgetOptions` in
+`lib/quoteForm.ts`; earlier bands stay in `retiredBudgetOptions` so old enquiries are named); unit
+tests pin the figures. Project cards lead with the "after" photo, the "before" as a small inset;
+the review wall shows three reviews.
 Enquiries arrive with source "Ad landing page — …" and, from the page URL's tags
 (`lib/attribution.ts`), the paid click / UTM rows in the email.
 

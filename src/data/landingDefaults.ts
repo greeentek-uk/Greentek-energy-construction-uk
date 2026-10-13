@@ -79,12 +79,12 @@ export const LANDING_PAGE_DEFAULTS: Record<
 > = {
   "lp-kitchen-renovation": {
     ...shared,
-    metaTitle: "New Kitchen, One Fixed Price | Free Survey | Greentek",
+    metaTitle: "New Kitchens from £4,999 | Free Survey | Greentek",
     metaDescription:
-      "Get a new kitchen fitted by one team, at one fixed price. Free home survey across the West Midlands and Wales.",
-    offerBar: "Free home survey and a fixed price in writing. Book yours today.",
-    heroHeading: "Get a new kitchen for one fixed price, with no surprise costs",
-    heroHighlight: "one fixed price",
+      "Get a new kitchen from £4,999, fitted by one team at one fixed price. Free home survey across the West Midlands and Wales.",
+    offerBar: "New kitchens from £4,999. Free home survey and a fixed price in writing.",
+    heroHeading: "Get a new kitchen from £4,999, fitted by one team",
+    heroHighlight: "from £4,999",
     heroBody:
       "Our own team does the whole job: the fitting, plumbing, electrics and tiling. You get a written price before we start. That is the price you pay.",
     heroTicks: ["Free home survey", "Fixed price in writing", "Pay monthly with finance"],
@@ -117,8 +117,8 @@ export const LANDING_PAGE_DEFAULTS: Record<
       "How long will I be without a kitchen?",
     ],
     problemBody,
-    problemImage: `${P}/Kitchen/PRE2 kitchen.jpeg`,
-    problemImageAlt: "A kitchen half way through being stripped out",
+    problemImage: "",
+    problemImageAlt: "",
     features: [
       {
         heading: "One team does the whole job",
@@ -141,34 +141,35 @@ export const LANDING_PAGE_DEFAULTS: Record<
     ],
     pricingHeading: "What does a new kitchen cost?",
     pricingIntro:
-      "Most of our kitchens fall into one of these bands. Your exact price comes after a free survey, in writing.",
+      "Our kitchen renovations start from £4,999. Most jobs fall into one of these brackets. The price depends on things like the size, the layout and the units you pick. You get an exact quote after a free survey.",
     pricingTiers: [
       {
-        name: "Simple refit",
-        price: "Under £8,000",
+        name: "Kitchen refresh",
+        price: "£4,999–£9,999",
         description: "New units, worktops and sink in the same layout. Good for a smaller kitchen.",
-        features: ["New units and worktops", "New sink and tap", "Free home survey"],
+        features: ["New units and worktops", "New sink and tap", "Tiling and flooring"],
       },
       {
         name: "Full new kitchen",
-        price: "£8,000–£15,000",
-        description: "A new layout with new units, worktops and appliances, with the plumbing and electrics redone.",
-        features: ["New layout if you want one", "New plumbing, electrics and flooring", "Fixed price in writing before we start"],
+        price: "£10,000–£19,999",
+        description: "A new layout with new units, worktops and appliances. We redo the plumbing and electrics too.",
+        features: ["New layout if you want one", "New plumbing and electrics", "New appliances fitted"],
       },
       {
         name: "Premium or open plan",
-        price: "£15,000+",
-        description: "Bigger kitchens, premium worktops, an island, or knocking through to make an open-plan space.",
-        features: ["Premium worktops and appliances", "Islands and knock-throughs", "Pay monthly if you like (subject to status)"],
+        price: "£20,000+",
+        description: "Bigger kitchens, premium worktops, an island, or knocking through to make one open space.",
+        features: ["Premium worktops and appliances", "Kitchen islands", "Knock-throughs and open plan"],
       },
     ],
-    pricingNote: "The survey and the quote are free. You don't have to go ahead.",
+    pricingNote:
+      "These are guide prices, not quotes. We visit for free and then send you a fixed price in writing. You don't have to go ahead.",
     steps: steps("kitchen"),
     faqs: [
       {
         question: "How much does a new kitchen cost?",
         answer:
-          "A simple refit is usually under £8,000, a full new kitchen £8,000 to £15,000, and a premium or open-plan kitchen more than £15,000. We visit for free, then send you a fixed price in writing.",
+          "Our kitchens start from £4,999. A refresh is usually £4,999 to £9,999. A full new kitchen is usually £10,000 to £19,999. Premium and open-plan kitchens are usually £20,000 or more. The exact price depends on your kitchen, so we visit for free and then send you a fixed price in writing.",
       },
       {
         question: "How long does it take?",
@@ -253,34 +254,35 @@ export const LANDING_PAGE_DEFAULTS: Record<
     ],
     pricingHeading: "What does a new bathroom cost?",
     pricingIntro:
-      "Most of our bathrooms fall into one of these bands. Your exact price comes after a free survey, in writing.",
+      "Our bathroom renovations start from £2,999. Most jobs fall into one of these brackets. The price depends on things like the room size, the layout and the fittings you pick. You get an exact quote after a free survey.",
     pricingTiers: [
       {
-        name: "Simple refit",
-        price: "Under £3,000",
+        name: "Bathroom refresh",
+        price: "£2,999–£5,999",
         description: "A new suite in the same layout, with new tiles or wall panels. Good for a small bathroom or en suite.",
-        features: ["New bath or shower, basin and toilet", "New tiles or wall panels", "Free home survey"],
+        features: ["New bath or shower, basin and toilet", "New tiles or wall panels", "New flooring"],
       },
       {
         name: "Full new bathroom",
-        price: "£3,000–£6,000",
-        description: "A new layout, a walk-in shower or a bath swap, with the plumbing and electrics redone.",
-        features: ["New layout if you want one", "New plumbing, flooring and lights", "Fixed price in writing before we start"],
+        price: "£6,000–£9,999",
+        description: "A new layout, a walk-in shower or a bath swap. We redo the plumbing and electrics too.",
+        features: ["New layout if you want one", "New plumbing and lights", "Walk-in shower options"],
       },
       {
         name: "Premium bathroom",
-        price: "£6,000+",
+        price: "£10,000+",
         description: "Bigger rooms, premium tiles and fittings, or extras like underfloor heating.",
-        features: ["Premium tiles and fittings", "Underfloor heating if you like", "Pay monthly if you like (subject to status)"],
+        features: ["Premium tiles and fittings", "Underfloor heating", "Wet rooms"],
       },
     ],
-    pricingNote: "The survey and the quote are free. You don't have to go ahead.",
+    pricingNote:
+      "These are guide prices, not quotes. We visit for free and then send you a fixed price in writing. You don't have to go ahead.",
     steps: steps("bathroom"),
     faqs: [
       {
         question: "How much does a new bathroom cost?",
         answer:
-          "Our bathrooms start from £2,999. A simple refit is usually under £3,000, a full new bathroom £3,000 to £6,000, and a premium one more than £6,000. We visit for free, then send you a fixed price in writing.",
+          "Our bathrooms start from £2,999. A refresh is usually £2,999 to £5,999. A full new bathroom is usually £6,000 to £9,999. Premium bathrooms are usually £10,000 or more. The exact price depends on your bathroom, so we visit for free and then send you a fixed price in writing.",
       },
       {
         question: "How long does it take?",
