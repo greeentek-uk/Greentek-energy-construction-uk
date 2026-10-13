@@ -14,6 +14,7 @@ import { RELATED_POST_COUNT } from "@/lib/relatedPosts";
 import type { BlogPost } from "@/data/blogs";
 import { parseContentBlocks, parseTocSettings } from "./contentBlocks";
 import { parseFaqs } from "./faqs";
+import { isValidSlug, SLUG_HINT } from "@/lib/slug";
 
 async function revalidateBlogRoutes(slug: string, previousSlug?: string) {
   await revalidate("/blog");
@@ -68,6 +69,12 @@ export async function saveBlogPostAction(formData: FormData): Promise<void> {
     redirect(
       `${editingPath}?error=${encodeURIComponent("Title and slug are required")}`,
     );
+  }
+
+  // The form's pattern stops this in the browser; this catches anything that
+  // gets past it, before a bad slug can become the post's id.
+  if (!isValidSlug(slug)) {
+    redirect(`${editingPath}?error=${encodeURIComponent(`Slug "${slug}" isn't valid. ${SLUG_HINT}`)}`);
   }
 
   const original = isNew ? null : await getBlogPostBySlug(originalSlug);

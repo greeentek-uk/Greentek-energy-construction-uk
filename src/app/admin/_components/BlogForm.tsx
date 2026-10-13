@@ -7,6 +7,7 @@ import ImageUploadField from "./ImageUploadField";
 import ContentBlocksEditor from "./ContentBlocksEditor";
 import FaqEditor from "./FaqEditor";
 import { RELATED_POST_COUNT } from "@/lib/relatedPosts";
+import { SLUG_HINT, SLUG_PATTERN } from "@/lib/slug";
 
 function Field({
   label,
@@ -17,6 +18,8 @@ function Field({
   textarea,
   rows = 3,
   placeholder,
+  pattern,
+  hint,
 }: {
   label: string;
   name: string;
@@ -26,6 +29,9 @@ function Field({
   textarea?: boolean;
   rows?: number;
   placeholder?: string;
+  /** Browser-side check; `hint` is shown under the field and in the browser's "doesn't match" message. */
+  pattern?: string;
+  hint?: string;
 }) {
   return (
     <div>
@@ -48,9 +54,12 @@ function Field({
           defaultValue={defaultValue}
           required={required}
           placeholder={placeholder}
-          className="w-full rounded-lg border border-white/15 bg-white/5 px-3 py-2 text-sm text-white placeholder:text-white/30 outline-none focus:border-[#c5eb02] focus:ring-2 focus:ring-[#c5eb02]/20 transition-all"
+          pattern={pattern}
+          title={hint}
+          className="w-full rounded-lg border border-white/15 bg-white/5 px-3 py-2 text-sm text-white placeholder:text-white/30 outline-none focus:border-[#c5eb02] focus:ring-2 focus:ring-[#c5eb02]/20 transition-all user-invalid:border-red-400"
         />
       )}
+      {hint && <p className="mt-1 text-xs text-white/50">{hint}</p>}
     </div>
   );
 }
@@ -75,7 +84,7 @@ export default function BlogForm({
         <h2 className="font-bold text-white">Post Details</h2>
         <div className="grid sm:grid-cols-2 gap-4">
           <Field label="Title" name="title" defaultValue={post?.title} required />
-          <Field label="Slug" name="slug" defaultValue={post?.slug} required />
+          <Field label="Slug" name="slug" defaultValue={post?.slug} required pattern={SLUG_PATTERN} hint={SLUG_HINT} />
         </div>
         <div className="grid sm:grid-cols-2 gap-4">
           <Field
