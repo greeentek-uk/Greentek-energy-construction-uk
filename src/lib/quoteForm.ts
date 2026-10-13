@@ -110,6 +110,38 @@ export const budgetOptions = [
   { value: "guidance", label: "I need guidance" },
 ];
 
+/**
+ * Budget bands for services the whole-project bands don't fit. A bathroom
+ * starts at £2,999, so "Under £25,000" would put every bathroom lead in one
+ * band and tell sales nothing. Bands only — the price itself comes after the
+ * survey. Values are prefixed so an email can't confuse them with the
+ * whole-project ones.
+ */
+export const serviceBudgetOptions: Record<string, typeof budgetOptions> = {
+  construction_bathroom: [
+    { value: "", label: "Select a budget" },
+    { value: "bathroom_under_3k", label: "Under £3,000" },
+    { value: "bathroom_3k_6k", label: "£3,000–£6,000" },
+    { value: "bathroom_over_6k", label: "More than £6,000" },
+    { value: "guidance", label: "I need guidance" },
+  ],
+  construction_kitchen: [
+    { value: "", label: "Select a budget" },
+    { value: "kitchen_under_8k", label: "Under £8,000" },
+    { value: "kitchen_8k_15k", label: "£8,000–£15,000" },
+    { value: "kitchen_over_15k", label: "More than £15,000" },
+    { value: "guidance", label: "I need guidance" },
+  ],
+};
+
+/** The budget answers that fit the chosen service. */
+export function budgetOptionsFor(service: string) {
+  return serviceBudgetOptions[service] ?? budgetOptions;
+}
+
+/** Every budget answer any form can send, for naming it in the enquiry email. */
+export const allBudgetOptions = [budgetOptions, ...Object.values(serviceBudgetOptions)].flat();
+
 /** Label for a stored option value, for the enquiry email. */
 export function optionLabel(options: { value: string; label: string }[], value: string): string {
   return options.find((o) => o.value === value && value)?.label ?? "";

@@ -9,7 +9,8 @@ config({ path: ".env.local" });
 const write = process.argv.includes("--write");
 
 const UNEDITED_EARLIER_COPY: Record<string, string[]> = {
-  "lp-kitchen-renovation": ["d630d774afc2b92b"],
+  // 7c5ec4… = the kitchen v2 copy before its price bands were added (2026-10-13).
+  "lp-kitchen-renovation": ["d630d774afc2b92b", "7c5ec4d030fbc17a"],
   // 90ae0b… = the bathroom v2 copy before its second before/after was added (2026-10-13).
   "lp-bathroom-renovation": ["698097e9aa55a124", "90ae0b485f05a32c"],
 };

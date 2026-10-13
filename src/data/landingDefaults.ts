@@ -129,8 +129,8 @@ export const LANDING_PAGE_DEFAULTS: Record<
           "We do the plumbing and electrics",
           "We fit the units, worktops and appliances",
         ],
-        image: `${P}/Extension/Mid EXT1.jpeg`,
-        imageAlt: "Greentek's team part way through building a kitchen extension",
+        image: `${P}/Kitchen/Post Kitchen.jpg`,
+        imageAlt: "A finished kitchen fitted by Greentek",
       },
       priceFeature,
       {
@@ -139,16 +139,36 @@ export const LANDING_PAGE_DEFAULTS: Record<
         imageAlt: "An open-plan kitchen built by Greentek",
       },
     ],
-    pricingHeading: "",
-    pricingIntro: "",
-    pricingTiers: [],
-    pricingNote: "",
+    pricingHeading: "What does a new kitchen cost?",
+    pricingIntro:
+      "Most of our kitchens fall into one of these bands. Your exact price comes after a free survey, in writing.",
+    pricingTiers: [
+      {
+        name: "Simple refit",
+        price: "Under £8,000",
+        description: "New units, worktops and sink in the same layout. Good for a smaller kitchen.",
+        features: ["New units and worktops", "New sink and tap", "Free home survey"],
+      },
+      {
+        name: "Full new kitchen",
+        price: "£8,000–£15,000",
+        description: "A new layout with new units, worktops and appliances, with the plumbing and electrics redone.",
+        features: ["New layout if you want one", "New plumbing, electrics and flooring", "Fixed price in writing before we start"],
+      },
+      {
+        name: "Premium or open plan",
+        price: "£15,000+",
+        description: "Bigger kitchens, premium worktops, an island, or knocking through to make an open-plan space.",
+        features: ["Premium worktops and appliances", "Islands and knock-throughs", "Pay monthly if you like (subject to status)"],
+      },
+    ],
+    pricingNote: "The survey and the quote are free. You don't have to go ahead.",
     steps: steps("kitchen"),
     faqs: [
       {
         question: "How much does a new kitchen cost?",
         answer:
-          "Every kitchen is different. The price depends on the size, the layout and the units you pick. We visit for free, then send you a fixed price in writing.",
+          "A simple refit is usually under £8,000, a full new kitchen £8,000 to £15,000, and a premium or open-plan kitchen more than £15,000. We visit for free, then send you a fixed price in writing.",
       },
       {
         question: "How long does it take?",
@@ -180,8 +200,8 @@ export const LANDING_PAGE_DEFAULTS: Record<
     heroBody:
       "Our own team does the whole job: the plumbing, electrics, waterproofing and tiling. You get a written price before we start. That is the price you pay.",
     heroTicks: ["Free home survey", "Fixed price in writing", "Pay monthly with finance"],
-    heroImage: `${P}/Bathroom/Bathroom Post.jpeg`,
-    heroImageAlt: "A new shower room fitted by Greentek",
+    heroImage: `${P}/Bathroom/Bathroom 2 Post.jpeg`,
+    heroImageAlt: "A new bathroom with a bath, glass screen and vanity unit, fitted by Greentek",
     resultsHeading: "See real bathrooms we rebuilt",
     resultsIntro: "These are our own jobs. No stock photos.",
     results: [
@@ -190,7 +210,7 @@ export const LANDING_PAGE_DEFAULTS: Record<
         beforeAlt: "A bathroom stripped back to the pipes before the work",
         after: `${P}/Bathroom/Bathroom Post.jpeg`,
         afterAlt: "The same bathroom after Greentek rebuilt it",
-        title: "From bare pipes to a modern shower room",
+        title: "From bare brick to a modern grey-tiled bathroom",
         body: "We replaced the pipes, waterproofed the walls, then fitted new tiles, a new suite and new lights.",
       },
       {
@@ -221,24 +241,37 @@ export const LANDING_PAGE_DEFAULTS: Record<
           "We do the plumbing and electrics",
           "We waterproof, tile and fit everything",
         ],
-        image: `${P}/Bathroom/Bathroom Mid.jpeg`,
-        imageAlt: "A bathroom being rebuilt by Greentek's team",
+        image: `${P}/Bathroom/Bathroom Post.jpeg`,
+        imageAlt: "A finished bathroom with grey tiles and a vanity unit, fitted by Greentek",
       },
       priceFeature,
       {
         ...accreditedFeature,
-        image: `${P}/Bathroom/Bathroom Post.jpeg`,
-        imageAlt: "A new shower room fitted by Greentek",
+        image: `${P}/Bathroom/Bathroom 2 Post.jpeg`,
+        imageAlt: "A finished bathroom with grey wall panels, a new bath and a vanity unit, fitted by Greentek",
       },
     ],
     pricingHeading: "What does a new bathroom cost?",
-    pricingIntro: "",
+    pricingIntro:
+      "Most of our bathrooms fall into one of these bands. Your exact price comes after a free survey, in writing.",
     pricingTiers: [
       {
-        name: "New bathroom",
-        price: "From £2,999",
-        description: "The final price depends on the room size, the layout and the suite and tiles you pick.",
-        features: ["Free home survey", "Fixed price in writing before we start", "Pay monthly if you like (subject to status)"],
+        name: "Simple refit",
+        price: "Under £3,000",
+        description: "A new suite in the same layout, with new tiles or wall panels. Good for a small bathroom or en suite.",
+        features: ["New bath or shower, basin and toilet", "New tiles or wall panels", "Free home survey"],
+      },
+      {
+        name: "Full new bathroom",
+        price: "£3,000–£6,000",
+        description: "A new layout, a walk-in shower or a bath swap, with the plumbing and electrics redone.",
+        features: ["New layout if you want one", "New plumbing, flooring and lights", "Fixed price in writing before we start"],
+      },
+      {
+        name: "Premium bathroom",
+        price: "£6,000+",
+        description: "Bigger rooms, premium tiles and fittings, or extras like underfloor heating.",
+        features: ["Premium tiles and fittings", "Underfloor heating if you like", "Pay monthly if you like (subject to status)"],
       },
     ],
     pricingNote: "The survey and the quote are free. You don't have to go ahead.",
@@ -247,7 +280,7 @@ export const LANDING_PAGE_DEFAULTS: Record<
       {
         question: "How much does a new bathroom cost?",
         answer:
-          "Our bathrooms start from £2,999. The final price depends on the room size, the layout and the suite and tiles you pick. We visit for free, then send you a fixed price in writing.",
+          "Our bathrooms start from £2,999. A simple refit is usually under £3,000, a full new bathroom £3,000 to £6,000, and a premium one more than £6,000. We visit for free, then send you a fixed price in writing.",
       },
       {
         question: "How long does it take?",
@@ -264,7 +297,7 @@ export const LANDING_PAGE_DEFAULTS: Record<
     finalHeading: "Ready for your new bathroom?",
     finalBody: "Answer 4 quick questions. We will call you back within 1 working day to book your free survey.",
     finalImage: `${P}/Bathroom/Bathroom Post.jpeg`,
-    finalImageAlt: "A new shower room fitted by Greentek",
+    finalImageAlt: "A new bathroom with grey tiles and a vanity unit, fitted by Greentek",
     formHeading: "Get your free bathroom quote",
   },
 };

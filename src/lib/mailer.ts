@@ -1,6 +1,6 @@
 import nodemailer from "nodemailer";
 import {
-  budgetOptions,
+  allBudgetOptions,
   optionLabel,
   ownerOptions,
   serviceLabel,
@@ -77,7 +77,7 @@ export async function sendQuoteRequestEmail(data: QuoteRequestPayload): Promise<
     ["Property type", humanize(data.property_type)],
     ["Property owner?", optionLabel(ownerOptions, data.is_homeowner) || humanize(data.is_homeowner)],
     ["Timeline", optionLabel(timelineOptions, data.timeline) || humanize(data.timeline)],
-    ["Budget", optionLabel(budgetOptions, data.budget ?? "") || humanize(data.budget ?? "")],
+    ["Budget", optionLabel(allBudgetOptions, data.budget ?? "") || humanize(data.budget ?? "")],
     ["Photos", data.photos?.length ? String(data.photos.length) : "None"],
     ["Came from", data.source || "Contact form"],
     ...(data.page ? ([["Page", data.page]] as [string, string][]) : []),

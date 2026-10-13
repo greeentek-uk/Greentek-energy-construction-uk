@@ -309,11 +309,15 @@ ticker, image/text blocks, prices, guarantee, steps, stats, FAQs, then the form 
 without JS they link to `#quote`, the inline copy. Phones get `StickyQuoteBar`. All wording is one
 `pageContent` block each (`lp-kitchen-renovation`, `lp-bathroom-renovation`, `LandingPageForm`,
 draft → publish); defaults in `data/landingDefaults.ts` (own photos only — the "Examples" folder
-and the polished living-room / full-home images look like stock). The page and the panel read
+and the polished living-room / full-home images look like stock; finished "after" shots only, never a
+mid-build one — owner, 2026-10-13). The page and the panel read
 the block through `withLandingDefaults`, so a field a stored doc lacks renders its default.
 **v1 was seeded to production** (commit b43f2d7, unedited — checked); after deploying v2 run
 `pnpm migrate:landing-v2 --write` (dry run without the flag; only touches v1-shaped docs, snapshots
-to Version History first). Prices: bathroom "from £2,999" (owner, 2026-10-13); kitchen shows none until the owner gives real ones.
+to Version History first). Prices are **bands, never a job's price** (that comes after the survey), set by the owner
+2026-10-13: bathroom "from £2,999", then under £3k / £3–6k / £6k+; kitchen under £8k / £8–15k /
+£15k+. The same bands are the budget question in both quote forms whenever the service is a
+bathroom or kitchen (`serviceBudgetOptions` in `lib/quoteForm.ts`); a unit test pins the figures.
 Enquiries arrive with source "Ad landing page — …" and, from the page URL's tags
 (`lib/attribution.ts`), the paid click / UTM rows in the email.
 
@@ -391,7 +395,7 @@ hover/focus/touch instead of on scroll. Keep new public links on that import. Ad
 
 ## Current state (2026-09-18)
 
-- Unit tests: **217 passing** across 24 files (2026-10-13).
+- Unit tests: **219 passing** across 24 files (2026-10-13).
 - E2E: 4 known failures recorded in `test-results/` —
   1. `/images/brands/swip.png` 404s on `/about` and in the media library. The file isn't in
      `public/images/brands/`; the reference lives in the **`brands` pageContent block in Mongo**,

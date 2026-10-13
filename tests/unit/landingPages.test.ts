@@ -26,11 +26,15 @@ describe("ad landing pages", () => {
     }
   });
 
-  it("shows no prices that weren't given: kitchen none, bathroom from £2,999 only", () => {
-    expect(LANDING_PAGE_DEFAULTS["lp-kitchen-renovation"].pricingTiers).toEqual([]);
-    expect(LANDING_PAGE_DEFAULTS["lp-kitchen-renovation"].pricingHeading).toBe("");
+  // Bands, not prices: the owner set them on 2026-10-13 (bathroom from £2,999, so under
+  // £3k / £3–6k / £6k+; kitchen under £8k / £8–15k / £15k+). Any other figure is invented.
+  it("shows only the price bands the owner gave", () => {
+    const bands = (block: keyof typeof LANDING_PAGE_DEFAULTS) =>
+      LANDING_PAGE_DEFAULTS[block].pricingTiers.map((t) => t.price);
+    expect(bands("lp-bathroom-renovation")).toEqual(["Under £3,000", "£3,000–£6,000", "£6,000+"]);
+    expect(bands("lp-kitchen-renovation")).toEqual(["Under £8,000", "£8,000–£15,000", "£15,000+"]);
     const prices = JSON.stringify(LANDING_PAGE_DEFAULTS).match(/£\d{1,3}(?:,\d{3})*/g) ?? [];
-    expect(new Set(prices)).toEqual(new Set(["£2,999"]));
+    expect(new Set(prices)).toEqual(new Set(["£2,999", "£3,000", "£6,000", "£8,000", "£15,000"]));
   });
 
   it("lookup and reserved slug", () => {

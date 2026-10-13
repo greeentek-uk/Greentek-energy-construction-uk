@@ -1,6 +1,8 @@
 import { describe, expect, it } from "vitest";
 import {
+  allBudgetOptions,
   budgetOptions,
+  budgetOptionsFor,
   heroServiceOptions,
   isAllowedPhoto,
   isLikelyPostcode,
@@ -67,6 +69,16 @@ describe("options", () => {
     expect(serviceLabel("unknown")).toBe("");
     expect(optionLabel(budgetOptions, "guidance")).toBe("I need guidance");
     expect(optionLabel(budgetOptions, "")).toBe("");
+  });
+
+  it("bathrooms and kitchens get their own budget bands, and every band is named in the email", () => {
+    const labels = (service: string) => budgetOptionsFor(service).filter((o) => o.value).map((o) => o.label);
+    expect(labels("construction_bathroom")).toEqual(["Under £3,000", "£3,000–£6,000", "More than £6,000", "I need guidance"]);
+    expect(labels("construction_kitchen")).toEqual(["Under £8,000", "£8,000–£15,000", "More than £15,000", "I need guidance"]);
+    expect(budgetOptionsFor("solar_pv")).toBe(budgetOptions);
+    expect(budgetOptionsFor("")).toBe(budgetOptions);
+    expect(optionLabel(allBudgetOptions, "bathroom_3k_6k")).toBe("£3,000–£6,000");
+    expect(optionLabel(allBudgetOptions, "50k_100k")).toBe("£50,000–£100,000");
   });
 });
 

@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { newEventId, setAdsUserData, track } from "@/lib/analytics";
 import { ArrowLeft, ArrowRight, ChevronDown } from "lucide-react";
 import {
-  budgetOptions,
+  budgetOptionsFor,
   heroServiceOptions,
   ownerOptions,
   projectTypeOptions,
@@ -196,9 +196,14 @@ export default function HeroQuoteForm({
     goTo(2);
   }
 
+  // The bands depend on the service (a bathroom's aren't a whole home's), so an
+  // answer picked before going back and changing the service no longer counts.
+  const budgets = budgetOptionsFor(form.service);
+  const budget = budgets.some((o) => o.value && o.value === form.budget) ? form.budget : "";
+
   function continueFromStepTwo() {
     if (!form.timeline) return setError("Choose when you'd like to begin.");
-    if (!form.budget) return setError("Choose an approximate budget — or “I need guidance”.");
+    if (!budget) return setError("Choose an approximate budget — or “I need guidance”.");
     goTo(3);
   }
 
@@ -407,8 +412,8 @@ export default function HeroQuoteForm({
               id={`${idPrefix}_budget`}
               label="Approximate project investment"
               placeholder="Choose a budget"
-              options={budgetOptions}
-              value={form.budget}
+              options={budgets}
+              value={budget}
               onChange={(value) => set("budget", value)}
             />
 

@@ -5,7 +5,7 @@ import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { newEventId, setAdsUserData, track } from "@/lib/analytics";
 import {
-  budgetOptions,
+  budgetOptionsFor,
   heroServiceOptions,
   isOfferedService,
   ownerOptions,
@@ -144,6 +144,13 @@ export default function CtaSection({
     if (type === "checkbox") {
       const checked = (e.target as HTMLInputElement).checked;
       setForm((prev) => ({ ...prev, [id]: checked }));
+    } else if (id === "service") {
+      // The budget bands follow the service, so a band from the old list is dropped.
+      setForm((prev) => ({
+        ...prev,
+        service: value,
+        budget: budgetOptionsFor(value).some((o) => o.value === prev.budget) ? prev.budget : "",
+      }));
     } else {
       setForm((prev) => ({ ...prev, [id]: value }));
     }
@@ -450,7 +457,7 @@ export default function CtaSection({
                     onChange={handleChange}
                     className={`${inputClasses} appearance-none cursor-pointer [&_option]:text-black [&_optgroup]:text-black`}
                   >
-                    {budgetOptions.map((opt) => (
+                    {budgetOptionsFor(form.service).map((opt) => (
                       <option key={opt.value} value={opt.value}>
                         {opt.label}
                       </option>
