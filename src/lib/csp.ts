@@ -26,8 +26,6 @@ const BASE = {
     "https://*.clarity.ms",
     // Google Analytics 4 (TrackingScripts) — built in, like the two above.
     "https://www.googletagmanager.com",
-    // Google Ads conversions (TrackingScripts, marketing consent): gtag.js
-    // pulls its conversion and remarketing scripts from these.
     "https://www.googleadservices.com",
     "https://googleads.g.doubleclick.net",
   ],
@@ -46,7 +44,6 @@ const BASE = {
     "https://c.bing.com",
     "https://*.google-analytics.com",
     "https://www.googletagmanager.com",
-    // Google Ads conversion and remarketing pixels.
     "https://www.googleadservices.com",
     "https://googleads.g.doubleclick.net",
     "https://*.doubleclick.net",
@@ -65,7 +62,6 @@ const BASE = {
     "https://*.google-analytics.com",
     "https://*.analytics.google.com",
     "https://www.googletagmanager.com",
-    // Google Ads conversion pings, incl. enhanced conversions.
     "https://www.googleadservices.com",
     "https://googleads.g.doubleclick.net",
     "https://*.doubleclick.net",
@@ -77,7 +73,6 @@ const BASE = {
     "https://www.google.com",
     "https://cdn.openwidget.com",
     "https://secure.livechatinc.com",
-    // Google Ads' conversion iframe.
     "https://td.doubleclick.net",
   ],
   "frame-ancestors": ["'none'"],

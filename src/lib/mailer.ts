@@ -24,9 +24,7 @@ export interface QuoteRequestPayload {
   photos?: string[];
   /** Which form the enquiry came from, so they can be told apart in the inbox. */
   source?: string;
-  /** Path of the page it was sent from. */
   page?: string;
-  /** Ad campaign rows from the page URL's tags (lib/attribution.ts). */
   campaign?: [string, string][];
 }
 

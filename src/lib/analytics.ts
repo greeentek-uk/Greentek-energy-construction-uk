@@ -52,24 +52,10 @@ export function configureAnalytics(options: {
   googleAds = options.googleAds ?? EMPTY_GOOGLE_ADS;
 }
 
-/**
- * Google Ads may only run with marketing consent — it's advertising, whatever
- * the Meta pixel's own setting is. TrackingScripts loads the tag on the same
- * condition, so `window.gtag` existing isn't enough on its own (GA4 creates it
- * on analytics consent alone).
- */
 function adsAllowed(): boolean {
   return Boolean(googleAds.conversionId) && Boolean(readConsent()?.marketing) && Boolean(window.gtag);
 }
 
-/**
- * Enhanced conversions: hands Google the email and phone the visitor has just
- * typed into a quote form, so a lead can be matched to the ad click even when
- * the click's cookie is gone. gtag hashes them (SHA-256) before anything leaves
- * the browser. Called on submit; the thank-you page's Lead conversion then
- * carries them, because the form moves there by client-side navigation and
- * the `set` survives it.
- */
 export function setAdsUserData(user: { email: string; phone: string }): void {
   if (typeof window === "undefined" || isAdminPath() || !adsAllowed()) return;
   const email = user.email.trim().toLowerCase();
@@ -170,10 +156,6 @@ export function track(
     });
   }
 
-  // Google Ads conversions: enquiries, calls and WhatsApp taps only. The
-  // Lead's event id doubles as the transaction id, so a second firing for the
-  // same enquiry (a refresh that slips past the thank-you page's guard) is
-  // dropped by Google rather than counted twice.
   const sendTo = adsSendTo(googleAds, name, params);
   if (sendTo && adsAllowed()) {
     window.gtag!("event", "conversion", {

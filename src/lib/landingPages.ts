@@ -1,17 +1,6 @@
-import type { PageContentKey } from "@/data/pageContent";
+import type { LandingPageContent, PageContentKey } from "@/data/pageContent";
+import { LANDING_PAGE_DEFAULTS } from "@/data/landingDefaults";
 
-/**
- * The ad landing pages, at /lp/<slug> — the one list the route, its static
- * params and the admin's page map read from.
- *
- * Kept apart from /services on purpose: an ad page drops the menu, cuts the
- * copy to what sells and is tested and changed often, all of which would cost
- * the SEO pages their rankings. These are noindex and left out of the sitemap,
- * so the two never compete in search.
- *
- * `service` is the quote form's option value (lib/quoteForm.ts), so an enquiry
- * from here lands in the inbox exactly like one from the service page.
- */
 export const LANDING_PAGES = [
   {
     slug: "kitchen-renovation",
@@ -29,4 +18,18 @@ export const LANDING_PAGES = [
 
 export function landingPage(slug: string) {
   return LANDING_PAGES.find((p) => p.slug === slug);
+}
+
+export function withLandingDefaults(
+  block: (typeof LANDING_PAGES)[number]["block"],
+  stored: Partial<LandingPageContent> | null | undefined,
+): LandingPageContent {
+  const defaults = LANDING_PAGE_DEFAULTS[block];
+  const merged = { ...defaults } as Record<string, unknown>;
+  for (const [key, value] of Object.entries(stored ?? {})) {
+    if (!(key in defaults) || value === undefined || value === null) continue;
+    if (Array.isArray(defaults[key as keyof LandingPageContent]) !== Array.isArray(value)) continue;
+    merged[key] = value;
+  }
+  return merged as unknown as LandingPageContent;
 }

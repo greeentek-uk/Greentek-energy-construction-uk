@@ -11,7 +11,7 @@
  */
 const TRUSTPILOT_GREEN = "#00b67a";
 
-function StarStrip({ score }: { score: number }) {
+export function StarStrip({ score }: { score: number }) {
   return (
     <span className="flex items-center gap-[2px]" aria-hidden>
       {[0, 1, 2, 3, 4].map((index) => {

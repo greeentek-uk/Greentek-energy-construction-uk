@@ -13,7 +13,11 @@ test("header navigation works on this screen size", async ({ page }, testInfo) =
     const open = page.getByRole("button", { name: "Open menu" });
     await open.click();
     await expect(page.getByRole("button", { name: "Close menu" }).first()).toBeVisible();
-    const nav = page.getByRole("navigation").filter({ has: page.locator('a[href="/contact"]') }).last();
+    // The menu's nav, not the footer's (whose link columns are navs too).
+    const nav = page
+      .locator("nav:not(footer nav)")
+      .filter({ has: page.locator('a[href="/contact"]') })
+      .last();
     await nav.locator('a[href="/about"]').first().click();
     await page.waitForURL(/\/about$/);
     await expect(page.getByRole("button", { name: "Open menu" })).toBeVisible();

@@ -1,13 +1,3 @@
-/**
- * Where an enquiry came from, read from the URL of the page it was sent on —
- * the UTM tags and ad click ids the ad platforms add to their links.
- *
- * Both quote forms already send that URL (`page_url`, for Meta), so nothing new
- * is collected or stored in the browser. On an ad landing page the form sits
- * on the page the ad opened, so the tags are still in the URL when it's sent.
- * It goes in the enquiry email so the team can see which campaign, ad and
- * keyword produced each lead, and which leads came from paid clicks at all.
- */
 const FIELDS = [
   ["utm_source", "Source"],
   ["utm_medium", "Medium"],
@@ -16,7 +6,6 @@ const FIELDS = [
   ["utm_content", "Ad"],
 ] as const;
 
-/** Click ids: present means the visit came from a paid click on that platform. */
 const CLICK_IDS = [
   ["gclid", "Google Ads"],
   ["gbraid", "Google Ads"],
@@ -25,7 +14,6 @@ const CLICK_IDS = [
   ["msclkid", "Microsoft Ads"],
 ] as const;
 
-/** Rows for the enquiry email; empty when the page URL carried no tags. */
 export function campaignRows(pageUrl: unknown): [string, string][] {
   if (typeof pageUrl !== "string" || !pageUrl) return [];
   let params: URLSearchParams;
@@ -34,8 +22,6 @@ export function campaignRows(pageUrl: unknown): [string, string][] {
   } catch {
     return [];
   }
-  // Values come from a public request, so they're length-capped; the mailer
-  // HTML-escapes them like every other field.
   const value = (key: string) => (params.get(key) ?? "").trim().slice(0, 150);
 
   const rows: [string, string][] = [];
@@ -47,7 +33,6 @@ export function campaignRows(pageUrl: unknown): [string, string][] {
   return rows;
 }
 
-/** The page path the enquiry was sent from, without the query. */
 export function pagePath(pageUrl: unknown): string {
   if (typeof pageUrl !== "string" || !pageUrl) return "";
   try {

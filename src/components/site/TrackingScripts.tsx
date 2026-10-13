@@ -58,7 +58,6 @@ export default function TrackingScripts({
   clarityProjectId,
 }: {
   gaMeasurementId: string;
-  /** AW-…; loaded only with marketing consent. */
   googleAdsId: string;
   clarityProjectId: string;
 }) {
@@ -83,8 +82,6 @@ export default function TrackingScripts({
     });
 
     if (analytics && gaMeasurementId) loadGoogleTag(gaMeasurementId);
-    // Advertising, so marketing consent. Enhanced conversions lets the quote
-    // forms' hashed email/phone match a lead to its click (lib/analytics.ts).
     if (marketing && googleAdsId) loadGoogleTag(googleAdsId, { allow_enhanced_conversions: true });
 
     if (analytics && clarityProjectId) {

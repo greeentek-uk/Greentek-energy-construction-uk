@@ -118,6 +118,7 @@ export default function HeroQuoteForm({
   subheading,
   source = "Homepage hero",
   fixedService,
+  idPrefix = "hero",
 }: {
   heading: string;
   subheading: string;
@@ -125,6 +126,7 @@ export default function HeroQuoteForm({
   source?: string;
   /** Set on a single-service page to skip the project type and service questions. */
   fixedService?: FixedService;
+  idPrefix?: string;
 }) {
   const router = useRouter();
   const started = useRef(false);
@@ -311,7 +313,7 @@ export default function HeroQuoteForm({
                 </div>
 
                 <SelectField
-                  id="hero_service"
+                  id={`${idPrefix}_service`}
                   label="What can we help with?"
                   placeholder={
                     form.project_type === "energy"
@@ -326,11 +328,11 @@ export default function HeroQuoteForm({
             )}
 
             <div>
-              <label htmlFor="hero_postcode" className="sr-only">
+              <label htmlFor={`${idPrefix}_postcode`} className="sr-only">
                 Postcode
               </label>
               <input
-                id="hero_postcode"
+                id={`${idPrefix}_postcode`}
                 value={form.postcode}
                 onChange={(e) => set("postcode", e.target.value.toUpperCase())}
                 placeholder="Your postcode"
@@ -393,7 +395,7 @@ export default function HeroQuoteForm({
             </fieldset>
 
             <SelectField
-              id="hero_timeline"
+              id={`${idPrefix}_timeline`}
               label="When would you like to begin?"
               placeholder="Choose a timeframe"
               options={timelineOptions}
@@ -402,7 +404,7 @@ export default function HeroQuoteForm({
             />
 
             <SelectField
-              id="hero_budget"
+              id={`${idPrefix}_budget`}
               label="Approximate project investment"
               placeholder="Choose a budget"
               options={budgetOptions}
@@ -431,11 +433,11 @@ export default function HeroQuoteForm({
             <PropertyPhotoPicker photos={photos} onChange={setPhotos} onEnquiry={setEnquiry} />
 
             <div className="space-y-1.5">
-              <label htmlFor="hero_message" className="text-xs font-bold text-white ml-1">
+              <label htmlFor={`${idPrefix}_message`} className="text-xs font-bold text-white ml-1">
                 How can we help?
               </label>
               <textarea
-                id="hero_message"
+                id={`${idPrefix}_message`}
                 rows={3}
                 value={form.message}
                 onChange={(e) => set("message", e.target.value)}
@@ -460,11 +462,11 @@ export default function HeroQuoteForm({
         {step === 4 && (
           <>
             <div>
-              <label htmlFor="hero_name" className="sr-only">
+              <label htmlFor={`${idPrefix}_name`} className="sr-only">
                 Full name
               </label>
               <input
-                id="hero_name"
+                id={`${idPrefix}_name`}
                 value={form.full_name}
                 onChange={(e) => set("full_name", e.target.value)}
                 placeholder="Full name"
@@ -475,11 +477,11 @@ export default function HeroQuoteForm({
               />
             </div>
             <div>
-              <label htmlFor="hero_email" className="sr-only">
+              <label htmlFor={`${idPrefix}_email`} className="sr-only">
                 Email
               </label>
               <input
-                id="hero_email"
+                id={`${idPrefix}_email`}
                 type="email"
                 inputMode="email"
                 value={form.email}
@@ -492,11 +494,11 @@ export default function HeroQuoteForm({
               />
             </div>
             <div>
-              <label htmlFor="hero_phone" className="sr-only">
+              <label htmlFor={`${idPrefix}_phone`} className="sr-only">
                 Phone
               </label>
               <input
-                id="hero_phone"
+                id={`${idPrefix}_phone`}
                 type="tel"
                 inputMode="tel"
                 value={form.phone}

@@ -6,7 +6,6 @@ import FaqEditor from "../FaqEditor";
 import { saveBlockDraftAction } from "../../_actions/pageContent";
 import type { LandingPageContent, PageContentKey } from "@/data/pageContent";
 
-/** One numbered box per section, in the order the page shows them. */
 function Section({ n, title, hint, children }: { n: number; title: string; hint?: string; children: React.ReactNode }) {
   return (
     <fieldset className="space-y-4 rounded-lg border border-white/10 p-5">
@@ -19,11 +18,6 @@ function Section({ n, title, hint, children }: { n: number; title: string; hint?
   );
 }
 
-/**
- * An ad landing page's own wording, top to bottom. Leaving a section's heading
- * blank (or its list empty) hides that section, so a weak one can be switched
- * off for a test without touching code.
- */
 export default function LandingPageForm({
   blockKey,
   content,
@@ -37,8 +31,9 @@ export default function LandingPageForm({
 
       <p className="rounded-lg border border-white/10 bg-white/5 px-4 py-3 text-xs text-white/60">
         This page is for paid ads only: it has no menu, is hidden from Google (noindex) and isn&apos;t in
-        the sitemap. Every button takes the visitor to the quote form, and enquiries from it arrive
-        marked &quot;Ad landing page&quot; with the ad campaign they came from.
+        the sitemap. Every quote button opens the same quote form, and enquiries from it arrive marked
+        &quot;Ad landing page&quot; with the ad campaign they came from. The sections below are in the
+        order the page shows them.
       </p>
 
       <Section n={1} title="Browser tab & shares">
@@ -46,72 +41,85 @@ export default function LandingPageForm({
         <Field label="Description" name="metaDescription" defaultValue={content.metaDescription} textarea rows={2} />
       </Section>
 
-      <Section n={2} title="Hero" hint="What the ad promised, repeated in the headline: visitors who see the same words they clicked are far more likely to stay.">
-        <Field label="Small line above the heading" name="heroEyebrow" defaultValue={content.heroEyebrow} />
+      <Section n={2} title="Offer strip (top of the page)" hint="One line. Leave blank to hide it.">
+        <Field label="Text" name="offerBar" defaultValue={content.offerBar} />
+      </Section>
+
+      <Section n={3} title="Hero" hint="Say what the ad promised, in the same words: visitors who see what they clicked on are far more likely to stay.">
+        <Field label="Rating pill text (after the stars; the score is the shared Trustpilot one)" name="ratingText" defaultValue={content.ratingText} />
         <div className="grid sm:grid-cols-2 gap-4">
           <Field label="Heading (H1, the whole line)" name="heroHeading" defaultValue={content.heroHeading} />
-          <Field label="Words in the heading to show in green (optional)" name="heroHighlight" defaultValue={content.heroHighlight} />
+          <Field label="Words in the heading to mark in green (optional)" name="heroHighlight" defaultValue={content.heroHighlight} />
         </div>
         <Field label="Text under the heading" name="heroBody" defaultValue={content.heroBody} textarea rows={3} />
-        <Field label="Ticks under the text (one per line, three or four)" name="heroBullets" defaultValue={content.heroBullets.join("\n")} textarea rows={4} />
+        <Field label="Ticks under the buttons (one per line, three)" name="heroTicks" defaultValue={content.heroTicks.join("\n")} textarea rows={3} />
         <ImageUploadField
           name="heroImage"
-          label="Background photo"
+          label="Photo (right-hand side)"
           defaultValue={content.heroImage}
           altName="heroImageAlt"
           altDefaultValue={content.heroImageAlt}
         />
         <div className="grid sm:grid-cols-2 gap-4">
-          <Field label="Quote form heading" name="formHeading" defaultValue={content.formHeading} />
-          <Field label="Quote form subheading" name="formSubheading" defaultValue={content.formSubheading} />
+          <Field label="Quote button text (every quote button on the page)" name="quoteButtonLabel" defaultValue={content.quoteButtonLabel} />
+          <Field label="Line under the buttons (e.g. Join 500+ homeowners…)" name="socialProofLine" defaultValue={content.socialProofLine} />
         </div>
       </Section>
 
-      <Section n={3} title="Trust strip under the hero" hint="A few words each. One per line.">
-        <Field label="Points" name="trustPoints" defaultValue={content.trustPoints.join("\n")} textarea rows={4} />
-      </Section>
-
-      <Section n={4} title="The problem" hint="The reader's frustrations, in their words, before the page offers the fix.">
-        <Field label="Heading" name="problemHeading" defaultValue={content.problemHeading} />
-        <Field label="Text (blank line between paragraphs)" name="problemIntro" defaultValue={content.problemIntro} textarea rows={4} />
+      <Section n={4} title="Before & after" hint="Real jobs only. A short result as the title converts better than a job name.">
+        <Field label="Heading" name="resultsHeading" defaultValue={content.resultsHeading} />
+        <Field label="Intro line" name="resultsIntro" defaultValue={content.resultsIntro} />
         <RepeatingFieldList
-          name="problemCards"
-          defaultValue={content.problemCards}
-          emptyItem={{ title: "", body: "" }}
+          name="results"
+          defaultValue={content.results}
+          emptyItem={{ before: "", beforeAlt: "", after: "", afterAlt: "", title: "", body: "" }}
           itemLabel={(i) => i.title}
           fields={[
-            { key: "title", label: "Title" },
-            { key: "body", label: "Text", textarea: true },
+            { key: "before", label: "Before photo", image: true, altKey: "beforeAlt" },
+            { key: "after", label: "After photo", image: true, altKey: "afterAlt" },
+            { key: "title", label: "Result (title)" },
+            { key: "body", label: "One line about the job", textarea: true },
           ]}
         />
       </Section>
 
-      <Section n={5} title="What's included">
-        <Field label="Heading" name="includedHeading" defaultValue={content.includedHeading} />
-        <Field label="Intro line" name="includedIntro" defaultValue={content.includedIntro} />
-        <Field label="Items (one per line)" name="includedItems" defaultValue={content.includedItems.join("\n")} textarea rows={6} />
-      </Section>
-
-      <Section n={6} title="Photos of finished jobs" hint="Before / after pairs convert best. Real photos only.">
-        <Field label="Heading" name="galleryHeading" defaultValue={content.galleryHeading} />
-        <Field label="Intro line" name="galleryIntro" defaultValue={content.galleryIntro} />
-        <RepeatingFieldList
-          name="gallery"
-          defaultValue={content.gallery}
-          emptyItem={{ image: "", alt: "", caption: "" }}
-          itemLabel={(i) => i.caption}
-          fields={[
-            { key: "image", label: "Photo", image: true, altKey: "alt" },
-            { key: "caption", label: "Caption (e.g. Before, After)" },
-          ]}
+      <Section n={5} title="The problem" hint="The reader's own doubts, then why it's different with you.">
+        <Field label="Heading" name="problemHeading" defaultValue={content.problemHeading} />
+        <Field label="Questions they're asking themselves (one per line)" name="problemQuestions" defaultValue={content.problemQuestions.join("\n")} textarea rows={3} />
+        <Field label="Text (blank line between paragraphs)" name="problemBody" defaultValue={content.problemBody} textarea rows={5} />
+        <ImageUploadField
+          name="problemImage"
+          label="Photo (optional)"
+          defaultValue={content.problemImage}
+          altName="problemImageAlt"
+          altDefaultValue={content.problemImageAlt}
         />
       </Section>
 
-      <Section n={7} title="Reviews" hint="The reviews themselves are the shared ones (Shared sections → Testimonials).">
+      <Section n={6} title="Reviews" hint="The reviews themselves are the shared ones (Shared sections → Testimonials). Three also appear in the strip under the hero.">
         <Field label="Heading" name="reviewsHeading" defaultValue={content.reviewsHeading} />
       </Section>
 
-      <Section n={8} title="Prices" hint="Showing a price range filters out enquiries you can't serve and builds trust. Keep them to what you really quote.">
+      <Section n={7} title="Scrolling benefits strip" hint="A few words each, one per line.">
+        <Field label="Items" name="tickerItems" defaultValue={content.tickerItems.join("\n")} textarea rows={5} />
+      </Section>
+
+      <Section n={8} title="Image and text blocks" hint="They alternate left and right. A block without a photo shows its points in a highlighted panel instead.">
+        <RepeatingFieldList
+          name="features"
+          defaultValue={content.features}
+          emptyItem={{ heading: "", body: "", bullets: [], image: "", imageAlt: "" }}
+          itemLabel={(i) => i.heading}
+          fields={[
+            { key: "heading", label: "Heading" },
+            { key: "body", label: "Text", textarea: true },
+            { key: "bullets", label: "Points", lines: true },
+            { key: "image", label: "Photo (optional)", image: true, altKey: "imageAlt" },
+          ]}
+        />
+      </Section>
+
+      <Section n={9} title="Prices" hint="Showing a range filters out enquiries you can't serve and builds trust. Keep them to what you really quote.">
         <Field label="Heading" name="pricingHeading" defaultValue={content.pricingHeading} />
         <Field label="Intro" name="pricingIntro" defaultValue={content.pricingIntro} textarea rows={2} />
         <RepeatingFieldList
@@ -129,7 +137,12 @@ export default function LandingPageForm({
         <Field label="Note under the prices" name="pricingNote" defaultValue={content.pricingNote} textarea rows={2} />
       </Section>
 
-      <Section n={9} title="How it works">
+      <Section n={10} title="Guarantee banner">
+        <Field label="Heading" name="guaranteeHeading" defaultValue={content.guaranteeHeading} />
+        <Field label="Text" name="guaranteeBody" defaultValue={content.guaranteeBody} textarea rows={3} />
+      </Section>
+
+      <Section n={11} title="Steps">
         <Field label="Heading" name="stepsHeading" defaultValue={content.stepsHeading} />
         <RepeatingFieldList
           name="steps"
@@ -143,33 +156,41 @@ export default function LandingPageForm({
         />
       </Section>
 
-      <Section n={10} title="Why choose us">
-        <Field label="Heading" name="guaranteeHeading" defaultValue={content.guaranteeHeading} />
+      <Section n={12} title="Numbers" hint="Only figures you can stand behind. Four fit on one row.">
         <RepeatingFieldList
-          name="guaranteeItems"
-          defaultValue={content.guaranteeItems}
-          emptyItem={{ title: "", body: "" }}
-          itemLabel={(i) => i.title}
+          name="stats"
+          defaultValue={content.stats}
+          emptyItem={{ value: "", label: "" }}
+          itemLabel={(i) => `${i.value} ${i.label}`}
           fields={[
-            { key: "title", label: "Title" },
-            { key: "body", label: "Text", textarea: true },
+            { key: "value", label: "Number (e.g. 500+)" },
+            { key: "label", label: "Label" },
           ]}
         />
       </Section>
 
-      <Section n={11} title="FAQs" hint="Answer the objections that stop people enquiring: cost, time, mess, finance, area.">
+      <Section n={13} title="FAQs" hint="Answer the objections that stop people enquiring: cost, time, mess, finance, area.">
         <Field label="Heading" name="faqHeading" defaultValue={content.faqHeading} />
         <FaqEditor initial={content.faqs} />
       </Section>
 
-      <Section n={12} title="Final quote form">
-        <Field label="Heading" name="ctaHeading" defaultValue={content.ctaHeading} />
-        <Field label="Text" name="ctaBody" defaultValue={content.ctaBody} textarea rows={2} />
+      <Section n={14} title="Closing section with the quote form">
+        <Field label="Heading" name="finalHeading" defaultValue={content.finalHeading} />
+        <Field label="Text" name="finalBody" defaultValue={content.finalBody} textarea rows={2} />
+        <Field label="Ticks (one per line)" name="finalTicks" defaultValue={content.finalTicks.join("\n")} textarea rows={3} />
+        <ImageUploadField
+          name="finalImage"
+          label="Background photo"
+          defaultValue={content.finalImage}
+          altName="finalImageAlt"
+          altDefaultValue={content.finalImageAlt}
+        />
       </Section>
 
-      <Section n={13} title="Buttons">
-        <Field label="In-page buttons (go to the quote form)" name="quoteButtonLabel" defaultValue={content.quoteButtonLabel} />
+      <Section n={15} title="Quote form & phone bar" hint="The form opens from every quote button, and sits in the closing section.">
         <div className="grid sm:grid-cols-2 gap-4">
+          <Field label="Form heading" name="formHeading" defaultValue={content.formHeading} />
+          <Field label="Form subheading" name="formSubheading" defaultValue={content.formSubheading} />
           <Field label="Phone bar — call button" name="stickyCallLabel" defaultValue={content.stickyCallLabel} />
           <Field label="Phone bar — quote button" name="stickyQuoteLabel" defaultValue={content.stickyQuoteLabel} />
         </div>

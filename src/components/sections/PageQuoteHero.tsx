@@ -18,9 +18,6 @@ interface PageQuoteHeroProps {
   formSubheading?: string;
   callLabel?: string;
   whatsappLabel?: string;
-  /** Ad landing pages: a line above the H1 and benefit ticks under the copy. */
-  eyebrow?: string;
-  bullets?: string[];
 }
 
 /**
@@ -45,8 +42,6 @@ export default async function PageQuoteHero({
   formSubheading,
   callLabel,
   whatsappLabel,
-  eyebrow,
-  bullets,
 }: PageQuoteHeroProps) {
   const [siteConfig, home] = await Promise.all([
     getCurrentSiteConfig(),
@@ -64,8 +59,6 @@ export default async function PageQuoteHero({
       phone={siteConfig.phone}
       callLabel={callLabel?.trim() || home.ctaLabel}
       whatsappLabel={whatsappLabel?.trim() || undefined}
-      eyebrow={eyebrow?.trim() || undefined}
-      bullets={bullets?.filter(Boolean)}
       rating={{
         label: home.ratingLabel,
         score: home.ratingScore,

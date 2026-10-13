@@ -28,30 +28,23 @@ function lines(formData: FormData, key: string): string[] {
     .filter(Boolean);
 }
 
-/**
- * Repeating items from RepeatingFieldList, kept to the named string fields
- * (and string[] for `listKeys`). Rows with every field blank are dropped, so an
- * empty slot left in the editor doesn't render as an empty card.
- */
-function cleanItems<K extends string>(
+function cleanItems<const K extends string, const L extends string = never>(
   formData: FormData,
   name: string,
   keys: readonly K[],
-  listKeys: readonly K[] = [],
-): Record<K, string & string[]>[] {
+  listKeys: readonly L[] = [],
+): (Record<K, string> & Record<L, string[]>)[] {
   return items<Record<string, unknown>>(formData, name)
-    .map((raw) =>
-      Object.fromEntries(
-        keys.map((k) => {
-          const v = raw[k];
-          if (listKeys.includes(k)) {
-            return [k, Array.isArray(v) ? v.map((x) => String(x).trim()).filter(Boolean) : []];
-          }
-          return [k, typeof v === "string" ? v.trim() : ""];
-        }),
-      ) as Record<K, string & string[]>,
-    )
-    .filter((item) => keys.some((k) => (Array.isArray(item[k]) ? item[k].length : item[k])));
+    .map((raw) => {
+      const item: Record<string, string | string[]> = {};
+      for (const k of keys) item[k] = typeof raw[k] === "string" ? (raw[k] as string).trim() : "";
+      for (const k of listKeys) {
+        const v = raw[k];
+        item[k] = Array.isArray(v) ? v.map((x) => String(x).trim()).filter(Boolean) : [];
+      }
+      return item as Record<K, string> & Record<L, string[]>;
+    })
+    .filter((item) => Object.values<string | string[]>(item).some((v) => v.length > 0));
 }
 
 function parseBlockFields(key: PageContentKey, formData: FormData): PageContentMap[PageContentKey] {
@@ -242,45 +235,52 @@ function parseBlockFields(key: PageContentKey, formData: FormData): PageContentM
       return {
         metaTitle: str(formData, "metaTitle"),
         metaDescription: str(formData, "metaDescription"),
-        heroEyebrow: str(formData, "heroEyebrow"),
+        offerBar: str(formData, "offerBar"),
+        ratingText: str(formData, "ratingText"),
         heroHeading: str(formData, "heroHeading"),
         heroHighlight: str(formData, "heroHighlight"),
         heroBody: str(formData, "heroBody"),
-        heroBullets: lines(formData, "heroBullets"),
+        heroTicks: lines(formData, "heroTicks"),
         heroImage: str(formData, "heroImage"),
         heroImageAlt: str(formData, "heroImageAlt"),
-        formHeading: str(formData, "formHeading"),
-        formSubheading: str(formData, "formSubheading"),
-        trustPoints: lines(formData, "trustPoints"),
+        quoteButtonLabel: str(formData, "quoteButtonLabel"),
+        socialProofLine: str(formData, "socialProofLine"),
+        resultsHeading: str(formData, "resultsHeading"),
+        resultsIntro: str(formData, "resultsIntro"),
+        results: cleanItems(formData, "results", ["before", "beforeAlt", "after", "afterAlt", "title", "body"]).filter(
+          (r) => r.before && r.after,
+        ),
         problemHeading: str(formData, "problemHeading"),
-        problemIntro: str(formData, "problemIntro").replace(/\r\n?/g, "\n"),
-        problemCards: cleanItems(formData, "problemCards", ["title", "body"]),
-        includedHeading: str(formData, "includedHeading"),
-        includedIntro: str(formData, "includedIntro"),
-        includedItems: lines(formData, "includedItems"),
-        galleryHeading: str(formData, "galleryHeading"),
-        galleryIntro: str(formData, "galleryIntro"),
-        gallery: cleanItems(formData, "gallery", ["image", "alt", "caption"]).filter((g) => g.image),
+        problemQuestions: lines(formData, "problemQuestions"),
+        problemBody: str(formData, "problemBody").replace(/\r\n?/g, "\n"),
+        problemImage: str(formData, "problemImage"),
+        problemImageAlt: str(formData, "problemImageAlt"),
         reviewsHeading: str(formData, "reviewsHeading"),
+        tickerItems: lines(formData, "tickerItems"),
+        features: cleanItems(formData, "features", ["heading", "body", "image", "imageAlt"], ["bullets"]),
         pricingHeading: str(formData, "pricingHeading"),
         pricingIntro: str(formData, "pricingIntro"),
         pricingTiers: cleanItems(
           formData,
           "pricingTiers",
-          ["name", "price", "description", "features"],
+          ["name", "price", "description"],
           ["features"],
         ),
         pricingNote: str(formData, "pricingNote"),
+        guaranteeHeading: str(formData, "guaranteeHeading"),
+        guaranteeBody: str(formData, "guaranteeBody"),
         stepsHeading: str(formData, "stepsHeading"),
         steps: cleanItems(formData, "steps", ["title", "body"]),
-        guaranteeHeading: str(formData, "guaranteeHeading"),
-        guaranteeItems: cleanItems(formData, "guaranteeItems", ["title", "body"]),
+        stats: cleanItems(formData, "stats", ["value", "label"]),
         faqHeading: str(formData, "faqHeading"),
-        // Rich text, sanitised on write like every other FAQ.
         faqs: parseFaqs(formData),
-        ctaHeading: str(formData, "ctaHeading"),
-        ctaBody: str(formData, "ctaBody"),
-        quoteButtonLabel: str(formData, "quoteButtonLabel"),
+        finalHeading: str(formData, "finalHeading"),
+        finalBody: str(formData, "finalBody"),
+        finalTicks: lines(formData, "finalTicks"),
+        finalImage: str(formData, "finalImage"),
+        finalImageAlt: str(formData, "finalImageAlt"),
+        formHeading: str(formData, "formHeading"),
+        formSubheading: str(formData, "formSubheading"),
         stickyCallLabel: str(formData, "stickyCallLabel"),
         stickyQuoteLabel: str(formData, "stickyQuoteLabel"),
       };

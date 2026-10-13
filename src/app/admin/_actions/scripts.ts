@@ -151,7 +151,6 @@ export async function saveGoogleAnalyticsAction(formData: FormData): Promise<voi
 
 export async function saveGoogleAdsAction(formData: FormData): Promise<void> {
   const conversionId = String(formData.get("conversionId") || "").trim().toUpperCase();
-  // A label is often pasted as the whole send_to ("AW-123/AbC"); keep the part after the slash.
   const label = (key: string) => String(formData.get(key) || "").trim().split("/").pop()!.trim();
   const settings = {
     conversionId,
@@ -174,7 +173,6 @@ export async function saveGoogleAdsAction(formData: FormData): Promise<void> {
   }
 
   await saveGoogleAdsSettings(settings);
-  // The tag id and labels are rendered into every page.
   await revalidate("/", "layout");
   redirect("/admin/scripts?saved=1");
 }

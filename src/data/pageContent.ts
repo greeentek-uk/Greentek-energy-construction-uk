@@ -257,57 +257,48 @@ export interface FinanceProviderContent {
   disclosure: string;
 }
 
-/**
- * An ad landing page (`/lp/<slug>`): one service, one goal — the enquiry.
- * Every visible word is here so the copy can be tested without a deploy; the
- * order of the sections is fixed in code (see the page for why it runs as it
- * does). A blank heading or an empty list hides that section.
- */
 export interface LandingPageContent {
-  /** Shown in the browser tab and on shares. The page is noindex, so it's not for Google. */
   metaTitle: string;
   metaDescription: string;
-  heroEyebrow: string;
-  /** The whole H1. */
+  offerBar: string;
+  ratingText: string;
   heroHeading: string;
-  /** A phrase inside the H1 shown in the brand colour; blank = all white. */
   heroHighlight: string;
   heroBody: string;
-  /** Short benefit ticks under the hero copy. Three or four. */
-  heroBullets: string[];
+  heroTicks: string[];
   heroImage: string;
   heroImageAlt: string;
-  formHeading: string;
-  formSubheading: string;
-  /** The strip directly under the hero — the reasons to trust us, in a few words each. */
-  trustPoints: string[];
+  quoteButtonLabel: string;
+  socialProofLine: string;
+  resultsHeading: string;
+  resultsIntro: string;
+  results: { before: string; beforeAlt: string; after: string; afterAlt: string; title: string; body: string }[];
   problemHeading: string;
-  /** Paragraphs separated by a blank line. */
-  problemIntro: string;
-  problemCards: { title: string; body: string }[];
-  includedHeading: string;
-  includedIntro: string;
-  includedItems: string[];
-  galleryHeading: string;
-  galleryIntro: string;
-  gallery: { image: string; alt: string; caption: string }[];
+  problemQuestions: string[];
+  problemBody: string;
+  problemImage: string;
+  problemImageAlt: string;
   reviewsHeading: string;
+  tickerItems: string[];
+  features: { heading: string; body: string; bullets: string[]; image: string; imageAlt: string }[];
   pricingHeading: string;
   pricingIntro: string;
   pricingTiers: { name: string; price: string; description: string; features: string[] }[];
-  /** Under the tiers — what a quote depends on, finance, no-obligation survey. */
   pricingNote: string;
+  guaranteeHeading: string;
+  guaranteeBody: string;
   stepsHeading: string;
   steps: { title: string; body: string }[];
-  guaranteeHeading: string;
-  guaranteeItems: { title: string; body: string }[];
+  stats: { value: string; label: string }[];
   faqHeading: string;
   faqs: FaqItem[];
-  ctaHeading: string;
-  ctaBody: string;
-  /** Every in-page button that takes the reader to the quote form. */
-  quoteButtonLabel: string;
-  /** The bar pinned to the bottom of the screen on phones. */
+  finalHeading: string;
+  finalBody: string;
+  finalTicks: string[];
+  finalImage: string;
+  finalImageAlt: string;
+  formHeading: string;
+  formSubheading: string;
   stickyCallLabel: string;
   stickyQuoteLabel: string;
 }

@@ -9,7 +9,6 @@
  * different sets of choices depending on which form they scrolled to.
  */
 
-/** The first choice in the hero form; the full form shows the same split as option groups. */
 export type ProjectType = "construction" | "energy";
 
 export const projectTypeOptions: { value: ProjectType; label: string }[] = [
@@ -20,7 +19,6 @@ export const projectTypeOptions: { value: ProjectType; label: string }[] = [
 export interface ServiceOption {
   value: string;
   label: string;
-  /** The `/services/[slug]` page this option is, so a service page can preselect it. */
   slug?: string;
 }
 
@@ -59,10 +57,6 @@ export const heroServiceOptions: Record<ProjectType, ServiceOption[]> = {
   ],
 };
 
-/**
- * Values no form offers any more, still named in the email: a visitor with the
- * old page open can send one, and older enquiries quote them.
- */
 const retiredServiceOptions = [
   { value: "energy_battery", label: "Energy — Battery storage" },
   { value: "solar_storage", label: "Solar PV & Battery Storage" },
@@ -73,11 +67,6 @@ const retiredServiceOptions = [
   { value: "not_sure", label: "Not Sure — Need Advice" },
 ];
 
-/**
- * The option for a service page, so the form there is about that service.
- * Falls back to the service's broad category for a service added in the panel
- * that isn't listed above yet — still a value the email can name.
- */
 export function serviceOptionValue(service: { slug: string; formCategory: string }): string {
   for (const options of Object.values(heroServiceOptions)) {
     const match = options.find((o) => o.slug === service.slug);
@@ -86,7 +75,6 @@ export function serviceOptionValue(service: { slug: string; formCategory: string
   return service.formCategory;
 }
 
-/** Whether a value is one the forms offer (rather than a retired or unknown one). */
 export function isOfferedService(value: string): boolean {
   return Object.values(heroServiceOptions).some((options) => options.some((o) => o.value === value));
 }

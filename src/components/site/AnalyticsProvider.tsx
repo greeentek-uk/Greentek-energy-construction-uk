@@ -56,8 +56,6 @@ export default function AnalyticsProvider({
       const href = link?.getAttribute("href") ?? "";
       if (href.startsWith("tel:")) track("Contact", { content_name: "phone" });
       else if (href.startsWith("mailto:")) track("Contact", { content_name: "email" });
-      // WhatsApp is as much a contact as a call — every hero has the button —
-      // but until 2026-10-13 its taps weren't counted anywhere.
       else if (/^https:\/\/(wa\.me|api\.whatsapp\.com)\//.test(href)) track("Contact", { content_name: "whatsapp" });
     }
 

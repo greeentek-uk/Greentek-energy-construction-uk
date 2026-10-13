@@ -3,15 +3,6 @@
 import { useEffect, useState } from "react";
 import { FileText, Phone } from "lucide-react";
 
-/**
- * Call / quote buttons pinned to the bottom of the screen on phones, once the
- * hero has scrolled away.
- *
- * Most ad traffic is mobile, and by the time someone has read the prices or
- * the reviews the form is a long way back up. The bar keeps both ways to
- * convert one tap away without covering the hero, where the form already is.
- * The phone tap is counted as a Contact by AnalyticsProvider's tel: listener.
- */
 export default function StickyQuoteBar({
   phone,
   callLabel,
@@ -24,11 +15,8 @@ export default function StickyQuoteBar({
   const [shown, setShown] = useState(false);
 
   useEffect(() => {
-    const target = document.getElementById("start");
-    // No hero form to watch: stay hidden rather than guess.
+    const target = document.getElementById("hero-cta");
     if (!target || typeof IntersectionObserver === "undefined") return;
-    // Shown only while the hero form is off screen *above* — not while it's
-    // visible, and not before the visitor has scrolled to it.
     const observer = new IntersectionObserver(([entry]) => {
       setShown(!entry.isIntersecting && entry.boundingClientRect.top < 0);
     });
@@ -53,7 +41,8 @@ export default function StickyQuoteBar({
           {callLabel}
         </a>
         <a
-          href="#start"
+          href="#quote"
+          data-quote
           tabIndex={shown ? 0 : -1}
           className="flex min-h-12 items-center justify-center gap-2 rounded-xl bg-[#c5eb02] text-sm font-bold text-black active:scale-[.98]"
         >

@@ -13,7 +13,6 @@ import {
   timelineOptions,
 } from "@/lib/quoteForm";
 
-
 const contactDetails = [
   {
     label: "0333 533 4567",
@@ -104,9 +103,6 @@ interface CtaSectionProps {
   heading?: string;
   description?: string;
   defaultService?: string;
-  /** Names this form in the enquiry email's "Came from" line. */
-  source?: string;
-  messagePlaceholder?: string;
 }
 
 export default function CtaSection({
@@ -114,8 +110,6 @@ export default function CtaSection({
   heading = "Get a free quote",
   description = "Solar, heating, insulation, or a full refurb, tell us what you're looking at and we'll come back within one business day with a straight answer, a plan and a real quote.",
   defaultService = "",
-  source = "Contact form",
-  messagePlaceholder = "Tell us about your solar, heating, insulation, or renovation project... (optional)",
 }: CtaSectionProps) {
   const [contentFadeRef, contentFadeVisible] = useFadeIn(0);
   const [formFadeRef, formFadeVisible] = useFadeIn(150);
@@ -125,8 +119,6 @@ export default function CtaSection({
     email: "",
     phone: "",
     postcode: "",
-    // A value the dropdown doesn't list would show as blank but still be
-    // sent, so only a service the form offers is preselected.
     service: isOfferedService(defaultService) ? defaultService : "",
     property_type: "",
     is_homeowner: "",
@@ -169,7 +161,7 @@ export default function CtaSection({
   function markStarted() {
     if (started.current) return;
     started.current = true;
-    track("StartQuote", { content_name: source === "Contact form" ? "Enquiry form" : source });
+    track("StartQuote", { content_name: "Enquiry form" });
   }
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -188,7 +180,7 @@ export default function CtaSection({
       const res = await fetch("/api/quote-request", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...form, source, event_id: eventId, page_url: window.location.href }),
+        body: JSON.stringify({ ...form, event_id: eventId, page_url: window.location.href }),
       });
 
       if (!res.ok) throw new Error("Request failed");
@@ -372,7 +364,6 @@ export default function CtaSection({
                   <option value="" disabled>
                     Select a service
                   </option>
-                  {/* The same split as the hero form's Construction / Energy switch. */}
                   {projectTypeOptions.map((type) => (
                     <optgroup key={type.value} label={type.label}>
                       {heroServiceOptions[type.value].map((opt) => (
@@ -428,7 +419,6 @@ export default function CtaSection({
                 </div>
               </div>
 
-              {/* Timeline + Budget */}
               <div className="grid sm:grid-cols-2 gap-5">
                 <div className="space-y-1.5">
                   <label htmlFor="timeline" className={labelClasses}>
@@ -481,7 +471,7 @@ export default function CtaSection({
                   value={form.message}
                   onChange={handleChange}
                   className={inputClasses.replace("py-3.5", "py-4")}
-                  placeholder={messagePlaceholder}
+                  placeholder="Tell us about your solar, heating, insulation, or renovation project... (optional)"
                 />
               </div>
 

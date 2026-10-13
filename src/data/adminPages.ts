@@ -115,8 +115,6 @@ export const CONTENT_PAGES: ContentPage[] = [
       { key: "finance-banner", note: "The strip under the hero on service and location pages" },
     ],
   },
-  // Ad landing pages: their own wording is one block each; the rating badge,
-  // finance strip, reviews and accreditations are the site-wide ones.
   ...(["kitchen-renovation", "bathroom-renovation"] as const).map((slug) => ({
     id: `lp-${slug}`,
     label: `Ad landing page — ${slug === "kitchen-renovation" ? "Kitchen" : "Bathroom"}`,
