@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import { notFound } from "next/navigation";
-import { Check, ChevronDown, Phone, ShieldCheck, Star } from "lucide-react";
+import { Check, ChevronDown, MapPin, Phone, ShieldCheck, Star } from "lucide-react";
 import Footer from "@/components/layout/Footer";
 import LandingHeader from "@/components/landing/LandingHeader";
 import StickyQuoteBar from "@/components/landing/StickyQuoteBar";
@@ -307,7 +307,11 @@ export default async function LandingPage({ params }: Props) {
 
         {content.problemHeading && (
           <section className="bg-[#f6f7f2] py-16 md:py-24">
-            <div className="site-container grid items-center gap-12 lg:grid-cols-2 lg:gap-16">
+            <div
+              className={`site-container grid items-center gap-12 lg:gap-16 ${
+                content.problemImage ? "lg:grid-cols-2" : "max-w-3xl"
+              }`}
+            >
               <div>
                 <h2 className={h2}>{content.problemHeading}</h2>
                 {content.problemQuestions.length > 0 && (
@@ -451,14 +455,22 @@ export default async function LandingPage({ params }: Props) {
                 <h2 className={h2}>{content.pricingHeading}</h2>
                 {content.pricingIntro && <p className="mt-4 text-lg text-[#0b0d0e]/65">{content.pricingIntro}</p>}
               </div>
-              <ul className={`mt-12 grid gap-5 ${content.pricingTiers.length >= 3 ? "md:grid-cols-3" : "md:grid-cols-2"}`}>
+              <ul
+                className={`mt-12 grid gap-5 ${
+                  content.pricingTiers.length === 1
+                    ? "mx-auto max-w-xl"
+                    : content.pricingTiers.length >= 3
+                      ? "md:grid-cols-3"
+                      : "md:grid-cols-2"
+                }`}
+              >
                 {content.pricingTiers.map((tier, i) => {
-                  const featured = content.pricingTiers.length >= 3 && i === 1;
+                  const featured = content.pricingTiers.length === 1 || (content.pricingTiers.length >= 3 && i === 1);
                   return (
                     <li
                       key={tier.name}
                       className={`flex flex-col rounded-2xl p-7 ${
-                        featured ? "bg-[#0b0d0e] text-white md:-my-3 md:py-10" : "border border-black/10 bg-white"
+                        featured ? `bg-[#0b0d0e] text-white ${content.pricingTiers.length > 1 ? "md:-my-3 md:py-10" : ""}` : "border border-black/10 bg-white"
                       }`}
                     >
                       <h3 className="text-sm font-bold uppercase tracking-[0.12em] opacity-70">{tier.name}</h3>
@@ -546,6 +558,26 @@ export default async function LandingPage({ params }: Props) {
                 </li>
               ))}
             </ul>
+          </section>
+        )}
+
+        {content.areasHeading && siteConfig.locations.length > 0 && (
+          <section className="bg-[#f6f7f2] py-16 md:py-20">
+            <div className="site-container text-center">
+              <h2 className={`${h2} mx-auto max-w-3xl`}>{content.areasHeading}</h2>
+              {content.areasBody && <p className="mx-auto mt-4 max-w-2xl text-lg text-[#0b0d0e]/70">{content.areasBody}</p>}
+              <ul className="mt-8 flex flex-wrap justify-center gap-3">
+                {siteConfig.locations.map((location) => (
+                  <li
+                    key={location.slug}
+                    className="flex items-center gap-2 rounded-full border border-black/10 bg-white px-5 py-2.5 font-semibold"
+                  >
+                    <MapPin className="h-4 w-4 text-[#0b0d0e]/60" aria-hidden />
+                    {location.name}
+                  </li>
+                ))}
+              </ul>
+            </div>
           </section>
         )}
 

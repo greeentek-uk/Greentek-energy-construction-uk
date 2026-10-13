@@ -17,12 +17,20 @@ describe("ad landing pages", () => {
     expect(pagesShowingBlock(page.block).map((p) => p.path)).toContain(`/lp/${page.slug}`);
   });
 
-  it("drafted copy fills every section", () => {
+  it("drafted copy fills every section (prices only where real ones are known)", () => {
     for (const content of Object.values(LANDING_PAGE_DEFAULTS)) {
       for (const [key, value] of Object.entries(content)) {
+        if (key.startsWith("pricing") || key.startsWith("problemImage")) continue;
         expect(Array.isArray(value) ? value.length : String(value).trim().length, key).toBeGreaterThan(0);
       }
     }
+  });
+
+  it("shows no prices that weren't given: kitchen none, bathroom from £2,999 only", () => {
+    expect(LANDING_PAGE_DEFAULTS["lp-kitchen-renovation"].pricingTiers).toEqual([]);
+    expect(LANDING_PAGE_DEFAULTS["lp-kitchen-renovation"].pricingHeading).toBe("");
+    const prices = JSON.stringify(LANDING_PAGE_DEFAULTS).match(/£\d{1,3}(?:,\d{3})*/g) ?? [];
+    expect(new Set(prices)).toEqual(new Set(["£2,999"]));
   });
 
   it("lookup and reserved slug", () => {

@@ -3,37 +3,74 @@ import type { LandingPageContent } from "./pageContent";
 const P = "/images/projects";
 
 const shared = {
-  ratingText: "Excellent on Trustpilot · 500+ projects completed",
+  ratingText: "Rated Excellent on Trustpilot · 500+ jobs done",
   quoteButtonLabel: "Get my free quote",
-  socialProofLine: "Join 500+ homeowners across the West Midlands & Wales",
-  stats: [
-    { value: "500+", label: "projects completed" },
-    { value: "25+", label: "years' combined experience" },
-    { value: "8", label: "industry accreditations" },
-    { value: "1", label: "team, from survey to sign-off" },
+  socialProofLine: "Join 500+ homeowners across the West Midlands and Wales",
+  reviewsHeading: "What our customers say",
+  tickerItems: [
+    "Free home survey",
+    "Fixed price in writing",
+    "Our own plumbers and electricians",
+    "Pay monthly",
+    "TrustMark registered",
+    "Free fix if anything is not right",
   ],
+  guaranteeHeading: "Not happy? We come back and fix it for free",
   guaranteeBody:
-    "Something not right after we finish? We come back and put it right at no cost. No arguments, and no passing the blame to another trade. That's our guarantee.",
-  stepsHeading: "Your new room in four simple steps",
-  formSubheading: "Four quick steps. We reply within one business day.",
+    "If something is not right after we finish, just tell us. We will come back and fix it at no cost. No arguments and no excuses.",
+  stepsHeading: "How it works",
+  stats: [
+    { value: "500+", label: "jobs completed" },
+    { value: "25+", label: "years of experience in our team" },
+    { value: "8", label: "industry bodies check our work" },
+    { value: "1", label: "team does the whole job" },
+  ],
+  areasHeading: "We cover the West Midlands and Wales",
+  areasBody: "Not sure if we cover your area? Put your postcode in the form and we will tell you straight away.",
+  faqHeading: "Your questions, answered",
+  finalTicks: ["Fixed price in writing", "Our own plumbers and electricians", "Free fix if anything is not right"],
+  formSubheading: "4 quick steps. We reply within 1 working day.",
   stickyCallLabel: "Call us",
   stickyQuoteLabel: "Free quote",
 };
 
-const financeFaq = {
-  question: "Can I spread the cost?",
+const problemBody =
+  "These are the worries we hear most. They happen when each trade works for a different firm. Jobs stall, and bills grow.\n\nWith us, one team does everything. You get one price, one plan and one person to call.";
+
+const priceFeature = {
+  heading: "You know the price before we start",
+  body: "We visit your home for free. Then we send you a written price for the whole job. It only changes if you ask for something extra.",
+  bullets: ["Free home survey", "One price for the whole job", "Pay monthly if you like (subject to status)"],
+  image: "",
+  imageAlt: "",
+};
+
+const accreditedFeature = {
+  heading: "Checked by the industry's experts",
+  body: "Eight industry bodies check our work, including TrustMark and Gas Safe. So you know the job is done right.",
+  bullets: ["TrustMark registered", "Gas Safe registered", "Checked by 8 industry bodies"],
+};
+
+const steps = (room: string) => [
+  { title: "Ask for a quote", body: "Fill in the short form or call us. It takes 2 minutes." },
+  { title: "We visit you", body: `We come to your home, measure up and talk about your new ${room}. It's free.` },
+  { title: "Get your price", body: "We send you a fixed price in writing. There are no hidden costs." },
+  { title: "We build it", body: "Our team does the work on the dates we agreed. Then we check it all with you." },
+];
+
+const fixedFaq = {
+  question: "Is the price really fixed?",
   answer:
-    "Yes. We work with two credit brokers, Ideal4Finance and Phoenix Financial Consultants, who can help you spread the cost with monthly payments, subject to status.",
+    "Yes. The written price is what you pay. It only changes if you ask for something extra, and we agree that with you first.",
+};
+const financeFaq = {
+  question: "Can I pay monthly?",
+  answer:
+    "Yes. We work with two finance brokers, Ideal4Finance and Phoenix Financial Consultants. They can help you spread the cost. Finance is subject to status.",
 };
 const areaFaq = {
   question: "Which areas do you cover?",
-  answer:
-    "We work across the West Midlands and Wales. Enter your postcode in the quote form and we'll confirm straight away.",
-};
-const fixedFaq = {
-  question: "Is the quote really fixed?",
-  answer:
-    "Yes. After the survey you get a written quote covering every trade, and that's what you pay. The price only changes if you ask for something different during the job, and we agree that with you first.",
+  answer: "We work across the West Midlands and Wales. Put your postcode in the form and we will tell you straight away.",
 };
 
 export const LANDING_PAGE_DEFAULTS: Record<
@@ -42,258 +79,192 @@ export const LANDING_PAGE_DEFAULTS: Record<
 > = {
   "lp-kitchen-renovation": {
     ...shared,
-    metaTitle: "Kitchen Renovation — Free Survey & Fixed Price | Greentek",
+    metaTitle: "New Kitchen, One Fixed Price | Free Survey | Greentek",
     metaDescription:
-      "Kitchen renovations across the West Midlands and Wales. One in-house team for design, plumbing, electrics and fitting, with a fixed written price before work starts.",
-    offerBar: "Free home survey and a fixed written quote — book yours this month",
-    heroHeading: "Get the kitchen you've been putting off, built by one team at one fixed price",
+      "Get a new kitchen fitted by one team, at one fixed price. Free home survey across the West Midlands and Wales.",
+    offerBar: "Free home survey and a fixed price in writing. Book yours today.",
+    heroHeading: "Get a new kitchen for one fixed price, with no surprise costs",
     heroHighlight: "one fixed price",
     heroBody:
-      "From strip-out to the last plug socket, our own fitters, plumbers and electricians do the lot. You get a written quote before we start, and that's what you pay.",
-    heroTicks: ["Free survey", "Fixed written price", "Finance available"],
+      "Our own team does the whole job: the fitting, plumbing, electrics and tiling. You get a written price before we start. That is the price you pay.",
+    heroTicks: ["Free home survey", "Fixed price in writing", "Pay monthly with finance"],
     heroImage: `${P}/Kitchen/Post Kitchen.jpg`,
-    heroImageAlt: "A finished kitchen fitted by Greentek",
-    resultsHeading: "Real kitchens. Real before and afters.",
-    resultsIntro: "Every photo here is a job our own team did. No stock images.",
+    heroImageAlt: "A new kitchen fitted by Greentek",
+    resultsHeading: "See real kitchens we have built",
+    resultsIntro: "These are our own jobs. No stock photos.",
     results: [
       {
         before: `${P}/Kitchen/Pre kitchen.jpeg`,
-        beforeAlt: "Old kitchen stripped out before the renovation",
+        beforeAlt: "An old kitchen, stripped out before the work",
         after: `${P}/Kitchen/Post Kitchen.jpg`,
-        afterAlt: "The same kitchen after Greentek's renovation",
-        title: "Tired and gutted to bright and brand new",
-        body: "Strip-out, replastering, new units, worktops, tiling and appliances, all by one team.",
+        afterAlt: "The same kitchen after Greentek fitted it",
+        title: "Old and worn out to bright and new",
+        body: "We stripped it out, plastered the walls and fitted new units, worktops and tiles.",
       },
       {
         before: `${P}/Extension/Pre EXT1.jpeg`,
-        beforeAlt: "A dated kitchen in an old conservatory",
+        beforeAlt: "A small, old kitchen in a conservatory",
         after: `${P}/Extension/post ext1.jpg`,
-        afterAlt: "The open-plan kitchen-diner Greentek built in its place",
-        title: "Cramped conservatory kitchen to open-plan kitchen-diner",
-        body: "The old conservatory came down and a solid extension went up, with a new kitchen inside.",
+        afterAlt: "The big open-plan kitchen Greentek built in its place",
+        title: "Small conservatory kitchen to big open-plan kitchen",
+        body: "We took down the old conservatory, built a proper extension and fitted a new kitchen inside.",
       },
     ],
-    problemHeading: "Been putting off your new kitchen? You're not alone.",
+    problemHeading: "Want a new kitchen but worried about the hassle?",
     problemQuestions: [
-      "Worried the price will creep up once the old kitchen is out?",
-      "Dreading weeks of chasing a fitter, a plumber and an electrician?",
-      "Not sure what it will really cost?",
+      "Will the price go up once work starts?",
+      "Will I have to chase five different trades?",
+      "How long will I be without a kitchen?",
     ],
-    problemBody:
-      "Most kitchen jobs go wrong in the gaps between trades: the fitter waiting on the electrician, the plasterer booked for the wrong week, and a final bill nobody agreed to.\n\nWe do every part of the job with our own team, to one schedule and one written price. There's one person to call, from the survey to the final sign-off.",
+    problemBody,
     problemImage: `${P}/Kitchen/PRE2 kitchen.jpeg`,
-    problemImageAlt: "A kitchen before renovation, mid strip-out",
-    reviewsHeading: "Homeowners across the West Midlands & Wales trust Greentek",
-    tickerItems: [
-      "Free survey",
-      "Fixed written price",
-      "Own plumbers & electricians",
-      "Finance available",
-      "TrustMark registered",
-      "We come back and fix it",
-    ],
+    problemImageAlt: "A kitchen half way through being stripped out",
     features: [
       {
         heading: "One team does the whole job",
-        body: "No juggling trades. Our own team handles design, strip-out, plumbing, electrics, plastering, tiling and fitting, all to one schedule.",
+        body: "You don't need to find a plumber, an electrician or a tiler. Our own team does it all, from start to finish.",
         bullets: [
-          "Design and layout planning",
-          "Plumbing and electrics done in-house",
-          "Plastering, tiling and flooring",
-          "Units, worktops and appliances fitted",
+          "We plan the layout with you",
+          "We take out your old kitchen",
+          "We do the plumbing and electrics",
+          "We fit the units, worktops and appliances",
         ],
         image: `${P}/Extension/Mid EXT1.jpeg`,
-        imageAlt: "Greentek's team part-way through a kitchen extension",
+        imageAlt: "Greentek's team part way through building a kitchen extension",
       },
+      priceFeature,
       {
-        heading: "One price, in writing, before we start",
-        body: "After a free survey you get a written quote covering every trade. That's what you pay. The price only changes if you ask for something different, and we agree it with you first.",
-        bullets: [
-          "Free, no-obligation survey",
-          "Every trade in one quote",
-          "Spread the cost with monthly finance, subject to status",
-        ],
-        image: "",
-        imageAlt: "",
+        ...accreditedFeature,
+        image: `${P}/Extension/post ext1.jpg`,
+        imageAlt: "An open-plan kitchen built by Greentek",
       },
     ],
-    pricingHeading: "What does a kitchen renovation cost?",
-    pricingIntro: "Every kitchen is quoted after a free survey, but these ranges show where most projects land.",
-    pricingTiers: [
-      {
-        name: "Refresh",
-        price: "From £8,000",
-        description: "New units and worktops in your existing layout.",
-        features: ["Same layout", "New cabinets and worktops", "Tiling and splashback"],
-      },
-      {
-        name: "Full renovation",
-        price: "£15,000–£25,000",
-        description: "A new layout with plumbing and electrics moved to suit.",
-        features: ["New layout", "Plumbing and electrics moved", "Flooring and plastering"],
-      },
-      {
-        name: "Open-plan",
-        price: "£25,000+",
-        description: "Walls removed or opened up to create a kitchen-diner.",
-        features: ["Structural work", "Building control sign-off", "Full redecoration"],
-      },
-    ],
-    pricingNote:
-      "Your price depends on size, layout changes and the units and appliances you choose. The survey and quote are free and there's no obligation.",
-    guaranteeHeading: "If it's not right, we come back and fix it, free",
-    steps: [
-      { title: "Get your free quote", body: "Answer four quick questions or call us. It takes two minutes." },
-      { title: "Free home survey", body: "We visit, measure up and talk through the kitchen you want." },
-      { title: "Your fixed price", body: "One written quote that covers every trade. No surprises." },
-      { title: "We build it", body: "Our team does the work to an agreed schedule, then signs it off with you." },
-    ],
-    faqHeading: "Kitchen renovation questions",
+    pricingHeading: "",
+    pricingIntro: "",
+    pricingTiers: [],
+    pricingNote: "",
+    steps: steps("kitchen"),
     faqs: [
       {
-        question: "How long does a kitchen renovation take?",
+        question: "How much does a new kitchen cost?",
         answer:
-          "Most kitchens take two to four weeks once work starts, depending on layout changes and whether walls are moved. We give you a schedule before we begin, so you know how long you'll be without a kitchen.",
+          "Every kitchen is different. The price depends on the size, the layout and the units you pick. We visit for free, then send you a fixed price in writing.",
+      },
+      {
+        question: "How long does it take?",
+        answer: "Most kitchens take 2 to 4 weeks once we start. We give you a plan with dates before we begin.",
       },
       fixedFaq,
       financeFaq,
       {
-        question: "Do you supply the kitchen units?",
+        question: "Can I choose my own units?",
         answer:
-          "We can supply units, worktops and appliances, or fit ones you've chosen yourself. Either way, the fitting, plumbing and electrics are in one quote.",
+          "Yes. We can supply the units, worktops and appliances. Or we can fit ones you have picked. Either way, it is all in one price.",
       },
       areaFaq,
     ],
-    finalHeading: "Ready for your new kitchen? Get your free quote today.",
-    finalBody:
-      "Tell us about your kitchen in four quick steps. We'll call you back within one business day to book your free survey.",
-    finalTicks: ["Fixed written price", "Own plumbers and electricians", "We come back and fix it, free"],
-    finalImage: `${P}/Extension/post ext1.jpg`,
-    finalImageAlt: "An open-plan kitchen-diner built by Greentek",
+    finalHeading: "Ready for your new kitchen?",
+    finalBody: "Answer 4 quick questions. We will call you back within 1 working day to book your free survey.",
+    finalImage: `${P}/Kitchen/Post Kitchen.jpg`,
+    finalImageAlt: "A new kitchen fitted by Greentek",
     formHeading: "Get your free kitchen quote",
   },
   "lp-bathroom-renovation": {
     ...shared,
-    metaTitle: "Bathroom Renovation — Free Survey & Fixed Price | Greentek",
+    metaTitle: "New Bathrooms from £2,999 | Free Survey | Greentek",
     metaDescription:
-      "Bathroom renovations across the West Midlands and Wales. One in-house team for plumbing, electrics, tiling and fitting, with a fixed written price before work starts.",
-    offerBar: "Free home survey and a fixed written quote — book yours this month",
-    heroHeading: "A bathroom you'll love using, fitted by one team at one fixed price",
-    heroHighlight: "one fixed price",
+      "Get a new bathroom from £2,999, fitted by one team at one fixed price. Free home survey across the West Midlands and Wales.",
+    offerBar: "New bathrooms from £2,999. Free home survey and a fixed price in writing.",
+    heroHeading: "Get a new bathroom from £2,999, fitted by one team",
+    heroHighlight: "from £2,999",
     heroBody:
-      "Strip-out, plumbing, electrics, waterproofing, tiling and fitting, all by our own team. You get a written quote before we start, and that's what you pay.",
-    heroTicks: ["Free survey", "Fixed written price", "Finance available"],
+      "Our own team does the whole job: the plumbing, electrics, waterproofing and tiling. You get a written price before we start. That is the price you pay.",
+    heroTicks: ["Free home survey", "Fixed price in writing", "Pay monthly with finance"],
     heroImage: `${P}/Bathroom/Bathroom Post.jpeg`,
-    heroImageAlt: "A finished shower room fitted by Greentek",
-    resultsHeading: "A real bathroom, from stripped-out to finished",
-    resultsIntro: "Every photo here is a job our own team did. No stock images.",
+    heroImageAlt: "A new shower room fitted by Greentek",
+    resultsHeading: "See real bathrooms we rebuilt",
+    resultsIntro: "These are our own jobs. No stock photos.",
     results: [
       {
         before: `${P}/Bathroom/Bathroom PRE.jpeg`,
-        beforeAlt: "Bathroom stripped back to the pipework before the renovation",
+        beforeAlt: "A bathroom stripped back to the pipes before the work",
         after: `${P}/Bathroom/Bathroom Post.jpeg`,
-        afterAlt: "The same bathroom after Greentek's renovation",
-        title: "Stripped back to the pipes, rebuilt as a modern shower room",
-        body: "New pipework, boarding, waterproofing, tiling, suite and lighting, all by one team.",
+        afterAlt: "The same bathroom after Greentek rebuilt it",
+        title: "From bare pipes to a modern shower room",
+        body: "We replaced the pipes, waterproofed the walls, then fitted new tiles, a new suite and new lights.",
+      },
+      {
+        before: `${P}/Bathroom/Bathroom 2 PRE.jpeg`,
+        beforeAlt: "A cramped, dated bathroom with old tiles and a shower curtain",
+        after: `${P}/Bathroom/Bathroom 2 Post.jpeg`,
+        afterAlt: "The same bathroom after Greentek fitted grey wall panels, a new bath and a vanity unit",
+        title: "From tired and cluttered to clean and bright",
+        body: "We took out the old suite and tiles, fitted wipe-clean wall panels, a new bath with a glass screen, a vanity unit with storage, new flooring and new lights.",
       },
     ],
-    problemHeading: "Been putting off your new bathroom? You're not alone.",
+    problemHeading: "Want a new bathroom but worried about the hassle?",
     problemQuestions: [
-      "Worried hidden leaks will turn into 'extras' once the tiles are off?",
-      "Dreading days without a working bathroom?",
-      "Not sure what it will really cost?",
+      "Will hidden leaks push the price up?",
+      "How long will I be without a bathroom?",
+      "Will I have to chase different trades?",
     ],
-    problemBody:
-      "A bathroom needs a plumber, an electrician, a tiler and a fitter, and when they're booked separately the job stalls between them.\n\nWe do every part with our own team, to one schedule and one written price. There's one person to call, from the survey to the final sign-off.",
-    problemImage: `${P}/Bathroom/Bathroom Mid.jpeg`,
-    problemImageAlt: "A bathroom mid-renovation, boarded and ready for tiling",
-    reviewsHeading: "Homeowners across the West Midlands & Wales trust Greentek",
-    tickerItems: [
-      "Free survey",
-      "Fixed written price",
-      "Own plumbers & electricians",
-      "Finance available",
-      "TrustMark registered",
-      "We come back and fix it",
-    ],
+    problemBody,
+    problemImage: "",
+    problemImageAlt: "",
     features: [
       {
         heading: "One team does the whole job",
-        body: "No juggling trades. Our own team handles strip-out, plumbing, electrics, waterproofing, tiling and fitting, all to one schedule.",
+        body: "You don't need to find a plumber, an electrician or a tiler. Our own team does it all, from start to finish.",
         bullets: [
-          "Design and layout planning",
-          "Plumbing and electrics done in-house",
-          "Proper waterproofing before tiling",
-          "Suite, shower, vanity and fittings installed",
+          "We plan the layout with you",
+          "We take out your old bathroom",
+          "We do the plumbing and electrics",
+          "We waterproof, tile and fit everything",
         ],
         image: `${P}/Bathroom/Bathroom Mid.jpeg`,
         imageAlt: "A bathroom being rebuilt by Greentek's team",
       },
+      priceFeature,
       {
-        heading: "One price, in writing, before we start",
-        body: "After a free survey you get a written quote covering every trade. That's what you pay. The price only changes if you ask for something different, and we agree it with you first.",
-        bullets: [
-          "Free, no-obligation survey",
-          "Every trade in one quote",
-          "Spread the cost with monthly finance, subject to status",
-        ],
-        image: "",
-        imageAlt: "",
+        ...accreditedFeature,
+        image: `${P}/Bathroom/Bathroom Post.jpeg`,
+        imageAlt: "A new shower room fitted by Greentek",
       },
     ],
-    pricingHeading: "What does a bathroom renovation cost?",
-    pricingIntro: "Every bathroom is quoted after a free survey, but these ranges show where most projects land.",
+    pricingHeading: "What does a new bathroom cost?",
+    pricingIntro: "",
     pricingTiers: [
       {
-        name: "Refresh",
-        price: "From £5,000",
-        description: "A new suite and tiling in your existing layout.",
-        features: ["Same layout", "New suite and fittings", "Tiling and flooring"],
-      },
-      {
-        name: "Full renovation",
-        price: "£8,000–£12,000",
-        description: "A new layout with plumbing and electrics moved to suit.",
-        features: ["New layout", "Plumbing and electrics moved", "Walk-in shower options"],
-      },
-      {
-        name: "Premium",
-        price: "£12,000+",
-        description: "Wet rooms, underfloor heating and high-end finishes.",
-        features: ["Wet room or tanked shower", "Underfloor heating", "Premium tiles and fittings"],
+        name: "New bathroom",
+        price: "From £2,999",
+        description: "The final price depends on the room size, the layout and the suite and tiles you pick.",
+        features: ["Free home survey", "Fixed price in writing before we start", "Pay monthly if you like (subject to status)"],
       },
     ],
-    pricingNote:
-      "Your price depends on size, layout changes and the suite and tiles you choose. The survey and quote are free and there's no obligation.",
-    guaranteeHeading: "If it's not right, we come back and fix it, free",
-    steps: [
-      { title: "Get your free quote", body: "Answer four quick questions or call us. It takes two minutes." },
-      { title: "Free home survey", body: "We visit, measure up and talk through the bathroom you want." },
-      { title: "Your fixed price", body: "One written quote that covers every trade. No surprises." },
-      { title: "We build it", body: "Our team does the work to an agreed schedule, then signs it off with you." },
-    ],
-    faqHeading: "Bathroom renovation questions",
+    pricingNote: "The survey and the quote are free. You don't have to go ahead.",
+    steps: steps("bathroom"),
     faqs: [
       {
-        question: "How long does a bathroom renovation take?",
+        question: "How much does a new bathroom cost?",
         answer:
-          "Most bathrooms take one to two weeks once work starts, depending on layout changes. We give you a schedule before we begin, so you know when you'll have a working bathroom again.",
+          "Our bathrooms start from £2,999. The final price depends on the room size, the layout and the suite and tiles you pick. We visit for free, then send you a fixed price in writing.",
+      },
+      {
+        question: "How long does it take?",
+        answer: "Most bathrooms take 1 to 2 weeks once we start. We give you a plan with dates before we begin.",
       },
       fixedFaq,
       financeFaq,
       {
-        question: "Can you turn a bath into a walk-in shower?",
-        answer:
-          "Yes. We move the plumbing, waterproof the area properly and fit the tray or wet-room floor, all in one quote.",
+        question: "Can you swap my bath for a walk-in shower?",
+        answer: "Yes. We move the pipes, waterproof the area and fit the new shower. It is all in one price.",
       },
       areaFaq,
     ],
-    finalHeading: "Ready for your new bathroom? Get your free quote today.",
-    finalBody:
-      "Tell us about your bathroom in four quick steps. We'll call you back within one business day to book your free survey.",
-    finalTicks: ["Fixed written price", "Own plumbers and electricians", "We come back and fix it, free"],
+    finalHeading: "Ready for your new bathroom?",
+    finalBody: "Answer 4 quick questions. We will call you back within 1 working day to book your free survey.",
     finalImage: `${P}/Bathroom/Bathroom Post.jpeg`,
-    finalImageAlt: "A finished shower room fitted by Greentek",
+    finalImageAlt: "A new shower room fitted by Greentek",
     formHeading: "Get your free bathroom quote",
   },
 };

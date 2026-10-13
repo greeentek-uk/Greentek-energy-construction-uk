@@ -1,3 +1,4 @@
+import { createHash } from "node:crypto";
 import { config } from "dotenv";
 import { getDb } from "../src/lib/db/mongodb";
 import { saveRevision } from "../src/lib/db/revisions";
@@ -6,6 +7,14 @@ import { LANDING_PAGE_DEFAULTS } from "../src/data/landingDefaults";
 config({ path: ".env.local" });
 
 const write = process.argv.includes("--write");
+
+const UNEDITED_EARLIER_COPY: Record<string, string[]> = {
+  "lp-kitchen-renovation": ["d630d774afc2b92b"],
+  // 90ae0b… = the bathroom v2 copy before its second before/after was added (2026-10-13).
+  "lp-bathroom-renovation": ["698097e9aa55a124", "90ae0b485f05a32c"],
+};
+
+const fingerprint = (value: unknown) => createHash("sha256").update(JSON.stringify(value)).digest("hex").slice(0, 16);
 
 async function run() {
   const db = await getDb();
@@ -19,13 +28,20 @@ async function run() {
       continue;
     }
     const isV1 = !("results" in (doc.draft ?? {})) || !("results" in (doc.published ?? {}));
-    if (!isV1) {
-      console.log(`  ${key}: already v2 — left alone`);
+    const known = UNEDITED_EARLIER_COPY[key] ?? [];
+    const isUneditedEarlierCopy =
+      known.includes(fingerprint(doc.draft)) && known.includes(fingerprint(doc.published));
+    if (fingerprint(doc.published) === fingerprint(v2) && fingerprint(doc.draft) === fingerprint(v2)) {
+      console.log(`  ${key}: already the latest copy — left alone`);
       continue;
     }
-    console.log(`  ${key}: v1 → v2${write ? "" : " (dry run)"}`);
+    if (!isV1 && !isUneditedEarlierCopy) {
+      console.log(`  ${key}: edited in the panel — left alone`);
+      continue;
+    }
+    console.log(`  ${key}: ${isV1 ? "v1" : "earlier drafted copy"} → latest${write ? "" : " (dry run)"}`);
     if (!write) continue;
-    await saveRevision("pageContent", key, doc.draft, `${key} (before v2 rebuild)`);
+    await saveRevision("pageContent", key, doc.draft, `${key} (before landing copy update)`);
     const now = new Date().toISOString();
     await col.updateOne(
       { _id: key },

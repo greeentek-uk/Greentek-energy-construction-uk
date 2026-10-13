@@ -313,8 +313,8 @@ and the polished living-room / full-home images look like stock). The page and t
 the block through `withLandingDefaults`, so a field a stored doc lacks renders its default.
 **v1 was seeded to production** (commit b43f2d7, unedited — checked); after deploying v2 run
 `pnpm migrate:landing-v2 --write` (dry run without the flag; only touches v1-shaped docs, snapshots
-to Version History first). The drafted price ranges are generic UK figures awaiting the owner's
-real ones. Enquiries arrive with source "Ad landing page — …" and, from the page URL's tags
+to Version History first). Prices: bathroom "from £2,999" (owner, 2026-10-13); kitchen shows none until the owner gives real ones.
+Enquiries arrive with source "Ad landing page — …" and, from the page URL's tags
 (`lib/attribution.ts`), the paid click / UTM rows in the email.
 
 **Footer** (rebuilt 2026-10-13, owner: "rethink it"): the Footer CTA is a photo band of its own;

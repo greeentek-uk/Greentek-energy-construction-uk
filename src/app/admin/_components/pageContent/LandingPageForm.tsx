@@ -169,12 +169,17 @@ export default function LandingPageForm({
         />
       </Section>
 
-      <Section n={13} title="FAQs" hint="Answer the objections that stop people enquiring: cost, time, mess, finance, area.">
+      <Section n={13} title="Areas we cover" hint="The area names come from your location pages (Admin → Locations).">
+        <Field label="Heading" name="areasHeading" defaultValue={content.areasHeading} />
+        <Field label="Text" name="areasBody" defaultValue={content.areasBody} textarea rows={2} />
+      </Section>
+
+      <Section n={14} title="FAQs" hint="Answer the objections that stop people enquiring: cost, time, mess, finance, area.">
         <Field label="Heading" name="faqHeading" defaultValue={content.faqHeading} />
         <FaqEditor initial={content.faqs} />
       </Section>
 
-      <Section n={14} title="Closing section with the quote form">
+      <Section n={15} title="Closing section with the quote form">
         <Field label="Heading" name="finalHeading" defaultValue={content.finalHeading} />
         <Field label="Text" name="finalBody" defaultValue={content.finalBody} textarea rows={2} />
         <Field label="Ticks (one per line)" name="finalTicks" defaultValue={content.finalTicks.join("\n")} textarea rows={3} />
@@ -187,7 +192,7 @@ export default function LandingPageForm({
         />
       </Section>
 
-      <Section n={15} title="Quote form & phone bar" hint="The form opens from every quote button, and sits in the closing section.">
+      <Section n={16} title="Quote form & phone bar" hint="The form opens from every quote button, and sits in the closing section.">
         <div className="grid sm:grid-cols-2 gap-4">
           <Field label="Form heading" name="formHeading" defaultValue={content.formHeading} />
           <Field label="Form subheading" name="formSubheading" defaultValue={content.formSubheading} />

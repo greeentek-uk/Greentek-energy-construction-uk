@@ -290,6 +290,8 @@ export interface LandingPageContent {
   stepsHeading: string;
   steps: { title: string; body: string }[];
   stats: { value: string; label: string }[];
+  areasHeading: string;
+  areasBody: string;
   faqHeading: string;
   faqs: FaqItem[];
   finalHeading: string;

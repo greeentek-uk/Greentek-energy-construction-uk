@@ -272,6 +272,8 @@ function parseBlockFields(key: PageContentKey, formData: FormData): PageContentM
         stepsHeading: str(formData, "stepsHeading"),
         steps: cleanItems(formData, "steps", ["title", "body"]),
         stats: cleanItems(formData, "stats", ["value", "label"]),
+        areasHeading: str(formData, "areasHeading"),
+        areasBody: str(formData, "areasBody"),
         faqHeading: str(formData, "faqHeading"),
         faqs: parseFaqs(formData),
         finalHeading: str(formData, "finalHeading"),
