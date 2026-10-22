@@ -8,7 +8,11 @@ import Breadcrumbs from "@/components/site/Breadcrumbs";
 import Link from "@/components/ui/Link";
 import { getPageContent } from "@/lib/cms";
 import { withSeoOverride } from "@/lib/seo";
-import { FINANCE_PROVIDERS, financeProvider, paragraphs } from "@/lib/financeProviders";
+import {
+  FINANCE_PROVIDERS,
+  financeProvider,
+  paragraphs,
+} from "@/lib/financeProviders";
 import IdealRates from "../IdealRates";
 import {
   ActionLink,
@@ -51,7 +55,12 @@ export default async function FinanceProviderPage({ params }: Props) {
   return (
     <div className="flex flex-col min-h-screen bg-black">
       <PageSchema path={`/finance/${meta.slug}`} />
-      <Breadcrumbs crumbs={[{ label: "Finance", href: "/finance" }, { label: provider.name }]} />
+      <Breadcrumbs
+        crumbs={[
+          { label: "Finance", href: "/finance" },
+          { label: provider.name },
+        ]}
+      />
       <Header />
 
       <main className="flex-1">
@@ -59,7 +68,11 @@ export default async function FinanceProviderPage({ params }: Props) {
           <div className="bg-black/75 pt-20 py-14">
             <div className="mx-auto max-w-4xl px-6 text-center">
               <div className="mx-auto mb-6 flex h-16 w-fit items-center rounded-2xl bg-black/40 px-5">
-                <ProviderLogo provider={provider} className="h-10 md:h-12" priority />
+                <ProviderLogo
+                  provider={provider}
+                  className="h-10 md:h-12"
+                  priority
+                />
               </div>
               <h1 className="text-[2rem] md:text-[3.5rem] font-bold leading-[1.15] text-white mb-6 text-balance">
                 {provider.heading}
@@ -69,13 +82,19 @@ export default async function FinanceProviderPage({ params }: Props) {
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 {provider.applyLabel && provider.applyUrl && (
-                  <ActionLink href={provider.applyUrl} className={primaryButton}>
+                  <ActionLink
+                    href={provider.applyUrl}
+                    className={primaryButton}
+                  >
                     {provider.applyLabel}
                     <ArrowRight className="h-4 w-4" />
                   </ActionLink>
                 )}
                 {provider.secondaryLabel && provider.secondaryUrl && (
-                  <ActionLink href={provider.secondaryUrl} className={secondaryButton}>
+                  <ActionLink
+                    href={provider.secondaryUrl}
+                    className={secondaryButton}
+                  >
                     {provider.secondaryLabel}
                   </ActionLink>
                 )}
@@ -97,8 +116,14 @@ export default async function FinanceProviderPage({ params }: Props) {
                   </h2>
                   <ul className="grid gap-3 sm:grid-cols-2">
                     {provider.features.map((f) => (
-                      <li key={f} className="flex gap-3 rounded-xl bg-white/5 border border-white/10 px-5 py-4 text-white/80">
-                        <span className="mt-2 h-2 w-2 shrink-0 rounded-full bg-[#c5eb02]" aria-hidden />
+                      <li
+                        key={f}
+                        className="flex gap-3 rounded-xl bg-white/5 border border-white/10 px-5 py-4 text-white/80"
+                      >
+                        <span
+                          className="mt-2 h-2 w-2 shrink-0 rounded-full bg-[#c5eb02]"
+                          aria-hidden
+                        />
                         {f}
                       </li>
                     ))}
@@ -111,7 +136,10 @@ export default async function FinanceProviderPage({ params }: Props) {
                     How it works
                   </h2>
                   {paragraphs(provider.howItWorks).map((p) => (
-                    <p key={p} className="text-lg text-white/75 leading-relaxed mb-4">
+                    <p
+                      key={p}
+                      className="text-lg text-white/75 leading-relaxed mb-4"
+                    >
                       {p}
                     </p>
                   ))}
@@ -145,20 +173,6 @@ export default async function FinanceProviderPage({ params }: Props) {
               <div className="border-t border-white/10 pt-6">
                 <Disclosure text={provider.disclosure} />
               </div>
-              {others.length > 0 && (
-                <p className="text-sm text-white/60 text-center">
-                  Also available:{" "}
-                  {others.map((o, i) => (
-                    <span key={o.slug}>
-                      {i > 0 && ", "}
-                      <Link href={`/finance/${o.slug}`} className="text-[#c5eb02] font-semibold hover:underline">
-                        finance with {o.name}
-                      </Link>
-                    </span>
-                  ))}{" "}
-                  · <Link href="/finance" className="text-[#c5eb02] font-semibold hover:underline">compare both</Link>
-                </p>
-              )}
             </div>
           </div>
         </section>
