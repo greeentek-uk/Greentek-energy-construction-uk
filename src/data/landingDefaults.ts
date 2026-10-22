@@ -5,7 +5,7 @@ const P = "/images/projects";
 const shared = {
   ratingText: "Rated Excellent on Trustpilot · 500+ jobs done",
   quoteButtonLabel: "Get my free quote",
-  socialProofLine: "Join 500+ homeowners across the West Midlands and Wales",
+  socialProofLine: "Join 500+ homeowners across the UK",
   reviewsHeading: "What our customers say",
   tickerItems: [
     "Free home survey",
@@ -25,8 +25,30 @@ const shared = {
     { value: "8", label: "industry bodies check our work" },
     { value: "1", label: "team does the whole job" },
   ],
-  areasHeading: "We cover the West Midlands and Wales",
-  areasBody: "Not sure if we cover your area? Put your postcode in the form and we will tell you straight away.",
+  // Based in Birmingham; most work is the West Midlands, Wales and London, and
+  // further afield only when the job makes the travel feasible (owner,
+  // 2026-10-22). The chips are a list of their own rather than the location
+  // pages, so naming a place here doesn't need eleven new combo pages.
+  areasHeading: "Based in Birmingham, working across the UK",
+  areasBody:
+    "Most of our work is in the West Midlands, Wales and London. We also travel to other major towns and cities when the project makes it feasible. Put your postcode in the form and we will tell you straight away.",
+  areaNames: [
+    "Birmingham",
+    "Solihull",
+    "Wolverhampton",
+    "Coventry",
+    "Dudley",
+    "Walsall",
+    "West Bromwich",
+    "Sutton Coldfield",
+    "Worcester",
+    "Stafford",
+    "Telford",
+    "Cardiff",
+    "Swansea",
+    "Newport",
+    "London",
+  ],
   faqHeading: "Your questions, answered",
   finalTicks: ["Fixed price in writing", "Our own plumbers and electricians", "Free fix if anything is not right"],
   formSubheading: "4 quick steps. We reply within 1 working day.",
@@ -70,7 +92,8 @@ const financeFaq = {
 };
 const areaFaq = {
   question: "Which areas do you cover?",
-  answer: "We work across the West Midlands and Wales. Put your postcode in the form and we will tell you straight away.",
+  answer:
+    "We are based in Birmingham and work across the West Midlands, Wales and London. We also travel to other major towns and cities across the UK when the project makes it feasible. Put your postcode in the form and we will tell you straight away.",
 };
 
 export const LANDING_PAGE_DEFAULTS: Record<
@@ -81,7 +104,7 @@ export const LANDING_PAGE_DEFAULTS: Record<
     ...shared,
     metaTitle: "New Kitchens from £4,999 | Free Survey | Greentek",
     metaDescription:
-      "Get a new kitchen from £4,999, fitted by one team at one fixed price. Free home survey across the West Midlands and Wales.",
+      "Get a new kitchen from £4,999, fitted by one team at one fixed price. Free home survey across most of the UK.",
     offerBar: "New kitchens from £4,999. Free home survey and a fixed price in writing.",
     heroHeading: "Get a new kitchen from £4,999, fitted by one team",
     heroHighlight: "from £4,999",
@@ -194,7 +217,7 @@ export const LANDING_PAGE_DEFAULTS: Record<
     ...shared,
     metaTitle: "New Bathrooms from £2,999 | Free Survey | Greentek",
     metaDescription:
-      "Get a new bathroom from £2,999, fitted by one team at one fixed price. Free home survey across the West Midlands and Wales.",
+      "Get a new bathroom from £2,999, fitted by one team at one fixed price. Free home survey across most of the UK.",
     offerBar: "New bathrooms from £2,999. Free home survey and a fixed price in writing.",
     heroHeading: "Get a new bathroom from £2,999, fitted by one team",
     heroHighlight: "from £2,999",

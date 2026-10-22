@@ -169,9 +169,10 @@ export default function LandingPageForm({
         />
       </Section>
 
-      <Section n={13} title="Areas we cover" hint="The area names come from your location pages (Admin → Locations).">
+      <Section n={13} title="Areas we cover" hint="Leave the place names blank to show your location pages (Admin → Locations) instead.">
         <Field label="Heading" name="areasHeading" defaultValue={content.areasHeading} />
         <Field label="Text" name="areasBody" defaultValue={content.areasBody} textarea rows={2} />
+        <Field label="Place names (one per line)" name="areaNames" defaultValue={content.areaNames.join("\n")} textarea rows={6} />
       </Section>
 
       <Section n={14} title="FAQs" hint="Answer the objections that stop people enquiring: cost, time, mess, finance, area.">

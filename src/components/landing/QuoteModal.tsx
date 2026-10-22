@@ -9,11 +9,13 @@ export default function QuoteModal({
   subheading,
   source,
   fixedService,
+  askAddress = false,
 }: {
   heading: string;
   subheading: string;
   source: string;
   fixedService: FixedService;
+  askAddress?: boolean;
 }) {
   const dialogRef = useRef<HTMLDialogElement>(null);
 
@@ -64,6 +66,7 @@ export default function QuoteModal({
             source={source}
             fixedService={fixedService}
             idPrefix="quote"
+            askAddress={askAddress}
           />
         </div>
       </div>

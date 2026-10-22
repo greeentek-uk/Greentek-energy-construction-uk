@@ -14,6 +14,7 @@
     "seed:combo-body": "tsx scripts/seed-combo-body.ts",
     "seed:location-faqs": "tsx scripts/seed-location-faqs.ts",
     "migrate:landing-v2": "tsx scripts/migrate-landing-v2.ts",
+    "migrate:landing-areas": "tsx scripts/migrate-landing-areas.ts",
     "flatten:home-hero": "tsx scripts/flatten-home-hero.ts",
     "db:indexes": "tsx scripts/ensure-indexes.ts",
     "preflight": "tsx scripts/preflight.ts",

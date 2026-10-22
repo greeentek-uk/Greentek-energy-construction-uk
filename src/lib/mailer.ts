@@ -14,6 +14,8 @@ export interface QuoteRequestPayload {
   email: string;
   phone: string;
   postcode: string;
+  /** Only some forms ask for it; the row is left out when blank. */
+  address?: string;
   service: string;
   property_type: string;
   is_homeowner: string;
@@ -72,6 +74,7 @@ export async function sendQuoteRequestEmail(data: QuoteRequestPayload): Promise<
     ["Name", data.full_name],
     ["Email", data.email],
     ["Phone", data.phone],
+    ...(data.address ? ([["Address", data.address]] as [string, string][]) : []),
     ["Postcode", data.postcode],
     ["Service", (serviceLabel(data.service) || humanize(data.service))],
     ["Property type", humanize(data.property_type)],

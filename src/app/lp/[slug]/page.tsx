@@ -183,6 +183,11 @@ export default async function LandingPage({ params }: Props) {
   const content = withLandingDefaults(meta.block, stored);
   const source = `Ad landing page — ${meta.name}`;
   const fixedService = { value: meta.service, label: meta.name };
+  // Bathroom enquiries also give the property's address (owner's request, 2026-10-22).
+  const askAddress = meta.slug === "bathroom-renovation";
+  const areaNames = content.areaNames.length
+    ? content.areaNames
+    : siteConfig.locations.map((location) => location.name);
   const reviews = testimonials.items;
   const phone = siteConfig.phone;
   const cta = { label: content.quoteButtonLabel || "Get my free quote", phone, proof: content.socialProofLine, reviews };
@@ -562,19 +567,19 @@ export default async function LandingPage({ params }: Props) {
           </section>
         )}
 
-        {content.areasHeading && siteConfig.locations.length > 0 && (
+        {content.areasHeading && areaNames.length > 0 && (
           <section className="bg-[#f6f7f2] py-16 md:py-20">
             <div className="site-container text-center">
               <h2 className={`${h2} mx-auto max-w-3xl`}>{content.areasHeading}</h2>
               {content.areasBody && <p className="mx-auto mt-4 max-w-2xl text-lg text-[#0b0d0e]/70">{content.areasBody}</p>}
               <ul className="mt-8 flex flex-wrap justify-center gap-3">
-                {siteConfig.locations.map((location) => (
+                {areaNames.map((name) => (
                   <li
-                    key={location.slug}
+                    key={name}
                     className="flex items-center gap-2 rounded-full border border-black/10 bg-white px-5 py-2.5 font-semibold"
                   >
                     <MapPin className="h-4 w-4 text-[#0b0d0e]/60" aria-hidden />
-                    {location.name}
+                    {name}
                   </li>
                 ))}
               </ul>
@@ -652,6 +657,7 @@ export default async function LandingPage({ params }: Props) {
                 subheading={content.formSubheading}
                 source={source}
                 fixedService={fixedService}
+                askAddress={askAddress}
               />
             </div>
           </div>
@@ -668,6 +674,7 @@ export default async function LandingPage({ params }: Props) {
         subheading={content.formSubheading}
         source={source}
         fixedService={fixedService}
+        askAddress={askAddress}
       />
       <StickyQuoteBar
         phone={phone}

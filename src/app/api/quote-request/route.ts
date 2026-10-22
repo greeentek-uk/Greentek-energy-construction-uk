@@ -68,6 +68,8 @@ export async function POST(request: Request) {
     email: String(body.email),
     phone: String(body.phone),
     postcode: String(body.postcode),
+    // Capped: it's free text from a public form going into an email.
+    address: typeof body.address === "string" ? body.address.trim().slice(0, 300) : "",
     service: String(body.service),
     property_type: String(body.property_type || ""),
     is_homeowner: String(body.is_homeowner || ""),

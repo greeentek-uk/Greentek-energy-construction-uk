@@ -36,6 +36,10 @@ import PropertyPhotoPicker, { type EnquiryRef, type PhotoItem } from "./Property
  * someone reading the solar page has already told us it's solar, and asking
  * again reads as a form that wasn't paying attention. The value is still
  * submitted, so the inbox sees no difference.
+ *
+ * `askAddress` adds the property's address to the last step (bathroom ad
+ * landing page). It sits with the contact details rather than beside the
+ * postcode in step 1, so the opening step stays one quick question.
  */
 const fieldClass =
   "w-full min-h-12 px-4 py-3 rounded-xl bg-white/15 backdrop-blur-sm border border-white/20 focus:border-[#c5eb02] focus:ring-4 focus:ring-[#c5eb02]/10 transition-all outline-none font-medium text-white placeholder:text-white/60 text-base sm:text-sm";
@@ -119,6 +123,7 @@ export default function HeroQuoteForm({
   source = "Homepage hero",
   fixedService,
   idPrefix = "hero",
+  askAddress = false,
 }: {
   heading: string;
   subheading: string;
@@ -127,6 +132,8 @@ export default function HeroQuoteForm({
   /** Set on a single-service page to skip the project type and service questions. */
   fixedService?: FixedService;
   idPrefix?: string;
+  /** Ask for the property's address (required) in the last step. */
+  askAddress?: boolean;
 }) {
   const router = useRouter();
   const started = useRef(false);
@@ -142,6 +149,7 @@ export default function HeroQuoteForm({
     project_type: "construction" as ProjectType,
     service: fixedService?.value ?? "",
     postcode: "",
+    address: "",
     property_type: "" as "" | "residential" | "commercial",
     is_homeowner: "",
     timeline: "",
@@ -219,6 +227,7 @@ export default function HeroQuoteForm({
     if (!form.full_name.trim()) return setError("Enter your name.");
     if (!form.email.trim()) return setError("Enter your email.");
     if (!form.phone.trim()) return setError("Enter your phone number.");
+    if (askAddress && !form.address.trim()) return setError("Enter the property's address.");
     if (!form.consent) return setError("Please tick the consent box so we can reply.");
     if (uploading) return setError("Your photos are still uploading — one moment.");
 
@@ -229,9 +238,10 @@ export default function HeroQuoteForm({
     const eventId = newEventId();
     try {
       // project_type is carried in the service value itself (energy_… / construction_…).
-      const { project_type, ...fields } = form;
+      const { project_type, address, ...fields } = form;
       await submitQuoteRequest({
         ...fields,
+        ...(askAddress ? { address: address.trim() } : {}),
         // A photo that failed to upload is left out rather than blocking the enquiry.
         photos: photos.flatMap((p) => (p.status === "done" && p.url ? [p.url] : [])),
         enquiry,
@@ -510,10 +520,27 @@ export default function HeroQuoteForm({
                 onChange={(e) => set("phone", e.target.value)}
                 placeholder="Phone number"
                 autoComplete="tel"
-                enterKeyHint="send"
+                enterKeyHint={askAddress ? "next" : "send"}
                 className={fieldClass}
               />
             </div>
+            {askAddress && (
+              <div>
+                <label htmlFor={`${idPrefix}_address`} className="sr-only">
+                  Property address
+                </label>
+                <input
+                  id={`${idPrefix}_address`}
+                  value={form.address}
+                  onChange={(e) => set("address", e.target.value)}
+                  placeholder={`Property address${form.postcode ? ` (${form.postcode.trim()})` : ""}`}
+                  autoComplete="street-address"
+                  autoCapitalize="words"
+                  enterKeyHint="send"
+                  className={fieldClass}
+                />
+              </div>
+            )}
 
             {/* The whole row is the tap target, not just the small box. */}
             <label className="flex min-h-11 cursor-pointer items-start gap-3 text-xs text-white/70 leading-relaxed">

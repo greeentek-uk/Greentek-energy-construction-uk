@@ -190,6 +190,8 @@ export interface QuoteSubmission {
   email: string;
   phone: string;
   postcode: string;
+  /** Street address; only asked for on some forms (bathroom ad landing page). */
+  address?: string;
   service: string;
   property_type?: string;
   is_homeowner?: string;

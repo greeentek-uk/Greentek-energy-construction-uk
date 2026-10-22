@@ -292,6 +292,8 @@ export interface LandingPageContent {
   stats: { value: string; label: string }[];
   areasHeading: string;
   areasBody: string;
+  /** Place names shown as chips. Blank = the location pages' names. */
+  areaNames: string[];
   faqHeading: string;
   faqs: FaqItem[];
   finalHeading: string;
