@@ -57,10 +57,14 @@ export default function BeforeAfterSlider({
     setSliderPos(Math.min(100, Math.max(0, pct)));
   }, []);
 
+  // Only the round handle starts a drag. The whole frame used to: it was
+  // `touch-none`, so a thumb landing on the photo couldn't scroll the page on
+  // a phone, and any tap jumped the divider to wherever it landed (owner,
+  // 2026-10-22). The frame is now `touch-pan-y`, so it scrolls like any image.
   const handlePointerDown = (e: React.PointerEvent) => {
+    if (!(e.target as Element).closest("[data-slider-handle]")) return;
     draggingRef.current = true;
-    (e.target as Element).setPointerCapture(e.pointerId);
-    updatePosFromClientX(e.clientX);
+    e.currentTarget.setPointerCapture(e.pointerId);
   };
 
   const handlePointerMove = (e: React.PointerEvent) => {
@@ -80,11 +84,11 @@ export default function BeforeAfterSlider({
   return (
     <div
       ref={containerRef}
-      className={`relative rounded-xl overflow-hidden border-8 border-white w-full select-none touch-none cursor-ew-resize ${className}`}
+      className={`relative rounded-xl overflow-hidden border-8 border-white w-full select-none touch-pan-y ${className}`}
       onPointerDown={handlePointerDown}
       onPointerMove={handlePointerMove}
       onPointerUp={handlePointerUp}
-      onPointerLeave={handlePointerUp}
+      onPointerCancel={handlePointerUp}
     >
       {/* After image (base layer) */}
       <Image
@@ -131,8 +135,15 @@ export default function BeforeAfterSlider({
         className="absolute top-0 bottom-0 w-0.5 bg-white pointer-events-none"
         style={{ left: `${sliderPos}%` }}
       >
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-white shadow-lg flex items-center justify-center">
-          <MoveHorizontal className="h-4 w-4 text-black" />
+        {/* 48px touch target around the 36px knob; touch-none here only, so
+            dragging the handle sideways doesn't scroll the page instead. */}
+        <div
+          data-slider-handle
+          className="pointer-events-auto touch-none cursor-ew-resize absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 grid h-12 w-12 place-items-center"
+        >
+          <div className="w-9 h-9 rounded-full bg-white shadow-lg flex items-center justify-center">
+            <MoveHorizontal className="h-4 w-4 text-black" />
+          </div>
         </div>
       </div>
     </div>
