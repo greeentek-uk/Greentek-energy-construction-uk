@@ -37,7 +37,7 @@ export default function LandingHeader({
           <div className="flex items-center gap-3">
             <a
               href={tel}
-              className="inline-flex items-center gap-2 rounded-lg border border-white/25 px-3.5 py-2.5 text-sm font-bold text-white transition hover:border-[#c5eb02] hover:text-[#c5eb02]"
+              className="inline-flex items-center gap-2 rounded-full border border-white/25 px-4 py-2.5 text-sm font-bold text-white transition hover:border-[#c5eb02] hover:text-[#c5eb02]"
             >
               <Phone className="h-4 w-4" aria-hidden />
               <span className="whitespace-nowrap">{phone}</span>
@@ -45,7 +45,7 @@ export default function LandingHeader({
             <a
               href="#quote"
               data-quote
-              className="hidden sm:inline-flex rounded-lg bg-[#c5eb02] px-5 py-2.5 text-sm font-extrabold uppercase tracking-wide text-black transition hover:bg-[#d4f53a]"
+              className="hidden sm:inline-flex rounded-full bg-[#c5eb02] px-5 py-2.5 text-sm font-extrabold uppercase tracking-wide text-black transition hover:bg-[#d4f53a]"
             >
               {quoteLabel}
             </a>

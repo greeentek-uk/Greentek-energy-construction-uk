@@ -35,7 +35,7 @@ export default function StickyQuoteBar({
         <a
           href={`tel:${phone.replace(/[^\d+]/g, "")}`}
           tabIndex={shown ? 0 : -1}
-          className="flex min-h-12 items-center justify-center gap-2 rounded-xl border border-white/25 text-sm font-bold text-white active:scale-[.98]"
+          className="flex min-h-12 items-center justify-center gap-2 rounded-full border border-white/25 text-sm font-bold text-white active:scale-[.98]"
         >
           <Phone className="h-4 w-4" aria-hidden />
           {callLabel}
@@ -44,7 +44,7 @@ export default function StickyQuoteBar({
           href="#quote"
           data-quote
           tabIndex={shown ? 0 : -1}
-          className="flex min-h-12 items-center justify-center gap-2 rounded-xl bg-[#c5eb02] text-sm font-bold text-black active:scale-[.98]"
+          className="flex min-h-12 items-center justify-center gap-2 rounded-full bg-[#c5eb02] text-sm font-bold text-black active:scale-[.98]"
         >
           <FileText className="h-4 w-4" aria-hidden />
           {quoteLabel}

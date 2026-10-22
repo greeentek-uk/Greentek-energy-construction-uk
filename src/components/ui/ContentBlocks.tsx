@@ -193,7 +193,7 @@ export default function ContentBlocks({
               />
               <Link
                 href={block.ctaLink || "/contact"}
-                className="inline-block rounded-lg bg-[#c5eb02] px-8 py-4 font-semibold text-black hover:bg-[#c5eb02]/80 transition-colors"
+                className="inline-block rounded-full bg-[#c5eb02] px-8 py-4 font-semibold text-black hover:bg-[#c5eb02]/80 transition-colors"
               >
                 {block.ctaText || "Get a Free Quote"}
               </Link>

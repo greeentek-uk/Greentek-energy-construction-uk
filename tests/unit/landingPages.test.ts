@@ -31,6 +31,9 @@ describe("ad landing pages", () => {
       LANDING_PAGE_DEFAULTS[block].pricingTiers.map((t) => t.price);
     expect(bands("lp-bathroom-renovation")).toEqual(["£2,999–£5,999", "£6,000–£9,999", "£10,000+"]);
     expect(bands("lp-kitchen-renovation")).toEqual(["£4,999–£9,999", "£10,000–£19,999", "£20,000+"]);
+    // No brackets given for these yet, so the pricing section stays hidden.
+    expect(bands("lp-solar-panels")).toEqual([]);
+    expect(bands("lp-air-source-heat-pumps")).toEqual([]);
     const prices = JSON.stringify(LANDING_PAGE_DEFAULTS).match(/£\d{1,3}(?:,\d{3})*/g) ?? [];
     expect(new Set(prices)).toEqual(
       new Set(["£2,999", "£5,999", "£6,000", "£9,999", "£10,000", "£4,999", "£19,999", "£20,000"]),
@@ -44,6 +47,8 @@ describe("ad landing pages", () => {
 
   it("lookup and reserved slug", () => {
     expect(landingPage("kitchen-renovation")?.block).toBe("lp-kitchen-renovation");
+    expect(landingPage("solar-panels")?.block).toBe("lp-solar-panels");
+    expect(landingPage("air-source-heat-pumps")?.block).toBe("lp-air-source-heat-pumps");
     expect(landingPage("nope")).toBeUndefined();
     expect(RESERVED_SLUGS).toContain("lp");
   });

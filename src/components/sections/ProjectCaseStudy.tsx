@@ -53,7 +53,7 @@ export default function ProjectCaseStudy({
             <p className="mb-5 w-fit rounded-2xl bg-[#28282C] px-3 py-1 text-[10px] font-semibold uppercase text-[#c5eb02] md:text-[14px]">
               {labels.eyebrow || "Case study"}
             </p>
-            <h2 className="text-[1.625rem] font-bold leading-[1.2] text-white md:text-[2.25rem]">
+            <h2 className="text-[1.625rem] md:text-[2.5rem] font-bold leading-[1.2] text-white">
               {labels.heading || project.title}
             </h2>
             <p className="mt-4 text-lg font-medium leading-relaxed text-white/85">

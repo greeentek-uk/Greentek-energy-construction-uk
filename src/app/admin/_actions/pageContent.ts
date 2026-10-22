@@ -232,6 +232,8 @@ function parseBlockFields(key: PageContentKey, formData: FormData): PageContentM
       };
     case "lp-kitchen-renovation":
     case "lp-bathroom-renovation":
+    case "lp-solar-panels":
+    case "lp-air-source-heat-pumps":
       return {
         metaTitle: str(formData, "metaTitle"),
         metaDescription: str(formData, "metaDescription"),

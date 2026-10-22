@@ -174,6 +174,8 @@ export default async function EditPageContentPage({ params, searchParams }: Prop
               return <FinanceProviderForm blockKey={key} content={content as PageContentMap["finance-phoenix"]} />;
             case "lp-kitchen-renovation":
             case "lp-bathroom-renovation":
+            case "lp-solar-panels":
+            case "lp-air-source-heat-pumps":
               return <LandingPageForm blockKey={key} content={withLandingDefaults(key, content as PageContentMap[typeof key])} />;
             case "about-page":
               return <AboutPageForm content={content as PageContentMap["about-page"]} />;

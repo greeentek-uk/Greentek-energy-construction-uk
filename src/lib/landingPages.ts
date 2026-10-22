@@ -14,6 +14,18 @@ export const LANDING_PAGES = [
     name: "Bathroom renovation",
     service: "construction_bathroom",
   },
+  {
+    slug: "solar-panels",
+    block: "lp-solar-panels",
+    name: "Solar panels",
+    service: "energy_solar_pv",
+  },
+  {
+    slug: "air-source-heat-pumps",
+    block: "lp-air-source-heat-pumps",
+    name: "Air source heat pumps",
+    service: "energy_heat_pump",
+  },
 ] as const satisfies readonly { slug: string; block: PageContentKey; name: string; service: string }[];
 
 export function landingPage(slug: string) {

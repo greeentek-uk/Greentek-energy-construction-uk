@@ -229,7 +229,7 @@ export default function ProjectsClient({
       <div className="mt-14 md:mt-16 flex justify-center items-center">
         <Link
           href="/projects"
-          className="w-fit rounded px-4 py-3 text-sm md:text-[18px] font-semibold text-black backdrop-blur-sm transition active:scale-95 bg-[#c5eb02]"
+          className="w-fit rounded-full px-5 py-3 text-sm md:text-[18px] font-semibold text-black backdrop-blur-sm transition active:scale-95 bg-[#c5eb02]"
         >
           {ctaLabel}{" "}
           <ArrowRight className="inline ml-2 bg-black rounded px-1 py-1 text-white" />

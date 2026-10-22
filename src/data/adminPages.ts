@@ -115,9 +115,16 @@ export const CONTENT_PAGES: ContentPage[] = [
       { key: "finance-banner", note: "The strip under the hero on service and location pages" },
     ],
   },
-  ...(["kitchen-renovation", "bathroom-renovation"] as const).map((slug) => ({
+  ...(
+    [
+      ["kitchen-renovation", "Kitchen"],
+      ["bathroom-renovation", "Bathroom"],
+      ["solar-panels", "Solar panels"],
+      ["air-source-heat-pumps", "Air source heat pumps"],
+    ] as const
+  ).map(([slug, name]) => ({
     id: `lp-${slug}`,
-    label: `Ad landing page — ${slug === "kitchen-renovation" ? "Kitchen" : "Bathroom"}`,
+    label: `Ad landing page — ${name}`,
     path: `/lp/${slug}`,
     sections: [
       { key: `lp-${slug}` as const, note: "All of this page's own wording, in page order" },

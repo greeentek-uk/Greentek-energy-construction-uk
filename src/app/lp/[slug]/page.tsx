@@ -115,13 +115,13 @@ function Cta({
         <a
           href="#quote"
           data-quote
-          className="inline-flex min-h-14 items-center justify-center rounded-xl bg-[#c5eb02] px-8 text-base font-extrabold uppercase tracking-wide text-black shadow-[0_8px_24px_-8px_rgba(197,235,2,0.6)] transition hover:bg-[#d4f53a] active:scale-[.98]"
+          className="inline-flex min-h-14 items-center justify-center rounded-full bg-[#c5eb02] px-8 text-base font-extrabold uppercase tracking-wide text-black shadow-[0_8px_24px_-8px_rgba(197,235,2,0.6)] transition hover:bg-[#d4f53a] active:scale-[.98]"
         >
           {label}
         </a>
         <a
           href={`tel:${phone.replace(/[^\d+]/g, "")}`}
-          className={`inline-flex min-h-14 items-center justify-center gap-2 rounded-xl px-7 text-base font-bold transition active:scale-[.98] ${
+          className={`inline-flex min-h-14 items-center justify-center gap-2 rounded-full px-7 text-base font-bold transition active:scale-[.98] ${
             dark
               ? "border-2 border-white/30 text-white hover:border-white"
               : "bg-[#0b0d0e] text-white hover:bg-black"

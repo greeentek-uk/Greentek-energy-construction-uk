@@ -35,6 +35,8 @@ const GROUPS: { title?: string; items: NavItem[] }[] = [
       { href: "/admin/pages", label: "Other pages" },
       { href: "/admin/content/lp-kitchen-renovation", label: "Ad page — Kitchen" },
       { href: "/admin/content/lp-bathroom-renovation", label: "Ad page — Bathroom" },
+      { href: "/admin/content/lp-solar-panels", label: "Ad page — Solar" },
+      { href: "/admin/content/lp-air-source-heat-pumps", label: "Ad page — Heat pumps" },
       { href: "/admin/content/shared", label: "Shared sections" },
     ],
   },

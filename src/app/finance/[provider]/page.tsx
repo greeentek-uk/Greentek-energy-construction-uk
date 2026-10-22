@@ -111,7 +111,7 @@ export default async function FinanceProviderPage({ params }: Props) {
             <div className="site-prose mx-auto space-y-14">
               {provider.features.length > 0 && (
                 <div>
-                  <h2 className="text-[1.625rem] md:text-[2.25rem] font-bold leading-[1.2] text-white mb-6 text-center">
+                  <h2 className="text-[1.625rem] md:text-[2.5rem] font-bold leading-[1.2] text-white mb-6 text-center">
                     Key points
                   </h2>
                   <ul className="grid gap-3 sm:grid-cols-2">
@@ -132,7 +132,7 @@ export default async function FinanceProviderPage({ params }: Props) {
               )}
               {provider.howItWorks && (
                 <div className="text-center">
-                  <h2 className="text-[1.625rem] md:text-[2.25rem] font-bold leading-[1.2] text-white mb-6">
+                  <h2 className="text-[1.625rem] md:text-[2.5rem] font-bold leading-[1.2] text-white mb-6">
                     How it works
                   </h2>
                   {paragraphs(provider.howItWorks).map((p) => (

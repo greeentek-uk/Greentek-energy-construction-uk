@@ -199,7 +199,7 @@ export default async function BlogDetailPage({ params }: Props) {
         {related.length > 0 && (
           <section className="pb-12 lg:pb-24">
             <div className="site-container">
-              <h2 className="text-[1.5rem] md:text-[2rem] font-bold leading-tight text-white mb-8">
+              <h2 className="text-[1.625rem] md:text-[2.5rem] font-bold leading-[1.2] text-white mb-8">
                 Related articles
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

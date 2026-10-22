@@ -29,7 +29,7 @@ export default async function ThankYouPage({ searchParams }: Props) {
           <span className="mb-6 grid h-14 w-14 place-items-center rounded-full bg-[#c5eb02]">
             <Check className="h-7 w-7 text-black" />
           </span>
-          <h1 className="text-[2rem] font-bold leading-[1.15] text-white md:text-[2.75rem] text-balance">
+          <h1 className="text-[2rem] md:text-[3.5rem] font-bold leading-[1.15] text-white text-balance">
             Thanks, your enquiry is with us
           </h1>
           <p className="mt-4 text-lg leading-relaxed text-white/75">
@@ -49,13 +49,13 @@ export default async function ThankYouPage({ searchParams }: Props) {
           <div className="mt-8 flex flex-wrap justify-center gap-3">
             <Link
               href="/"
-              className="rounded bg-[#c5eb02] px-5 py-3 text-sm font-semibold text-black transition active:scale-95 md:text-base"
+              className="rounded-full bg-[#c5eb02] px-5 py-3 text-sm font-semibold text-black transition active:scale-95 md:text-base"
             >
               Back to home
             </Link>
             <Link
               href="/projects"
-              className="group inline-flex items-center gap-2 rounded border border-white/25 px-5 py-3 text-sm font-semibold text-white transition-colors hover:border-[#c5eb02] hover:text-[#c5eb02] md:text-base"
+              className="group inline-flex items-center gap-2 rounded-full border border-white/25 px-5 py-3 text-sm font-semibold text-white transition-colors hover:border-[#c5eb02] hover:text-[#c5eb02] md:text-base"
             >
               See our recent projects
               <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />

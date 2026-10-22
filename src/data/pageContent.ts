@@ -347,6 +347,8 @@ export interface PageContentMap {
   "finance-phoenix": FinanceProviderContent;
   "lp-kitchen-renovation": LandingPageContent;
   "lp-bathroom-renovation": LandingPageContent;
+  "lp-solar-panels": LandingPageContent;
+  "lp-air-source-heat-pumps": LandingPageContent;
 }
 
 export type PageContentKey = keyof PageContentMap;
@@ -376,6 +378,8 @@ export const PAGE_CONTENT_KEYS = [
   "finance-phoenix",
   "lp-kitchen-renovation",
   "lp-bathroom-renovation",
+  "lp-solar-panels",
+  "lp-air-source-heat-pumps",
 ] as const satisfies readonly PageContentKey[];
 
 export interface PageContentMeta {
@@ -495,5 +499,15 @@ export const PAGE_CONTENT_META: Record<PageContentKey, PageContentMeta> = {
     label: "Ad landing page — Bathroom renovation",
     group: "Ad Landing Pages",
     routes: ["/lp/bathroom-renovation"],
+  },
+  "lp-solar-panels": {
+    label: "Ad landing page — Solar panels",
+    group: "Ad Landing Pages",
+    routes: ["/lp/solar-panels"],
+  },
+  "lp-air-source-heat-pumps": {
+    label: "Ad landing page — Air source heat pumps",
+    group: "Ad Landing Pages",
+    routes: ["/lp/air-source-heat-pumps"],
   },
 };

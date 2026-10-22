@@ -56,30 +56,38 @@ export default async function DynamicPage({ params }: Props) {
       <Breadcrumbs crumbs={[{ label: page.title }]} />
 
       <main className="flex-1">
-        <section className="px-5 sm:px-15 pt-10 pb-8">
-          <div className="mx-auto max-w-3xl">
-            <h1 className="text-[2rem] md:text-[3.25rem] font-bold leading-[1.1] text-white text-balance">
-              {page.heading || page.title}
-            </h1>
-            {page.subheading && (
-              <p className="mt-5 text-lg md:text-xl text-white/70 font-medium leading-relaxed">
-                {page.subheading}
-              </p>
-            )}
+        {/* Title, image and body share site-container + site-prose, so all
+            three start on the same left edge. They used to be centred at
+            max-w-3xl / max-w-4xl with their own px-* while the body sat
+            left-aligned in the container, so no two edges lined up. */}
+        <section className="pt-10 pb-8">
+          <div className="site-container">
+            <div className="site-prose">
+              <h1 className="text-[2rem] md:text-[3.5rem] font-bold leading-[1.15] text-white text-balance">
+                {page.heading || page.title}
+              </h1>
+              {page.subheading && (
+                <p className="mt-5 text-lg md:text-xl text-white/70 font-medium leading-relaxed">
+                  {page.subheading}
+                </p>
+              )}
+            </div>
           </div>
         </section>
 
         {page.heroImage && (
-          <section className="px-5 sm:px-15 pb-8">
-            <div className="mx-auto max-w-4xl relative aspect-[16/9] overflow-hidden rounded-xl border border-white/10">
-              <Image
-                src={page.heroImage}
-                alt={page.heroImageAlt || page.title}
-                fill
-                sizes="(min-width: 1024px) 900px, 100vw"
-                className="object-cover"
-                priority
-              />
+          <section className="pb-8">
+            <div className="site-container">
+              <div className="site-prose relative aspect-[16/9] overflow-hidden rounded-xl border border-white/10">
+                <Image
+                  src={page.heroImage}
+                  alt={page.heroImageAlt || page.title}
+                  fill
+                  sizes="(min-width: 1024px) 900px, 100vw"
+                  className="object-cover"
+                  priority
+                />
+              </div>
             </div>
           </section>
         )}

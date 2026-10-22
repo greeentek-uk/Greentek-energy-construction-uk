@@ -96,8 +96,60 @@ const areaFaq = {
     "We are based in Birmingham and work across the West Midlands, Wales and London. We also travel to other major towns and cities across the UK when the project makes it feasible. Put your postcode in the form and we will tell you straight away.",
 };
 
+// ---- Energy pages (solar, heat pumps) -------------------------------------
+// Drafted 2026-10-23 from the live service pages' own claims (MCS certified,
+// the brands we fit, SEG, room-by-room heat loss) and the owner's reference
+// pages (instagroup, stromltd, greenheatingltd): grant near the top, what's
+// included spelled out, heat-pump objections (noise, cold, radiators) answered.
+// No prices and no grant amount: the owner hasn't given brackets for these, and
+// the service pages deliberately confirm "the current grant at survey" rather
+// than print a figure that changes. The pricing section hides while
+// pricingTiers is empty; add brackets in the panel once they're agreed.
+
+const energyShared = {
+  ...shared,
+  tickerItems: [
+    "Free home survey",
+    "MCS certified installers",
+    "Fixed price in writing",
+    "Our own engineers, no subcontractors",
+    "Pay monthly",
+    "TrustMark registered",
+  ],
+  finalTicks: ["Free home survey", "MCS certified installers", "Fixed price in writing"],
+  pricingHeading: "",
+  pricingIntro: "",
+  pricingTiers: [],
+  pricingNote: "",
+};
+
+const energyPriceFeature = {
+  ...priceFeature,
+  body: "We visit your home for free and design the system around it. Then we send you a written price for the whole job. It only changes if you ask for something extra.",
+  bullets: ["Free home survey", "One price for the whole job", "Pay monthly if you like (subject to status)"],
+};
+
+const mcsFeature = {
+  heading: "MCS certified, and checked by the industry's experts",
+  body: "Eight industry bodies check our work, including MCS and TrustMark. MCS is the standard for solar and heat pump installs, and you need it for the Smart Export Guarantee and the Boiler Upgrade Scheme.",
+  bullets: ["MCS certified installers", "TrustMark registered", "MCS certificate at handover"],
+};
+
+const energySteps = (survey: string, install: string) => [
+  { title: "Ask for a quote", body: "Fill in the short form or call us. It takes 2 minutes." },
+  { title: "We survey your home", body: `${survey} It's free.` },
+  { title: "Get your price", body: "We send you a fixed price in writing. There are no hidden costs." },
+  { title: "We install it", body: install },
+];
+
+const energyFinanceFaq = {
+  question: "Can I pay monthly?",
+  answer:
+    "Yes. We work with two finance brokers, Ideal4Finance and Phoenix Financial Consultants. They can help you spread the cost. Finance is subject to status.",
+};
+
 export const LANDING_PAGE_DEFAULTS: Record<
-  "lp-kitchen-renovation" | "lp-bathroom-renovation",
+  "lp-kitchen-renovation" | "lp-bathroom-renovation" | "lp-solar-panels" | "lp-air-source-heat-pumps",
   LandingPageContent
 > = {
   "lp-kitchen-renovation": {
@@ -324,5 +376,194 @@ export const LANDING_PAGE_DEFAULTS: Record<
     finalImage: `${P}/Bathroom/Bathroom Post.jpeg`,
     finalImageAlt: "A new bathroom with grey tiles and a vanity unit, fitted by Greentek",
     formHeading: "Get your free bathroom quote",
+  },
+  "lp-solar-panels": {
+    ...energyShared,
+    metaTitle: "Solar Panels Installed by MCS Installers | Free Survey | Greentek",
+    metaDescription:
+      "Solar panels and battery storage designed around your roof and your bills. MCS certified, fitted by our own team at a fixed price. Free home survey.",
+    offerBar: "Solar panels and batteries from MCS certified installers. Free home survey and a fixed price in writing.",
+    heroHeading: "Make your own electricity with solar panels sized for your home",
+    heroHighlight: "make your own electricity",
+    heroBody:
+      "We look at your roof and your bills, then design a system that fits how you use power. Our own MCS certified team fits the panels, inverter and battery. You get a written price before we start.",
+    heroTicks: ["Free home survey", "MCS certified installers", "Get paid for the power you export"],
+    heroImage: `${P}/Solar/after.png`,
+    heroImageAlt: "Black solar panels fitted on a slate roof by Greentek",
+    resultsHeading: "See a solar roof we fitted",
+    resultsIntro: "Our own job, from bare roof to finished system.",
+    results: [
+      {
+        before: `${P}/Solar/before.png`,
+        beforeAlt: "A slate roof before the solar panels were fitted",
+        after: `${P}/Solar/after.png`,
+        afterAlt: "The same roof with black solar panels fitted by Greentek",
+        title: "Bare slate roof to a full solar system",
+        body: "We surveyed the roof, designed the system and fitted the panels, then handed over the MCS certificate.",
+      },
+    ],
+    problemHeading: "Thinking about solar but not sure it's worth it?",
+    problemQuestions: [
+      "Will it really cut my bills?",
+      "How many panels do I actually need?",
+      "Is a battery worth paying for?",
+    ],
+    problemBody:
+      "These are the questions we hear most. Solar only pays back when it is sized to your roof and to how you use electricity. Panel counts picked from a brochure are why some systems never save what they promised.\n\nWe design yours from your bills and a roof survey. Then we tell you honestly what it will do, and whether a battery is worth it for you.",
+    problemImage: "",
+    problemImageAlt: "",
+    features: [
+      {
+        heading: "Designed for your roof, not picked from a brochure",
+        body: "We check which way your roof faces, its pitch and any shading. Then we size the system from your real electricity use.",
+        bullets: [
+          "Panels from AIKO, JinkoSolar and Trinasolar",
+          "Growatt and SolaX inverters",
+          "Battery storage if it makes sense for you",
+          "Scaffolding, fitting and testing in one price",
+        ],
+        image: `${P}/Solar/after.png`,
+        imageAlt: "Solar panels on a slate roof, fitted by Greentek",
+      },
+      energyPriceFeature,
+      {
+        ...mcsFeature,
+        image: `${P}/Solar/after.png`,
+        imageAlt: "A finished solar panel system on a slate roof",
+      },
+    ],
+    steps: energySteps(
+      "We check your roof and look at your electricity bills, then design your system.",
+      "Most homes take 1 to 2 days once the scaffolding is up. We hand over your MCS certificate and export paperwork.",
+    ),
+    faqs: [
+      {
+        question: "How much do solar panels cost?",
+        answer:
+          "It depends on how many panels your home needs, your roof, and whether you add a battery. We survey your roof and your electricity use for free, then send you a fixed price in writing for a system sized to your home.",
+      },
+      {
+        question: "Can I get paid for the electricity I don't use?",
+        answer:
+          "Yes. Under the Smart Export Guarantee, energy suppliers pay you for the power you send to the grid. You need an MCS certified install and an export meter. We sort the paperwork for you.",
+      },
+      {
+        question: "Is a battery worth it?",
+        answer:
+          "A battery stores the power you make in the day so you can use it in the evening. Whether it pays back depends on how you use electricity and your tariff. We will tell you honestly at the survey.",
+      },
+      {
+        question: "Do I need planning permission?",
+        answer:
+          "Most homes don't. Roof panels usually fall under permitted development. Listed buildings and conservation areas have tighter rules, and we check this before we quote.",
+      },
+      {
+        question: "How long does it take?",
+        answer: "Most homes take 1 to 2 days once the scaffolding is up. Adding a battery can take a day more.",
+      },
+      fixedFaq,
+      energyFinanceFaq,
+      areaFaq,
+    ],
+    finalHeading: "Ready to make your own electricity?",
+    finalBody: "Answer 4 quick questions. We will call you back within 1 working day to book your free survey.",
+    finalImage: `${P}/Solar/after.png`,
+    finalImageAlt: "Solar panels fitted on a slate roof by Greentek",
+    formHeading: "Get your free solar quote",
+  },
+  "lp-air-source-heat-pumps": {
+    ...energyShared,
+    metaTitle: "Air Source Heat Pumps by MCS Installers | Free Survey | Greentek",
+    metaDescription:
+      "Air source heat pumps sized from a room-by-room heat loss survey. MCS certified, Boiler Upgrade Scheme grant checked for you. Free home survey.",
+    offerBar: "Replacing a gas, oil or LPG boiler? We check your Boiler Upgrade Scheme grant for free.",
+    heroHeading: "A heat pump that keeps every room warm, sized for your home",
+    heroHighlight: "keeps every room warm",
+    heroBody:
+      "We measure your home's heat loss room by room, then fit a heat pump that is the right size. Our own MCS certified team does the whole job, and we check if you can get a Boiler Upgrade Scheme grant.",
+    heroTicks: ["Free heat loss survey", "MCS certified installers", "Boiler Upgrade Scheme grant checked"],
+    heroImage: `${P}/Heating/after.webp`,
+    heroImageAlt: "An air source heat pump fitted against a brick wall by Greentek",
+    resultsHeading: "See a heat pump we fitted",
+    resultsIntro: "Our own job: a neat outdoor unit, with the pipework tidied away.",
+    results: [
+      {
+        before: `${P}/Heating/before.png`,
+        beforeAlt: "The back wall of a brick bungalow before the heat pump was fitted",
+        after: `${P}/Heating/after.webp`,
+        afterAlt: "The same wall with an air source heat pump fitted on a base by Greentek",
+        title: "A neat air source heat pump install",
+        body: "We worked out the heat loss of every room, then fitted the outdoor unit on a raised base with its pipework run neatly into the house.",
+      },
+    ],
+    problemHeading: "Heard heat pumps don't work in UK homes?",
+    problemQuestions: [
+      "Will my rooms be warm enough in winter?",
+      "Will my bills go up?",
+      "Do I need all new radiators?",
+    ],
+    problemBody:
+      "These are the worries we hear most. When a heat pump disappoints, it is usually because it was sized from a guess, or fitted to radiators that are too small.\n\nWe measure your home's heat loss room by room first. Then we fit the right size of heat pump, and only change the radiators that need it.",
+    problemImage: "",
+    problemImageAlt: "",
+    features: [
+      {
+        heading: "Everything you need, in one job",
+        body: "You don't need to find a plumber, an electrician and a heating engineer. Our own team does it all, from the survey to the handover.",
+        bullets: [
+          "Room-by-room heat loss survey",
+          "Vaillant or Ideal Heating heat pump",
+          "New hot water cylinder and controls",
+          "Radiators upgraded only where needed",
+        ],
+        image: `${P}/Heating/after.webp`,
+        imageAlt: "An air source heat pump fitted by Greentek",
+      },
+      energyPriceFeature,
+      {
+        ...mcsFeature,
+        image: `${P}/Heating/after.webp`,
+        imageAlt: "A finished air source heat pump install",
+      },
+    ],
+    steps: energySteps(
+      "We measure your home's heat loss room by room and check if you can get a grant.",
+      "Our team fits the heat pump, cylinder and controls, then sets it up to run efficiently. We hand over your MCS certificate.",
+    ),
+    faqs: [
+      {
+        question: "Can I get a grant?",
+        answer:
+          "The government's Boiler Upgrade Scheme helps pay for a heat pump when you replace a gas, oil or LPG boiler in England and Wales. You need an MCS certified installer, like us. We check if you can get it, and how much, at your free survey.",
+      },
+      {
+        question: "Will it keep my home warm in winter?",
+        answer:
+          "Yes, when it is the right size. We size your heat pump from a room-by-room heat loss survey, so it is made for your home on the coldest days, not just a mild one.",
+      },
+      {
+        question: "Do I need new radiators?",
+        answer:
+          "Not always. A heat pump runs cooler than a boiler, so some rooms may need a bigger radiator. The survey shows exactly which ones, so we don't replace the rest.",
+      },
+      {
+        question: "Are heat pumps noisy?",
+        answer:
+          "Modern heat pumps are built to run quietly. We also choose the best place for the outdoor unit, away from bedroom windows and your neighbours, and check it meets the noise rules for permitted development.",
+      },
+      {
+        question: "How much does a heat pump cost?",
+        answer:
+          "It depends on your home's heat loss, the size of the heat pump, and whether your radiators or cylinder need changing. We survey for free and then send you a fixed price in writing, with any grant taken off.",
+      },
+      fixedFaq,
+      energyFinanceFaq,
+      areaFaq,
+    ],
+    finalHeading: "Ready for warmer rooms and lower bills?",
+    finalBody: "Answer 4 quick questions. We will call you back within 1 working day to book your free survey.",
+    finalImage: `${P}/Heating/after.webp`,
+    finalImageAlt: "An air source heat pump fitted against a brick wall by Greentek",
+    formHeading: "Get your free heat pump quote",
   },
 };

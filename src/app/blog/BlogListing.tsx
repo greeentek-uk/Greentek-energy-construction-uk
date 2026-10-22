@@ -109,7 +109,7 @@ export default function BlogListing({
           {/* Posts */}
           <div>
             <div className="flex flex-wrap items-baseline justify-between gap-2 mb-6">
-              <h2 className="text-[1.5rem] md:text-[2rem] font-bold leading-tight text-white">{title}</h2>
+              <h2 className="text-[1.625rem] md:text-[2.5rem] font-bold leading-[1.2] text-white">{title}</h2>
               <p className="text-sm text-white/50">
                 {query.trim()
                   ? `${shown.length} result${shown.length === 1 ? "" : "s"} for “${query.trim()}”`

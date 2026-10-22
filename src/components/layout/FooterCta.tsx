@@ -86,7 +86,7 @@ export default function FooterCta({
         </p>
       )}
       {cta.heading && (
-        <h2 className="text-white text-[1.8rem] md:text-[2.8rem] font-bold leading-[1.15] max-w-[90%] sm:max-w-lg md:max-w-2xl text-center px-4">
+        <h2 className="text-white text-[1.625rem] md:text-[2.5rem] font-bold leading-[1.2] max-w-[90%] sm:max-w-lg md:max-w-2xl text-center px-4">
           {headingLines.map((line, i) => (
             <Fragment key={i}>
               {i > 0 && <br />}

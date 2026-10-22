@@ -321,6 +321,14 @@ both quote forms whenever the service is a bathroom or kitchen (`serviceBudgetOp
 `lib/quoteForm.ts`; earlier bands stay in `retiredBudgetOptions` so old enquiries are named); unit
 tests pin the figures. Project cards lead with the "after" photo, the "before" as a small inset;
 the review wall shows three reviews.
+**Energy pages (2026-10-23):** `/lp/solar-panels` and `/lp/air-source-heat-pumps` on the same
+template (`lp-solar-panels`, `lp-air-source-heat-pumps`; services `energy_solar_pv` /
+`energy_heat_pump`). Copy is drawn from the live service pages' own claims (MCS, brands, SEG,
+room-by-room heat loss) — **no prices and no grant amount** until the owner gives them (pricing
+section hidden while `pricingTiers` is empty; a test pins that). Their only photos are
+`projects/Solar/*` and `projects/Heating/*`; the solar pair is byte-identical to files in the
+"Examples" folder, so swap in real install photos when there are some. Need `pnpm
+seed:page-content` (insert-only) or they 500.
 Enquiries arrive with source "Ad landing page — …" and, from the page URL's tags
 (`lib/attribution.ts`), the paid click / UTM rows in the email.
 
@@ -378,6 +386,14 @@ hover/focus/touch instead of on scroll. Keep new public links on that import. Ad
   `PageQuoteHero`, and the about/contact/blog/finance/article title heroes keep their original
   `px-5 sm:px-15` / `max-w-*` widths) — except the **single blog post** hero, which the owner asked (2026-09-30) to
   centre in `site-container` so it lines up with the image + contents row below it and the testimonials marquee (full-bleed).
+- **Type and button scale (2026-10-23, owner: align every page).** Page H1
+  `text-[2rem] md:text-[3.5rem] leading-[1.15]`; section H2 `text-[1.625rem] md:text-[2.5rem]
+  leading-[1.2]`; a heading inside a card/panel `text-[1.375rem] md:text-[1.75rem]`. Standalone
+  action buttons/links are **pills** (`rounded-full`); buttons *inside a form* stay `rounded-xl`
+  to match the inputs. Exempt: the two quote heroes' H1 and the `/lp/*` pages' own type.
+  Privacy/Terms use `components/site/LegalPage.tsx` (dark, blog-style title hero); the privacy
+  cookie section is built from the live Meta/GA/Clarity/Google Ads settings, so it can't
+  describe a category the banner doesn't offer.
 - **Never `overflow-x: hidden` on an ancestor of page content** — use `overflow-x: clip`.
   `hidden` makes the element a scroll container, which silently disables every `position: sticky`
   inside it. That is what had broken both the sticky header and the Process section's pinned

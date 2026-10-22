@@ -1,120 +1,169 @@
 import type { Metadata } from "next";
-import Header from "@/components/layout/Header";
-import Footer from "@/components/layout/Footer";
 import { getCurrentSiteConfig } from "@/lib/cms";
 import { withSeoOverride } from "@/lib/seo";
-import PageSchema from "@/components/site/PageSchema";
+import { getMetaPixelSettings } from "@/lib/db/metaPixel";
+import { getClaritySettings } from "@/lib/db/clarity";
+import { getGoogleAnalyticsSettings } from "@/lib/db/googleAnalytics";
+import { getGoogleAdsSettings } from "@/lib/db/googleAds";
+import LegalPage, { LegalList, LegalSection } from "@/components/site/LegalPage";
 
 export async function generateMetadata(): Promise<Metadata> {
+  const siteConfig = await getCurrentSiteConfig();
   return withSeoOverride("/privacy", {
     title: "Privacy Policy",
-    description: "Privacy policy for Greentek Construction.",
+    description: `How ${siteConfig.name} collects, uses and protects your personal data, and the cookies this site uses.`,
   });
 }
 
 export default async function PrivacyPage() {
-  const siteConfig = await getCurrentSiteConfig();
+  const [siteConfig, metaPixel, clarity, googleAnalytics, googleAds] = await Promise.all([
+    getCurrentSiteConfig(),
+    getMetaPixelSettings(),
+    getClaritySettings(),
+    getGoogleAnalyticsSettings(),
+    getGoogleAdsSettings(),
+  ]);
+  const name = siteConfig.name;
+  const { address } = siteConfig;
+
+  // The cookie section is built from the same settings the root layout gives
+  // the cookie banner, so the policy can't describe a category the banner
+  // doesn't offer (it used to say "two kinds" with Meta under Necessary,
+  // whatever the panel's Meta setting was).
+  const meta = Boolean(metaPixel.pixelId);
+  const metaNecessary = meta && metaPixel.consent === "necessary";
+  const metaMarketing = meta && metaPixel.consent === "marketing";
+  const ads = Boolean(googleAds.conversionId);
+  const analyticsTools = [
+    googleAnalytics.measurementId && "Google Analytics, which measures visits and page views",
+    clarity.projectId &&
+      "Microsoft Clarity, which records anonymised page interactions such as clicks and scrolling",
+  ].filter(Boolean) as string[];
+  const marketingTools = [
+    metaMarketing && "the Meta Pixel, which shows us which Meta adverts lead to enquiries",
+    ads && "Google Ads conversion tracking, which shows us which Google adverts lead to enquiries",
+  ].filter(Boolean) as string[];
 
   return (
-    <div className="flex flex-col min-h-screen bg-white">
-      <PageSchema path="/privacy" />
-      <Header />
-      <main className="flex-1 pt-24 pb-20">
-        <div className="site-container">
-          <h1 className="text-[2rem] md:text-[3.5rem] font-bold leading-[1.15] text-zinc-900 mb-8">
-            Privacy <span className="text-green-600">Policy.</span>
-          </h1>
-          
-          <div className="prose prose-zinc prose-sm md:prose-base site-prose text-zinc-600 space-y-8 font-medium">
-            <section>
-              <h2 className="text-sm font-bold text-zinc-900 mb-4 uppercase">1. Introduction</h2>
-              <p>
-                Greentek Construction (&ldquo;we&rdquo;, &ldquo;our&rdquo;, or &ldquo;us&rdquo;) is committed to protecting and respecting your privacy. 
-                This policy sets out the basis on which any personal data we collect from you, or that you provide to us, 
-                will be processed by us.
-              </p>
-            </section>
+    <LegalPage
+      path="/privacy"
+      title="Privacy"
+      highlight="Policy"
+      intro={`How ${name} collects, uses and protects your personal data.`}
+    >
+      <LegalSection heading="1. Introduction">
+        <p>
+          {name} (&ldquo;we&rdquo;, &ldquo;our&rdquo; or &ldquo;us&rdquo;) is committed to protecting
+          and respecting your privacy. This policy explains how we process any personal data we
+          collect from you, or that you provide to us.
+        </p>
+      </LegalSection>
 
-            <section>
-              <h2 className="text-sm font-bold text-zinc-900 mb-4 uppercase">2. Information We Collect</h2>
-              <p>We may collect and process the following data about you:</p>
-              <ul className="list-disc pl-5 space-y-2">
-                <li>Information you provide by filling in forms on our site, such as your name, email address, phone number, and project details.</li>
-                <li>If you contact us, we may keep a record of that correspondence.</li>
-                <li>Details of your visits to our site including, but not limited to, traffic data, location data, and other communication data.</li>
-              </ul>
-            </section>
+      <LegalSection heading="2. Information we collect">
+        <p>We may collect and process the following data about you:</p>
+        <LegalList
+          items={[
+            "Information you give us by filling in forms on our site, such as your name, email address, phone number, postcode and project details.",
+            "Photos of your property that you choose to upload with a quote request.",
+            "A record of any correspondence if you contact us.",
+            "Details of your visits to our site, such as the pages you view and how you arrived at them, where you have allowed the cookies described below.",
+          ]}
+        />
+      </LegalSection>
 
-            <section>
-              <h2 className="text-sm font-bold text-zinc-900 mb-4 uppercase">3. How We Use Your Information</h2>
-              <p>We use information held about you in the following ways:</p>
-              <ul className="list-disc pl-5 space-y-2">
-                <li>To provide you with information or services that you request from us (e.g., project quotes).</li>
-                <li>To carry out our obligations arising from any contracts entered into between you and us.</li>
-                <li>To notify you about changes to our service.</li>
-                <li>To ensure that content from our site is presented in the most effective manner for you and for your computer.</li>
-              </ul>
-            </section>
+      <LegalSection heading="3. How we use your information">
+        <p>We use the information we hold about you to:</p>
+        <LegalList
+          items={[
+            "provide the information or services you ask us for, such as a quote;",
+            "carry out our obligations under any contract between you and us;",
+            "tell you about changes to our service;",
+            "make sure our site works well on your device and improve it over time.",
+          ]}
+        />
+      </LegalSection>
 
-            <section>
-              <h2 className="text-sm font-bold text-zinc-900 mb-4 uppercase">4. Data Security</h2>
-              <p>
-                All information you provide to us is stored on secure servers. We use strict procedures and security features 
-                to try to prevent unauthorised access. However, the transmission of information via the internet is not 
-                completely secure; any transmission is at your own risk.
-              </p>
-            </section>
+      <LegalSection heading="4. Data security">
+        <p>
+          All the information you provide is stored on secure servers, and we use strict procedures
+          and security features to try to prevent unauthorised access. However, sending information
+          over the internet is never completely secure, so we cannot guarantee the security of data
+          sent to our site; any transmission is at your own risk.
+        </p>
+      </LegalSection>
 
-            <section>
-              <h2 className="text-sm font-bold text-zinc-900 mb-4 uppercase">5. Disclosure of Your Information</h2>
-              <p>
-                We may disclose your personal information to third parties if we are under a duty to disclose or share your 
-                personal data in order to comply with any legal obligation, or to protect the rights, property, or safety of 
-                Greentek Construction, our customers, or others.
-              </p>
-            </section>
+      <LegalSection heading="5. Sharing your information">
+        <p>
+          We use trusted service providers to run this site: our website host, our database
+          provider, our email provider, and Cloudinary, which stores any photos you upload. They
+          process your data only on our instructions.
+        </p>
+        <p>
+          We may also disclose your personal data to third parties if we are under a duty to do so
+          to comply with a legal obligation, or to protect the rights, property or safety of {name},
+          our customers or others. We do not sell your personal data.
+        </p>
+      </LegalSection>
 
-            <section>
-              <h2 className="text-sm font-bold text-zinc-900 mb-4 uppercase">6. Your Rights</h2>
-              <p>
-                You have the right to ask us not to process your personal data for marketing purposes. You can also 
-                request access to the information we hold about you at any time by contacting us at {siteConfig.email}.
-              </p>
-            </section>
+      <LegalSection heading="6. Your rights">
+        <p>
+          You have the right to ask us not to process your personal data for marketing purposes.
+          You can also ask for a copy of the information we hold about you, or ask us to correct or
+          delete it, at any time by emailing{" "}
+          <a href={`mailto:${siteConfig.email}`} className="font-semibold text-[#c5eb02] hover:underline">
+            {siteConfig.email}
+          </a>
+          . If you are unhappy with how we have handled your data, you can complain to the
+          Information Commissioner&apos;s Office (ico.org.uk).
+        </p>
+      </LegalSection>
 
-            <section id="cookies" className="scroll-mt-28">
-              <h2 className="text-sm font-bold text-zinc-900 mb-4 uppercase">7. Cookies</h2>
-              <p>
-                Cookies are small files stored on your device. We use two kinds, and you can change
-                your choice at any time from the Cookie settings link at the bottom of every page.
-              </p>
-              <p className="mt-4">
-                <strong>Necessary</strong> — always on. These keep the site secure and working,
-                remember your cookie choice and help us measure how our advertising performs (Meta
-                Pixel, used to see which Meta adverts lead to enquiries). When you send us an
-                enquiry, your email address and phone number are shared with Meta in a scrambled
-                (hashed) form so the enquiry can be matched to the advert that brought you here.
-              </p>
-              <p className="mt-4">
-                <strong>Analytics</strong> — only with your permission. These show us how visitors
-                use the site so we can improve it: Google Analytics, which measures visits and page
-                views, and Microsoft Clarity, which records anonymised page interactions such as
-                clicks and scrolling. Your choice is kept for six months, after which we ask again.
-              </p>
-            </section>
+      <LegalSection heading="7. Cookies" id="cookies">
+        <p>
+          Cookies are small files stored on your device. You can change your choice at any time
+          from the Cookie settings link at the bottom of every page. Your choice is kept for six
+          months, after which we ask again.
+        </p>
+        <p>
+          <strong className="text-white">Necessary</strong> — always on. These keep the site secure
+          and working and remember your cookie choice
+          {metaNecessary ? (
+            <>
+              . They also include the Meta Pixel, which helps us measure which Meta adverts lead to
+              enquiries. When you send us an enquiry, your email address and phone number are shared
+              with Meta in a scrambled (hashed) form so the enquiry can be matched to the advert that
+              brought you here
+            </>
+          ) : null}
+          .
+        </p>
+        {analyticsTools.length > 0 && (
+          <p>
+            <strong className="text-white">Analytics</strong> — only with your permission. These
+            show us how visitors use the site so we can improve it: {analyticsTools.join("; and ")}.
+          </p>
+        )}
+        {marketingTools.length > 0 && (
+          <p>
+            <strong className="text-white">Marketing</strong> — only with your permission. These
+            measure how our advertising performs: {marketingTools.join("; and ")}. If you allow
+            them and then send us an enquiry, your email address and phone number are shared with
+            the advertising platform in a scrambled (hashed) form so the enquiry can be matched to
+            the advert that brought you here.
+          </p>
+        )}
+      </LegalSection>
 
-            <section>
-              <h2 className="text-sm font-bold text-zinc-900 mb-4 uppercase">8. Contact</h2>
-              <p>
-                Questions, comments and requests regarding this privacy policy are welcomed and should be addressed to: 
-                <br />
-                <strong>{siteConfig.email}</strong> or by post to our registered office at {siteConfig.address.line1}, {siteConfig.address.city}, {siteConfig.address.postcode}.
-              </p>
-            </section>
-          </div>
-        </div>
-      </main>
-      <Footer />
-    </div>
+      <LegalSection heading="8. Contact">
+        <p>
+          Please send any questions, comments or requests about this privacy policy to{" "}
+          <a href={`mailto:${siteConfig.email}`} className="font-semibold text-[#c5eb02] hover:underline">
+            {siteConfig.email}
+          </a>
+          , or by post to our registered office at {address.line1}, {address.city},{" "}
+          {address.postcode}.
+        </p>
+      </LegalSection>
+    </LegalPage>
   );
 }
