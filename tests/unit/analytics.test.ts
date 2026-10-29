@@ -3,7 +3,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 vi.mock("@microsoft/clarity", () => ({ default: { event: vi.fn() } }));
 import Clarity from "@microsoft/clarity";
-import { configureAnalytics, isAdminPath, metaAllowed, track } from "@/lib/analytics";
+import { configureAnalytics, isAdminPath, metaAllowed, setAdsUserData, track } from "@/lib/analytics";
 import { writeConsent } from "@/lib/consent";
 
 type Queue = { queue: IArguments[] };
@@ -58,14 +58,16 @@ describe("track", () => {
     expect(navigator.sendBeacon).not.toHaveBeenCalled();
   });
 
-  it("sends GA4 and Clarity events only with analytics consent", () => {
+  it("sends GA4 events whatever the choice (Consent Mode advanced), Clarity only with consent", () => {
     configureAnalytics({ pixelId: "", pixelNeedsConsent: false });
     const gtag = vi.fn();
     Object.assign(window, { gtag, clarity: () => {} });
 
+    // No choice yet: the Google tag's denied defaults make this a cookieless ping.
     track("Contact", { content_name: "phone" });
-    expect(gtag).not.toHaveBeenCalled();
+    expect(gtag).toHaveBeenCalledWith("event", "contact", { method: "phone" });
     expect(Clarity.event).not.toHaveBeenCalled();
+    gtag.mockClear();
 
     writeConsent({ analytics: true, marketing: false });
     track("Contact", { content_name: "phone" });
@@ -74,6 +76,29 @@ describe("track", () => {
     expect(gtag).toHaveBeenCalledWith("event", "view_service", { item_name: "Solar", item_category: "energy" });
     expect(Clarity.event).toHaveBeenCalledWith("Contact");
     expect(Clarity.event).toHaveBeenCalledTimes(1); // page and content views aren't tagged in Clarity
+  });
+});
+
+describe("Google Ads in Consent Mode advanced mode", () => {
+  it("sends conversions without consent, but the visitor's email and phone only with marketing consent", () => {
+    configureAnalytics({
+      pixelId: "",
+      pixelNeedsConsent: false,
+      googleAds: { conversionId: "AW-123456789", leadLabel: "leadLabel1", callLabel: "callLabel1", whatsappLabel: "" },
+    });
+    const gtag = vi.fn();
+    Object.assign(window, { gtag });
+    writeConsent({ analytics: false, marketing: false });
+
+    track("Lead", { content_name: "energy_heat_pump" }, { eventId: "evt-12345678" });
+    expect(gtag).toHaveBeenCalledWith("event", "conversion", { send_to: "AW-123456789/leadLabel1", transaction_id: "evt-12345678" });
+
+    setAdsUserData({ email: "jo@example.com", phone: "07700900123" });
+    expect(gtag).not.toHaveBeenCalledWith("set", "user_data", expect.anything());
+
+    writeConsent({ analytics: false, marketing: true });
+    setAdsUserData({ email: "jo@example.com", phone: "07700900123" });
+    expect(gtag).toHaveBeenCalledWith("set", "user_data", { email: "jo@example.com", phone_number: "+447700900123" });
   });
 });
 

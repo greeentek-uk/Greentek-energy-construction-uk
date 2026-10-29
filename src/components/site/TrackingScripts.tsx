@@ -48,9 +48,19 @@ function loadGoogleTag(id: string, config: Record<string, unknown> = {}) {
 }
 
 /**
- * Starts the optional trackers once the visitor has agreed to them: Google
- * Analytics and Clarity (analytics), Google Ads (marketing), plus any panel
- * snippets waiting on a category. Nothing here runs for a visitor who hasn't chosen yet.
+ * The Google tag (GA4 + Google Ads) runs in Consent Mode's *advanced* mode:
+ * gtag.js loads for every visitor, but with the consent defaults set in
+ * <head> — everything denied until they accept — so it sets no cookies and
+ * sends only cookieless pings, which Google uses to model the conversions of
+ * people who decline. A choice made later is passed on as a `consent update`.
+ *
+ * Until 2026-10-29 the tag loaded only after consent ("basic" mode). Google
+ * Ads couldn't detect the tag (its checker never accepts the banner), and
+ * every visitor who declined was invisible to bidding. The owner chose
+ * advanced mode knowing the ICO's view of cookieless pings is a grey area.
+ *
+ * Clarity (analytics) and the panel's consent-gated snippets still wait for
+ * consent — they have no denied mode.
  */
 export default function TrackingScripts({
   gaMeasurementId,
@@ -68,6 +78,13 @@ export default function TrackingScripts({
   // session recording, not the panel's own consent-gated snippets.
   const admin = isAdminPath(usePathname());
 
+  // The Google tag from the first render, whatever the choice (see above).
+  useEffect(() => {
+    if (admin) return;
+    if (gaMeasurementId) loadGoogleTag(gaMeasurementId);
+    if (googleAdsId) loadGoogleTag(googleAdsId, { allow_enhanced_conversions: true });
+  }, [admin, gaMeasurementId, googleAdsId]);
+
   useEffect(() => {
     if (admin || !consent) return;
 
@@ -81,16 +98,13 @@ export default function TrackingScripts({
       ad_personalization: ads,
     });
 
-    if (analytics && gaMeasurementId) loadGoogleTag(gaMeasurementId);
-    if (marketing && googleAdsId) loadGoogleTag(googleAdsId, { allow_enhanced_conversions: true });
-
     if (analytics && clarityProjectId) {
       Clarity.init(clarityProjectId);
       Clarity.consentV2({ analytics_Storage: "granted", ad_Storage: ads });
     }
 
     void activateConsentedScripts({ analytics, marketing });
-  }, [admin, consent, analytics, marketing, gaMeasurementId, googleAdsId, clarityProjectId]);
+  }, [admin, consent, analytics, marketing, clarityProjectId]);
 
   return null;
 }

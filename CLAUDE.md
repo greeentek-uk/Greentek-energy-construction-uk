@@ -372,8 +372,13 @@ in `retiredServiceOptions` so old enquiries are still named in emails.
 
 **Google Ads** (Admin → Scripts → Google Ads conversions, `lib/googleAds.ts`): tag `AW-…` plus a
 label per action — enquiry (Lead on the thank-you page, `transaction_id` = event id), phone tap,
-WhatsApp tap. Loaded with **marketing** consent only, on the same gtag.js as GA4. Enhanced
-conversions: forms `set user_data` (email/phone, hashed by gtag) before moving to /thank-you.
+WhatsApp tap. On the same gtag.js as GA4, which since 2026-10-29 runs in **Consent Mode advanced
+mode**: it loads for every visitor with the `<head>` defaults all denied (+ `ads_data_redaction`),
+so it's cookieless until consent and conversions/GA4 events from people who decline are modelled.
+Switched because Google Ads couldn't detect the tag (its checker never accepts the banner); the
+owner chose it knowing the ICO view of cookieless pings is a grey area, and the privacy page says
+so. Enhanced conversions still need marketing consent: forms `set user_data` (email/phone, hashed
+by gtag) before moving to /thank-you only then. Clarity and panel snippets still wait for consent.
 WhatsApp taps are now a Meta/GA `Contact` too.
 
 **Footer CTA** (heading, text, two buttons) is editable at Admin → Footer CTA: a default plus

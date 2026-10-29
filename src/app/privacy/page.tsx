@@ -152,6 +152,17 @@ export default async function PrivacyPage() {
             the advert that brought you here.
           </p>
         )}
+        {(googleAnalytics.measurementId || ads) && (
+          <p>
+            <strong className="text-white">Google&apos;s tag without permission</strong> — if you
+            don&apos;t allow analytics or marketing cookies, Google&apos;s tag still runs in a
+            restricted mode: it sets no cookies, and sends Google only basic signals without cookies
+            or advert-click identifiers (for example, that a page was viewed or an enquiry was sent).
+            Google uses these to estimate, in total, how many visits and enquiries came from its
+            adverts. Your email address and phone number are never shared unless you allow marketing
+            cookies.
+          </p>
+        )}
       </LegalSection>
 
       <LegalSection heading="8. Contact">

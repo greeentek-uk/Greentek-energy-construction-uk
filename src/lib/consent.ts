@@ -89,9 +89,13 @@ export function clearTrackingCookies(): void {
 /**
  * Inline script for the top of <head>: sets Google Consent Mode defaults from
  * the stored choice before any Google tag runs, so a tag that loads — now or
- * after the visitor accepts — starts with the right permissions.
+ * after the visitor accepts — starts with the right permissions. The Google
+ * tag loads for everyone (advanced mode, see TrackingScripts), so these
+ * defaults are what keep it cookieless until consent; `ads_data_redaction`
+ * also strips ad-click ids from its pings while ad storage is denied.
  */
 export const CONSENT_MODE_DEFAULTS_SCRIPT = `window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}
 (function(){var m=document.cookie.match(/(?:^|; )${CONSENT_COOKIE}=${CONSENT_VERSION}\\.a([01])\\.m([01])/);
 var a=m&&m[1]==="1"?"granted":"denied",k=m&&m[2]==="1"?"granted":"denied";
-gtag("consent","default",{analytics_storage:a,ad_storage:k,ad_user_data:k,ad_personalization:k,functionality_storage:"granted",security_storage:"granted"});})();`;
+gtag("consent","default",{analytics_storage:a,ad_storage:k,ad_user_data:k,ad_personalization:k,functionality_storage:"granted",security_storage:"granted"});
+gtag("set","ads_data_redaction",true);})();`;

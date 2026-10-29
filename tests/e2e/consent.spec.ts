@@ -12,12 +12,25 @@ const GA = /googletagmanager\.com\/gtag\/js/;
 const CLARITY = /clarity\.ms\/tag\//;
 const META = /connect\.facebook\.net\/.+fbevents\.js/;
 
+/**
+ * The Google tag loads for everyone in Consent Mode's advanced mode
+ * (2026-10-29), so "no consent" means its consent state is denied — not that
+ * gtag.js is absent. This is the last consent command it was given.
+ */
+async function googleConsent(page: Page) {
+  return page.evaluate(() => {
+    const cmds = ((window.dataLayer ?? []) as IArguments[]).map((a) => Array.from(a)).filter((a) => a[0] === "consent");
+    return Object.assign({}, ...cmds.map((c) => c[2] as Record<string, string>));
+  });
+}
+
 test("first visit: banner shows, only necessary trackers load", async ({ page, captured }) => {
   await page.goto("/");
   await expect(banner(page)).toBeVisible();
   await expect(banner(page).getByRole("link", { name: "Privacy policy" })).toHaveAttribute("href", "/privacy#cookies");
   await settle(page);
-  expect(loaded(captured.vendor, GA), "Google Analytics before consent").toBe(false);
+  expect(loaded(captured.vendor, GA), "Google tag loads, in denied mode").toBe(true);
+  expect(await googleConsent(page)).toMatchObject({ analytics_storage: "denied", ad_storage: "denied", ad_user_data: "denied" });
   expect(loaded(captured.vendor, CLARITY), "Clarity before consent").toBe(false);
   expect(loaded(captured.vendor, META), "Meta runs as necessary").toBe(true);
 });
@@ -33,7 +46,7 @@ test("'Necessary only' is remembered across pages and reloads", async ({ page, c
   await page.goto("/about");
   await settle(page);
   await expect(banner(page)).toBeHidden();
-  expect(loaded(captured.vendor, GA)).toBe(false);
+  expect(await googleConsent(page)).toMatchObject({ analytics_storage: "denied", ad_storage: "denied" });
   expect(loaded(captured.vendor, CLARITY)).toBe(false);
 });
 
@@ -70,7 +83,7 @@ test("manage choices: analytics toggle, then withdraw from the footer", async ({
   captured.vendor.length = 0;
   await Promise.all([page.waitForEvent("load"), page.getByRole("button", { name: "Save choices" }).click()]);
   await settle(page);
-  expect(loaded(captured.vendor, GA)).toBe(false);
+  expect(await googleConsent(page)).toMatchObject({ analytics_storage: "denied" });
   expect(loaded(captured.vendor, CLARITY)).toBe(false);
 });
 

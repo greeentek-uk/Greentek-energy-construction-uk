@@ -52,8 +52,18 @@ export function configureAnalytics(options: {
   googleAds = options.googleAds ?? EMPTY_GOOGLE_ADS;
 }
 
+/**
+ * Conversions go to Google whatever the choice: the tag is in Consent Mode's
+ * advanced mode, so for a visitor who declined they're cookieless pings that
+ * Google models. What still needs marketing consent is `user_data` — the
+ * visitor's own email and phone for enhanced conversions.
+ */
+function adsReady(): boolean {
+  return Boolean(googleAds.conversionId) && Boolean(window.gtag);
+}
+
 function adsAllowed(): boolean {
-  return Boolean(googleAds.conversionId) && Boolean(readConsent()?.marketing) && Boolean(window.gtag);
+  return adsReady() && Boolean(readConsent()?.marketing);
 }
 
 export function setAdsUserData(user: { email: string; phone: string }): void {
@@ -142,11 +152,11 @@ export function track(
   // Never from the admin panel — no pixel, no GA, no Clarity, no server relay.
   if (isAdminPath()) return eventId;
 
-  // Google Analytics and Clarity only exist on the page once the visitor has
-  // accepted analytics cookies, so their presence is the consent check.
+  // GA4 events go whatever the choice, like the tag itself: with analytics
+  // storage denied they're cookieless pings (Consent Mode advanced mode).
   // GA4 counts page views itself, including client-side navigation.
   const gaName = GA_EVENT_NAMES[name];
-  if (gaName && window.gtag && readConsent()?.analytics) {
+  if (gaName && window.gtag) {
     const { content_name, content_category, method } = params as Record<string, unknown>;
     window.gtag("event", gaName, {
       ...(name === "Contact" ? { method: content_name } : {}),
@@ -157,7 +167,7 @@ export function track(
   }
 
   const sendTo = adsSendTo(googleAds, name, params);
-  if (sendTo && adsAllowed()) {
+  if (sendTo && adsReady()) {
     window.gtag!("event", "conversion", {
       send_to: sendTo,
       ...(name === "Lead" ? { transaction_id: eventId } : {}),
