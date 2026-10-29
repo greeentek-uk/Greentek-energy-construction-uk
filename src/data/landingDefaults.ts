@@ -2,7 +2,12 @@ import type { LandingPageContent } from "./pageContent";
 
 const P = "/images/projects";
 
+// The Christmas offer (owner, 2026-10-29): every landing page except heat
+// pumps, which leads with the grant instead. Shows to the end of Christmas Eve.
+const christmasOffer = { promoText: "20% off until Christmas", promoEnds: "2026-12-24" };
+
 const shared = {
+  ...christmasOffer,
   ratingText: "Rated Excellent on Trustpilot · 500+ jobs done",
   quoteButtonLabel: "Get my free quote",
   socialProofLine: "Join 500+ homeowners across the UK",
@@ -49,6 +54,15 @@ const shared = {
     "Newport",
     "London",
   ],
+  // No grant section unless a page sets one (heat pumps do).
+  grantHeading: "",
+  grantAmount: "",
+  grantAmountLabel: "",
+  grantBody: "",
+  grantSteps: [],
+  grantChecklistHeading: "",
+  grantChecklist: [],
+  grantNote: "",
   faqHeading: "Your questions, answered",
   finalTicks: ["Fixed price in writing", "Our own plumbers and electricians", "Free fix if anything is not right"],
   formSubheading: "4 quick steps. We reply within 1 working day.",
@@ -101,10 +115,20 @@ const areaFaq = {
 // the brands we fit, SEG, room-by-room heat loss) and the owner's reference
 // pages (instagroup, stromltd, greenheatingltd): grant near the top, what's
 // included spelled out, heat-pump objections (noise, cold, radiators) answered.
-// No prices and no grant amount: the owner hasn't given brackets for these, and
-// the service pages deliberately confirm "the current grant at survey" rather
-// than print a figure that changes. The pricing section hides while
-// pricingTiers is empty; add brackets in the panel once they're agreed.
+// No prices: the owner hasn't given brackets for these. The pricing section
+// hides while pricingTiers is empty; add brackets in the panel once agreed.
+//
+// The heat pump page does name the grant (2026-10-29, at the owner's request:
+// "how much, do I pay extra, who can fit it" are what visitors ask). Every
+// figure and rule is the government's, checked that day on gov.uk
+// (apply-boiler-upgrade-scheme) and Ofgem's April 2026 guidance update: £7,500
+// for an air source heat pump; £1,500 more (£9,000) until March 2027 for
+// homes heated by oil or LPG with no mains gas; England and Wales; owners
+// incl. landlords and second homes; replacing gas, oil, LPG or electric
+// heating; no EPC needed since 28 April 2026; the MCS installer applies and
+// the grant comes off the price. Brand-new builds still being built don't
+// qualify. Re-check gov.uk when the scheme changes — the figures are all in
+// the panel.
 
 const energyShared = {
   ...shared,
@@ -473,15 +497,46 @@ export const LANDING_PAGE_DEFAULTS: Record<
   },
   "lp-air-source-heat-pumps": {
     ...energyShared,
+    promoText: "",
+    promoEnds: "",
     metaTitle: "Air Source Heat Pumps by MCS Installers | Free Survey | Greentek",
     metaDescription:
-      "Air source heat pumps sized from a room-by-room heat loss survey. MCS certified, Boiler Upgrade Scheme grant checked for you. Free home survey.",
-    offerBar: "Replacing a gas, oil or LPG boiler? We check your Boiler Upgrade Scheme grant for free.",
-    heroHeading: "A heat pump that keeps every room warm, sized for your home",
-    heroHighlight: "keeps every room warm",
+      "Get £7,500 off an air source heat pump with the Boiler Upgrade Scheme. MCS certified installers: we apply for the grant and take it off your price. Free survey.",
+    // £7,500 leads (true for most visitors, who are on gas); £9,000 is named
+    // with its condition wherever a figure appears, never as "up to £9,000" —
+    // a headline most readers can't get is the kind of claim the ASA objects to.
+    offerBar: "£7,500 off a heat pump (£9,000 for oil and LPG homes). We apply for you.",
+    // Grant-led first screen (2026-10-29): people clicking a grant or cost ad
+    // should see their answer before scrolling. Room-by-room sizing moved out
+    // of the hero to the warmth FAQ and the doubts section, where it answers
+    // a worry rather than leading.
+    heroHeading: "Check if you can get £7,500 off a heat pump",
+    heroHighlight: "£7,500 off",
+    quoteButtonLabel: "Check my grant",
+    stickyQuoteLabel: "Check my grant",
     heroBody:
-      "We measure your home's heat loss room by room, then fit a heat pump that is the right size. Our own MCS certified team does the whole job, and we check if you can get a Boiler Upgrade Scheme grant.",
-    heroTicks: ["Free heat loss survey", "MCS certified installers", "Boiler Upgrade Scheme grant checked"],
+      "The government's Boiler Upgrade Scheme takes £7,500 off an air source heat pump, or £9,000 if you heat with oil or LPG and have no mains gas. We check if you qualify for free. Then we survey your home and send you one fixed price in writing, with the grant taken off.",
+    heroTicks: ["MCS certified, based in Birmingham", "Free survey, no commitment", "Pay monthly (subject to status)"],
+    grantHeading: "Get £7,500 off with the Boiler Upgrade Scheme",
+    grantAmount: "£7,500",
+    grantAmountLabel: "off your air source heat pump, or £9,000 for oil and LPG homes off mains gas",
+    grantBody:
+      "It's a government grant, not a loan, so you never pay it back. There's no income or benefits test. You don't claim it yourself and wait: we apply for you, and it comes straight off the price you pay.",
+    grantSteps: [
+      { title: "We check you qualify", body: "At your free survey. It only takes a few questions." },
+      { title: "We apply for you", body: "Only an MCS certified installer can apply. We do all the paperwork." },
+      { title: "It comes off your price", body: "Your written quote shows the grant taken off. You pay the rest." },
+    ],
+    grantChecklistHeading: "You can usually get it if:",
+    grantChecklist: [
+      "You own the home (a home you rent out or a second home counts too)",
+      "It's in England or Wales",
+      "You're replacing a gas, oil, LPG or electric heating system",
+      "Your installer is MCS certified, like us",
+      "You don't need an EPC any more (the rules changed in April 2026)",
+    ],
+    grantNote:
+      "Heated by oil or LPG, with no mains gas? You can get £1,500 more, £9,000 in total, until March 2027.",
     heroImage: `${P}/Heating/after.webp`,
     heroImageAlt: "An air source heat pump fitted against a brick wall by Greentek",
     resultsHeading: "See a heat pump we fitted",
@@ -527,14 +582,29 @@ export const LANDING_PAGE_DEFAULTS: Record<
       },
     ],
     steps: energySteps(
-      "We measure your home's heat loss room by room and check if you can get a grant.",
-      "Our team fits the heat pump, cylinder and controls, then sets it up to run efficiently. We hand over your MCS certificate.",
+      "We visit, check which grant you qualify for, and measure up for the right size of heat pump.",
+      "Our team fits the heat pump, cylinder and controls, and sets it up to run efficiently. We apply for your grant and hand over your MCS certificate.",
     ),
     faqs: [
       {
-        question: "Can I get a grant?",
+        question: "How much is the Boiler Upgrade Scheme grant?",
         answer:
-          "The government's Boiler Upgrade Scheme helps pay for a heat pump when you replace a gas, oil or LPG boiler in England and Wales. You need an MCS certified installer, like us. We check if you can get it, and how much, at your free survey.",
+          "£7,500 off an air source heat pump. If your home is heated by oil or LPG and has no mains gas, you can get £1,500 more (£9,000 in total) until March 2027. It's a grant, so you never pay it back.",
+      },
+      {
+        question: "Can I get the grant?",
+        answer:
+          "Usually, if you own the home, it's in England or Wales, and you're replacing a gas, oil, LPG or electric heating system. Homes you rent out and second homes count too. There's no income or benefits test, and since April 2026 you don't need an EPC. If you heat with oil or LPG and have no mains gas, you get £9,000 instead of £7,500 until March 2027. Brand-new homes that are still being built don't qualify. We check for you at your free survey.",
+      },
+      {
+        question: "Do I have to apply for the grant myself?",
+        answer:
+          "No. Your installer applies for it, and only an MCS certified installer can. We are MCS certified, so we do all the paperwork. The grant is taken off your price, so you don't pay it up front and wait to be paid back.",
+      },
+      {
+        question: "Can any installer fit a heat pump?",
+        answer:
+          "No. To get the grant, the heat pump must be designed and fitted by an MCS certified installer. MCS also checks it is the right size for your home. That matters, because a heat pump sized from a guess is the main reason they disappoint. We are MCS certified and TrustMark registered.",
       },
       {
         question: "Will it keep my home warm in winter?",
@@ -552,18 +622,24 @@ export const LANDING_PAGE_DEFAULTS: Record<
           "Modern heat pumps are built to run quietly. We also choose the best place for the outdoor unit, away from bedroom windows and your neighbours, and check it meets the noise rules for permitted development.",
       },
       {
-        question: "How much does a heat pump cost?",
+        question: "How much will it cost me?",
         answer:
-          "It depends on your home's heat loss, the size of the heat pump, and whether your radiators or cylinder need changing. We survey for free and then send you a fixed price in writing, with any grant taken off.",
+          "It depends on your home's heat loss, the size of the heat pump, and whether any radiators or your cylinder need changing. After your free survey we send you a fixed price in writing, with your grant already taken off: £7,500, or £9,000 for oil and LPG homes off mains gas. You can pay the rest monthly if you like.",
       },
-      fixedFaq,
+      {
+        question: "Will I have to pay anything extra?",
+        answer:
+          "No hidden extras. Your written price covers the whole job: the heat pump, the hot water cylinder and controls, any radiators that need changing, the grant application and your MCS certificate. It only changes if you ask for something more, and we agree that with you first.",
+      },
+      // "Is the price really fixed?" is left out: "Will I have to pay anything
+      // extra?" above answers it.
       energyFinanceFaq,
       areaFaq,
     ],
-    finalHeading: "Ready for warmer rooms and lower bills?",
-    finalBody: "Answer 4 quick questions. We will call you back within 1 working day to book your free survey.",
+    finalHeading: "Ready for warmer rooms, lower bills and £7,500 off?",
+    finalBody: "Answer 4 quick questions. We will call you back within 1 working day to book your free survey and check your grant.",
     finalImage: `${P}/Heating/after.webp`,
     finalImageAlt: "An air source heat pump fitted against a brick wall by Greentek",
-    formHeading: "Get your free heat pump quote",
+    formHeading: "Check your heat pump grant",
   },
 };

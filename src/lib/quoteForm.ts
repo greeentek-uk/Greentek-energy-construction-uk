@@ -153,6 +153,95 @@ export function budgetOptionsFor(service: string) {
   return serviceBudgetOptions[service] ?? budgetOptions;
 }
 
+/**
+ * Heat pump questions (ad landing page, 2026-10-29). They replace property
+ * type and budget there: nobody arriving from a heat pump ad is a commercial
+ * site, and the whole-project bands put every heat pump lead in "Under
+ * £25,000". What they ask instead is what decides the Boiler Upgrade Scheme —
+ * what the home is heated with now and who owns it (no EPC: the scheme
+ * stopped needing one on 28 April 2026) — plus
+ * why they're looking, so a broken boiler can be called before a grant
+ * browser. Mirrors the Meta lead form, so leads from both read the same.
+ * Values are never renamed (see heroServiceOptions).
+ */
+export const currentHeatingOptions = [
+  { value: "gas", label: "Gas boiler" },
+  { value: "oil", label: "Oil boiler" },
+  { value: "lpg", label: "LPG boiler" },
+  { value: "electric", label: "Electric heaters" },
+  { value: "heat_pump", label: "Already a heat pump" },
+  { value: "other", label: "Something else" },
+];
+
+export const homeTypeOptions = [
+  { value: "detached", label: "Detached" },
+  { value: "semi", label: "Semi-detached" },
+  { value: "terraced", label: "Terraced" },
+  { value: "bungalow", label: "Bungalow" },
+  { value: "flat", label: "Flat" },
+  { value: "other", label: "Other" },
+];
+
+export const heatPumpReasonOptions = [
+  { value: "", label: "Choose a reason" },
+  { value: "boiler_broken", label: "My boiler is old or broken" },
+  { value: "lower_bills", label: "Lower my energy bills" },
+  { value: "off_gas", label: "Move away from gas or oil" },
+  { value: "grant", label: "Just looking at the grant for now" },
+];
+
+/**
+ * UK mobile or landline, with or without +44 / spaces / brackets. Mobiles are
+ * always 11 digits; a few old landlines (01xxx area codes) are 10.
+ */
+export function isLikelyUkPhone(value: string): boolean {
+  const digits = value.replace(/[\s().-]/g, "").replace(/^(\+44|0044)0?/, "0");
+  return /^07\d{9}$/.test(digits) || /^0[1-3]\d{8,9}$/.test(digits);
+}
+
+/** Loose shape check — one @, a dot in the domain, no spaces. */
+export function isLikelyEmail(value: string): boolean {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(value.trim());
+}
+
+/**
+ * Domains people commonly mistype on a phone keyboard. Only ever offered as a
+ * "Did you mean …?" — never changed silently, since an unusual domain can be
+ * real.
+ */
+const EMAIL_DOMAIN_TYPOS: Record<string, string> = {
+  "gmial.com": "gmail.com",
+  "gmal.com": "gmail.com",
+  "gmai.com": "gmail.com",
+  "gamil.com": "gmail.com",
+  "gnail.com": "gmail.com",
+  "gmail.co": "gmail.com",
+  "gmail.co.uk": "gmail.com",
+  "gmail.con": "gmail.com",
+  "hotmial.com": "hotmail.com",
+  "hotmal.com": "hotmail.com",
+  "hotmail.co": "hotmail.co.uk",
+  "hotmail.con": "hotmail.com",
+  "yahoo.co": "yahoo.co.uk",
+  "yaho.co.uk": "yahoo.co.uk",
+  "yahooo.co.uk": "yahoo.co.uk",
+  "yahoo.con": "yahoo.com",
+  "outlok.com": "outlook.com",
+  "outlook.con": "outlook.com",
+  "iclod.com": "icloud.com",
+  "icloud.co": "icloud.com",
+  "btinternet.co": "btinternet.com",
+  "btinternet.co.uk": "btinternet.com",
+};
+
+export function suggestEmail(value: string): string | null {
+  const email = value.trim().toLowerCase();
+  const at = email.lastIndexOf("@");
+  if (at < 1) return null;
+  const fix = EMAIL_DOMAIN_TYPOS[email.slice(at + 1)];
+  return fix ? `${email.slice(0, at)}@${fix}` : null;
+}
+
 /** Every budget answer any form can send, for naming it in the enquiry email. */
 export const allBudgetOptions = [budgetOptions, ...Object.values(serviceBudgetOptions), retiredBudgetOptions].flat();
 
@@ -198,6 +287,10 @@ export interface QuoteSubmission {
   timeline?: string;
   budget?: string;
   message?: string;
+  /** Heat pump questions (only the heat pump landing page asks them). */
+  current_heating?: string;
+  home_type?: string;
+  main_reason?: string;
   /** Cloudinary URLs of property photos uploaded with the enquiry. */
   photos?: string[];
   /** The numbered enquiry the photos were uploaded under. */

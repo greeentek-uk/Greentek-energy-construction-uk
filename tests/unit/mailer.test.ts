@@ -44,6 +44,41 @@ describe("sendQuoteRequestEmail", () => {
     expect(mail.html).toContain("/image/upload/c_fill,w_240,h_180,f_jpg,q_auto/v1/enquiry-photos/00012/a.jpg");
   });
 
+  it("heat pump enquiries get the grant check and their own answers instead of budget", async () => {
+    vi.stubEnv("GMAIL_USER", "site@example.com");
+    vi.stubEnv("GMAIL_APP_PASSWORD", "x");
+    sent.length = 0;
+
+    await sendQuoteRequestEmail({
+      full_name: "Jo Bloggs",
+      email: "jo@example.com",
+      phone: "07700900123",
+      postcode: "WV1 1AA",
+      service: "energy_heat_pump",
+      property_type: "",
+      is_homeowner: "yes",
+      timeline: "asap",
+      message: "",
+      current_heating: "gas",
+      home_type: "semi",
+      main_reason: "grant",
+      source: "Ad landing page — Air source heat pumps",
+    });
+
+    const mail = sent[0];
+    expect(mail.subject.startsWith("[Grant: likely] New quote request")).toBe(true);
+    for (const text of [
+      "Grant check: Likely — owner, replacing a gas boiler",
+      "Main reason: Just looking at the grant for now",
+      "Heated by: Gas boiler",
+      "Home type: Semi-detached",
+    ]) {
+      expect(mail.text).toContain(text);
+    }
+    expect(mail.text).not.toContain("Budget:");
+    expect(mail.text).not.toContain("Property type:");
+  });
+
   it("fails loudly when email isn't configured", async () => {
     vi.stubEnv("GMAIL_USER", "");
     vi.stubEnv("GMAIL_APP_PASSWORD", "");

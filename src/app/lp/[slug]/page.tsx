@@ -10,6 +10,8 @@ import HeroQuoteForm from "@/components/sections/HeroQuoteForm";
 import FinanceBanner from "@/components/sections/FinanceBanner";
 import AccreditationsSection from "@/components/sections/AccreditationsSection";
 import TrackViewContent from "@/components/site/TrackViewContent";
+import PromoBadge from "@/components/landing/PromoBadge";
+import { promoActive } from "@/lib/promo";
 import { StarStrip } from "@/components/site/TrustRatingBadge";
 import { getCurrentSiteConfig, getPageContent } from "@/lib/cms";
 import { LANDING_PAGES, landingPage, withLandingDefaults } from "@/lib/landingPages";
@@ -183,8 +185,12 @@ export default async function LandingPage({ params }: Props) {
   const content = withLandingDefaults(meta.block, stored);
   const source = `Ad landing page — ${meta.name}`;
   const fixedService = { value: meta.service, label: meta.name };
-  // Bathroom enquiries also give the property's address (owner's request, 2026-10-22).
-  const askAddress = meta.slug === "bathroom-renovation";
+  // Heat pump enquiries are asked the grant questions instead of property type
+  // and budget (2026-10-29, after comparing with the Meta lead form).
+  const heatPump = meta.service === "energy_heat_pump";
+  // Bathroom enquiries also give the property's address (owner's request,
+  // 2026-10-22); heat pump ones too, as the survey and the Meta form need it.
+  const askAddress = meta.slug === "bathroom-renovation" || heatPump;
   const areaNames = content.areaNames.length
     ? content.areaNames
     : siteConfig.locations.map((location) => location.name);
@@ -192,6 +198,9 @@ export default async function LandingPage({ params }: Props) {
   const phone = siteConfig.phone;
   const cta = { label: content.quoteButtonLabel || "Get my free quote", phone, proof: content.socialProofLine, reviews };
   const score = Number.parseFloat(rating.ratingScore) || 0;
+  // Left out of any build after the end date; PromoBadge also hides itself in
+  // the browser, since a static page can outlive its build by weeks.
+  const promo = content.promoText && promoActive(content.promoEnds) ? content.promoText : "";
 
   return (
     <div className="flex min-h-screen flex-col bg-white text-[#0b0d0e] pb-20 lg:pb-0">
@@ -222,6 +231,11 @@ export default async function LandingPage({ params }: Props) {
                   {score > 0 && <StarStrip score={score} />}
                   {content.ratingText}
                 </a>
+              )}
+              {promo && (
+                <div className="mt-5">
+                  <PromoBadge text={promo} ends={content.promoEnds} />
+                </div>
               )}
               <h1 className="mt-6 font-heading text-[2.25rem] font-extrabold leading-[1.05] tracking-[-0.025em] text-balance sm:text-[2.75rem] xl:text-[3.4rem]">
                 <Highlighted text={content.heroHeading || meta.name} highlight={content.heroHighlight} />
@@ -254,6 +268,70 @@ export default async function LandingPage({ params }: Props) {
                 </li>
               ))}
             </ul>
+          </section>
+        )}
+
+        {/* The grant straight after the reviews: for heat pump ad traffic it's
+            the reason they clicked, and "how much, who applies, do I qualify"
+            are the questions to answer before anything else. */}
+        {content.grantHeading && (
+          <section className="bg-white py-16 md:py-24">
+            <div className="site-container grid items-start gap-10 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:gap-16">
+              <div className="order-2 rounded-3xl bg-[#0b0d0e] p-8 text-white md:p-10 lg:order-1">
+                {content.grantAmount && (
+                  <p>
+                    <span className="block font-heading text-[3.5rem] font-extrabold leading-none tracking-[-0.03em] md:text-[4.5rem]" style={{ color: lime }}>
+                      {content.grantAmount}
+                    </span>
+                    {content.grantAmountLabel && (
+                      <span className="mt-2 block text-lg font-semibold text-white/80">{content.grantAmountLabel}</span>
+                    )}
+                  </p>
+                )}
+                {content.grantChecklist.length > 0 && (
+                  <>
+                    {content.grantChecklistHeading && (
+                      <h3 className="mt-8 font-heading text-xl font-extrabold">{content.grantChecklistHeading}</h3>
+                    )}
+                    <ul className="mt-4 space-y-3">
+                      {content.grantChecklist.map((item) => (
+                        <Tick key={item} dark>
+                          {item}
+                        </Tick>
+                      ))}
+                    </ul>
+                  </>
+                )}
+                {content.grantNote && (
+                  <p className="mt-8 rounded-2xl bg-[#c5eb02] p-5 font-semibold leading-snug text-black">{content.grantNote}</p>
+                )}
+              </div>
+
+              <div className="order-1 lg:order-2">
+                <h2 className={h2}>{content.grantHeading}</h2>
+                {content.grantBody && (
+                  <p className="mt-5 text-lg leading-relaxed text-[#0b0d0e]/70">{content.grantBody}</p>
+                )}
+                {content.grantSteps.length > 0 && (
+                  <ol className="mt-10 space-y-6">
+                    {content.grantSteps.map((step, i) => (
+                      <li key={step.title} className="flex gap-4">
+                        <span className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-[#c5eb02] font-heading text-lg font-extrabold">
+                          {i + 1}
+                        </span>
+                        <div>
+                          <h3 className="font-heading text-lg font-extrabold">{step.title}</h3>
+                          <p className="mt-1 leading-relaxed text-[#0b0d0e]/70">{step.body}</p>
+                        </div>
+                      </li>
+                    ))}
+                  </ol>
+                )}
+                <div className="mt-10">
+                  <Cta {...cta} />
+                </div>
+              </div>
+            </div>
           </section>
         )}
 
@@ -630,6 +708,11 @@ export default async function LandingPage({ params }: Props) {
                   {content.ratingText}
                 </p>
               )}
+              {promo && (
+                <div className="mt-5">
+                  <PromoBadge text={promo} ends={content.promoEnds} />
+                </div>
+              )}
               {content.finalHeading && (
                 <h2 className="mt-5 font-heading text-[1.9rem] font-extrabold leading-[1.1] tracking-[-0.02em] md:text-[2.5rem]">
                   {content.finalHeading}
@@ -658,6 +741,7 @@ export default async function LandingPage({ params }: Props) {
                 source={source}
                 fixedService={fixedService}
                 askAddress={askAddress}
+                heatPump={heatPump}
               />
             </div>
           </div>
@@ -675,6 +759,7 @@ export default async function LandingPage({ params }: Props) {
         source={source}
         fixedService={fixedService}
         askAddress={askAddress}
+                heatPump={heatPump}
       />
       <StickyQuoteBar
         phone={phone}

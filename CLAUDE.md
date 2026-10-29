@@ -324,11 +324,36 @@ the review wall shows three reviews.
 **Energy pages (2026-10-23):** `/lp/solar-panels` and `/lp/air-source-heat-pumps` on the same
 template (`lp-solar-panels`, `lp-air-source-heat-pumps`; services `energy_solar_pv` /
 `energy_heat_pump`). Copy is drawn from the live service pages' own claims (MCS, brands, SEG,
-room-by-room heat loss) — **no prices and no grant amount** until the owner gives them (pricing
-section hidden while `pricingTiers` is empty; a test pins that). Their only photos are
+room-by-room heat loss) — **no prices** until the owner gives them (pricing
+section hidden while `pricingTiers` is empty; a test pins that). The heat pump page *does* name
+the **Boiler Upgrade Scheme** (2026-10-29, owner's request): a grant section after the reviews
+strip (`grant*` fields, blank = hidden, so other pages don't show it) and FAQs on how much / who
+qualifies / who applies / MCS / extra costs. Figures are gov.uk's, checked that day: £7,500; +£1,500
+(£9,000) for oil/LPG homes with no mains gas until March 2027; **no EPC needed since 28 April
+2026**; the MCS installer applies and the grant comes off the price. A test pins them — re-check
+gov.uk when the scheme changes. Production was seeded with the earlier copy, so after deploying run
+`pnpm migrate:heat-pump-grant --write` (dry run without; per field, only unedited copy). The hero
+is grant-led ("Check if you can get £7,500 off a heat pump", "Check my grant" buttons); £7,500
+leads and £9,000 is always named with its condition, never "up to £9,000" (ASA) — a test pins it.
+**Christmas offer** (2026-10-29): "20% off until Christmas" badge (`promoText`/`promoEnds`, hero +
+closing section) on every landing page except heat pumps. `PromoBadge` hides itself in the browser
+after the end date, because these pages are static and outlive their build; `lib/promo.ts`
+`promoActive` is shared with the server page (a client file's export can't be called there). Their only photos are
 `projects/Solar/*` and `projects/Heating/*`; the solar pair is byte-identical to files in the
 "Examples" folder, so swap in real install photos when there are some. Need `pnpm
 seed:page-content` (insert-only) or they 500.
+**Heat pump form (2026-10-29):** on `/lp/air-source-heat-pumps` only, `HeroQuoteForm heatPump`
+asks the grant questions in place of property type + budget — current heating + home type (step 1,
+dropdowns), owner (required), main reason, timeline — plus the address. No EPC question (not
+needed since April 2026). Lists in `lib/quoteForm.ts`,
+mirroring the Meta lead form. The email adds a **Grant check** row and a `[Grant: …]` subject tag
+from `lib/grantCheck.ts` (owner, fossil-fuel heating, not a Scotland/NI postcode; oil/LPG flagged
+for the £9,000 uplift) — inbox sorting only, never shown on the site. Every `HeroQuoteForm` now
+checks the email's shape (with a "Did you mean …?" for common domain typos) and that the phone is a
+UK number. **All four steps share one grid cell** (inactive ones `invisible` + `inert`), so the
+card keeps the tallest step's height and the buttons don't move; on one-service pages property type
++ owner moved to step 1 (step 2 = timing & budget) so step 1 isn't nearly empty. No "Your enquiry"
+box on one-service pages (owner: useless — the heading names the service).
 Enquiries arrive with source "Ad landing page — …" and, from the page URL's tags
 (`lib/attribution.ts`), the paid click / UTM rows in the email.
 
@@ -414,7 +439,7 @@ hover/focus/touch instead of on scroll. Keep new public links on that import. Ad
 
 ## Current state (2026-09-18)
 
-- Unit tests: **219 passing** across 24 files (2026-10-13).
+- Unit tests: **231 passing** across 25 files (2026-10-29).
 - E2E: 4 known failures recorded in `test-results/` —
   1. `/images/brands/swip.png` 404s on `/about` and in the media library. The file isn't in
      `public/images/brands/`; the reference lives in the **`brands` pageContent block in Mongo**,

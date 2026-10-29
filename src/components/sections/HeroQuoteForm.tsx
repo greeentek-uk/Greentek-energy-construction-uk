@@ -6,10 +6,16 @@ import { newEventId, setAdsUserData, track } from "@/lib/analytics";
 import { ArrowLeft, ArrowRight, ChevronDown } from "lucide-react";
 import {
   budgetOptionsFor,
+  currentHeatingOptions,
+  heatPumpReasonOptions,
   heroServiceOptions,
+  homeTypeOptions,
+  isLikelyEmail,
+  isLikelyUkPhone,
   ownerOptions,
   projectTypeOptions,
   submitQuoteRequest,
+  suggestEmail,
   isLikelyPostcode,
   timelineOptions,
   type ProjectType,
@@ -35,11 +41,19 @@ import PropertyPhotoPicker, { type EnquiryRef, type PhotoItem } from "./Property
  * On a page about one service, `fixedService` drops the first two questions:
  * someone reading the solar page has already told us it's solar, and asking
  * again reads as a form that wasn't paying attention. The value is still
- * submitted, so the inbox sees no difference.
+ * submitted, so the inbox sees no difference. There's no "Your enquiry: …"
+ * box restating it either (removed 2026-10-29, owner: "useless") — the form's
+ * heading already names the service.
  *
  * `askAddress` adds the property's address to the last step (bathroom ad
  * landing page). It sits with the contact details rather than beside the
  * postcode in step 1, so the opening step stays one quick question.
+ *
+ * `heatPump` (heat pump ad landing page) swaps property type and budget for
+ * the questions that decide the Boiler Upgrade Scheme: current heating and
+ * home type beside the postcode in step 1, then owner, why they're looking
+ * and when in step 2. The enquiry email turns them into a grant check
+ * (`lib/grantCheck.ts`).
  */
 const fieldClass =
   "w-full min-h-12 px-4 py-3 rounded-xl bg-white/15 backdrop-blur-sm border border-white/20 focus:border-[#c5eb02] focus:ring-4 focus:ring-[#c5eb02]/10 transition-all outline-none font-medium text-white placeholder:text-white/60 text-base sm:text-sm";
@@ -106,6 +120,65 @@ function SelectField({
 }
 
 const STEP_TITLES = ["What you need", "Property & budget", "Photos & notes", "Your details"] as const;
+const FIXED_SERVICE_STEP_TITLES = ["Your property", "Timing & budget", "Photos & notes", "Your details"] as const;
+const HEAT_PUMP_STEP_TITLES = ["Your home", "Grant & timing", "Photos & notes", "Your details"] as const;
+
+const propertyTypeOptions = [
+  { value: "residential", label: "Residential" },
+  { value: "commercial", label: "Commercial" },
+];
+
+/** One step of the form; see the grid it sits in for why it's never unmounted. */
+function StepPanel({ active, children }: { active: boolean; children: React.ReactNode }) {
+  return (
+    <div
+      inert={!active}
+      aria-hidden={!active}
+      className={`col-start-1 row-start-1 flex flex-col gap-4 ${active ? "" : "invisible"}`}
+    >
+      {children}
+    </div>
+  );
+}
+
+/** A row of tap-to-pick answers; tapping the chosen one again clears it. */
+function ChipGroup({
+  legend,
+  options,
+  value,
+  onChange,
+  columns = 2,
+  fullWidth,
+}: {
+  legend: string;
+  options: { value: string; label: string }[];
+  value: string;
+  onChange: (value: string) => void;
+  columns?: 2 | 3;
+  /** An option whose label is too long for one column gets the whole row. */
+  fullWidth?: string;
+}) {
+  return (
+    <fieldset>
+      <legend className="text-xs font-bold text-white ml-1 mb-1.5">{legend}</legend>
+      <div className={`grid gap-2 ${columns === 3 ? "grid-cols-3" : "grid-cols-2"}`}>
+        {options.map((option) => (
+          <button
+            key={option.value}
+            type="button"
+            onClick={() => onChange(value === option.value ? "" : option.value)}
+            aria-pressed={value === option.value}
+            className={`${chipClass(value === option.value)} ${
+              option.value === fullWidth ? "col-span-full" : ""
+            }`}
+          >
+            {option.label}
+          </button>
+        ))}
+      </div>
+    </fieldset>
+  );
+}
 
 type Step = 1 | 2 | 3 | 4;
 
@@ -124,6 +197,7 @@ export default function HeroQuoteForm({
   fixedService,
   idPrefix = "hero",
   askAddress = false,
+  heatPump = false,
 }: {
   heading: string;
   subheading: string;
@@ -134,6 +208,8 @@ export default function HeroQuoteForm({
   idPrefix?: string;
   /** Ask for the property's address (required) in the last step. */
   askAddress?: boolean;
+  /** Ask the heat pump / grant questions instead of property type and budget. */
+  heatPump?: boolean;
 }) {
   const router = useRouter();
   const started = useRef(false);
@@ -155,6 +231,9 @@ export default function HeroQuoteForm({
     timeline: "",
     budget: "",
     message: "",
+    current_heating: "",
+    home_type: "",
+    main_reason: "",
     full_name: "",
     email: "",
     phone: "",
@@ -199,6 +278,7 @@ export default function HeroQuoteForm({
 
   function continueFromStepOne() {
     if (!fixedService && !form.service) return setError("Pick what you need help with.");
+    if (heatPump && !form.current_heating) return setError("Tell us how you heat your home now.");
     if (!form.postcode.trim()) return setError("Enter your postcode.");
     if (!isLikelyPostcode(form.postcode)) return setError("That postcode doesn't look right.");
     goTo(2);
@@ -210,12 +290,50 @@ export default function HeroQuoteForm({
   const budget = budgets.some((o) => o.value && o.value === form.budget) ? form.budget : "";
 
   function continueFromStepTwo() {
+    if (heatPump) {
+      if (!form.is_homeowner) return setError("Tell us if you own the property.");
+      if (!form.main_reason) return setError("Choose the main reason you're looking.");
+      if (!form.timeline) return setError("Choose when you'd like to begin.");
+      return goTo(3);
+    }
     if (!form.timeline) return setError("Choose when you'd like to begin.");
     if (!budget) return setError("Choose an approximate budget — or “I need guidance”.");
     goTo(3);
   }
 
   const uploading = photos.some((p) => p.status === "uploading");
+  const emailSuggestion = suggestEmail(form.email);
+
+  const stepTitles = heatPump
+    ? HEAT_PUMP_STEP_TITLES
+    : fixedService
+      ? FIXED_SERVICE_STEP_TITLES
+      : STEP_TITLES;
+
+  const errorText = error && (
+    <p role="alert" className="text-xs font-medium text-red-300">
+      {error}
+    </p>
+  );
+
+  const propertyTypeChips = (
+    <ChipGroup
+      legend="Property type"
+      options={propertyTypeOptions}
+      value={form.property_type}
+      onChange={(value) => set("property_type", value as typeof form.property_type)}
+    />
+  );
+
+  const ownerChips = (
+    <ChipGroup
+      legend={heatPump ? "Do you own the property?" : "Are you the property owner?"}
+      options={ownerOptions}
+      value={form.is_homeowner}
+      onChange={(value) => set("is_homeowner", value)}
+      fullWidth="buying"
+    />
+  );
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -226,7 +344,9 @@ export default function HeroQuoteForm({
 
     if (!form.full_name.trim()) return setError("Enter your name.");
     if (!form.email.trim()) return setError("Enter your email.");
+    if (!isLikelyEmail(form.email)) return setError("That email address doesn't look right.");
     if (!form.phone.trim()) return setError("Enter your phone number.");
+    if (!isLikelyUkPhone(form.phone)) return setError("Please check your phone number — we'll call you on it.");
     if (askAddress && !form.address.trim()) return setError("Enter the property's address.");
     if (!form.consent) return setError("Please tick the consent box so we can reply.");
     if (uploading) return setError("Your photos are still uploading — one moment.");
@@ -238,10 +358,12 @@ export default function HeroQuoteForm({
     const eventId = newEventId();
     try {
       // project_type is carried in the service value itself (energy_… / construction_…).
-      const { project_type, address, ...fields } = form;
+      const { project_type, address, current_heating, home_type, main_reason, ...fields } = form;
       await submitQuoteRequest({
         ...fields,
+        email: fields.email.trim(),
         ...(askAddress ? { address: address.trim() } : {}),
+        ...(heatPump ? { current_heating, home_type, main_reason } : {}),
         // A photo that failed to upload is left out rather than blocking the enquiry.
         photos: photos.flatMap((p) => (p.status === "done" && p.url ? [p.url] : [])),
         enquiry,
@@ -289,145 +411,165 @@ export default function HeroQuoteForm({
           tabIndex={-1}
           className="text-sm font-bold uppercase tracking-wide text-[#c5eb02] outline-none"
         >
-          {step === 1 && fixedService ? "Where you are" : STEP_TITLES[step - 1]}
+          {stepTitles[step - 1]}
         </p>
 
-        {step === 1 && (
-          <>
-            {fixedService ? (
-              // Confirmation, not a question: it tells the reader the enquiry
-              // is about the page they're on, without making them restate it.
-              <div className="rounded-xl border border-white/20 bg-white/10 px-4 py-3">
-                <p className="text-xs font-bold text-white/60">Your enquiry</p>
-                <p className="text-sm font-bold text-[#c5eb02]">{fixedService.label}</p>
-              </div>
-            ) : (
-              <>
-                {/* Segmented switch: the choice changes the service list below it. */}
-                <div
-                  role="radiogroup"
-                  aria-label="Type of project"
-                  className="grid grid-cols-2 gap-1 rounded-xl border border-white/20 bg-white/10 p-1"
-                >
-                  {projectTypeOptions.map((option) => (
-                    <button
-                      key={option.value}
-                      type="button"
-                      role="radio"
-                      aria-checked={form.project_type === option.value}
-                      onClick={() => setProjectType(option.value)}
-                      className={`min-h-11 rounded-lg text-sm font-bold transition-colors ${
-                        form.project_type === option.value
-                          ? "bg-[#c5eb02] text-black"
-                          : "text-white/80 hover:text-white"
-                      }`}
-                    >
-                      {option.label}
-                    </button>
-                  ))}
-                </div>
+        {/* Every step sits in the same grid cell and the inactive ones are
+            invisible + inert, so the card is always as tall as its tallest
+            step: it doesn't jump between steps, and Back/Continue stay where
+            the thumb left them. Hidden steps are out of the tab order and the
+            accessibility tree, and keep their answers. */}
+        <div className="grid">
+          <StepPanel active={step === 1}>
+            <div className="space-y-4">
+              {!fixedService && (
+                <>
+                  {/* Segmented switch: the choice changes the service list below it. */}
+                  <div
+                    role="radiogroup"
+                    aria-label="Type of project"
+                    className="grid grid-cols-2 gap-1 rounded-xl border border-white/20 bg-white/10 p-1"
+                  >
+                    {projectTypeOptions.map((option) => (
+                      <button
+                        key={option.value}
+                        type="button"
+                        role="radio"
+                        aria-checked={form.project_type === option.value}
+                        onClick={() => setProjectType(option.value)}
+                        className={`min-h-11 rounded-lg text-sm font-bold transition-colors ${
+                          form.project_type === option.value
+                            ? "bg-[#c5eb02] text-black"
+                            : "text-white/80 hover:text-white"
+                        }`}
+                      >
+                        {option.label}
+                      </button>
+                    ))}
+                  </div>
 
-                <SelectField
-                  id={`${idPrefix}_service`}
-                  label="What can we help with?"
-                  placeholder={
-                    form.project_type === "energy"
-                      ? "Choose an energy upgrade"
-                      : "Choose a project"
-                  }
-                  options={heroServiceOptions[form.project_type]}
-                  value={form.service}
-                  onChange={(value) => set("service", value)}
+                  <SelectField
+                    id={`${idPrefix}_service`}
+                    label="What can we help with?"
+                    placeholder={
+                      form.project_type === "energy"
+                        ? "Choose an energy upgrade"
+                        : "Choose a project"
+                    }
+                    options={heroServiceOptions[form.project_type]}
+                    value={form.service}
+                    onChange={(value) => set("service", value)}
+                  />
+                </>
+              )}
+
+              {heatPump && (
+                <>
+                  <SelectField
+                    id={`${idPrefix}_heating`}
+                    label="How do you heat your home now?"
+                    placeholder="Choose your heating"
+                    options={currentHeatingOptions}
+                    value={form.current_heating}
+                    onChange={(value) => set("current_heating", value)}
+                  />
+                  <SelectField
+                    id={`${idPrefix}_home_type`}
+                    label="What type of home is it?"
+                    placeholder="Choose a home type"
+                    options={homeTypeOptions}
+                    value={form.home_type}
+                    onChange={(value) => set("home_type", value)}
+                  />
+                </>
+              )}
+
+              {/* On a one-service page the postcode alone would leave this
+                  step nearly empty beside a full step 2, so property type and
+                  owner move up here and step 2 is timing and budget. */}
+              {fixedService && !heatPump && (
+                <>
+                  {propertyTypeChips}
+                  {ownerChips}
+                </>
+              )}
+
+              <div className="space-y-1.5">
+                <label htmlFor={`${idPrefix}_postcode`} className="block text-xs font-bold text-white ml-1">
+                  Postcode
+                </label>
+                <input
+                  id={`${idPrefix}_postcode`}
+                  value={form.postcode}
+                  onChange={(e) => set("postcode", e.target.value.toUpperCase())}
+                  placeholder="Your postcode"
+                  autoComplete="postal-code"
+                  autoCapitalize="characters"
+                  enterKeyHint="next"
+                  className={fieldClass}
                 />
-              </>
-            )}
-
-            <div>
-              <label htmlFor={`${idPrefix}_postcode`} className="sr-only">
-                Postcode
-              </label>
-              <input
-                id={`${idPrefix}_postcode`}
-                value={form.postcode}
-                onChange={(e) => set("postcode", e.target.value.toUpperCase())}
-                placeholder="Your postcode"
-                autoComplete="postal-code"
-                autoCapitalize="characters"
-                enterKeyHint="next"
-                className={fieldClass}
-              />
+              </div>
             </div>
 
-            <button type="button" onClick={continueFromStepOne} className={`${primaryButton} w-full`}>
+            {step === 1 && errorText}
+            <button type="button" onClick={continueFromStepOne} className={`${primaryButton} w-full flex-none mt-auto`}>
               Continue
               <ArrowRight className="h-4 w-4" />
             </button>
-          </>
-        )}
+          </StepPanel>
 
-        {step === 2 && (
-          <>
-            <fieldset>
-              <legend className="text-xs font-bold text-white ml-1 mb-1.5">Property type</legend>
-              <div className="grid grid-cols-2 gap-2">
-                {(["residential", "commercial"] as const).map((value) => (
-                  <button
-                    key={value}
-                    type="button"
-                    onClick={() => set("property_type", form.property_type === value ? "" : value)}
-                    aria-pressed={form.property_type === value}
-                    className={chipClass(form.property_type === value)}
-                  >
-                    {value === "residential" ? "Residential" : "Commercial"}
-                  </button>
-                ))}
-              </div>
-            </fieldset>
+          <StepPanel active={step === 2}>
+            <div className="space-y-4">
+              {heatPump ? (
+                <>
+                  {/* Tenants can't apply for the grant — the owner or landlord
+                      does. No EPC question: the scheme stopped needing one on
+                      28 April 2026. */}
+                  {ownerChips}
 
-            {/* Asked for commercial sites too: owner, tenant or mid-purchase
-                changes who can sign off the work. */}
-            <fieldset>
-              <legend className="text-xs font-bold text-white ml-1 mb-1.5">
-                Are you the property owner?
-              </legend>
-              <div className="grid grid-cols-2 gap-2">
-                {ownerOptions.map((option) => (
-                  <button
-                    key={option.value}
-                    type="button"
-                    onClick={() =>
-                      set("is_homeowner", form.is_homeowner === option.value ? "" : option.value)
-                    }
-                    aria-pressed={form.is_homeowner === option.value}
-                    className={`${chipClass(form.is_homeowner === option.value)} ${
-                      option.value === "buying" ? "col-span-2" : ""
-                    }`}
-                  >
-                    {option.label}
-                  </button>
-                ))}
-              </div>
-            </fieldset>
+                  <SelectField
+                    id={`${idPrefix}_reason`}
+                    label="What's the main reason you're looking?"
+                    placeholder="Choose a reason"
+                    options={heatPumpReasonOptions}
+                    value={form.main_reason}
+                    onChange={(value) => set("main_reason", value)}
+                  />
+                </>
+              ) : (
+                !fixedService && (
+                  <>
+                    {propertyTypeChips}
+                    {/* Asked for commercial sites too: owner, tenant or
+                        mid-purchase changes who can sign off the work. */}
+                    {ownerChips}
+                  </>
+                )
+              )}
 
-            <SelectField
-              id={`${idPrefix}_timeline`}
-              label="When would you like to begin?"
-              placeholder="Choose a timeframe"
-              options={timelineOptions}
-              value={form.timeline}
-              onChange={(value) => set("timeline", value)}
-            />
+              <SelectField
+                id={`${idPrefix}_timeline`}
+                label={heatPump ? "When would you like it fitted?" : "When would you like to begin?"}
+                placeholder="Choose a timeframe"
+                options={timelineOptions}
+                value={form.timeline}
+                onChange={(value) => set("timeline", value)}
+              />
 
-            <SelectField
-              id={`${idPrefix}_budget`}
-              label="Approximate project investment"
-              placeholder="Choose a budget"
-              options={budgets}
-              value={budget}
-              onChange={(value) => set("budget", value)}
-            />
+              {!heatPump && (
+                <SelectField
+                  id={`${idPrefix}_budget`}
+                  label="Approximate project investment"
+                  placeholder="Choose a budget"
+                  options={budgets}
+                  value={budget}
+                  onChange={(value) => set("budget", value)}
+                />
+              )}
+            </div>
 
-            <div className="flex gap-2">
+            {step === 2 && errorText}
+            <div className="flex gap-2 mt-auto">
               <button type="button" onClick={() => goTo(1)} className={backButton}>
                 <ArrowLeft className="h-4 w-4" />
                 Back
@@ -437,31 +579,34 @@ export default function HeroQuoteForm({
                 <ArrowRight className="h-4 w-4" />
               </button>
             </div>
-          </>
-        )}
+          </StepPanel>
 
-        {step === 3 && (
-          <>
-            <p className="-mt-2 text-xs text-white/60">
-              Photos help us understand the job before we call. Both are optional.
-            </p>
-            <PropertyPhotoPicker photos={photos} onChange={setPhotos} onEnquiry={setEnquiry} />
+          <StepPanel active={step === 3}>
+            <div className="space-y-4">
+              <p className="-mt-2 text-xs text-white/60">
+                {heatPump
+                  ? "A photo of your boiler and the outside wall where the unit could go helps us plan before we call. Both are optional."
+                  : "Photos help us understand the job before we call. Both are optional."}
+              </p>
+              <PropertyPhotoPicker photos={photos} onChange={setPhotos} onEnquiry={setEnquiry} />
 
-            <div className="space-y-1.5">
-              <label htmlFor={`${idPrefix}_message`} className="text-xs font-bold text-white ml-1">
-                How can we help?
-              </label>
-              <textarea
-                id={`${idPrefix}_message`}
-                rows={3}
-                value={form.message}
-                onChange={(e) => set("message", e.target.value)}
-                placeholder="Tell us about your project… (optional)"
-                className={`${fieldClass} resize-none`}
-              />
+              <div className="space-y-1.5">
+                <label htmlFor={`${idPrefix}_message`} className="text-xs font-bold text-white ml-1">
+                  How can we help?
+                </label>
+                <textarea
+                  id={`${idPrefix}_message`}
+                  rows={3}
+                  value={form.message}
+                  onChange={(e) => set("message", e.target.value)}
+                  placeholder="Tell us about your project… (optional)"
+                  className={`${fieldClass} resize-none`}
+                />
+              </div>
             </div>
 
-            <div className="flex gap-2">
+            {step === 3 && errorText}
+            <div className="flex gap-2 mt-auto">
               <button type="button" onClick={() => goTo(2)} className={backButton}>
                 <ArrowLeft className="h-4 w-4" />
                 Back
@@ -471,89 +616,104 @@ export default function HeroQuoteForm({
                 <ArrowRight className="h-4 w-4" />
               </button>
             </div>
-          </>
-        )}
+          </StepPanel>
 
-        {step === 4 && (
-          <>
-            <div>
-              <label htmlFor={`${idPrefix}_name`} className="sr-only">
-                Full name
-              </label>
-              <input
-                id={`${idPrefix}_name`}
-                value={form.full_name}
-                onChange={(e) => set("full_name", e.target.value)}
-                placeholder="Full name"
-                autoComplete="name"
-                autoCapitalize="words"
-                enterKeyHint="next"
-                className={fieldClass}
-              />
-            </div>
-            <div>
-              <label htmlFor={`${idPrefix}_email`} className="sr-only">
-                Email
-              </label>
-              <input
-                id={`${idPrefix}_email`}
-                type="email"
-                inputMode="email"
-                value={form.email}
-                onChange={(e) => set("email", e.target.value)}
-                placeholder="Email address"
-                autoComplete="email"
-                autoCapitalize="none"
-                enterKeyHint="next"
-                className={fieldClass}
-              />
-            </div>
-            <div>
-              <label htmlFor={`${idPrefix}_phone`} className="sr-only">
-                Phone
-              </label>
-              <input
-                id={`${idPrefix}_phone`}
-                type="tel"
-                inputMode="tel"
-                value={form.phone}
-                onChange={(e) => set("phone", e.target.value)}
-                placeholder="Phone number"
-                autoComplete="tel"
-                enterKeyHint={askAddress ? "next" : "send"}
-                className={fieldClass}
-              />
-            </div>
-            {askAddress && (
+          <StepPanel active={step === 4}>
+            <div className="space-y-4">
               <div>
-                <label htmlFor={`${idPrefix}_address`} className="sr-only">
-                  Property address
+                <label htmlFor={`${idPrefix}_name`} className="sr-only">
+                  Full name
                 </label>
                 <input
-                  id={`${idPrefix}_address`}
-                  value={form.address}
-                  onChange={(e) => set("address", e.target.value)}
-                  placeholder={`Property address${form.postcode ? ` (${form.postcode.trim()})` : ""}`}
-                  autoComplete="street-address"
+                  id={`${idPrefix}_name`}
+                  value={form.full_name}
+                  onChange={(e) => set("full_name", e.target.value)}
+                  placeholder="Full name"
+                  autoComplete="name"
                   autoCapitalize="words"
-                  enterKeyHint="send"
+                  enterKeyHint="next"
                   className={fieldClass}
                 />
               </div>
-            )}
+              <div>
+                <label htmlFor={`${idPrefix}_email`} className="sr-only">
+                  Email
+                </label>
+                <input
+                  id={`${idPrefix}_email`}
+                  type="email"
+                  inputMode="email"
+                  value={form.email}
+                  onChange={(e) => set("email", e.target.value)}
+                  placeholder="Email address"
+                  autoComplete="email"
+                  autoCapitalize="none"
+                  enterKeyHint="next"
+                  className={fieldClass}
+                />
+                {/* A nudge, never an automatic change: an odd domain can be real. */}
+                {emailSuggestion && (
+                  <p className="mt-1.5 ml-1 text-xs text-white/70">
+                    Did you mean{" "}
+                    <button
+                      type="button"
+                      onClick={() => set("email", emailSuggestion)}
+                      className="font-bold text-[#c5eb02] underline underline-offset-2"
+                    >
+                      {emailSuggestion}
+                    </button>
+                    ?
+                  </p>
+                )}
+              </div>
+              <div>
+                <label htmlFor={`${idPrefix}_phone`} className="sr-only">
+                  Phone
+                </label>
+                <input
+                  id={`${idPrefix}_phone`}
+                  type="tel"
+                  inputMode="tel"
+                  value={form.phone}
+                  onChange={(e) => set("phone", e.target.value)}
+                  placeholder="Phone number"
+                  autoComplete="tel"
+                  enterKeyHint={askAddress ? "next" : "send"}
+                  className={fieldClass}
+                />
+              </div>
+              {askAddress && (
+                <div>
+                  <label htmlFor={`${idPrefix}_address`} className="sr-only">
+                    Property address
+                  </label>
+                  <input
+                    id={`${idPrefix}_address`}
+                    value={form.address}
+                    onChange={(e) => set("address", e.target.value)}
+                    placeholder={`Property address${form.postcode ? ` (${form.postcode.trim()})` : ""}`}
+                    autoComplete="street-address"
+                    autoCapitalize="words"
+                    enterKeyHint="send"
+                    className={fieldClass}
+                  />
+                </div>
+              )}
 
-            {/* The whole row is the tap target, not just the small box. */}
-            <label className="flex min-h-11 cursor-pointer items-start gap-3 text-xs text-white/70 leading-relaxed">
-              <input
-                type="checkbox"
-                checked={form.consent}
-                onChange={(e) => set("consent", e.target.checked)}
-                className="mt-0.5 accent-[#c5eb02] h-5 w-5 shrink-0"
-              />
-              <span>I&apos;m happy for Greentek to contact me about this enquiry.</span>
-            </label>
+              {/* The whole row is the tap target, not just the small box. */}
+              <label className="flex min-h-11 cursor-pointer items-start gap-3 text-xs text-white/70 leading-relaxed">
+                <input
+                  type="checkbox"
+                  checked={form.consent}
+                  onChange={(e) => set("consent", e.target.checked)}
+                  className="mt-0.5 accent-[#c5eb02] h-5 w-5 shrink-0"
+                />
+                <span>I&apos;m happy for Greentek to contact me about this enquiry.</span>
+              </label>
+            </div>
 
-            <div className="flex gap-2">
+            {step === 4 && errorText}
+            <div className="flex gap-2 mt-auto">
               <button type="button" onClick={() => goTo(3)} className={backButton}>
                 <ArrowLeft className="h-4 w-4" />
                 Back
@@ -570,14 +730,8 @@ export default function HeroQuoteForm({
                     : "Get my free quote"}
               </button>
             </div>
-          </>
-        )}
-
-        {error && (
-          <p role="alert" className="text-xs font-medium text-red-300">
-            {error}
-          </p>
-        )}
+          </StepPanel>
+        </div>
       </form>
     </div>
   );

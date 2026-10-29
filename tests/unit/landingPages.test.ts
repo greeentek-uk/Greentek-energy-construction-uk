@@ -5,6 +5,7 @@ import { PAGE_CONTENT_KEYS } from "@/data/pageContent";
 import { isOfferedService, serviceLabel } from "@/lib/quoteForm";
 import { pagesShowingBlock } from "@/data/adminPages";
 import { RESERVED_SLUGS } from "@/data/pages";
+import { promoActive } from "@/lib/promo";
 
 describe("ad landing pages", () => {
   it.each(LANDING_PAGES.map((p) => [p.slug, p] as const))("%s is wired up end to end", (_slug, page) => {
@@ -21,6 +22,10 @@ describe("ad landing pages", () => {
     for (const content of Object.values(LANDING_PAGE_DEFAULTS)) {
       for (const [key, value] of Object.entries(content)) {
         if (key.startsWith("pricing") || key.startsWith("problemImage")) continue;
+        // The grant section is heat pumps only; the others leave it blank.
+        if (key.startsWith("grant") && content !== LANDING_PAGE_DEFAULTS["lp-air-source-heat-pumps"]) continue;
+        // The Christmas offer is on every page but heat pumps.
+        if (key.startsWith("promo") && content === LANDING_PAGE_DEFAULTS["lp-air-source-heat-pumps"]) continue;
         expect(Array.isArray(value) ? value.length : String(value).trim().length, key).toBeGreaterThan(0);
       }
     }
@@ -34,10 +39,33 @@ describe("ad landing pages", () => {
     // No brackets given for these yet, so the pricing section stays hidden.
     expect(bands("lp-solar-panels")).toEqual([]);
     expect(bands("lp-air-source-heat-pumps")).toEqual([]);
-    const prices = JSON.stringify(LANDING_PAGE_DEFAULTS).match(/£\d{1,3}(?:,\d{3})*/g) ?? [];
+    // Our prices only — plus the heat pump page's government grant figures,
+    // which are gov.uk's, not ours (see the next test).
+    const { "lp-air-source-heat-pumps": heatPump, ...ours } = LANDING_PAGE_DEFAULTS;
+    const prices = JSON.stringify(ours).match(/£\d{1,3}(?:,\d{3})*/g) ?? [];
     expect(new Set(prices)).toEqual(
       new Set(["£2,999", "£5,999", "£6,000", "£9,999", "£10,000", "£4,999", "£19,999", "£20,000"]),
     );
+    expect(new Set(JSON.stringify(heatPump).match(/£\d{1,3}(?:,\d{3})*/g))).toEqual(new Set(["£7,500", "£1,500", "£9,000"]));
+  });
+
+  it("heat pump page answers the grant questions with gov.uk's figures and rules", () => {
+    const page = LANDING_PAGE_DEFAULTS["lp-air-source-heat-pumps"];
+    expect(page.grantAmount).toBe("£7,500");
+    expect(page.grantNote).toContain("£9,000");
+    expect(page.grantNote).toContain("March 2027");
+    // £7,500 leads; £9,000 is always named with its condition, never as "up to".
+    const copy = JSON.stringify(page);
+    expect(copy).not.toMatch(/up to £9,000/i);
+    for (const field of [page.offerBar, page.heroBody, page.grantAmountLabel]) expect(field).toContain("£9,000");
+    expect(copy.match(/£9,000[^"]*/g)?.every((s) => /oil|LPG|mains gas|in total|instead/.test(s))).toBe(true);
+    const faqs = page.faqs.map((f) => f.question);
+    for (const q of ["How much is the Boiler Upgrade Scheme grant?", "Can I get the grant?", "Do I have to apply for the grant myself?", "Can any installer fit a heat pump?", "How much will it cost me?", "Will I have to pay anything extra?"]) {
+      expect(faqs).toContain(q);
+    }
+    // The EPC rule changed on 28 April 2026; nothing may say one is needed.
+    expect(JSON.stringify(page)).not.toMatch(/(?<!don't )needs? an EPC/);
+    expect(JSON.stringify(page)).toContain("don't need an EPC");
   });
 
   it("uses finished photos, never a mid-build one", () => {
@@ -51,6 +79,19 @@ describe("ad landing pages", () => {
     expect(landingPage("air-source-heat-pumps")?.block).toBe("lp-air-source-heat-pumps");
     expect(landingPage("nope")).toBeUndefined();
     expect(RESERVED_SLUGS).toContain("lp");
+  });
+});
+
+describe("Christmas offer", () => {
+  it("is on every landing page except heat pumps, and ends after Christmas Eve", () => {
+    for (const { block } of LANDING_PAGES) {
+      const page = LANDING_PAGE_DEFAULTS[block];
+      if (block === "lp-air-source-heat-pumps") expect(page.promoText).toBe("");
+      else expect([page.promoText, page.promoEnds]).toEqual(["20% off until Christmas", "2026-12-24"]);
+    }
+    expect(promoActive("2026-12-24", Date.parse("2026-12-24T23:00:00Z"))).toBe(true);
+    expect(promoActive("2026-12-24", Date.parse("2026-12-25T00:00:01Z"))).toBe(false);
+    expect(promoActive("", Date.parse("2030-01-01"))).toBe(true);
   });
 });
 

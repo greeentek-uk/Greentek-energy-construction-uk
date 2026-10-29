@@ -261,6 +261,13 @@ export interface LandingPageContent {
   metaTitle: string;
   metaDescription: string;
   offerBar: string;
+  /**
+   * Limited-time offer badge (hero + closing section), e.g. "20% off until
+   * Christmas". Blank = none. Hidden automatically after `promoEnds`
+   * (YYYY-MM-DD, the last day it shows).
+   */
+  promoText: string;
+  promoEnds: string;
   ratingText: string;
   heroHeading: string;
   heroHighlight: string;
@@ -273,6 +280,19 @@ export interface LandingPageContent {
   resultsHeading: string;
   resultsIntro: string;
   results: { before: string; beforeAlt: string; after: string; afterAlt: string; title: string; body: string }[];
+  /**
+   * Grant section (Boiler Upgrade Scheme), shown after the reviews strip when
+   * the heading is set — heat pumps only for now. `grantAmount` is the big
+   * figure ("£7,500"); the rest is how it works and who qualifies.
+   */
+  grantHeading: string;
+  grantAmount: string;
+  grantAmountLabel: string;
+  grantBody: string;
+  grantSteps: { title: string; body: string }[];
+  grantChecklistHeading: string;
+  grantChecklist: string[];
+  grantNote: string;
   problemHeading: string;
   problemQuestions: string[];
   problemBody: string;

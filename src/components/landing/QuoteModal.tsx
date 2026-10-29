@@ -10,12 +10,14 @@ export default function QuoteModal({
   source,
   fixedService,
   askAddress = false,
+  heatPump = false,
 }: {
   heading: string;
   subheading: string;
   source: string;
   fixedService: FixedService;
   askAddress?: boolean;
+  heatPump?: boolean;
 }) {
   const dialogRef = useRef<HTMLDialogElement>(null);
 
@@ -67,6 +69,7 @@ export default function QuoteModal({
             fixedService={fixedService}
             idPrefix="quote"
             askAddress={askAddress}
+            heatPump={heatPump}
           />
         </div>
       </div>

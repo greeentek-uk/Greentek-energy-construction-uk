@@ -15,6 +15,7 @@
     "seed:location-faqs": "tsx scripts/seed-location-faqs.ts",
     "migrate:landing-v2": "tsx scripts/migrate-landing-v2.ts",
     "migrate:landing-areas": "tsx scripts/migrate-landing-areas.ts",
+    "migrate:heat-pump-grant": "tsx scripts/migrate-heat-pump-grant.ts",
     "flatten:home-hero": "tsx scripts/flatten-home-hero.ts",
     "db:indexes": "tsx scripts/ensure-indexes.ts",
     "preflight": "tsx scripts/preflight.ts",

@@ -76,6 +76,13 @@ export async function POST(request: Request) {
     timeline: String(body.timeline || ""),
     budget: String(body.budget || ""),
     message: String(body.message || ""),
+    // Heat pump answers are short option values; capped like the address.
+    ...Object.fromEntries(
+      (["current_heating", "home_type", "main_reason"] as const).map((key) => [
+        key,
+        typeof body[key] === "string" ? body[key].trim().slice(0, 40) : "",
+      ]),
+    ),
     photos,
     source: String(body.source || "Contact form"),
     page: pagePath(body.page_url),

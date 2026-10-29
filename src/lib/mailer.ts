@@ -1,11 +1,15 @@
 import nodemailer from "nodemailer";
 import {
   allBudgetOptions,
+  currentHeatingOptions,
+  heatPumpReasonOptions,
+  homeTypeOptions,
   optionLabel,
   ownerOptions,
   serviceLabel,
   timelineOptions,
 } from "@/lib/quoteForm";
+import { grantCheck } from "@/lib/grantCheck";
 
 export interface QuoteRequestPayload {
   /** Sequential enquiry number; also names the photo folder in Cloudinary. */
@@ -22,6 +26,10 @@ export interface QuoteRequestPayload {
   timeline: string;
   budget?: string;
   message: string;
+  /** Heat pump questions; when `current_heating` is set the email gets the grant rows. */
+  current_heating?: string;
+  home_type?: string;
+  main_reason?: string;
   /** Cloudinary links to property photos, already checked by the route. */
   photos?: string[];
   /** Which form the enquiry came from, so they can be told apart in the inbox. */
@@ -69,6 +77,13 @@ export async function sendQuoteRequestEmail(data: QuoteRequestPayload): Promise<
   const from = process.env.GMAIL_USER!;
   const to = process.env.CONTACT_TO_EMAIL || "info@greentekenergy.co.uk";
 
+  // Heat pump enquiries: their own answers in place of property type and
+  // budget, plus a first read on the grant so the team can call the best first.
+  const heatPump = Boolean(data.current_heating);
+  const grant = heatPump ? grantCheck(data) : null;
+  const label = (options: { value: string; label: string }[], value = "") =>
+    optionLabel(options, value) || humanize(value);
+
   const rows: [string, string][] = [
     ...(data.enquiry_number ? ([["Enquiry", `#${data.enquiry_number}`]] as [string, string][]) : []),
     ["Name", data.full_name],
@@ -77,10 +92,17 @@ export async function sendQuoteRequestEmail(data: QuoteRequestPayload): Promise<
     ...(data.address ? ([["Address", data.address]] as [string, string][]) : []),
     ["Postcode", data.postcode],
     ["Service", (serviceLabel(data.service) || humanize(data.service))],
-    ["Property type", humanize(data.property_type)],
-    ["Property owner?", optionLabel(ownerOptions, data.is_homeowner) || humanize(data.is_homeowner)],
-    ["Timeline", optionLabel(timelineOptions, data.timeline) || humanize(data.timeline)],
-    ["Budget", optionLabel(allBudgetOptions, data.budget ?? "") || humanize(data.budget ?? "")],
+    ...(grant
+      ? ([
+          ["Grant check", grant.summary],
+          ["Main reason", label(heatPumpReasonOptions, data.main_reason)],
+          ["Heated by", label(currentHeatingOptions, data.current_heating)],
+          ["Home type", label(homeTypeOptions, data.home_type)],
+        ] as [string, string][])
+      : ([["Property type", humanize(data.property_type)]] as [string, string][])),
+    ["Property owner?", label(ownerOptions, data.is_homeowner)],
+    ["Timeline", label(timelineOptions, data.timeline)],
+    ...(heatPump ? [] : ([["Budget", label(allBudgetOptions, data.budget)]] as [string, string][])),
     ["Photos", data.photos?.length ? String(data.photos.length) : "None"],
     ["Came from", data.source || "Contact form"],
     ...(data.page ? ([["Page", data.page]] as [string, string][]) : []),
@@ -120,7 +142,7 @@ export async function sendQuoteRequestEmail(data: QuoteRequestPayload): Promise<
     from: `"Greentek Website" <${from}>`,
     to,
     replyTo: data.email,
-    subject: `New quote request${data.enquiry_number ? ` #${data.enquiry_number}` : ""} — ${data.full_name} (${(serviceLabel(data.service) || humanize(data.service))})`,
+    subject: `${grant ? `[Grant: ${grant.verdict}] ` : ""}New quote request${data.enquiry_number ? ` #${data.enquiry_number}` : ""} — ${data.full_name} (${(serviceLabel(data.service) || humanize(data.service))})`,
     text,
     html,
   });
