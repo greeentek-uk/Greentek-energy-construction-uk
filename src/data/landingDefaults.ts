@@ -17,7 +17,7 @@ const shared = {
     "Fixed price in writing",
     "Our own plumbers and electricians",
     "Pay monthly",
-    "TrustMark registered",
+    "Gas Safe registered",
     "Free fix if anything is not right",
   ],
   guaranteeHeading: "Not happy? We come back and fix it for free",
@@ -63,6 +63,19 @@ const shared = {
   grantChecklistHeading: "",
   grantChecklist: [],
   grantNote: "",
+  quizHeading: "",
+  quizSubheading: "",
+  proofStats: [],
+  includedHeading: "",
+  includedItems: [],
+  costAmount: "",
+  costLabel: "",
+  compareHeading: "",
+  compareUsLabel: "",
+  compareThemLabel: "",
+  compareRows: [],
+  payHeading: "",
+  payOptions: [],
   faqHeading: "Your questions, answered",
   finalTicks: ["Fixed price in writing", "Our own plumbers and electricians", "Free fix if anything is not right"],
   formSubheading: "4 quick steps. We reply within 1 working day.",
@@ -83,8 +96,8 @@ const priceFeature = {
 
 const accreditedFeature = {
   heading: "Checked by the industry's experts",
-  body: "Eight industry bodies check our work, including TrustMark and Gas Safe. So you know the job is done right.",
-  bullets: ["TrustMark registered", "Gas Safe registered", "Checked by 8 industry bodies"],
+  body: "Seven industry bodies check our work, including Gas Safe and HIES. So you know the job is done right.",
+  bullets: ["Gas Safe registered", "HIES accredited", "Checked by 7 industry bodies"],
 };
 
 const steps = (room: string) => [
@@ -138,7 +151,7 @@ const energyShared = {
     "Fixed price in writing",
     "Our own engineers, no subcontractors",
     "Pay monthly",
-    "TrustMark registered",
+    "HIES accredited",
   ],
   finalTicks: ["Free home survey", "MCS certified installers", "Fixed price in writing"],
   pricingHeading: "",
@@ -155,8 +168,8 @@ const energyPriceFeature = {
 
 const mcsFeature = {
   heading: "MCS certified, and checked by the industry's experts",
-  body: "Eight industry bodies check our work, including MCS and TrustMark. MCS is the standard for solar and heat pump installs, and you need it for the Smart Export Guarantee and the Boiler Upgrade Scheme.",
-  bullets: ["MCS certified installers", "TrustMark registered", "MCS certificate at handover"],
+  body: "Seven industry bodies check our work, including MCS and HIES. MCS is the standard for solar and heat pump installs, and you need it for the Smart Export Guarantee and the Boiler Upgrade Scheme.",
+  bullets: ["MCS certified installers", "HIES accredited", "MCS certificate at handover"],
 };
 
 const energySteps = (survey: string, install: string) => [
@@ -514,9 +527,65 @@ export const LANDING_PAGE_DEFAULTS: Record<
     heroHighlight: "£7,500 off",
     quoteButtonLabel: "Check my grant",
     stickyQuoteLabel: "Check my grant",
+    // One line (2026-11-04, owner: "clean the hero"). The rules live in the
+    // grant section; the number strip carries MCS and "no EPC". £9,000 keeps
+    // its condition, as everywhere (ASA).
     heroBody:
-      "The government's Boiler Upgrade Scheme takes £7,500 off an air source heat pump, or £9,000 if you heat with oil or LPG and have no mains gas. We check if you qualify for free. Then we survey your home and send you one fixed price in writing, with the grant taken off.",
-    heroTicks: ["MCS certified, based in Birmingham", "Free survey, no commitment", "Pay monthly (subject to status)"],
+      "£7,500 off, or £9,000 for oil and LPG homes off mains gas. We apply for you and take it off your price.",
+    heroTicks: ["Free survey", "Fixed price in writing", "Pay monthly (subject to status)"],
+    // On the page, not behind a button: the competitors that out-convert this
+    // page all ask one easy thing first (2026-11-04). See GrantQuiz.
+    quizHeading: "Check your grant in 30 seconds",
+    quizSubheading: "Free, with no commitment. We apply for the grant for you.",
+    // Only what's already promised elsewhere on this page. "No EPC" leads
+    // because British Gas's page still says you need one (2026-11-04): being
+    // the up-to-date installer is worth saying. Add the guarantee years and
+    // fitting time here once the owner confirms them.
+    proofStats: [
+      { value: "£7,500", label: "grant taken off your price" },
+      { value: "No EPC", label: "needed since April 2026" },
+      { value: "MCS", label: "certified: we apply for you" },
+      // Zero-rated: energy-saving materials relief, installs in Great Britain
+      // until 31 March 2027. Aira leads with it beside the grant.
+      { value: "0% VAT", label: "on the installation until March 2027" },
+    ],
+    includedHeading: "Everything included, in one fixed price",
+    includedItems: [
+      "Free room-by-room heat loss survey",
+      "We apply for the £7,500 grant and take it off your price",
+      "Vaillant or Ideal Heating heat pump",
+      "New hot water cylinder and controls",
+      "Radiators upgraded only where needed",
+      "Fitted by our own team, from survey to handover",
+      "MCS certificate at handover",
+      "0% VAT on the installation",
+    ],
+    payHeading: "Pay your way",
+    payOptions: [
+      {
+        title: "Spread the cost",
+        body: "Pay monthly through one of our two finance brokers. Finance is subject to status.",
+      },
+      {
+        title: "Pay in full",
+        body: "One fixed price in writing after your free survey, with the £7,500 grant already taken off.",
+      },
+    ],
+    compareHeading: "Why a local installer beats the national names",
+    compareUsLabel: "Greentek",
+    compareThemLabel: "Big national firms",
+    // Each "them" is on their own pages (read 2026-11-04/05): partner
+    // installers (British Gas solar), a ~35-click online checkout (E.ON's
+    // footnote), a guarantee that becomes £19.90 a month after year one
+    // (Aira's small print), an EPC still listed as required (British Gas).
+    // Kept general — "some", "often" — and no firm is named.
+    compareRows: [
+      { label: "Who fits it", us: "Our own engineers, survey to handover", them: "Often a partner installer" },
+      { label: "Who you deal with", us: "A local Birmingham team you can call", them: "A national call centre or online checkout" },
+      { label: "Getting a price", us: "4 taps, then we call you", them: "Long online forms (one takes about 35 clicks)" },
+      { label: "If something's not right", us: "We come back and fix it, free", them: "Some cover needs a monthly plan after year one" },
+      { label: "Grant rules", us: "Up to date: no EPC needed since April 2026", them: "Some still tell you to get an EPC" },
+    ],
     grantHeading: "Get £7,500 off with the Boiler Upgrade Scheme",
     grantAmount: "£7,500",
     grantAmountLabel: "off your air source heat pump, or £9,000 for oil and LPG homes off mains gas",
@@ -561,24 +630,16 @@ export const LANDING_PAGE_DEFAULTS: Record<
       "These are the worries we hear most. When a heat pump disappoints, it is usually because it was sized from a guess, or fitted to radiators that are too small.\n\nWe measure your home's heat loss room by room first. Then we fit the right size of heat pump, and only change the radiators that need it.",
     problemImage: "",
     problemImageAlt: "",
+    // "Everything you need, in one job" went 2026-11-04: the "Everything
+    // included" card beside the quiz says the same, and its photo was the
+    // hero's, shown a third time. Same for the MCS block's photo (a block
+    // without one shows its points in a panel instead).
     features: [
-      {
-        heading: "Everything you need, in one job",
-        body: "You don't need to find a plumber, an electrician and a heating engineer. Our own team does it all, from the survey to the handover.",
-        bullets: [
-          "Room-by-room heat loss survey",
-          "Vaillant or Ideal Heating heat pump",
-          "New hot water cylinder and controls",
-          "Radiators upgraded only where needed",
-        ],
-        image: `${P}/Heating/after.webp`,
-        imageAlt: "An air source heat pump fitted by Greentek",
-      },
       energyPriceFeature,
       {
         ...mcsFeature,
-        image: `${P}/Heating/after.webp`,
-        imageAlt: "A finished air source heat pump install",
+        image: "",
+        imageAlt: "",
       },
     ],
     steps: energySteps(
@@ -604,7 +665,7 @@ export const LANDING_PAGE_DEFAULTS: Record<
       {
         question: "Can any installer fit a heat pump?",
         answer:
-          "No. To get the grant, the heat pump must be designed and fitted by an MCS certified installer. MCS also checks it is the right size for your home. That matters, because a heat pump sized from a guess is the main reason they disappoint. We are MCS certified and TrustMark registered.",
+          "No. To get the grant, the heat pump must be designed and fitted by an MCS certified installer. MCS also checks it is the right size for your home. That matters, because a heat pump sized from a guess is the main reason they disappoint. We are MCS certified and HIES accredited.",
       },
       {
         question: "Will it keep my home warm in winter?",

@@ -21,7 +21,17 @@ const LINKEDIN =
 
 export default async function Footer({
   hideCta = false,
-}: { hideCta?: boolean } = {}) {
+  minimal = false,
+}: {
+  hideCta?: boolean;
+  /**
+   * Ad landing pages: no Services / Company link columns. Paid visitors who
+   * reach the footer are close to deciding; a list of every page on the site
+   * is a list of ways off the page (2026-11-05). Contact details, the finance
+   * disclosures and the legal links stay.
+   */
+  minimal?: boolean;
+} = {}) {
   const [siteConfig, footerCta, financeProviders] = await Promise.all([
     getCurrentSiteConfig(),
     getFooterCtaSettings(),
@@ -36,175 +46,198 @@ export default async function Footer({
   ].filter((s) => s.href);
 
   return (
-    <footer>
-      {!hideCta && (
-        <section className="bg-[url('/images/footer/footer-bg.webp')] bg-cover bg-center">
-          <div className="bg-black/65 pt-16 md:pt-20 pb-4">
+    // Glass footer (back by the owner's request, 2026-11-17: the solid
+    // #0b0d0e rebuild of 2026-10-13 felt flat next to the pre-October frosted
+    // card). One photo runs behind the CTA band *and* the footer, so the
+    // backdrop-blur card has something to blur; the newer columns, contact
+    // block and finance disclosures are kept as they were.
+    <footer className="bg-[url('/images/footer/footer-bg.webp')] bg-cover bg-center text-white">
+      <div className="bg-black/70">
+        {!hideCta && (
+          <section className="pt-16 md:pt-20 pb-4">
             <FooterCta settings={footerCta} phone={siteConfig.phone} />
-          </div>
-        </section>
-      )}
+          </section>
+        )}
 
-      <div className="bg-[#0b0d0e] border-t-2 border-[#c5eb02] text-white">
-        <div className="site-container pt-14 pb-8 md:pt-16">
-          <div className="grid grid-cols-2 gap-x-6 gap-y-10 lg:grid-cols-12 lg:gap-x-10">
-            <div className="col-span-2 lg:col-span-4">
-              <Link href="/" className="inline-block">
-                <Image
-                  src="/images/home-page/greentek-logo.png"
-                  sizes="200px"
-                  alt={siteConfig.name}
-                  width={200}
-                  height={66}
-                  className="h-12 w-auto object-contain"
-                />
-              </Link>
-              <p className="mt-5 max-w-sm text-sm leading-relaxed text-white/65">
-                One team for construction and renewable energy, solar, heat
-                pumps, insulation and full renovations, across the UK.
-              </p>
-              {socials.length > 0 && (
-                <ul className="mt-6 flex gap-2.5">
-                  {socials.map((social) => (
-                    <li key={social.label}>
-                      <a
-                        href={social.href}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        aria-label={social.label}
-                        className="grid h-10 w-10 place-items-center rounded-full bg-white/[0.06] text-white/80 transition-colors hover:bg-[#c5eb02] hover:text-black"
-                      >
-                        <svg
-                          className="h-[18px] w-[18px]"
-                          fill="currentColor"
-                          viewBox="0 0 24 24"
-                          aria-hidden
-                        >
-                          <path
-                            fillRule="evenodd"
-                            clipRule="evenodd"
-                            d={social.path}
-                          />
-                        </svg>
+        <div className={hideCta ? "pt-12" : ""}>
+          <div className="site-container pb-8">
+            <div className="relative overflow-clip rounded-2xl border border-white/15 bg-black/45 px-6 py-10 shadow-[0_20px_60px_-20px_rgba(0,0,0,0.8)] backdrop-blur-md md:px-10 md:py-12">
+              <div
+                aria-hidden
+                className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#c5eb02]/70 to-transparent"
+              />
+              <div className="grid grid-cols-2 gap-x-6 gap-y-10 lg:grid-cols-12 lg:gap-x-10">
+                <div className="col-span-2 lg:col-span-4">
+                  <Link href="/" className="inline-block">
+                    <Image
+                      src="/images/home-page/greentek-logo.png"
+                      sizes="200px"
+                      alt={siteConfig.name}
+                      width={200}
+                      height={66}
+                      className="h-12 w-auto object-contain"
+                    />
+                  </Link>
+                  <p className="mt-5 max-w-sm text-sm leading-relaxed text-white/65">
+                    One team for construction and renewable energy, solar, heat
+                    pumps, insulation and full renovations, across the UK.
+                  </p>
+                  {socials.length > 0 && (
+                    <ul className="mt-6 flex gap-2.5">
+                      {socials.map((social) => (
+                        <li key={social.label}>
+                          <a
+                            href={social.href}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            aria-label={social.label}
+                            className="grid h-10 w-10 place-items-center rounded-full bg-white/[0.06] text-white/80 transition-colors hover:bg-[#c5eb02] hover:text-black"
+                          >
+                            <svg
+                              className="h-[18px] w-[18px]"
+                              fill="currentColor"
+                              viewBox="0 0 24 24"
+                              aria-hidden
+                            >
+                              <path
+                                fillRule="evenodd"
+                                clipRule="evenodd"
+                                d={social.path}
+                              />
+                            </svg>
+                          </a>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
+
+                {!minimal && (
+                  <nav aria-label="Services" className="lg:col-span-3">
+                    <h2 className={heading}>Services</h2>
+                    <ul className="space-y-2.5">
+                      {siteConfig.services.map((service) => (
+                        <li key={service.slug}>
+                          <Link
+                            href={`/services/${service.slug}`}
+                            className={link}
+                          >
+                            {service.title}
+                          </Link>
+                        </li>
+                      ))}
+                    </ul>
+                  </nav>
+                )}
+
+                {!minimal && (
+                  <nav aria-label="Company" className="lg:col-span-2">
+                    <h2 className={heading}>Company</h2>
+                    <ul className="space-y-2.5">
+                      {siteConfig.navLinks.map((navLink) => (
+                        <li key={navLink.label}>
+                          <Link href={navLink.href} className={link}>
+                            {navLink.label}
+                          </Link>
+                        </li>
+                      ))}
+                    </ul>
+                  </nav>
+                )}
+
+                <div className="col-span-2 sm:col-span-1 lg:col-span-3">
+                  <h2 className={heading}>Get in touch</h2>
+                  <ul className="space-y-4 text-sm">
+                    <li>
+                      <a href={tel} className="group flex items-start gap-3">
+                        <Phone className={icon} aria-hidden />
+                        <span>
+                          <span className="block text-base font-semibold text-white group-hover:text-[#c5eb02] transition-colors">
+                            {siteConfig.phone}
+                          </span>
+                          <span className="text-white/50">
+                            Call for a free quote
+                          </span>
+                        </span>
                       </a>
                     </li>
-                  ))}
-                </ul>
-              )}
-            </div>
+                    <li>
+                      <a
+                        href={whatsappUrl(siteConfig.phone)}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-3 text-white/70 hover:text-[#c5eb02] transition-colors"
+                      >
+                        <MessageCircle className={icon} aria-hidden />
+                        Message us on WhatsApp
+                      </a>
+                    </li>
+                    <li>
+                      <a
+                        href={`mailto:${siteConfig.email}`}
+                        className="flex items-center gap-3 text-white/70 hover:text-[#c5eb02] transition-colors break-all"
+                      >
+                        <Mail className={icon} aria-hidden />
+                        {siteConfig.email}
+                      </a>
+                    </li>
+                    <li className="flex items-start gap-3 text-white/70">
+                      <MapPin className={icon} aria-hidden />
+                      <address className="not-italic leading-relaxed">
+                        {siteConfig.address.line1}
+                        <br />
+                        {siteConfig.address.city}, {siteConfig.address.postcode}
+                      </address>
+                    </li>
+                  </ul>
+                </div>
+              </div>
 
-            <nav aria-label="Services" className="lg:col-span-3">
-              <h2 className={heading}>Services</h2>
-              <ul className="space-y-2.5">
-                {siteConfig.services.map((service) => (
-                  <li key={service.slug}>
-                    <Link href={`/services/${service.slug}`} className={link}>
-                      {service.title}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </nav>
-
-            <nav aria-label="Company" className="lg:col-span-2">
-              <h2 className={heading}>Company</h2>
-              <ul className="space-y-2.5">
-                {siteConfig.navLinks.map((navLink) => (
-                  <li key={navLink.label}>
-                    <Link href={navLink.href} className={link}>
-                      {navLink.label}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </nav>
-
-            <div className="col-span-2 sm:col-span-1 lg:col-span-3">
-              <h2 className={heading}>Get in touch</h2>
-              <ul className="space-y-4 text-sm">
-                <li>
-                  <a href={tel} className="group flex items-start gap-3">
-                    <Phone className={icon} aria-hidden />
-                    <span>
-                      <span className="block text-base font-semibold text-white group-hover:text-[#c5eb02] transition-colors">
-                        {siteConfig.phone}
-                      </span>
-                      <span className="text-white/50">
-                        Call for a free quote
-                      </span>
-                    </span>
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href={whatsappUrl(siteConfig.phone)}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-3 text-white/70 hover:text-[#c5eb02] transition-colors"
-                  >
-                    <MessageCircle className={icon} aria-hidden />
-                    Message us on WhatsApp
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href={`mailto:${siteConfig.email}`}
-                    className="flex items-center gap-3 text-white/70 hover:text-[#c5eb02] transition-colors break-all"
-                  >
-                    <Mail className={icon} aria-hidden />
-                    {siteConfig.email}
-                  </a>
-                </li>
-                <li className="flex items-start gap-3 text-white/70">
-                  <MapPin className={icon} aria-hidden />
-                  <address className="not-italic leading-relaxed">
-                    {siteConfig.address.line1}
-                    <br />
-                    {siteConfig.address.city}, {siteConfig.address.postcode}
-                  </address>
-                </li>
-              </ul>
-            </div>
-          </div>
-
-          <div className="mt-12 grid gap-6 border-t border-white/10 pt-8 md:grid-cols-2 md:gap-10">
-            {financeProviders.map((provider, i) => (
-              <div key={FINANCE_PROVIDERS[i].slug} className="space-y-1.5">
-                <p className="text-xs font-semibold uppercase tracking-wide text-white/70">
-                  Finance — {provider.name}
-                </p>
-                {paragraphs(provider.disclosure).map((p) => (
-                  <p key={p} className="text-xs leading-relaxed text-white/50">
-                    {p}
-                  </p>
+              {/* Inside the glass card: on the bare photo the small print was
+                  unreadable (owner, 2026-11-17). Still verbatim, still equal. */}
+              <div className="mt-10 grid gap-6 border-t border-white/10 pt-8 md:grid-cols-2 md:gap-10">
+                {financeProviders.map((provider, i) => (
+                  <div key={FINANCE_PROVIDERS[i].slug} className="space-y-1.5">
+                    <p className="text-xs font-semibold uppercase tracking-wide text-white/90">
+                      Finance: {provider.name}
+                    </p>
+                    {paragraphs(provider.disclosure).map((p) => (
+                      <p
+                        key={p}
+                        className="text-xs leading-relaxed text-white/75"
+                      >
+                        {p}
+                      </p>
+                    ))}
+                  </div>
                 ))}
               </div>
-            ))}
-          </div>
+            </div>
 
-          <div className="mt-8 flex flex-col gap-4 border-t border-white/10 pt-6 text-xs text-white/50 md:flex-row md:items-center md:justify-between">
-            <p>
-              © {currentYear} {siteConfig.name}. Company No.{" "}
-              {siteConfig.companyNo}, registered in England.
-            </p>
-            <ul className="flex flex-wrap items-center gap-x-5 gap-y-2">
-              {siteConfig.footerLinks.map((footerLink) => (
-                <li key={footerLink.href}>
-                  <Link
-                    href={footerLink.href}
-                    {...(footerLink.newTab
-                      ? { target: "_blank", rel: "noopener noreferrer" }
-                      : {})}
-                    className="hover:text-[#c5eb02] transition-colors"
-                  >
-                    {footerLink.label}
-                  </Link>
+            <div className="mt-8 flex flex-col gap-4 border-t border-white/10 pt-6 text-xs text-white/70 md:flex-row md:items-center md:justify-between">
+              <p>
+                © {currentYear} {siteConfig.name}. Company No.{" "}
+                {siteConfig.companyNo}, registered in England.
+              </p>
+              <ul className="flex flex-wrap items-center gap-x-5 gap-y-2">
+                {siteConfig.footerLinks.map((footerLink) => (
+                  <li key={footerLink.href}>
+                    <Link
+                      href={footerLink.href}
+                      {...(footerLink.newTab
+                        ? { target: "_blank", rel: "noopener noreferrer" }
+                        : {})}
+                      className="hover:text-[#c5eb02] transition-colors"
+                    >
+                      {footerLink.label}
+                    </Link>
+                  </li>
+                ))}
+                <li>
+                  <CookieSettingsButton className="hover:text-[#c5eb02] transition-colors" />
                 </li>
-              ))}
-              <li>
-                <CookieSettingsButton className="hover:text-[#c5eb02] transition-colors" />
-              </li>
-            </ul>
+              </ul>
+            </div>
           </div>
         </div>
       </div>

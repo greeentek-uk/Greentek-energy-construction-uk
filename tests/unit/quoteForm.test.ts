@@ -3,6 +3,7 @@ import {
   allBudgetOptions,
   budgetOptions,
   budgetOptionsFor,
+  serviceBudgetOptions,
   heroServiceOptions,
   isAllowedPhoto,
   isLikelyPostcode,
@@ -69,6 +70,23 @@ describe("options", () => {
     expect(serviceLabel("unknown")).toBe("");
     expect(optionLabel(budgetOptions, "guidance")).toBe("I need guidance");
     expect(optionLabel(budgetOptions, "")).toBe("");
+  });
+
+  it("every service page has budget bands of its own; only multiple / not sure get the whole-project ones", () => {
+    const options = [...heroServiceOptions.construction, ...heroServiceOptions.energy];
+    for (const option of options) {
+      if (option.slug) expect(budgetOptionsFor(option.value), option.value).not.toBe(budgetOptions);
+      else expect(budgetOptionsFor(option.value), option.value).toBe(budgetOptions);
+    }
+    const labels = (service: string) => budgetOptionsFor(service).filter((o) => o.value).map((o) => o.label);
+    expect(labels("energy_loft_insulation")).toEqual(["Under £1,200", "£1,200–£1,999", "£2,000–£2,999", "£3,000 or more", "I need guidance"]);
+    expect(labels("construction_commercial_maintenance")[0]).toBe("Under £1,000 a year");
+    expect(optionLabel(allBudgetOptions, "solar_6k_9k")).toBe("£6,000–£8,999");
+  });
+
+  it("no two services share a band value, so an email can't name the wrong one", () => {
+    const values = Object.values(serviceBudgetOptions).flat().map((o) => o.value).filter((v) => v && v !== "guidance");
+    expect(new Set(values).size).toBe(values.length);
   });
 
   it("bathrooms and kitchens get their own budget bands, and every band is named in the email", () => {

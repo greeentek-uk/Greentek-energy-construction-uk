@@ -21,9 +21,11 @@ describe("ad landing pages", () => {
   it("drafted copy fills every section (prices only where real ones are known)", () => {
     for (const content of Object.values(LANDING_PAGE_DEFAULTS)) {
       for (const [key, value] of Object.entries(content)) {
-        if (key.startsWith("pricing") || key.startsWith("problemImage")) continue;
+        // No typical price until the owner gives one.
+        if (/^(pricing|problemImage|cost)/.test(key)) continue;
         // The grant section is heat pumps only; the others leave it blank.
-        if (key.startsWith("grant") && content !== LANDING_PAGE_DEFAULTS["lp-air-source-heat-pumps"]) continue;
+        // So are the quiz and what sits around it (for now).
+        if (/^(grant|quiz|proof|included|compare|pay)/.test(key) && content !== LANDING_PAGE_DEFAULTS["lp-air-source-heat-pumps"]) continue;
         // The Christmas offer is on every page but heat pumps.
         if (key.startsWith("promo") && content === LANDING_PAGE_DEFAULTS["lp-air-source-heat-pumps"]) continue;
         expect(Array.isArray(value) ? value.length : String(value).trim().length, key).toBeGreaterThan(0);

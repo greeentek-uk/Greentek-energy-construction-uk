@@ -87,7 +87,7 @@ export async function sendQuoteRequestEmail(data: QuoteRequestPayload): Promise<
   const rows: [string, string][] = [
     ...(data.enquiry_number ? ([["Enquiry", `#${data.enquiry_number}`]] as [string, string][]) : []),
     ["Name", data.full_name],
-    ["Email", data.email],
+    ["Email", data.email || "None given: call back on the phone number"],
     ["Phone", data.phone],
     ...(data.address ? ([["Address", data.address]] as [string, string][]) : []),
     ["Postcode", data.postcode],
@@ -141,8 +141,9 @@ export async function sendQuoteRequestEmail(data: QuoteRequestPayload): Promise<
   await transporter.sendMail({
     from: `"Greentek Website" <${from}>`,
     to,
-    replyTo: data.email,
-    subject: `${grant ? `[Grant: ${grant.verdict}] ` : ""}New quote request${data.enquiry_number ? ` #${data.enquiry_number}` : ""} — ${data.full_name} (${(serviceLabel(data.service) || humanize(data.service))})`,
+    // A callback request has no email; there's nothing to reply to.
+    replyTo: data.email || undefined,
+    subject: `${data.email ? "" : "[Call back] "}${grant ? `[Grant: ${grant.verdict}] ` : ""}New quote request${data.enquiry_number ? ` #${data.enquiry_number}` : ""} — ${data.full_name} (${(serviceLabel(data.service) || humanize(data.service))})`,
     text,
     html,
   });

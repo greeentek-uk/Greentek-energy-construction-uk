@@ -38,6 +38,15 @@ test.describe("/api/quote-request", () => {
     expect((await res.json()).error).toMatch(/Missing required field/);
   });
 
+  test("needs an email, except on a call-me-back request", async ({ request }) => {
+    const base = { full_name: "x", phone: "07700900123", postcode: "B1 1AA", service: "energy_heat_pump" };
+    const noEmail = await request.post("/api/quote-request", { data: base });
+    expect((await noEmail.json()).error).toBe("Missing required field: email");
+    // A callback gets past the required fields (no consent here, so it stops at the next check).
+    const callback = await request.post("/api/quote-request", { data: { ...base, callback: true } });
+    expect((await callback.json()).error).toBe("Consent is required");
+  });
+
   test("rejects an enquiry without consent", async ({ request }) => {
     const res = await request.post("/api/quote-request", {
       data: { full_name: "x", email: "x@example.com", phone: "0", postcode: "B1 1AA", service: "construction_kitchen", consent: false },

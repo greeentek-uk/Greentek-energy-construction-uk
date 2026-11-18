@@ -6,7 +6,9 @@ import Footer from "@/components/layout/Footer";
 import LandingHeader from "@/components/landing/LandingHeader";
 import StickyQuoteBar from "@/components/landing/StickyQuoteBar";
 import QuoteModal from "@/components/landing/QuoteModal";
+import ScrollToQuiz from "@/components/landing/ScrollToQuiz";
 import HeroQuoteForm from "@/components/sections/HeroQuoteForm";
+import HeatPumpLanding from "@/components/landing/HeatPumpLanding";
 import FinanceBanner from "@/components/sections/FinanceBanner";
 import AccreditationsSection from "@/components/sections/AccreditationsSection";
 import TrackViewContent from "@/components/site/TrackViewContent";
@@ -17,6 +19,7 @@ import { getCurrentSiteConfig, getPageContent } from "@/lib/cms";
 import { LANDING_PAGES, landingPage, withLandingDefaults } from "@/lib/landingPages";
 import { paragraphs } from "@/lib/financeProviders";
 import { splitHeading } from "@/lib/heroHeading";
+import { reviewHighlight } from "@/lib/reviewHighlight";
 import { SITE_URL } from "@/lib/structuredData";
 import type { TestimonialsContent } from "@/data/pageContent";
 
@@ -188,9 +191,8 @@ export default async function LandingPage({ params }: Props) {
   // Heat pump enquiries are asked the grant questions instead of property type
   // and budget (2026-10-29, after comparing with the Meta lead form).
   const heatPump = meta.service === "energy_heat_pump";
-  // Bathroom enquiries also give the property's address (owner's request,
-  // 2026-10-22); heat pump ones too, as the survey and the Meta form need it.
-  const askAddress = meta.slug === "bathroom-renovation" || heatPump;
+  // The quiz asks the heat pump grant questions, so it's never on other pages.
+  const quiz = heatPump && Boolean(content.quizHeading);
   const areaNames = content.areaNames.length
     ? content.areaNames
     : siteConfig.locations.map((location) => location.name);
@@ -207,560 +209,650 @@ export default async function LandingPage({ params }: Props) {
       <TrackViewContent name={meta.name} category="ad_landing_page" id={`lp-${meta.slug}`} />
       <LandingHeader phone={phone} offer={content.offerBar} quoteLabel={cta.label} />
 
-      <main className="flex-1">
-        <section className="grid lg:grid-cols-2">
-          <div className="relative order-1 h-64 sm:h-80 lg:order-2 lg:h-auto lg:min-h-[640px]">
-            <Image
-              src={content.heroImage}
-              alt={content.heroImageAlt || meta.name}
-              fill
-              priority
-              sizes="(min-width: 1024px) 50vw, 100vw"
-              className="object-cover"
-            />
+      {quiz ? (
+        <>
+          <HeatPumpLanding
+            content={content}
+            name={meta.name}
+            service={meta.service}
+            source={source}
+            phone={phone}
+            score={score}
+            ratingUrl={rating.ratingUrl}
+            reviews={reviews}
+          />
+          <div className="bg-black">
+            <AccreditationsSection />
           </div>
-          <div className="order-2 bg-[#f6f7f2] lg:order-1">
-            <div className="mx-auto max-w-[640px] px-5 py-10 sm:px-8 md:py-14 lg:ml-auto lg:mr-0 lg:py-20 lg:pr-14 xl:pl-0">
-              {(content.ratingText || score > 0) && (
-                <a
-                  href={rating.ratingUrl || undefined}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex flex-wrap items-center gap-x-2.5 gap-y-1 rounded-full border border-black/15 bg-white px-4 py-2 text-sm font-semibold"
-                >
-                  {score > 0 && <StarStrip score={score} />}
-                  {content.ratingText}
-                </a>
-              )}
-              {promo && (
-                <div className="mt-5">
-                  <PromoBadge text={promo} ends={content.promoEnds} />
+        </>
+      ) : (
+        <main className="flex-1">
+          <section className="grid lg:grid-cols-2">
+            <div className="relative order-1 h-64 sm:h-80 lg:order-2 lg:h-auto lg:min-h-[640px]">
+              <Image
+                src={content.heroImage}
+                alt={content.heroImageAlt || meta.name}
+                fill
+                priority
+                sizes="(min-width: 1024px) 50vw, 100vw"
+                className="object-cover"
+              />
+            </div>
+            <div className="order-2 bg-[#f6f7f2] lg:order-1">
+              <div className="mx-auto max-w-[640px] px-5 py-10 sm:px-8 md:py-14 lg:ml-auto lg:mr-0 lg:py-20 lg:pr-14 xl:pl-0">
+                {(content.ratingText || score > 0) && (
+                  <a
+                    href={rating.ratingUrl || undefined}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex flex-wrap items-center gap-x-2.5 gap-y-1 rounded-full border border-black/15 bg-white px-4 py-2 text-sm font-semibold"
+                  >
+                    {score > 0 && <StarStrip score={score} />}
+                    {content.ratingText}
+                  </a>
+                )}
+                {promo && (
+                  <div className="mt-5">
+                    <PromoBadge text={promo} ends={content.promoEnds} />
+                  </div>
+                )}
+                <h1 className="mt-6 font-heading text-[2.25rem] font-extrabold leading-[1.05] tracking-[-0.025em] text-balance sm:text-[2.75rem] xl:text-[3.4rem]">
+                  <Highlighted text={content.heroHeading || meta.name} highlight={content.heroHighlight} />
+                </h1>
+                {content.heroBody && (
+                  <p className="mt-5 text-lg leading-relaxed text-[#0b0d0e]/75">{content.heroBody}</p>
+                )}
+                <div id="hero-cta" className="mt-8">
+                  <Cta {...cta} proof="" align="start" />
                 </div>
-              )}
-              <h1 className="mt-6 font-heading text-[2.25rem] font-extrabold leading-[1.05] tracking-[-0.025em] text-balance sm:text-[2.75rem] xl:text-[3.4rem]">
-                <Highlighted text={content.heroHeading || meta.name} highlight={content.heroHighlight} />
-              </h1>
-              {content.heroBody && (
-                <p className="mt-5 text-lg leading-relaxed text-[#0b0d0e]/75">{content.heroBody}</p>
-              )}
-              <div id="hero-cta" className="mt-8">
-                <Cta {...cta} proof="" align="start" />
+                {content.heroTicks.length > 0 && (
+                  <ul className="mt-6 flex flex-wrap gap-x-6 gap-y-2 text-[15px] font-semibold">
+                    {content.heroTicks.map((t) => (
+                      <Tick key={t}>{t}</Tick>
+                    ))}
+                  </ul>
+                )}
               </div>
-              {content.heroTicks.length > 0 && (
-                <ul className="mt-6 flex flex-wrap gap-x-6 gap-y-2 text-[15px] font-semibold">
-                  {content.heroTicks.map((t) => (
-                    <Tick key={t}>{t}</Tick>
+            </div>
+          </section>
+
+          {reviews.length > 0 && (
+            <section className="bg-[#0b0d0e] text-white">
+              <ul className="site-container grid gap-6 py-8 md:grid-cols-3 md:gap-10">
+                {reviews.slice(0, 3).map((r) => (
+                  <li key={r.name} className="flex flex-col gap-2.5">
+                    <GoldStars rating={r.rating} />
+                    <p className="text-[15px] font-medium leading-snug">&ldquo;{reviewHighlight(r.quote)}&rdquo;</p>
+                    <p className="text-sm text-white/55">{r.name}</p>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          )}
+
+          {/* Big figures after the reviews, as Aira puts theirs after its
+              hero: the whole pitch in two seconds, right before the quiz.
+              Hero → reviews → figures → quiz is the owner's order (2026-11-04). */}
+          {content.proofStats.length > 0 && (
+            <section className="border-b border-black/10 bg-white">
+              <ul
+                className={`site-container grid grid-cols-2 gap-x-6 gap-y-8 py-10 md:py-12 ${
+                  content.proofStats.length >= 4 ? "lg:grid-cols-4" : "md:grid-cols-3"
+                }`}
+              >
+                {content.proofStats.map((s) => (
+                  <li key={`${s.value}${s.label}`} className="border-t-2 border-[#0b0d0e] pt-4">
+                    <span className="block font-heading text-[2.25rem] font-extrabold leading-none tracking-[-0.03em] md:text-[3.25rem]">
+                      {s.value}
+                    </span>
+                    <span className="mt-2 block text-[15px] font-semibold leading-snug text-[#0b0d0e]/65">{s.label}</span>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          )}
+
+          {/* The grant straight after the reviews: for heat pump ad traffic it's
+              the reason they clicked, and "how much, who applies, do I qualify"
+              are the questions to answer before anything else. */}
+          {content.grantHeading && (
+            <section className="bg-white py-16 md:py-24">
+              <div className="site-container grid items-start gap-10 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:gap-16">
+                <div className="order-2 rounded-3xl bg-[#0b0d0e] p-8 text-white md:p-10 lg:order-1">
+                  {content.grantAmount && (
+                    <p>
+                      <span className="block font-heading text-[3.5rem] font-extrabold leading-none tracking-[-0.03em] md:text-[4.5rem]" style={{ color: lime }}>
+                        {content.grantAmount}
+                      </span>
+                      {content.grantAmountLabel && (
+                        <span className="mt-2 block text-lg font-semibold text-white/80">{content.grantAmountLabel}</span>
+                      )}
+                    </p>
+                  )}
+                  {content.grantChecklist.length > 0 && (
+                    <>
+                      {content.grantChecklistHeading && (
+                        <h3 className="mt-8 font-heading text-xl font-extrabold">{content.grantChecklistHeading}</h3>
+                      )}
+                      <ul className="mt-4 space-y-3">
+                        {content.grantChecklist.map((item) => (
+                          <Tick key={item} dark>
+                            {item}
+                          </Tick>
+                        ))}
+                      </ul>
+                    </>
+                  )}
+                  {content.grantNote && (
+                    <p className="mt-8 rounded-2xl bg-[#c5eb02] p-5 font-semibold leading-snug text-black">{content.grantNote}</p>
+                  )}
+                </div>
+
+                <div className="order-1 lg:order-2">
+                  <h2 className={h2}>{content.grantHeading}</h2>
+                  {content.grantBody && (
+                    <p className="mt-5 text-lg leading-relaxed text-[#0b0d0e]/70">{content.grantBody}</p>
+                  )}
+                  {content.grantSteps.length > 0 && (
+                    <ol className="mt-10 space-y-6">
+                      {content.grantSteps.map((step, i) => (
+                        <li key={step.title} className="flex gap-4">
+                          <span className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-[#c5eb02] font-heading text-lg font-extrabold">
+                            {i + 1}
+                          </span>
+                          <div>
+                            <h3 className="font-heading text-lg font-extrabold">{step.title}</h3>
+                            <p className="mt-1 leading-relaxed text-[#0b0d0e]/70">{step.body}</p>
+                          </div>
+                        </li>
+                      ))}
+                    </ol>
+                  )}
+                  <div className="mt-10">
+                    <Cta {...cta} />
+                  </div>
+                </div>
+              </div>
+            </section>
+          )}
+
+          {/* Us vs the national names, right after the grant: by then the
+              visitor knows the offer is the same everywhere, so the question
+              is who to trust with it. Plain table so it reads on a phone as
+              rows of three, and search engines can lift it. */}
+          {content.compareHeading && content.compareRows.length > 0 && (
+            <section className="bg-[#f6f7f2] py-16 md:py-24">
+              <div className="site-container">
+                <h2 className={`${h2} mx-auto max-w-3xl text-center`}>{content.compareHeading}</h2>
+                <div className="mx-auto mt-10 max-w-4xl overflow-hidden rounded-3xl border border-black/10 bg-white">
+                  <table className="w-full table-fixed text-left text-[15px]">
+                    <thead>
+                      <tr>
+                        <th scope="col" className="w-[28%] p-4 md:p-5">
+                          <span className="sr-only">Compared</span>
+                        </th>
+                        <th scope="col" className="bg-[#0b0d0e] p-4 font-heading text-base font-extrabold text-[#c5eb02] md:p-5 md:text-lg">
+                          {content.compareUsLabel || "Us"}
+                        </th>
+                        <th scope="col" className="p-4 font-heading text-base font-extrabold text-[#0b0d0e]/55 md:p-5 md:text-lg">
+                          {content.compareThemLabel || "Others"}
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {content.compareRows.map((row) => (
+                        <tr key={row.label} className="border-t border-black/10">
+                          <th scope="row" className="p-4 align-top font-bold md:p-5">
+                            {row.label}
+                          </th>
+                          <td className="bg-[#0b0d0e] p-4 align-top font-semibold text-white md:p-5">
+                            <span className="flex items-start gap-2">
+                              <Check className="mt-0.5 h-4 w-4 shrink-0 text-[#c5eb02]" strokeWidth={3} aria-hidden />
+                              {row.us}
+                            </span>
+                          </td>
+                          <td className="p-4 align-top text-[#0b0d0e]/60 md:p-5">{row.them}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+                <div className="mt-10">
+                  <Cta {...cta} />
+                </div>
+              </div>
+            </section>
+          )}
+
+          {content.resultsHeading && content.results.length > 0 && (
+            <section className="bg-white py-16 md:py-24">
+              <div className="site-container">
+                <div className="mx-auto max-w-3xl text-center">
+                  <h2 className={h2}>{content.resultsHeading}</h2>
+                  {content.resultsIntro && <p className="mt-4 text-lg text-[#0b0d0e]/65">{content.resultsIntro}</p>}
+                </div>
+                <ul
+                  className={`mx-auto mt-12 grid gap-6 ${
+                    content.results.length === 1 ? "max-w-3xl" : "md:grid-cols-2 lg:max-w-none"
+                  }`}
+                >
+                  {content.results.map((r) => (
+                    <li key={r.title + r.after} className="overflow-hidden rounded-2xl border border-black/10 bg-white shadow-[0_20px_50px_-30px_rgba(0,0,0,0.35)]">
+                      <div className="relative aspect-[4/5] sm:aspect-[5/4]">
+                        <Image
+                          src={r.after}
+                          alt={r.afterAlt || `${meta.name}, after`}
+                          fill
+                          sizes="(min-width: 768px) 50vw, 100vw"
+                          className="object-cover"
+                        />
+                        <span className="absolute left-4 top-4 rounded-full bg-[#c5eb02] px-3.5 py-1.5 text-xs font-extrabold uppercase tracking-wide text-black">
+                          After
+                        </span>
+                        <div className="absolute bottom-4 right-4 w-[34%] max-w-[180px] overflow-hidden rounded-xl border-4 border-white shadow-xl">
+                          <div className="relative aspect-[3/4]">
+                            <Image
+                              src={r.before}
+                              alt={r.beforeAlt || `${meta.name}, before`}
+                              fill
+                              sizes="180px"
+                              className="object-cover"
+                            />
+                          </div>
+                          <span className="absolute inset-x-0 bottom-0 bg-black/70 py-1 text-center text-[11px] font-bold uppercase tracking-wide text-white">
+                            Before
+                          </span>
+                        </div>
+                      </div>
+                      <div className="p-6">
+                        <h3 className="font-heading text-xl font-extrabold leading-snug">{r.title}</h3>
+                        {r.body && <p className="mt-2 text-[#0b0d0e]/65">{r.body}</p>}
+                      </div>
+                    </li>
                   ))}
                 </ul>
-              )}
-            </div>
-          </div>
-        </section>
+                <div className="mt-12">
+                  <Cta {...cta} />
+                </div>
+              </div>
+            </section>
+          )}
 
-        {reviews.length > 0 && (
-          <section className="bg-[#0b0d0e] text-white">
-            <ul className="site-container grid gap-6 py-8 md:grid-cols-3 md:gap-10">
-              {reviews.slice(0, 3).map((r) => (
-                <li key={r.name} className="flex flex-col gap-2.5">
-                  <GoldStars rating={r.rating} />
-                  <p className="text-[15px] font-medium leading-snug">&ldquo;{clip(r.quote, 120)}&rdquo;</p>
-                  <p className="text-sm text-white/55">{r.name}</p>
-                </li>
-              ))}
-            </ul>
-          </section>
-        )}
-
-        {/* The grant straight after the reviews: for heat pump ad traffic it's
-            the reason they clicked, and "how much, who applies, do I qualify"
-            are the questions to answer before anything else. */}
-        {content.grantHeading && (
-          <section className="bg-white py-16 md:py-24">
-            <div className="site-container grid items-start gap-10 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:gap-16">
-              <div className="order-2 rounded-3xl bg-[#0b0d0e] p-8 text-white md:p-10 lg:order-1">
-                {content.grantAmount && (
-                  <p>
-                    <span className="block font-heading text-[3.5rem] font-extrabold leading-none tracking-[-0.03em] md:text-[4.5rem]" style={{ color: lime }}>
-                      {content.grantAmount}
-                    </span>
-                    {content.grantAmountLabel && (
-                      <span className="mt-2 block text-lg font-semibold text-white/80">{content.grantAmountLabel}</span>
-                    )}
-                  </p>
-                )}
-                {content.grantChecklist.length > 0 && (
-                  <>
-                    {content.grantChecklistHeading && (
-                      <h3 className="mt-8 font-heading text-xl font-extrabold">{content.grantChecklistHeading}</h3>
-                    )}
-                    <ul className="mt-4 space-y-3">
-                      {content.grantChecklist.map((item) => (
-                        <Tick key={item} dark>
-                          {item}
-                        </Tick>
+          {content.problemHeading && (
+            <section className="bg-[#f6f7f2] py-16 md:py-24">
+              <div
+                className={`site-container grid items-center gap-12 lg:gap-16 ${
+                  content.problemImage ? "lg:grid-cols-2" : "max-w-3xl"
+                }`}
+              >
+                <div>
+                  <h2 className={h2}>{content.problemHeading}</h2>
+                  {content.problemQuestions.length > 0 && (
+                    <ul className="mt-7 space-y-3 text-lg font-semibold">
+                      {content.problemQuestions.map((q) => (
+                        <Tick key={q}>{q}</Tick>
                       ))}
                     </ul>
-                  </>
-                )}
-                {content.grantNote && (
-                  <p className="mt-8 rounded-2xl bg-[#c5eb02] p-5 font-semibold leading-snug text-black">{content.grantNote}</p>
+                  )}
+                  {paragraphs(content.problemBody).map((p, i) => (
+                    <p key={i} className="mt-5 text-lg leading-relaxed text-[#0b0d0e]/75">
+                      {p}
+                    </p>
+                  ))}
+                  <div className="mt-9">
+                    <Cta {...cta} align="start" />
+                  </div>
+                </div>
+                {content.problemImage && (
+                  <div className="relative mx-auto aspect-[4/5] w-full max-w-md lg:max-w-none">
+                    <div className="absolute inset-0 translate-x-3 translate-y-3 rounded-2xl bg-[#c5eb02]" aria-hidden />
+                    <Image
+                      src={content.problemImage}
+                      alt={content.problemImageAlt || meta.name}
+                      fill
+                      sizes="(min-width: 1024px) 40vw, 90vw"
+                      className="rounded-2xl object-cover"
+                    />
+                  </div>
                 )}
               </div>
+            </section>
+          )}
 
-              <div className="order-1 lg:order-2">
-                <h2 className={h2}>{content.grantHeading}</h2>
-                {content.grantBody && (
-                  <p className="mt-5 text-lg leading-relaxed text-[#0b0d0e]/70">{content.grantBody}</p>
-                )}
-                {content.grantSteps.length > 0 && (
-                  <ol className="mt-10 space-y-6">
-                    {content.grantSteps.map((step, i) => (
-                      <li key={step.title} className="flex gap-4">
-                        <span className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-[#c5eb02] font-heading text-lg font-extrabold">
-                          {i + 1}
-                        </span>
-                        <div>
-                          <h3 className="font-heading text-lg font-extrabold">{step.title}</h3>
-                          <p className="mt-1 leading-relaxed text-[#0b0d0e]/70">{step.body}</p>
+          {content.reviewsHeading && reviews.length > 0 && (
+            <section className="bg-white py-16 md:py-24">
+              <div className="site-container">
+                <h2 className={`${h2} mx-auto max-w-3xl text-center`}>{content.reviewsHeading}</h2>
+                <ul className="mt-12 grid gap-5 md:grid-cols-3">
+                  {reviews.slice(0, 3).map((r) => {
+                    const { lead, rest } = firstSentence(r.quote);
+                    return (
+                      <li key={r.name} className="flex flex-col rounded-2xl border border-black/10 bg-white p-6">
+                        <GoldStars rating={r.rating} />
+                        {lead && <p className="mt-4 font-heading text-lg font-extrabold leading-snug">&ldquo;{lead}&rdquo;</p>}
+                        <p className="mt-2 flex-1 text-[15px] leading-relaxed text-[#0b0d0e]/70">{clip(rest, 260)}</p>
+                        <div className="mt-6 flex items-center justify-between gap-3 border-t border-black/10 pt-4">
+                          <span className="flex items-center gap-3">
+                            {r.image ? (
+                              <Image src={r.image} alt="" width={36} height={36} className="h-9 w-9 rounded-full object-cover" />
+                            ) : (
+                              <span className="grid h-9 w-9 place-items-center rounded-full bg-[#c5eb02] text-sm font-bold">
+                                {r.name.charAt(0)}
+                              </span>
+                            )}
+                            <span className="text-sm font-semibold">{r.name}</span>
+                          </span>
+                          {r.source === "google" && <GoogleG />}
                         </div>
                       </li>
-                    ))}
-                  </ol>
+                    );
+                  })}
+                </ul>
+                <div className="mt-12">
+                  <Cta {...cta} />
+                </div>
+              </div>
+            </section>
+          )}
+
+          {content.tickerItems.length > 0 && (
+            <div className="overflow-hidden bg-[#c5eb02] py-4" aria-label="Why Greentek">
+              <ul className="lp-marquee flex w-max gap-10 whitespace-nowrap">
+                {[...content.tickerItems, ...content.tickerItems].map((item, i) => (
+                  <li
+                    key={i}
+                    aria-hidden={i >= content.tickerItems.length}
+                    className="flex items-center gap-3 font-heading text-lg font-extrabold uppercase tracking-wide text-black"
+                  >
+                    <Check className="h-5 w-5" strokeWidth={3} aria-hidden />
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          {content.features.length > 0 && (
+            <section className="bg-white py-16 md:py-24">
+              <div className="site-container space-y-16 md:space-y-24">
+                {content.features.map((f, i) => (
+                  <div key={f.heading} className="grid items-center gap-10 lg:grid-cols-2 lg:gap-16">
+                    <div className={i % 2 ? "lg:order-2" : ""}>
+                      <h2 className={h2}>{f.heading}</h2>
+                      {f.body && <p className="mt-5 text-lg leading-relaxed text-[#0b0d0e]/75">{f.body}</p>}
+                      {f.image && f.bullets.length > 0 && (
+                        <ul className="mt-6 space-y-3 text-[17px] font-medium">
+                          {f.bullets.map((b) => (
+                            <Tick key={b}>{b}</Tick>
+                          ))}
+                        </ul>
+                      )}
+                      <div className="mt-8">
+                        <Cta {...cta} proof="" align="start" />
+                      </div>
+                    </div>
+                    <div className={i % 2 ? "lg:order-1" : ""}>
+                      {f.image ? (
+                        <div className="relative aspect-[4/3] overflow-hidden rounded-2xl">
+                          <Image
+                            src={f.image}
+                            alt={f.imageAlt || f.heading}
+                            fill
+                            sizes="(min-width: 1024px) 45vw, 100vw"
+                            className="object-cover"
+                          />
+                        </div>
+                      ) : (
+                        <div className="rounded-2xl bg-[#0b0d0e] p-8 md:p-10">
+                          <ShieldCheck className="h-12 w-12" style={{ color: lime }} aria-hidden />
+                          <ul className="mt-6 space-y-4 text-lg font-semibold">
+                            {f.bullets.map((b) => (
+                              <Tick key={b} dark>
+                                {b}
+                              </Tick>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </section>
+          )}
+
+          {content.pricingHeading && content.pricingTiers.length > 0 && (
+            <section className="bg-[#f6f7f2] py-16 md:py-24">
+              <div className="site-container">
+                <div className="mx-auto max-w-3xl text-center">
+                  <h2 className={h2}>{content.pricingHeading}</h2>
+                  {content.pricingIntro && <p className="mt-4 text-lg text-[#0b0d0e]/65">{content.pricingIntro}</p>}
+                </div>
+                <ul
+                  className={`mt-12 grid gap-5 ${
+                    content.pricingTiers.length === 1
+                      ? "mx-auto max-w-xl"
+                      : content.pricingTiers.length >= 3
+                        ? "md:grid-cols-3"
+                        : "md:grid-cols-2"
+                  }`}
+                >
+                  {content.pricingTiers.map((tier, i) => {
+                    const featured = content.pricingTiers.length === 1 || (content.pricingTiers.length >= 3 && i === 1);
+                    return (
+                      <li
+                        key={tier.name}
+                        className={`flex flex-col rounded-2xl p-7 ${
+                          featured ? `bg-[#0b0d0e] text-white ${content.pricingTiers.length > 1 ? "md:-my-3 md:py-10" : ""}` : "border border-black/10 bg-white"
+                        }`}
+                      >
+                        <h3 className="text-sm font-bold uppercase tracking-[0.12em] opacity-70">{tier.name}</h3>
+                        <p className={`mt-3 font-heading text-[2.1rem] font-extrabold leading-none ${featured ? "text-[#c5eb02]" : ""}`}>
+                          {tier.price}
+                        </p>
+                        {tier.description && <p className="mt-4 opacity-75">{tier.description}</p>}
+                        {tier.features.length > 0 && (
+                          <ul className={`mt-6 space-y-3 border-t pt-6 ${featured ? "border-white/15" : "border-black/10"}`}>
+                            {tier.features.map((f) => (
+                              <Tick key={f} dark={featured}>
+                                {f}
+                              </Tick>
+                            ))}
+                          </ul>
+                        )}
+                      </li>
+                    );
+                  })}
+                </ul>
+                {content.pricingNote && (
+                  <p className="mx-auto mt-10 max-w-2xl text-center text-[#0b0d0e]/65">{content.pricingNote}</p>
                 )}
                 <div className="mt-10">
                   <Cta {...cta} />
                 </div>
               </div>
-            </div>
-          </section>
-        )}
+            </section>
+          )}
 
-        {content.resultsHeading && content.results.length > 0 && (
-          <section className="bg-white py-16 md:py-24">
-            <div className="site-container">
-              <div className="mx-auto max-w-3xl text-center">
-                <h2 className={h2}>{content.resultsHeading}</h2>
-                {content.resultsIntro && <p className="mt-4 text-lg text-[#0b0d0e]/65">{content.resultsIntro}</p>}
+          <FinanceBanner />
+
+          {content.guaranteeHeading && (
+            <section className="bg-white py-14 md:py-20">
+              <div className="site-container">
+                <div className="flex flex-col items-start gap-6 rounded-3xl bg-[#eef9b8] p-8 md:flex-row md:items-center md:gap-10 md:p-12">
+                  <span className="grid h-24 w-24 shrink-0 place-items-center rounded-full bg-[#0b0d0e]">
+                    <ShieldCheck className="h-12 w-12" style={{ color: lime }} aria-hidden />
+                  </span>
+                  <div>
+                    <h2 className="font-heading text-[1.75rem] font-extrabold leading-tight tracking-[-0.02em] md:text-[2.25rem]">
+                      {content.guaranteeHeading}
+                    </h2>
+                    {content.guaranteeBody && (
+                      <p className="mt-3 max-w-3xl text-lg leading-relaxed text-[#0b0d0e]/75">{content.guaranteeBody}</p>
+                    )}
+                  </div>
+                </div>
               </div>
-              <ul
-                className={`mx-auto mt-12 grid gap-6 ${
-                  content.results.length === 1 ? "max-w-3xl" : "md:grid-cols-2 lg:max-w-none"
-                }`}
-              >
-                {content.results.map((r) => (
-                  <li key={r.title + r.after} className="overflow-hidden rounded-2xl border border-black/10 bg-white shadow-[0_20px_50px_-30px_rgba(0,0,0,0.35)]">
-                    <div className="relative aspect-[4/5] sm:aspect-[5/4]">
-                      <Image
-                        src={r.after}
-                        alt={r.afterAlt || `${meta.name}, after`}
-                        fill
-                        sizes="(min-width: 768px) 50vw, 100vw"
-                        className="object-cover"
-                      />
-                      <span className="absolute left-4 top-4 rounded-full bg-[#c5eb02] px-3.5 py-1.5 text-xs font-extrabold uppercase tracking-wide text-black">
-                        After
+            </section>
+          )}
+
+          {content.stepsHeading && content.steps.length > 0 && (
+            <section className="bg-white pb-16 md:pb-24">
+              <div className="site-container">
+                <h2 className={`${h2} mx-auto max-w-3xl text-center`}>{content.stepsHeading}</h2>
+                <ol className={`relative mt-14 grid gap-10 sm:grid-cols-2 ${content.steps.length >= 4 ? "lg:grid-cols-4" : "lg:grid-cols-3"}`}>
+                  <span className="absolute left-0 right-0 top-6 hidden h-0.5 bg-black/10 lg:block" aria-hidden />
+                  {content.steps.map((step, i) => (
+                    <li key={step.title} className="relative">
+                      <span className="relative grid h-12 w-12 place-items-center rounded-full bg-[#c5eb02] font-heading text-xl font-extrabold ring-8 ring-white">
+                        {i + 1}
                       </span>
-                      <div className="absolute bottom-4 right-4 w-[34%] max-w-[180px] overflow-hidden rounded-xl border-4 border-white shadow-xl">
-                        <div className="relative aspect-[3/4]">
-                          <Image
-                            src={r.before}
-                            alt={r.beforeAlt || `${meta.name}, before`}
-                            fill
-                            sizes="180px"
-                            className="object-cover"
-                          />
-                        </div>
-                        <span className="absolute inset-x-0 bottom-0 bg-black/70 py-1 text-center text-[11px] font-bold uppercase tracking-wide text-white">
-                          Before
-                        </span>
-                      </div>
-                    </div>
-                    <div className="p-6">
-                      <h3 className="font-heading text-xl font-extrabold leading-snug">{r.title}</h3>
-                      {r.body && <p className="mt-2 text-[#0b0d0e]/65">{r.body}</p>}
-                    </div>
+                      <h3 className="mt-5 font-heading text-xl font-extrabold">{step.title}</h3>
+                      <p className="mt-2 leading-relaxed text-[#0b0d0e]/70">{step.body}</p>
+                    </li>
+                  ))}
+                </ol>
+                <div className="mt-14">
+                  <Cta {...cta} />
+                </div>
+              </div>
+            </section>
+          )}
+
+          {content.stats.length > 0 && (
+            <section className="bg-[#0b0d0e] text-white">
+              <ul className={`site-container grid grid-cols-2 gap-8 py-12 md:py-16 ${content.stats.length >= 4 ? "lg:grid-cols-4" : "md:grid-cols-3"}`}>
+                {content.stats.map((s) => (
+                  <li key={s.label} className="text-center">
+                    <p className="font-heading text-[2.75rem] font-extrabold leading-none md:text-[3.5rem]" style={{ color: lime }}>
+                      {s.value}
+                    </p>
+                    <p className="mt-2 text-sm text-white/70 md:text-base">{s.label}</p>
                   </li>
                 ))}
               </ul>
-              <div className="mt-12">
-                <Cta {...cta} />
-              </div>
-            </div>
-          </section>
-        )}
+            </section>
+          )}
 
-        {content.problemHeading && (
-          <section className="bg-[#f6f7f2] py-16 md:py-24">
-            <div
-              className={`site-container grid items-center gap-12 lg:gap-16 ${
-                content.problemImage ? "lg:grid-cols-2" : "max-w-3xl"
-              }`}
-            >
-              <div>
-                <h2 className={h2}>{content.problemHeading}</h2>
-                {content.problemQuestions.length > 0 && (
-                  <ul className="mt-7 space-y-3 text-lg font-semibold">
-                    {content.problemQuestions.map((q) => (
-                      <Tick key={q}>{q}</Tick>
+          {content.areasHeading && areaNames.length > 0 && (
+            <section className="bg-[#f6f7f2] py-16 md:py-20">
+              <div className="site-container text-center">
+                <h2 className={`${h2} mx-auto max-w-3xl`}>{content.areasHeading}</h2>
+                {content.areasBody && <p className="mx-auto mt-4 max-w-2xl text-lg text-[#0b0d0e]/70">{content.areasBody}</p>}
+                <ul className="mt-8 flex flex-wrap justify-center gap-3">
+                  {areaNames.map((name) => (
+                    <li
+                      key={name}
+                      className="flex items-center gap-2 rounded-full border border-black/10 bg-white px-5 py-2.5 font-semibold"
+                    >
+                      <MapPin className="h-4 w-4 text-[#0b0d0e]/60" aria-hidden />
+                      {name}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </section>
+          )}
+
+          {content.faqs.length > 0 && (
+            <section className="bg-white py-16 md:py-24">
+              <div className="site-container">
+                <div className="mx-auto max-w-3xl">
+                  <h2 className={`${h2} text-center`}>{content.faqHeading || "Frequently asked questions"}</h2>
+                  <div className="mt-10 divide-y divide-black/10 border-y border-black/10">
+                    {content.faqs.map((faq, i) => (
+                      <details key={i} className="group py-5" {...(i === 0 ? { open: true } : {})}>
+                        <summary className="flex cursor-pointer list-none items-center justify-between gap-4 text-lg font-bold">
+                          {faq.question}
+                          <ChevronDown className="h-5 w-5 shrink-0 transition-transform group-open:rotate-180" aria-hidden />
+                        </summary>
+                        <div
+                          className="mt-3 leading-relaxed text-[#0b0d0e]/70 [&_a]:font-semibold [&_a]:underline"
+                          dangerouslySetInnerHTML={{ __html: faq.answer }}
+                        />
+                      </details>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </section>
+          )}
+
+          <section id="quote" className="relative scroll-mt-20 overflow-hidden">
+            {content.finalImage && (
+              <Image
+                src={content.finalImage}
+                alt={content.finalImageAlt || ""}
+                fill
+                sizes="100vw"
+                className="object-cover"
+              />
+            )}
+            <div className="absolute inset-0 bg-black/55" aria-hidden />
+            <div className="site-container relative grid items-center gap-8 py-16 md:py-24 lg:grid-cols-[1fr_minmax(360px,440px)] lg:gap-14">
+              <div className="rounded-2xl bg-white p-8 md:p-10">
+                {(content.ratingText || score > 0) && (
+                  <p className="inline-flex flex-wrap items-center gap-2.5 text-sm font-semibold">
+                    {score > 0 && <StarStrip score={score} />}
+                    {content.ratingText}
+                  </p>
+                )}
+                {promo && (
+                  <div className="mt-5">
+                    <PromoBadge text={promo} ends={content.promoEnds} />
+                  </div>
+                )}
+                {content.finalHeading && (
+                  <h2 className="mt-5 font-heading text-[1.9rem] font-extrabold leading-[1.1] tracking-[-0.02em] md:text-[2.5rem]">
+                    {content.finalHeading}
+                  </h2>
+                )}
+                {content.finalBody && <p className="mt-4 text-lg leading-relaxed text-[#0b0d0e]/75">{content.finalBody}</p>}
+                {content.finalTicks.length > 0 && (
+                  <ul className="mt-6 space-y-3 font-semibold">
+                    {content.finalTicks.map((t) => (
+                      <Tick key={t}>{t}</Tick>
                     ))}
                   </ul>
                 )}
-                {paragraphs(content.problemBody).map((p, i) => (
-                  <p key={i} className="mt-5 text-lg leading-relaxed text-[#0b0d0e]/75">
-                    {p}
-                  </p>
-                ))}
-                <div className="mt-9">
-                  <Cta {...cta} align="start" />
-                </div>
-              </div>
-              {content.problemImage && (
-                <div className="relative mx-auto aspect-[4/5] w-full max-w-md lg:max-w-none">
-                  <div className="absolute inset-0 translate-x-3 translate-y-3 rounded-2xl bg-[#c5eb02]" aria-hidden />
-                  <Image
-                    src={content.problemImage}
-                    alt={content.problemImageAlt || meta.name}
-                    fill
-                    sizes="(min-width: 1024px) 40vw, 90vw"
-                    className="rounded-2xl object-cover"
-                  />
-                </div>
-              )}
-            </div>
-          </section>
-        )}
-
-        {content.reviewsHeading && reviews.length > 0 && (
-          <section className="bg-white py-16 md:py-24">
-            <div className="site-container">
-              <h2 className={`${h2} mx-auto max-w-3xl text-center`}>{content.reviewsHeading}</h2>
-              <ul className="mt-12 grid gap-5 md:grid-cols-3">
-                {reviews.slice(0, 3).map((r) => {
-                  const { lead, rest } = firstSentence(r.quote);
-                  return (
-                    <li key={r.name} className="flex flex-col rounded-2xl border border-black/10 bg-white p-6">
-                      <GoldStars rating={r.rating} />
-                      {lead && <p className="mt-4 font-heading text-lg font-extrabold leading-snug">&ldquo;{lead}&rdquo;</p>}
-                      <p className="mt-2 flex-1 text-[15px] leading-relaxed text-[#0b0d0e]/70">{clip(rest, 260)}</p>
-                      <div className="mt-6 flex items-center justify-between gap-3 border-t border-black/10 pt-4">
-                        <span className="flex items-center gap-3">
-                          {r.image ? (
-                            <Image src={r.image} alt="" width={36} height={36} className="h-9 w-9 rounded-full object-cover" />
-                          ) : (
-                            <span className="grid h-9 w-9 place-items-center rounded-full bg-[#c5eb02] text-sm font-bold">
-                              {r.name.charAt(0)}
-                            </span>
-                          )}
-                          <span className="text-sm font-semibold">{r.name}</span>
-                        </span>
-                        {r.source === "google" && <GoogleG />}
-                      </div>
-                    </li>
-                  );
-                })}
-              </ul>
-              <div className="mt-12">
-                <Cta {...cta} />
-              </div>
-            </div>
-          </section>
-        )}
-
-        {content.tickerItems.length > 0 && (
-          <div className="overflow-hidden bg-[#c5eb02] py-4" aria-label="Why Greentek">
-            <ul className="lp-marquee flex w-max gap-10 whitespace-nowrap">
-              {[...content.tickerItems, ...content.tickerItems].map((item, i) => (
-                <li
-                  key={i}
-                  aria-hidden={i >= content.tickerItems.length}
-                  className="flex items-center gap-3 font-heading text-lg font-extrabold uppercase tracking-wide text-black"
+                <a
+                  href={`tel:${phone.replace(/[^\d+]/g, "")}`}
+                  className="mt-8 inline-flex items-center gap-2 text-lg font-bold underline-offset-4 hover:underline"
                 >
-                  <Check className="h-5 w-5" strokeWidth={3} aria-hidden />
-                  {item}
-                </li>
-              ))}
-            </ul>
+                  <Phone className="h-5 w-5" aria-hidden />
+                  Prefer to talk? Call {phone}
+                </a>
+              </div>
+              <div className="w-full">
+                <HeroQuoteForm
+                  heading={content.formHeading || `Get your free ${meta.name.toLowerCase()} quote`}
+                  subheading={content.formSubheading}
+                  source={source}
+                  fixedService={fixedService}
+                  heatPump={heatPump}
+                />
+              </div>
+            </div>
+          </section>
+
+          <div className="bg-black">
+            <AccreditationsSection />
           </div>
-        )}
+        </main>
+      )}
 
-        {content.features.length > 0 && (
-          <section className="bg-white py-16 md:py-24">
-            <div className="site-container space-y-16 md:space-y-24">
-              {content.features.map((f, i) => (
-                <div key={f.heading} className="grid items-center gap-10 lg:grid-cols-2 lg:gap-16">
-                  <div className={i % 2 ? "lg:order-2" : ""}>
-                    <h2 className={h2}>{f.heading}</h2>
-                    {f.body && <p className="mt-5 text-lg leading-relaxed text-[#0b0d0e]/75">{f.body}</p>}
-                    {f.image && f.bullets.length > 0 && (
-                      <ul className="mt-6 space-y-3 text-[17px] font-medium">
-                        {f.bullets.map((b) => (
-                          <Tick key={b}>{b}</Tick>
-                        ))}
-                      </ul>
-                    )}
-                    <div className="mt-8">
-                      <Cta {...cta} proof="" align="start" />
-                    </div>
-                  </div>
-                  <div className={i % 2 ? "lg:order-1" : ""}>
-                    {f.image ? (
-                      <div className="relative aspect-[4/3] overflow-hidden rounded-2xl">
-                        <Image
-                          src={f.image}
-                          alt={f.imageAlt || f.heading}
-                          fill
-                          sizes="(min-width: 1024px) 45vw, 100vw"
-                          className="object-cover"
-                        />
-                      </div>
-                    ) : (
-                      <div className="rounded-2xl bg-[#0b0d0e] p-8 md:p-10">
-                        <ShieldCheck className="h-12 w-12" style={{ color: lime }} aria-hidden />
-                        <ul className="mt-6 space-y-4 text-lg font-semibold">
-                          {f.bullets.map((b) => (
-                            <Tick key={b} dark>
-                              {b}
-                            </Tick>
-                          ))}
-                        </ul>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </section>
-        )}
-
-        {content.pricingHeading && content.pricingTiers.length > 0 && (
-          <section className="bg-[#f6f7f2] py-16 md:py-24">
-            <div className="site-container">
-              <div className="mx-auto max-w-3xl text-center">
-                <h2 className={h2}>{content.pricingHeading}</h2>
-                {content.pricingIntro && <p className="mt-4 text-lg text-[#0b0d0e]/65">{content.pricingIntro}</p>}
-              </div>
-              <ul
-                className={`mt-12 grid gap-5 ${
-                  content.pricingTiers.length === 1
-                    ? "mx-auto max-w-xl"
-                    : content.pricingTiers.length >= 3
-                      ? "md:grid-cols-3"
-                      : "md:grid-cols-2"
-                }`}
-              >
-                {content.pricingTiers.map((tier, i) => {
-                  const featured = content.pricingTiers.length === 1 || (content.pricingTiers.length >= 3 && i === 1);
-                  return (
-                    <li
-                      key={tier.name}
-                      className={`flex flex-col rounded-2xl p-7 ${
-                        featured ? `bg-[#0b0d0e] text-white ${content.pricingTiers.length > 1 ? "md:-my-3 md:py-10" : ""}` : "border border-black/10 bg-white"
-                      }`}
-                    >
-                      <h3 className="text-sm font-bold uppercase tracking-[0.12em] opacity-70">{tier.name}</h3>
-                      <p className={`mt-3 font-heading text-[2.1rem] font-extrabold leading-none ${featured ? "text-[#c5eb02]" : ""}`}>
-                        {tier.price}
-                      </p>
-                      {tier.description && <p className="mt-4 opacity-75">{tier.description}</p>}
-                      {tier.features.length > 0 && (
-                        <ul className={`mt-6 space-y-3 border-t pt-6 ${featured ? "border-white/15" : "border-black/10"}`}>
-                          {tier.features.map((f) => (
-                            <Tick key={f} dark={featured}>
-                              {f}
-                            </Tick>
-                          ))}
-                        </ul>
-                      )}
-                    </li>
-                  );
-                })}
-              </ul>
-              {content.pricingNote && (
-                <p className="mx-auto mt-10 max-w-2xl text-center text-[#0b0d0e]/65">{content.pricingNote}</p>
-              )}
-              <div className="mt-10">
-                <Cta {...cta} />
-              </div>
-            </div>
-          </section>
-        )}
-
-        <FinanceBanner />
-
-        {content.guaranteeHeading && (
-          <section className="bg-white py-14 md:py-20">
-            <div className="site-container">
-              <div className="flex flex-col items-start gap-6 rounded-3xl bg-[#eef9b8] p-8 md:flex-row md:items-center md:gap-10 md:p-12">
-                <span className="grid h-24 w-24 shrink-0 place-items-center rounded-full bg-[#0b0d0e]">
-                  <ShieldCheck className="h-12 w-12" style={{ color: lime }} aria-hidden />
-                </span>
-                <div>
-                  <h2 className="font-heading text-[1.75rem] font-extrabold leading-tight tracking-[-0.02em] md:text-[2.25rem]">
-                    {content.guaranteeHeading}
-                  </h2>
-                  {content.guaranteeBody && (
-                    <p className="mt-3 max-w-3xl text-lg leading-relaxed text-[#0b0d0e]/75">{content.guaranteeBody}</p>
-                  )}
-                </div>
-              </div>
-            </div>
-          </section>
-        )}
-
-        {content.stepsHeading && content.steps.length > 0 && (
-          <section className="bg-white pb-16 md:pb-24">
-            <div className="site-container">
-              <h2 className={`${h2} mx-auto max-w-3xl text-center`}>{content.stepsHeading}</h2>
-              <ol className={`relative mt-14 grid gap-10 sm:grid-cols-2 ${content.steps.length >= 4 ? "lg:grid-cols-4" : "lg:grid-cols-3"}`}>
-                <span className="absolute left-0 right-0 top-6 hidden h-0.5 bg-black/10 lg:block" aria-hidden />
-                {content.steps.map((step, i) => (
-                  <li key={step.title} className="relative">
-                    <span className="relative grid h-12 w-12 place-items-center rounded-full bg-[#c5eb02] font-heading text-xl font-extrabold ring-8 ring-white">
-                      {i + 1}
-                    </span>
-                    <h3 className="mt-5 font-heading text-xl font-extrabold">{step.title}</h3>
-                    <p className="mt-2 leading-relaxed text-[#0b0d0e]/70">{step.body}</p>
-                  </li>
-                ))}
-              </ol>
-              <div className="mt-14">
-                <Cta {...cta} />
-              </div>
-            </div>
-          </section>
-        )}
-
-        {content.stats.length > 0 && (
-          <section className="bg-[#0b0d0e] text-white">
-            <ul className={`site-container grid grid-cols-2 gap-8 py-12 md:py-16 ${content.stats.length >= 4 ? "lg:grid-cols-4" : "md:grid-cols-3"}`}>
-              {content.stats.map((s) => (
-                <li key={s.label} className="text-center">
-                  <p className="font-heading text-[2.75rem] font-extrabold leading-none md:text-[3.5rem]" style={{ color: lime }}>
-                    {s.value}
-                  </p>
-                  <p className="mt-2 text-sm text-white/70 md:text-base">{s.label}</p>
-                </li>
-              ))}
-            </ul>
-          </section>
-        )}
-
-        {content.areasHeading && areaNames.length > 0 && (
-          <section className="bg-[#f6f7f2] py-16 md:py-20">
-            <div className="site-container text-center">
-              <h2 className={`${h2} mx-auto max-w-3xl`}>{content.areasHeading}</h2>
-              {content.areasBody && <p className="mx-auto mt-4 max-w-2xl text-lg text-[#0b0d0e]/70">{content.areasBody}</p>}
-              <ul className="mt-8 flex flex-wrap justify-center gap-3">
-                {areaNames.map((name) => (
-                  <li
-                    key={name}
-                    className="flex items-center gap-2 rounded-full border border-black/10 bg-white px-5 py-2.5 font-semibold"
-                  >
-                    <MapPin className="h-4 w-4 text-[#0b0d0e]/60" aria-hidden />
-                    {name}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </section>
-        )}
-
-        {content.faqs.length > 0 && (
-          <section className="bg-white py-16 md:py-24">
-            <div className="site-container">
-              <div className="mx-auto max-w-3xl">
-                <h2 className={`${h2} text-center`}>{content.faqHeading || "Frequently asked questions"}</h2>
-                <div className="mt-10 divide-y divide-black/10 border-y border-black/10">
-                  {content.faqs.map((faq, i) => (
-                    <details key={i} className="group py-5" {...(i === 0 ? { open: true } : {})}>
-                      <summary className="flex cursor-pointer list-none items-center justify-between gap-4 text-lg font-bold">
-                        {faq.question}
-                        <ChevronDown className="h-5 w-5 shrink-0 transition-transform group-open:rotate-180" aria-hidden />
-                      </summary>
-                      <div
-                        className="mt-3 leading-relaxed text-[#0b0d0e]/70 [&_a]:font-semibold [&_a]:underline"
-                        dangerouslySetInnerHTML={{ __html: faq.answer }}
-                      />
-                    </details>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </section>
-        )}
-
-        <section id="quote" className="relative scroll-mt-20 overflow-hidden">
-          {content.finalImage && (
-            <Image
-              src={content.finalImage}
-              alt={content.finalImageAlt || ""}
-              fill
-              sizes="100vw"
-              className="object-cover"
-            />
-          )}
-          <div className="absolute inset-0 bg-black/55" aria-hidden />
-          <div className="site-container relative grid items-center gap-8 py-16 md:py-24 lg:grid-cols-[1fr_minmax(360px,440px)] lg:gap-14">
-            <div className="rounded-2xl bg-white p-8 md:p-10">
-              {(content.ratingText || score > 0) && (
-                <p className="inline-flex flex-wrap items-center gap-2.5 text-sm font-semibold">
-                  {score > 0 && <StarStrip score={score} />}
-                  {content.ratingText}
-                </p>
-              )}
-              {promo && (
-                <div className="mt-5">
-                  <PromoBadge text={promo} ends={content.promoEnds} />
-                </div>
-              )}
-              {content.finalHeading && (
-                <h2 className="mt-5 font-heading text-[1.9rem] font-extrabold leading-[1.1] tracking-[-0.02em] md:text-[2.5rem]">
-                  {content.finalHeading}
-                </h2>
-              )}
-              {content.finalBody && <p className="mt-4 text-lg leading-relaxed text-[#0b0d0e]/75">{content.finalBody}</p>}
-              {content.finalTicks.length > 0 && (
-                <ul className="mt-6 space-y-3 font-semibold">
-                  {content.finalTicks.map((t) => (
-                    <Tick key={t}>{t}</Tick>
-                  ))}
-                </ul>
-              )}
-              <a
-                href={`tel:${phone.replace(/[^\d+]/g, "")}`}
-                className="mt-8 inline-flex items-center gap-2 text-lg font-bold underline-offset-4 hover:underline"
-              >
-                <Phone className="h-5 w-5" aria-hidden />
-                Prefer to talk? Call {phone}
-              </a>
-            </div>
-            <div className="w-full">
-              <HeroQuoteForm
-                heading={content.formHeading || `Get your free ${meta.name.toLowerCase()} quote`}
-                subheading={content.formSubheading}
-                source={source}
-                fixedService={fixedService}
-                askAddress={askAddress}
-                heatPump={heatPump}
-              />
-            </div>
-          </div>
-        </section>
-
-        <div className="bg-black">
-          <AccreditationsSection />
-        </div>
-      </main>
-
-      <Footer hideCta />
-      <QuoteModal
-        heading={content.formHeading || `Get your free ${meta.name.toLowerCase()} quote`}
-        subheading={content.formSubheading}
-        source={source}
-        fixedService={fixedService}
-        askAddress={askAddress}
-                heatPump={heatPump}
-      />
+      <Footer hideCta minimal={quiz} />
+      {quiz ? (
+        <ScrollToQuiz target="grant-quiz" />
+      ) : (
+        <QuoteModal
+          heading={content.formHeading || `Get your free ${meta.name.toLowerCase()} quote`}
+          subheading={content.formSubheading}
+          source={source}
+          fixedService={fixedService}
+          heatPump={heatPump}
+        />
+      )}
       <StickyQuoteBar
         phone={phone}
         callLabel={content.stickyCallLabel || "Call us"}

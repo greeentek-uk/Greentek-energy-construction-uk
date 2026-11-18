@@ -57,7 +57,7 @@ const seedData: PageContentMap = {
       {
         id: "certified",
         title: "Certified & Accredited Installers",
-        description: "Every installer is MCS and TrustMark certified, so the work is signed off to the standard your warranty and any grant funding requires.",
+        description: "Every installer is MCS certified, so the work is signed off to the standard your warranty and any grant funding requires.",
         image: "/images/projects/Examples/Solar Panel Installation.png",
       },
       {
@@ -145,7 +145,7 @@ const seedData: PageContentMap = {
       },
       {
         question: "Are you accredited and compliant?",
-        answer: "Yes, we maintain full compliance with industry standards. We are accredited by leading bodies such as TrustMark, HIES, and Gas Safe, ensuring quality and peace of mind for every solar installation, heat pump setup, and construction project.",
+        answer: "Yes, we maintain full compliance with industry standards. We are accredited by leading bodies such as MCS, HIES, and Gas Safe, ensuring quality and peace of mind for every solar installation, heat pump setup, and construction project.",
       },
       {
         question: "How can I contact Greentek for solar, heat pump, or refurbishment projects?",

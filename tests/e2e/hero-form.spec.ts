@@ -76,7 +76,7 @@ test("step 2 — required dropdowns, choices and going back keeps answers", asyn
     "As soon as possible", "Within 1–3 months", "Within 3–6 months",
   ]);
   expect(await page.locator("#hero_budget option:not([disabled])").allTextContents()).toEqual([
-    "Under £25,000", "£25,000–£50,000", "£50,000–£100,000", "More than £100,000", "I need guidance",
+    "£4,999–£9,999", "£10,000–£19,999", "£20,000 or more", "I need guidance",
   ]);
   await expect(page.getByText("Are you the property owner?")).toBeVisible();
 
@@ -107,7 +107,7 @@ test("step 2 — required dropdowns, choices and going back keeps answers", asyn
 async function completeStepTwo(page: Page) {
   await completeStepOne(page);
   await page.locator("#hero_timeline").selectOption("asap");
-  await page.locator("#hero_budget").selectOption("25k_50k");
+  await page.locator("#hero_budget").selectOption("kitchen_10k_20k");
   await page.getByRole("button", { name: "Residential", exact: true }).click();
   await page.getByRole("button", { name: "Yes", exact: true }).click();
   await continueButton(page).click();
@@ -167,6 +167,9 @@ test("full journey — submits every answer, photos and enquiry number, then tha
   await expect(alert(page)).toHaveText("Enter your phone number.");
   await page.locator("#hero_phone").fill("07700 900123");
   await submit.click();
+  await expect(alert(page)).toHaveText("Enter the property's address.");
+  await page.locator("#hero_address").fill("1 Test Street, Wolverhampton");
+  await submit.click();
   await expect(alert(page)).toHaveText("Please tick the consent box so we can reply.");
   expect(captured.quotes).toHaveLength(0);
 
@@ -179,10 +182,11 @@ test("full journey — submits every answer, photos and enquiry number, then tha
   expect(sent).toMatchObject({
     service: "construction_kitchen",
     postcode: "WV1 1AA",
+    address: "1 Test Street, Wolverhampton",
     property_type: "residential",
     is_homeowner: "yes",
     timeline: "asap",
-    budget: "25k_50k",
+    budget: "kitchen_10k_20k",
     message: "Knock through into the dining room.",
     full_name: "E2E Tester",
     email: "e2e@example.com",
@@ -233,6 +237,7 @@ test("the server's error message is shown if sending fails", async ({ page, cont
   await page.locator("#hero_name").fill("E2E Tester");
   await page.locator("#hero_email").fill("e2e@example.com");
   await page.locator("#hero_phone").fill("07700900123");
+  await page.locator("#hero_address").fill("1 Test Street, Wolverhampton");
   await page.getByLabel(/happy for Greentek to contact me/).check();
   await page.getByRole("button", { name: "Get my free quote" }).click();
   await expect(alert(page)).toHaveText("Failed to send email");

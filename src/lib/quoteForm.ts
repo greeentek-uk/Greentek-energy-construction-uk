@@ -111,11 +111,21 @@ export const budgetOptions = [
 ];
 
 /**
- * Budget bands for services the whole-project bands don't fit. A bathroom
- * starts at £2,999, so "Under £25,000" would put every bathroom lead in one
- * band and tell sales nothing. Bands only — the price itself comes after the
- * survey. Values are prefixed so an email can't confuse them with the
- * whole-project ones.
+ * Budget bands per service. The whole-project bands fit neither end: "Under
+ * £25,000" would put every bathroom lead in one band and tell sales nothing,
+ * and loft insulation was being offered "More than £100,000". The whole-project
+ * list is only for "multiple" / "not sure", where the job isn't known yet.
+ * Bands only — the price itself comes after the survey. Bathroom and kitchen
+ * figures are the owner's (2026-10-13); the rest follow published UK cost
+ * guides (2026-11-02) until the owner confirms them, with the cuts where the
+ * job changes: panels vs panels + battery, Velux vs dormer vs mansard, terrace
+ * vs semi vs detached. The first band is the floor (owner, 2026-11-02): nothing
+ * lower is offered, because people pick the first option, and "Under £1,200"
+ * says what the budget is without suggesting the job can be done for less.
+ * Only the owner's two state a starting price; the others open with "Under".
+ * Heat pump bands are what's paid after the Boiler
+ * Upgrade Scheme, and commercial maintenance is a yearly schedule. Values are
+ * prefixed so an email can't confuse them with the whole-project ones.
  */
 export const serviceBudgetOptions: Record<string, typeof budgetOptions> = {
   construction_bathroom: [
@@ -130,6 +140,86 @@ export const serviceBudgetOptions: Record<string, typeof budgetOptions> = {
     { value: "kitchen_4999_10k", label: "£4,999–£9,999" },
     { value: "kitchen_10k_20k", label: "£10,000–£19,999" },
     { value: "kitchen_over_20k", label: "£20,000 or more" },
+    { value: "guidance", label: "I need guidance" },
+  ],
+  construction_full_property: [
+    { value: "", label: "Select a budget" },
+    { value: "full_home_under_45k", label: "Under £45,000" },
+    { value: "full_home_45k_70k", label: "£45,000–£69,999" },
+    { value: "full_home_70k_100k", label: "£70,000–£99,999" },
+    { value: "full_home_over_100k", label: "£100,000 or more" },
+    { value: "guidance", label: "I need guidance" },
+  ],
+  construction_extension: [
+    { value: "", label: "Select a budget" },
+    { value: "extension_under_35k", label: "Under £35,000" },
+    { value: "extension_35k_50k", label: "£35,000–£49,999" },
+    { value: "extension_50k_70k", label: "£50,000–£69,999" },
+    { value: "extension_over_70k", label: "£70,000 or more" },
+    { value: "guidance", label: "I need guidance" },
+  ],
+  construction_loft_conversion: [
+    { value: "", label: "Select a budget" },
+    { value: "loft_conversion_under_30k", label: "Under £30,000" },
+    { value: "loft_conversion_30k_45k", label: "£30,000–£44,999" },
+    { value: "loft_conversion_45k_60k", label: "£45,000–£59,999" },
+    { value: "loft_conversion_over_60k", label: "£60,000 or more" },
+    { value: "guidance", label: "I need guidance" },
+  ],
+  construction_living_space: [
+    { value: "", label: "Select a budget" },
+    { value: "living_room_under_3k", label: "Under £3,000" },
+    { value: "living_room_3k_6k", label: "£3,000–£5,999" },
+    { value: "living_room_6k_10k", label: "£6,000–£9,999" },
+    { value: "living_room_over_10k", label: "£10,000 or more" },
+    { value: "guidance", label: "I need guidance" },
+  ],
+  construction_commercial_maintenance: [
+    { value: "", label: "Select a budget" },
+    { value: "maintenance_under_1k", label: "Under £1,000 a year" },
+    { value: "maintenance_1k_3k", label: "£1,000–£2,999 a year" },
+    { value: "maintenance_3k_10k", label: "£3,000–£9,999 a year" },
+    { value: "maintenance_over_10k", label: "£10,000 a year or more" },
+    { value: "guidance", label: "I need guidance" },
+  ],
+  energy_solar_pv: [
+    { value: "", label: "Select a budget" },
+    { value: "solar_under_6k", label: "Under £6,000" },
+    { value: "solar_6k_9k", label: "£6,000–£8,999" },
+    { value: "solar_9k_14k", label: "£9,000–£13,999" },
+    { value: "solar_over_14k", label: "£14,000 or more" },
+    { value: "guidance", label: "I need guidance" },
+  ],
+  energy_heat_pump: [
+    { value: "", label: "Select a budget" },
+    { value: "heat_pump_under_3k", label: "Under £3,000" },
+    { value: "heat_pump_3k_5k", label: "£3,000–£4,999" },
+    { value: "heat_pump_5k_8k", label: "£5,000–£7,999" },
+    { value: "heat_pump_over_8k", label: "£8,000 or more" },
+    { value: "guidance", label: "I need guidance" },
+  ],
+  energy_heating_boiler: [
+    { value: "", label: "Select a budget" },
+    { value: "heating_under_2500", label: "Under £2,500" },
+    { value: "heating_2500_4k", label: "£2,500–£3,999" },
+    { value: "heating_4k_8k", label: "£4,000–£7,999" },
+    { value: "heating_over_8k", label: "£8,000 or more" },
+    { value: "guidance", label: "I need guidance" },
+  ],
+  energy_loft_insulation: [
+    { value: "", label: "Select a budget" },
+    { value: "loft_insulation_under_1200", label: "Under £1,200" },
+    { value: "loft_insulation_1200_2k", label: "£1,200–£1,999" },
+    { value: "loft_insulation_2k_3k", label: "£2,000–£2,999" },
+    { value: "loft_insulation_over_3k", label: "£3,000 or more" },
+    { value: "guidance", label: "I need guidance" },
+  ],
+  energy_wall_insulation: [
+    { value: "", label: "Select a budget" },
+    { value: "wall_insulation_under_10k", label: "Under £10,000" },
+    { value: "wall_insulation_10k_15k", label: "£10,000–£14,999" },
+    { value: "wall_insulation_15k_25k", label: "£15,000–£24,999" },
+    { value: "wall_insulation_over_25k", label: "£25,000 or more" },
     { value: "guidance", label: "I need guidance" },
   ],
 };
@@ -279,7 +369,7 @@ export interface QuoteSubmission {
   email: string;
   phone: string;
   postcode: string;
-  /** Street address; only asked for on some forms (bathroom ad landing page). */
+  /** Street address; every form asks for it (optional here for pages left open). */
   address?: string;
   service: string;
   property_type?: string;
@@ -296,6 +386,11 @@ export interface QuoteSubmission {
   /** The numbered enquiry the photos were uploaded under. */
   enquiry?: { number: number; token: string } | null;
   consent: boolean;
+  /**
+   * A "call me back" request (name, phone, postcode only): the one case the
+   * API accepts without an email address.
+   */
+  callback?: boolean;
   /** Which form it came from, so enquiries can be told apart in the inbox. */
   source?: string;
   /** Shared with the browser pixel's Lead so Meta de-duplicates the pair. */

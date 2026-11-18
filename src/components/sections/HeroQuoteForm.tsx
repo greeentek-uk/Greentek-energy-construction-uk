@@ -45,9 +45,9 @@ import PropertyPhotoPicker, { type EnquiryRef, type PhotoItem } from "./Property
  * box restating it either (removed 2026-10-29, owner: "useless") — the form's
  * heading already names the service.
  *
- * `askAddress` adds the property's address to the last step (bathroom ad
- * landing page). It sits with the contact details rather than beside the
- * postcode in step 1, so the opening step stays one quick question.
+ * The property's address is asked for on every page (owner, 2026-11-02). It
+ * sits with the contact details rather than beside the postcode in step 1, so
+ * the opening step stays one quick question.
  *
  * `heatPump` (heat pump ad landing page) swaps property type and budget for
  * the questions that decide the Boiler Upgrade Scheme: current heating and
@@ -196,7 +196,6 @@ export default function HeroQuoteForm({
   source = "Homepage hero",
   fixedService,
   idPrefix = "hero",
-  askAddress = false,
   heatPump = false,
 }: {
   heading: string;
@@ -206,8 +205,6 @@ export default function HeroQuoteForm({
   /** Set on a single-service page to skip the project type and service questions. */
   fixedService?: FixedService;
   idPrefix?: string;
-  /** Ask for the property's address (required) in the last step. */
-  askAddress?: boolean;
   /** Ask the heat pump / grant questions instead of property type and budget. */
   heatPump?: boolean;
 }) {
@@ -347,7 +344,7 @@ export default function HeroQuoteForm({
     if (!isLikelyEmail(form.email)) return setError("That email address doesn't look right.");
     if (!form.phone.trim()) return setError("Enter your phone number.");
     if (!isLikelyUkPhone(form.phone)) return setError("Please check your phone number — we'll call you on it.");
-    if (askAddress && !form.address.trim()) return setError("Enter the property's address.");
+    if (!form.address.trim()) return setError("Enter the property's address.");
     if (!form.consent) return setError("Please tick the consent box so we can reply.");
     if (uploading) return setError("Your photos are still uploading — one moment.");
 
@@ -358,11 +355,11 @@ export default function HeroQuoteForm({
     const eventId = newEventId();
     try {
       // project_type is carried in the service value itself (energy_… / construction_…).
-      const { project_type, address, current_heating, home_type, main_reason, ...fields } = form;
+      const { project_type, current_heating, home_type, main_reason, ...fields } = form;
       await submitQuoteRequest({
         ...fields,
         email: fields.email.trim(),
-        ...(askAddress ? { address: address.trim() } : {}),
+        address: fields.address.trim(),
         ...(heatPump ? { current_heating, home_type, main_reason } : {}),
         // A photo that failed to upload is left out rather than blocking the enquiry.
         photos: photos.flatMap((p) => (p.status === "done" && p.url ? [p.url] : [])),
@@ -678,27 +675,25 @@ export default function HeroQuoteForm({
                   onChange={(e) => set("phone", e.target.value)}
                   placeholder="Phone number"
                   autoComplete="tel"
-                  enterKeyHint={askAddress ? "next" : "send"}
+                  enterKeyHint="next"
                   className={fieldClass}
                 />
               </div>
-              {askAddress && (
-                <div>
-                  <label htmlFor={`${idPrefix}_address`} className="sr-only">
-                    Property address
-                  </label>
-                  <input
-                    id={`${idPrefix}_address`}
-                    value={form.address}
-                    onChange={(e) => set("address", e.target.value)}
-                    placeholder={`Property address${form.postcode ? ` (${form.postcode.trim()})` : ""}`}
-                    autoComplete="street-address"
-                    autoCapitalize="words"
-                    enterKeyHint="send"
-                    className={fieldClass}
-                  />
-                </div>
-              )}
+              <div>
+                <label htmlFor={`${idPrefix}_address`} className="sr-only">
+                  Property address
+                </label>
+                <input
+                  id={`${idPrefix}_address`}
+                  value={form.address}
+                  onChange={(e) => set("address", e.target.value)}
+                  placeholder={`Property address${form.postcode ? ` (${form.postcode.trim()})` : ""}`}
+                  autoComplete="street-address"
+                  autoCapitalize="words"
+                  enterKeyHint="send"
+                  className={fieldClass}
+                />
+              </div>
 
               {/* The whole row is the tap target, not just the small box. */}
               <label className="flex min-h-11 cursor-pointer items-start gap-3 text-xs text-white/70 leading-relaxed">

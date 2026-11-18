@@ -1,7 +1,7 @@
 "use client";
 import Script from "next/script";
 import { usePathname } from "next/navigation";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 /**
  * The subset of OpenWidget's loader API used here (it's LiveChat's widget
@@ -21,6 +21,28 @@ declare global {
 
 /** Ad landing pages have their own sticky Call / Free quote bar in the same corner. */
 const isLandingPath = (path: string) => path === "/lp" || path.startsWith("/lp/");
+
+/**
+ * The widget is ~1 MB of script from cdn.openwidget.com, the single heaviest
+ * thing on the homepage after the trackers (measured 2026-11-17). It now
+ * waits for the visitor's first scroll, tap, mouse move or key press, so a
+ * visit that never engages (and every page-speed test) never downloads it,
+ * and when it does load it isn't competing with the page's own images.
+ */
+const ENGAGE_EVENTS = ["scroll", "pointerdown", "pointermove", "keydown", "touchstart"] as const;
+
+function useFirstInteraction(enabled: boolean) {
+  const [engaged, setEngaged] = useState(false);
+  useEffect(() => {
+    if (!enabled || engaged) return;
+    const go = () => setEngaged(true);
+    for (const e of ENGAGE_EVENTS) window.addEventListener(e, go, { once: true, passive: true });
+    return () => {
+      for (const e of ENGAGE_EVENTS) window.removeEventListener(e, go);
+    };
+  }, [enabled, engaged]);
+  return engaged;
+}
 
 /** How long a greeting may cover a phone screen before it's tucked away. */
 const PHONE_GREETING_MS = 6000;
@@ -105,9 +127,10 @@ export default function OpenWidget() {
     window.OpenWidget?.call(onLanding ? "hide" : "minimize");
   }, [onLanding]);
 
-  usePhoneTidying(!onLanding);
+  const engaged = useFirstInteraction(!onLanding);
+  usePhoneTidying(!onLanding && engaged);
 
-  if (onLanding) return null;
+  if (onLanding || !engaged) return null;
   return (
     <>
       <Script id="openwidget" strategy="afterInteractive">

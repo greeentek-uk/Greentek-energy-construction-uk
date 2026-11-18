@@ -35,7 +35,10 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Invalid request body" }, { status: 400 });
   }
 
-  for (const field of REQUIRED_FIELDS) {
+  // A callback request (CallbackForm) leaves out the email on purpose: the
+  // team rings them instead of replying. Every other form still needs one.
+  const required = body.callback === true ? REQUIRED_FIELDS.filter((f) => f !== "email") : REQUIRED_FIELDS;
+  for (const field of required) {
     if (typeof body[field] !== "string" || !body[field].trim()) {
       return NextResponse.json({ error: `Missing required field: ${field}` }, { status: 400 });
     }
@@ -65,7 +68,7 @@ export async function POST(request: Request) {
   const payload: QuoteRequestPayload = {
     enquiry_number: enquiryNumber,
     full_name: String(body.full_name),
-    email: String(body.email),
+    email: typeof body.email === "string" ? body.email : "",
     phone: String(body.phone),
     postcode: String(body.postcode),
     // Capped: it's free text from a public form going into an email.

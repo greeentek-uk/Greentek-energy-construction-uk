@@ -319,7 +319,11 @@ to Version History first). Prices are **brackets, never a job's price** (that co
 £4,999 (£4,999–£9,999 / £10,000–£19,999 / £20,000+). The same brackets are the budget question in
 both quote forms whenever the service is a bathroom or kitchen (`serviceBudgetOptions` in
 `lib/quoteForm.ts`; earlier bands stay in `retiredBudgetOptions` so old enquiries are named); unit
-tests pin the figures. Project cards lead with the "after" photo, the "before" as a small inset;
+tests pin the figures. **Every other service page has its own bands too** (2026-11-02, a unit test
+requires it): those figures follow published UK cost guides (heat pumps after the grant) and await the
+owner's confirmation. The first band is the floor (e.g. loft insulation "Under £1,200"), never
+anything lower: people pick the first option, so it reads the wallet without undercutting. The whole-project bands remain only for "multiple" / "not sure". **Every quote form asks
+for the property address** (2026-11-02, owner), required in the browser; the API keeps it optional. Project cards lead with the "after" photo, the "before" as a small inset;
 the review wall shows three reviews.
 **Energy pages (2026-10-23):** `/lp/solar-panels` and `/lp/air-source-heat-pumps` on the same
 template (`lp-solar-panels`, `lp-air-source-heat-pumps`; services `energy_solar_pv` /
@@ -354,6 +358,47 @@ UK number. **All four steps share one grid cell** (inactive ones `invisible` + `
 card keeps the tallest step's height and the buttons don't move; on one-service pages property type
 + owner moved to step 1 (step 2 = timing & budget) so step 1 isn't nearly empty. No "Your enquiry"
 box on one-service pages (owner: useless — the heading names the service).
+**Hero grant quiz (2026-11-04)**, after Aira / British Gas / Octopus / E.ON Next entered the heat pump
+auction and out-converted us — all ask one easy thing *on the page* first: `GrantQuiz` is its own section
+after the hero + reviews strip (owner: not in the hero; the hero's main button scrolls to it) on
+`/lp/air-source-heat-pumps` only — four tap-a-tile questions (heating, home type, owner,
+timeline; each tap moves on), postcode, then contact. Same option lists/payload as `HeroQuoteForm
+heatPump` minus main reason and photos. Shown while `quizHeading` is set (blank = no quiz; hero button opens the pop-up).
+Never tells the visitor whether they qualify. Pop-up and closing form unchanged.
+Page order (owner): hero → reviews strip → `proofStats` → quiz. The hero was cut to one line +
+short ticks; production needs `pnpm migrate:heat-pump-hero --write` after deploying (dry run without;
+only unedited copy). The quiz card shows the rating badge under it on every step, as Aira does.
+**One form on that page** (full-page review, 2026-11-04): no pop-up there — `ScrollToQuiz` sends every
+`[data-quote]` button to `#grant-quiz`, and the closing section shows a second `GrantQuiz`
+(`idPrefix="final"`, `narrow`). The reviews strip shows each review's best sentence
+(`lib/reviewHighlight.ts`), not its first 120 characters (which put "…had one two problems…" under
+the hero). The "Everything you need, in one job" feature block went (duplicated the included card)
+and the MCS block lost its photo (the hero's, again) — both in `migrate:heat-pump-hero`.
+Around it, from the same competitor review: `proofStats` (big-figure strip after the reviews, as Aira's
+£490/-25°C/15Y), and beside the quiz `includedHeading`/`includedItems` + an optional `costAmount`/
+`costLabel` (typical price after the grant, as E.ON/Octopus). All blank = hidden; new fields render
+from `landingDefaults` on stored docs, so no migration. Only facts already on the page — guarantee
+years, fitting time, typical price and a finance example await the owner. "No EPC" leads because
+British Gas's page still says one is needed.
+**After reading 16 competitor pages (2026-11-05):** `0% VAT` (installs zero-rated in GB until
+31 March 2027) replaced "1 day" in the strip and joined the included list, and a `compare*` table
+"Why a local installer beats the national names" sits after the grant section. Its "them" column is
+general ("some", "often") and names nobody; each line traces to their own pages (British Gas solar's
+partner installers, E.ON's ~35-click footnote, Aira's guarantee = £19.90/month after year one, British
+Gas still listing an EPC). Keep it that way — comparative claims must stay provable.
+**v3 layout (2026-11-05)** — the owner found every competitor page better, so the heat pump page
+(while `quizHeading` is set) leaves the template for `HeatPumpLanding.tsx`: ~11 sections, each
+comment naming whose idea it is (British Gas's reasons row + timeline, E.ON's reviews / grant /
+two "pay your way" cards, Aira's quiz + closing). Lime only as an accent, one dark band (comparison
++ our promise). **Hero = the old split hero, by the owner's choice** (a full-bleed photo hero was
+tried and rejected). `payHeading`/`payOptions` carry no rate or monthly figure (needs a
+representative example; the brokers' pages have it, opened in a new tab). Template-only fields
+(ticker, features, second stats strip, areas, review wall) aren't shown there. Conversion extras:
+`CallbackForm` (name, phone, postcode; `callback: true` is the only enquiry the API accepts without
+an email; the team email gets a `[Call back]` subject tag), WhatsApp links, and `Footer minimal`
+(no Services/Company link columns, so paid visitors aren't shown ways off the page). Kitchen,
+bathroom and solar keep the template until the owner approves v3. Locally `next start` can't serve
+`/_next/image`; screenshot scripts reroute it to the original file.
 Enquiries arrive with source "Ad landing page — …" and, from the page URL's tags
 (`lib/attribution.ts`), the paid click / UTM rows in the email.
 
@@ -444,7 +489,7 @@ hover/focus/touch instead of on scroll. Keep new public links on that import. Ad
 
 ## Current state (2026-09-18)
 
-- Unit tests: **231 passing** across 25 files (2026-10-29).
+- Unit tests: **234 passing** across 25 files (2026-11-02).
 - E2E: 4 known failures recorded in `test-results/` —
   1. `/images/brands/swip.png` 404s on `/about` and in the media library. The file isn't in
      `public/images/brands/`; the reference lives in the **`brands` pageContent block in Mongo**,

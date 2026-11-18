@@ -16,6 +16,7 @@
     "migrate:landing-v2": "tsx scripts/migrate-landing-v2.ts",
     "migrate:landing-areas": "tsx scripts/migrate-landing-areas.ts",
     "migrate:heat-pump-grant": "tsx scripts/migrate-heat-pump-grant.ts",
+    "migrate:heat-pump-hero": "tsx scripts/migrate-heat-pump-hero.ts",
     "flatten:home-hero": "tsx scripts/flatten-home-hero.ts",
     "db:indexes": "tsx scripts/ensure-indexes.ts",
     "preflight": "tsx scripts/preflight.ts",
@@ -31,11 +32,11 @@
     "cloudinary": "^2.10.0",
     "lucide-react": "^1.27.0",
     "mongodb": "^7.5.0",
-    "next": "16.4.2",
+    "next": "16.4.6",
     "nodemailer": "^10.1.5",
     "react": "19.2.4",
     "react-dom": "19.2.4",
-    "sanitize-html": "^2.17.7",
+    "sanitize-html": "^2.18.2",
     "swiper": "^14.0.7"
   },
   "devDependencies": {
@@ -47,13 +48,13 @@
     "@types/react-dom": "^19",
     "dotenv": "^17.4.2",
     "eslint": "^9",
-    "eslint-config-next": "16.4.2",
-    "jsdom": "^30.0.1",
+    "eslint-config-next": "16.4.6",
+    "jsdom": "^31.0.1",
     "sharp": "^0.35.5",
     "tailwindcss": "^4",
     "tsx": "^4.23.12",
     "typescript": "^5",
-    "vitest": "^5.0.1"
+    "vitest": "^5.1.0"
   },
   "packageManager": "pnpm@11.25.0",
   "engines": {

@@ -84,6 +84,7 @@ type FormState = {
   email: string;
   phone: string;
   postcode: string;
+  address: string;
   service: string;
   property_type: "residential" | "commercial" | "";
   is_homeowner: string;
@@ -119,6 +120,7 @@ export default function CtaSection({
     email: "",
     phone: "",
     postcode: "",
+    address: "",
     service: isOfferedService(defaultService) ? defaultService : "",
     property_type: "",
     is_homeowner: "",
@@ -353,6 +355,23 @@ export default function CtaSection({
                     placeholder="B37 7WY"
                   />
                 </div>
+              </div>
+
+              <div className="space-y-1.5">
+                <label htmlFor="address" className={labelClasses}>
+                  Property address
+                </label>
+                <input
+                  type="text"
+                  id="address"
+                  name="address"
+                  autoComplete="street-address"
+                  required
+                  value={form.address}
+                  onChange={handleChange}
+                  className={inputClasses}
+                  placeholder="House number and street"
+                />
               </div>
 
               {/* Service interested in */}

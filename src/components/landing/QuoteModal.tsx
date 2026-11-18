@@ -9,14 +9,12 @@ export default function QuoteModal({
   subheading,
   source,
   fixedService,
-  askAddress = false,
   heatPump = false,
 }: {
   heading: string;
   subheading: string;
   source: string;
   fixedService: FixedService;
-  askAddress?: boolean;
   heatPump?: boolean;
 }) {
   const dialogRef = useRef<HTMLDialogElement>(null);
@@ -52,7 +50,10 @@ export default function QuoteModal({
       onClick={(e) => e.target === dialogRef.current && dialogRef.current?.close()}
       className="m-auto w-[calc(100%-1.5rem)] max-w-md bg-transparent p-0 backdrop:bg-black/75 backdrop:backdrop-blur-sm"
     >
-      <div className="relative">
+      {/* mt-3 mr-1 make room inside the dialog for the close button's
+          offset: a <dialog> scrolls its own overflow, so a button poking past
+          its edge showed a horizontal scrollbar and clipped the X. */}
+      <div className="relative mt-3 mr-1">
         <button
           type="button"
           onClick={() => dialogRef.current?.close()}
@@ -68,7 +69,6 @@ export default function QuoteModal({
             source={source}
             fixedService={fixedService}
             idPrefix="quote"
-            askAddress={askAddress}
             heatPump={heatPump}
           />
         </div>

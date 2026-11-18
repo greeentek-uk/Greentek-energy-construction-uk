@@ -63,7 +63,7 @@ export default async function PrivacyPage() {
         <p>We may collect and process the following data about you:</p>
         <LegalList
           items={[
-            "Information you give us by filling in forms on our site, such as your name, email address, phone number, postcode and project details.",
+            "Information you give us by filling in forms on our site, such as your name, email address, phone number, address, postcode and project details.",
             "Photos of your property that you choose to upload with a quote request.",
             "A record of any correspondence if you contact us.",
             "Details of your visits to our site, such as the pages you view and how you arrived at them, where you have allowed the cookies described below.",

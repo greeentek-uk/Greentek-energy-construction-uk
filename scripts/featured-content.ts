@@ -55,7 +55,6 @@ export const FEATURED_SERVICES: FeaturedServicesContent = {
 
 export const ACCREDITATION_LOGOS: AccreditationsContent["logos"] = [
   { name: "MCS Certified", image: "/images/accreditations/image-808x1024.png", imageAlt: "MCS Certified", url: "https://mcscertified.com" },
-  { name: "TrustMark", image: "/images/accreditations/trustmark.png", imageAlt: "TrustMark Government Endorsed Quality", url: "https://www.trustmark.org.uk" },
   { name: "Gas Safe Register", image: "/images/accreditations/gas-safe.png", imageAlt: "Gas Safe Register", url: "https://www.gassaferegister.co.uk" },
   { name: "HIES", image: "/images/accreditations/hies.png", imageAlt: "HIES accredited", url: "https://hies.org.uk" },
   { name: "Amtivo", image: "/images/accreditations/amtivo-logo-new.png", imageAlt: "Amtivo certified", url: "https://amtivo.com" },

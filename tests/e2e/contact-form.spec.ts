@@ -18,6 +18,7 @@ test("the browser blocks sending until required fields and consent are given", a
   await page.locator("#email").fill("e2e@example.com");
   await page.locator("#phone").fill("07700900123");
   await page.locator("#postcode").fill("B1 1AA");
+  await page.locator("#address").fill("1 Test Street, Birmingham");
   await page.locator("#service").selectOption({ index: 1 });
   await submit.click();
   expect(await page.locator("#consent").evaluate((el: HTMLInputElement) => el.validity.valid)).toBe(false);
@@ -29,6 +30,7 @@ test("a complete enquiry is sent and lands on the thank-you page", async ({ page
   await page.locator("#email").fill("e2e@example.com");
   await page.locator("#phone").fill("07700900123");
   await page.locator("#postcode").fill("B1 1AA");
+  await page.locator("#address").fill("1 Test Street, Birmingham");
   const service = await page.locator("#service option").nth(1).getAttribute("value");
   await page.locator("#service").selectOption(service!);
   await page.getByRole("button", { name: "Residential" }).click();
@@ -62,6 +64,7 @@ test("an error from the server is shown and the visitor stays on the page", asyn
   await page.locator("#email").fill("e2e@example.com");
   await page.locator("#phone").fill("07700900123");
   await page.locator("#postcode").fill("B1 1AA");
+  await page.locator("#address").fill("1 Test Street, Birmingham");
   await page.locator("#service").selectOption({ index: 1 });
   await page.locator("#consent").check();
   await page.getByRole("button", { name: "Send My Request" }).click();

@@ -293,6 +293,43 @@ export interface LandingPageContent {
   grantChecklistHeading: string;
   grantChecklist: string[];
   grantNote: string;
+  /**
+   * The tap-a-tile grant quiz in the hero (`GrantQuiz`), heat pumps only.
+   * Blank heading = no quiz: the hero keeps its buttons.
+   */
+  quizHeading: string;
+  quizSubheading: string;
+  /**
+   * Big figures in a strip straight under the hero, as Aira does ("£490 /
+   * -25°C / 15Y"). Blank = no strip. Only facts the page can stand behind.
+   */
+  proofStats: { value: string; label: string }[];
+  /** Beside the quiz: what the price covers. Blank heading = not shown. */
+  includedHeading: string;
+  includedItems: string[];
+  /**
+   * A typical price after the grant (E.ON: "from £4,746", Octopus: "typical
+   * £4,064"), shown above what's included. Blank until the owner gives one.
+   */
+  costAmount: string;
+  costLabel: string;
+  /**
+   * "Us vs the national firms" table (2026-11-05, after reading 16 of the
+   * competitors' pages): only claims this page already makes or that can be
+   * shown from their own sites. Blank heading = not shown.
+   */
+  compareHeading: string;
+  compareUsLabel: string;
+  compareThemLabel: string;
+  compareRows: { label: string; us: string; them: string }[];
+  /**
+   * "Pay your way": two plain cards, as E.ON's page does. No rates or
+   * monthly figures here — a finance promotion that names one needs a full
+   * representative example; the cards link to each broker's page, which has
+   * it. Blank heading = not shown.
+   */
+  payHeading: string;
+  payOptions: { title: string; body: string }[];
   problemHeading: string;
   problemQuestions: string[];
   problemBody: string;
